@@ -2,7 +2,7 @@
 #define CPP_RAYTRACING_UTIL_H
 
 namespace ray {
-template <typename T, T low, T high> inline T clip(const T x) {
+template <typename T, T low, T high> inline constexpr T clip(const T x) {
     if (x < low) {
         return low;
     }
