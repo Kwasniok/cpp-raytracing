@@ -11,6 +11,7 @@ using ColorScalar = double;
 using ColorIntegral = unsigned long;
 
 class Color {
+
   public:
     constexpr Color() : _data{0, 0, 0} {}
     constexpr Color(const ColorScalar r, const ColorScalar g,
@@ -92,6 +93,13 @@ inline constexpr Color operator/(const Color& color, const ColorScalar f) {
     const ColorScalar f_inv = 1 / f;
     return Color(color.r() * f_inv, color.g() * f_inv, color.b() * f_inv);
 }
+
+namespace Colors {
+constexpr Color BLACK{0.0, 0.0, 0.0};
+constexpr Color RED{1.0, 0.0, 0.0};
+constexpr Color GREEN{0.0, 1.0, 0.0};
+constexpr Color BLUE{0.0, 0.0, 1.0};
+} // namespace Colors
 
 } // namespace ray
 #endif
