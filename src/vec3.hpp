@@ -4,9 +4,9 @@
 #include <cmath>
 #include <iostream>
 
-namespace ray {
+#include "scalar.hpp"
 
-using Scalar = double;
+namespace ray {
 
 class Vec3 {
   public:
