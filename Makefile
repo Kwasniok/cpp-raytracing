@@ -1,6 +1,6 @@
 
 CPP=g++
-CPP_FLAGS=-O3
+CPP_FLAGS=-std=c++20 -O3
 
 .PHONY: all
 .DEFAULT_GOAL=all
