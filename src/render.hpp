@@ -1,6 +1,8 @@
 #ifndef CPP_RAYTRACING_RENDER_H
 #define CPP_RAYTRACING_RENDER_H value
 
+#include <cmath>
+
 #include "color.hpp"
 #include "hittable.hpp"
 #include "ray.hpp"
@@ -22,8 +24,8 @@ inline std::ostream& write_color_as_int_triple(std::ostream& os,
 Color constexpr ray_back_ground_color(const Ray& ray) {
     Vec3 direction = ray.direction();
     direction = unit_vector(direction);
-    auto t = 0.5 * abs(direction.y()) + 0.25;
-    Color color = (1 - t) * Colors::WHITE + t * Colors::BLUE;
+    auto t = 0.5 * std::abs(direction.y()) + 0.25;
+    Color color = (1.0 - t) * Colors::WHITE + t * Colors::BLUE;
     return color;
 }
 
