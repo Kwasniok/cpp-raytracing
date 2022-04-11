@@ -20,8 +20,9 @@ Color constexpr ray_back_ground_color(const Ray& ray) {
     return color;
 }
 
-Color normal_color(const Vec3& normal) {
-    return 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
+Color normal_color(const HitRecord& record) {
+    return 0.5 * Color(record.normal.x() + 1, record.normal.y() + 1,
+                       record.normal.z() + 1);
 }
 
 Color ray_color(const vector<unique_ptr<Hittable>>& hittables, const Ray& ray) {
@@ -35,7 +36,7 @@ Color ray_color(const vector<unique_ptr<Hittable>>& hittables, const Ray& ray) {
     }
 
     if (closest_record.t < SCALAR_INF) {
-        return normal_color(closest_record.normal);
+        return normal_color(closest_record);
     }
     return ray_back_ground_color(ray);
 }

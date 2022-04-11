@@ -64,12 +64,11 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     // found solution in range
     const Vec3 point = ray.at(t);
     const Vec3 normal = (point - origin()) / radius();
-    return HitRecord{
-        .point = point,
-        .normal = normal,
-        .t = t,
-    };
-    ;
+    HitRecord record;
+    record.t = t;
+    record.point = point;
+    record.set_face_normal(ray, normal);
+    return record;
 }
 
 } // namespace ray

@@ -13,6 +13,12 @@ struct HitRecord {
     Vec3 point;
     Vec3 normal;
     Scalar t;
+    bool front_face;
+
+    void set_face_normal(const Ray& ray, const Vec3& face_normal) {
+        front_face = dot(face_normal, ray.direction());
+        normal = front_face ? face_normal : -face_normal;
+    }
 };
 
 class Hittable {
