@@ -1,7 +1,14 @@
 #ifndef CPP_RAYTRACING_UTIL_H
 #define CPP_RAYTRACING_UTIL_H
 
+#include <numbers>
+
 namespace ray {
+
+template <typename T> inline T degrees_to_radians(T degrees) {
+    return degrees * std::numbers::pi_v<T> / 180.0;
+}
+
 template <typename T, T low, T high> inline constexpr T clip(const T x) {
     if (x < low) {
         return low;
@@ -13,4 +20,5 @@ template <typename T, T low, T high> inline constexpr T clip(const T x) {
 }
 
 } // namespace ray
+
 #endif
