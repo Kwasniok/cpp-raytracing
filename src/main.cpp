@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #include "camera.hpp"
 #include "color.hpp"
@@ -51,15 +52,19 @@ Color constexpr ray_back_ground_color(const Ray& ray) {
     return color;
 }
 
-Color constexpr ray_color(const Ray& ray) {
-    constexpr Sphere sphere{{0.0, 0.0, -1.0}, 0.5};
-    const auto t = hits_at(ray, sphere);
-    if (t > 0.0) {
-        const auto hit_point = ray.at(t);
-        const auto normal = unit_vector(hit_point - sphere.origin());
-        return 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
+Color ray_color(const vector<Sphere>& spheres, const Ray& ray) {
+    Color color = ray_back_ground_color(ray);
+    Scalar closest_t = numeric_limits<Scalar>::infinity();
+    for (const Sphere& sphere : spheres) {
+        const auto t = hits_at(ray, sphere);
+        if (t > 0.0 and t < closest_t) {
+            closest_t = t;
+            const auto hit_point = ray.at(t);
+            const auto normal = unit_vector(hit_point - sphere.origin());
+            color = 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
+        }
     }
-    return ray_back_ground_color(ray);
+    return color;
 }
 
 void print_example_ppm_file() {
@@ -75,6 +80,14 @@ void print_example_ppm_file() {
                         .direction_x = {1.0, 0.0, 0.0},
                         .direction_y = {0.0, 1.0, 0.0},
                         .direction_z = {0.0, 0.0, -1.0}};
+
+    const vector<Sphere> spheres = {{{{0.0, 0.0, -1.0}, 0.5},
+                                     {{0.0, +0.5, -1.5}, 0.5},
+                                     {{0.0, -0.5, -1.5}, 0.5},
+                                     {{+.5, 0.0, -1.5}, 0.5},
+                                     {{-0.5, 0.0, -1.5}, 0.5}
+
+    }};
 
     // header
     cout << "P3 # ASCII RGB" << endl;
@@ -95,7 +108,7 @@ void print_example_ppm_file() {
             const Scalar y = 2.0 * (Scalar(j) / camera.canvas_height - 0.5);
 
             Ray ray = camera.ray_for_coords(x, y);
-            Color color = ray_color(ray);
+            Color color = ray_color(spheres, ray);
             cout << "  ";
             write_color_as_integrals(cout, color);
         }
