@@ -7,6 +7,18 @@
 #include "scene.hpp"
 
 namespace ray {
+
+inline std::ostream& write_color_as_int_triple(std::ostream& os,
+                                               const Color& color,
+                                               const unsigned long samples) {
+    const auto scale = 1.0 / samples;
+    const auto r = int_from_color_scalar(color.r() * scale);
+    const auto g = int_from_color_scalar(color.g() * scale);
+    const auto b = int_from_color_scalar(color.b() * scale);
+    os << r << " " << g << " " << b;
+    return os;
+}
+
 Color constexpr ray_back_ground_color(const Ray& ray) {
     Vec3 direction = ray.direction();
     direction = unit_vector(direction);

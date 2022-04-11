@@ -56,19 +56,9 @@ class Color {
     ColorScalar _data[3];
 };
 
-inline constexpr ColorIntegral
-integral_from_color_scalar(const ColorScalar cs) {
+inline constexpr ColorIntegral int_from_color_scalar(const ColorScalar cs) {
     ColorIntegral ci = static_cast<ColorIntegral>(cs * 255);
     return clip<ColorIntegral, 0, 255>(ci);
-}
-
-inline std::ostream& write_color_as_integrals(std::ostream& os,
-                                              const Color color) {
-    const unsigned r = integral_from_color_scalar(color.r());
-    const unsigned g = integral_from_color_scalar(color.g());
-    const unsigned b = integral_from_color_scalar(color.b());
-    os << r << " " << g << " " << b;
-    return os;
 }
 
 inline constexpr Color operator+(const Color& color1, const Color& color2) {

@@ -24,8 +24,8 @@ void print_example_ppm_file() {
     // see: https://en.wikipedia.org/wiki/Netpbm#File_formats
 
     const bool logging = false;
-
     const unsigned long max_color = 255;
+    const unsigned long samples = 1;
 
     const Camera camera{.canvas_width = 1000,
                         .canvas_height = 1000,
@@ -52,13 +52,16 @@ void print_example_ppm_file() {
             cerr << "line " << (j + 1) << "/" << camera.canvas_height << endl;
         }
         for (long i = 0; i < camera.canvas_width; ++i) {
-            const Scalar x = 2.0 * (Scalar(i) / camera.canvas_width - 0.5);
-            const Scalar y = 2.0 * (Scalar(j) / camera.canvas_height - 0.5);
+            Color pixel_color = Colors::BLACK;
+            for (long s = 0; s < samples; ++s) {
+                const Scalar x = 2.0 * (Scalar(i) / camera.canvas_width - 0.5);
+                const Scalar y = 2.0 * (Scalar(j) / camera.canvas_height - 0.5);
 
-            Ray ray = camera.ray_for_coords(x, y);
-            Color color = ray_color(hittables, ray);
+                Ray ray = camera.ray_for_coords(x, y);
+                pixel_color += ray_color(hittables, ray);
+            }
             cout << "  ";
-            write_color_as_integrals(cout, color);
+            write_color_as_int_triple(cout, pixel_color, samples);
         }
         cout << endl;
     }
