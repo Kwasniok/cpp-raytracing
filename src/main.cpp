@@ -1,48 +1,16 @@
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "camera.hpp"
 #include "color.hpp"
+#include "hittable.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 
 using namespace std;
 using namespace ray;
-
-Scalar constexpr hits_at(const Ray& ray, const Sphere& sphere) {
-    // returns minimal solution which is positive and starts outside of the
-    // sphere or else nan
-    constexpr Scalar nan = numeric_limits<Scalar>::signaling_NaN();
-
-    // analytical geometry: line hits sphere
-    // ray: s + t*d
-    // sphere: (x-o)^2 = R^2
-    // solve: a*t^2 + b*t + c = 0
-    // where a = d^2 >= 0, b = 2*d*(s-o), c = (s-o)^2 - R^2
-    // solution: t = (-b +/- sqrt(b^2 - 4ac))/(2a)
-    const auto delta = ray.start() - sphere.origin();
-    const auto a = dot(ray.direction(), ray.direction());
-    const auto b = 2.0 * dot(ray.direction(), delta);
-    const auto c = dot(delta, delta) - sphere.radius() * sphere.radius();
-    const auto discriminant = b * b - 4.0 * a * c;
-    if (discriminant < 0.0) {
-        // no real solution
-        return nan;
-    }
-    const auto t1 = (-b - sqrt(discriminant)) / (2.0 * a);
-    // const auto t2 = (-b + sqrt(discriminant)) / (2.0 * a);
-    // t1>0, t2>0: ray starts outside of the sphere and enters it at t1
-    // t1<0, t2>0: ray starts inside the sphere and leaves it at t2
-    // t1<0, t2<0: ray starts after the sphere and never enters it
-
-    // select minimal positive sloution (if it exists)
-    if (t1 > 0.0) {
-        return t1;
-    }
-    // no positive soltion which is minimal
-    return nan;
-}
 
 Color constexpr ray_back_ground_color(const Ray& ray) {
     Vec3 direction = ray.direction();
@@ -52,19 +20,32 @@ Color constexpr ray_back_ground_color(const Ray& ray) {
     return color;
 }
 
-Color ray_color(const vector<Sphere>& spheres, const Ray& ray) {
-    Color color = ray_back_ground_color(ray);
-    Scalar closest_t = numeric_limits<Scalar>::infinity();
-    for (const Sphere& sphere : spheres) {
-        const auto t = hits_at(ray, sphere);
-        if (t > 0.0 and t < closest_t) {
-            closest_t = t;
-            const auto hit_point = ray.at(t);
-            const auto normal = unit_vector(hit_point - sphere.origin());
-            color = 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
+Color normal_color(const Vec3& normal) {
+    return 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
+}
+
+Color ray_color(const vector<unique_ptr<Hittable>>& hittables, const Ray& ray) {
+    HitRecord closest_record = {.t = SCALAR_INF};
+
+    for (const auto& hittable : hittables) {
+        HitRecord record = hittable->hit_record(ray, 0.0, SCALAR_INF);
+        if (record.t < closest_record.t) {
+            closest_record = record;
         }
     }
-    return color;
+
+    if (closest_record.t < SCALAR_INF) {
+        return normal_color(closest_record.normal);
+    }
+    return ray_back_ground_color(ray);
+}
+
+void make_scene(vector<unique_ptr<Hittable>>& hittables) {
+    hittables.push_back(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
+    hittables.push_back(make_unique<Sphere>(Vec3(0.0, +0.5, -1.5), 0.5));
+    hittables.push_back(make_unique<Sphere>(Vec3(0.0, -0.5, -1.5), 0.5));
+    hittables.push_back(make_unique<Sphere>(Vec3(+0.5, 0.0, -1.5), 0.5));
+    hittables.push_back(make_unique<Sphere>(Vec3(-0.5, 0.0, -1.5), 0.5));
 }
 
 void print_example_ppm_file() {
@@ -81,13 +62,8 @@ void print_example_ppm_file() {
                         .direction_y = {0.0, 1.0, 0.0},
                         .direction_z = {0.0, 0.0, -1.0}};
 
-    const vector<Sphere> spheres = {{{{0.0, 0.0, -1.0}, 0.5},
-                                     {{0.0, +0.5, -1.5}, 0.5},
-                                     {{0.0, -0.5, -1.5}, 0.5},
-                                     {{+.5, 0.0, -1.5}, 0.5},
-                                     {{-0.5, 0.0, -1.5}, 0.5}
-
-    }};
+    vector<unique_ptr<Hittable>> hittables;
+    make_scene(hittables);
 
     // header
     cout << "P3 # ASCII RGB" << endl;
@@ -108,7 +84,7 @@ void print_example_ppm_file() {
             const Scalar y = 2.0 * (Scalar(j) / camera.canvas_height - 0.5);
 
             Ray ray = camera.ray_for_coords(x, y);
-            Color color = ray_color(spheres, ray);
+            Color color = ray_color(hittables, ray);
             cout << "  ";
             write_color_as_integrals(cout, color);
         }
