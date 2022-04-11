@@ -1,4 +1,7 @@
 
+CPP=g++
+CPP_FLAGS=-O3
+
 .PHONY: all
 .DEFAULT_GOAL=all
 all: folders main run
@@ -15,4 +18,4 @@ run:
 .PHONY: main
 main: bin/main
 bin/main: src/main.cpp
-	g++ -o bin/main src/main.cpp
+	$(CPP) $(CPP_FLAGS) -o bin/main src/main.cpp
