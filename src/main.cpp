@@ -7,6 +7,7 @@
 #include "color.hpp"
 #include "hittable.hpp"
 #include "ray.hpp"
+#include "scene.hpp"
 #include "sphere.hpp"
 
 using namespace std;
@@ -25,7 +26,7 @@ Color normal_color(const HitRecord& record) {
                        record.normal.z() + 1);
 }
 
-Color ray_color(const vector<unique_ptr<Hittable>>& hittables, const Ray& ray) {
+Color ray_color(const Scene& hittables, const Ray& ray) {
     HitRecord closest_record = {.t = SCALAR_INF};
 
     for (const auto& hittable : hittables) {
@@ -41,7 +42,7 @@ Color ray_color(const vector<unique_ptr<Hittable>>& hittables, const Ray& ray) {
     return ray_back_ground_color(ray);
 }
 
-void make_scene(vector<unique_ptr<Hittable>>& hittables) {
+void make_scene(Scene& hittables) {
     hittables.push_back(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
     hittables.push_back(make_unique<Sphere>(Vec3(0.0, +0.5, -1.5), 0.5));
     hittables.push_back(make_unique<Sphere>(Vec3(0.0, -0.5, -1.5), 0.5));
@@ -63,7 +64,7 @@ void print_example_ppm_file() {
                         .direction_y = {0.0, 1.0, 0.0},
                         .direction_z = {0.0, 0.0, -1.0}};
 
-    vector<unique_ptr<Hittable>> hittables;
+    Scene hittables;
     make_scene(hittables);
 
     // header
