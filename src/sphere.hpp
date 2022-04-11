@@ -17,8 +17,9 @@ class Sphere : public Hittable {
     constexpr Vec3 origin() const { return _origin; }
     constexpr Scalar radius() const { return _radius; }
 
-    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min,
-                                 const Scalar t_max) const override;
+    virtual HitRecord
+    hit_record(const Ray& ray, const Scalar t_min = 0.0,
+               const Scalar t_max = SCALAR_INF) const override;
 
   public:
     Vec3 _origin;

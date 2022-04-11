@@ -28,7 +28,7 @@ Color ray_color(const vector<unique_ptr<Hittable>>& hittables, const Ray& ray) {
     HitRecord closest_record = {.t = SCALAR_INF};
 
     for (const auto& hittable : hittables) {
-        HitRecord record = hittable->hit_record(ray, 0.0, SCALAR_INF);
+        HitRecord record = hittable->hit_record(ray);
         if (record.t < closest_record.t) {
             closest_record = record;
         }

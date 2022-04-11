@@ -17,8 +17,8 @@ struct HitRecord {
 
 class Hittable {
   public:
-    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min,
-                                 const Scalar t_max) const = 0;
+    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+                                 const Scalar t_max = SCALAR_INF) const = 0;
 };
 
 } // namespace ray
