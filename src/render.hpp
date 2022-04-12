@@ -47,7 +47,7 @@ Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth) {
     if (depth == 0) {
         return Colors::BLACK;
     }
-    HitRecord record = scene.hit_record(ray);
+    HitRecord record = scene.hit_record(ray, 0.00001);
     const Color surface_color{0.5, 0.5, 0.5};
     if (record.t < SCALAR_INF) {
         // diffuse surface
