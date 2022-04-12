@@ -1,4 +1,8 @@
 
+SRC=src
+BIN=bin
+OUT=out
+
 CPP=g++
 CPP_FLAGS=-std=c++20 -O3
 
@@ -9,13 +13,13 @@ all: folders main run
 # ensure folders exist
 .PHONY: folders
 folders:
-	mkdir -p src bin out
+	mkdir -p $(SRC) $(BIN) $(OUT)
 
 .PHONY:run
 run:
-	./bin/main > out/out.ppm
+	$(BIN)/main > $(OUT)/out.ppm
 
 .PHONY: main
-main: bin/main
-bin/main: src/main.cpp
-	$(CPP) $(CPP_FLAGS) -o bin/main src/main.cpp
+main: $(BIN)/main
+$(BIN)/main: $(SRC)/main.cpp
+	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp
