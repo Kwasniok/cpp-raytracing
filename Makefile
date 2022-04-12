@@ -36,5 +36,5 @@ MAIN_HEADERS= \
 
 
 main: $(BIN)/main
-$(BIN)/main: $(SRC)/main.cpp
+$(BIN)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
 	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp
