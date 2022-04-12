@@ -13,11 +13,20 @@ namespace ray {
 inline std::ostream& write_color_as_int_triple(std::ostream& os,
                                                const Color& color,
                                                const unsigned long samples) {
+    // rescale
     const auto scale = 1.0 / samples;
-    const auto r = int_from_color_scalar(color.r() * scale);
-    const auto g = int_from_color_scalar(color.g() * scale);
-    const auto b = int_from_color_scalar(color.b() * scale);
-    os << r << " " << g << " " << b;
+    auto r = color.r() * scale;
+    auto g = color.g() * scale;
+    auto b = color.b() * scale;
+    // gamma correction (raise to the power of 1/gamma)
+    r = std::sqrt(r);
+    g = std::sqrt(g);
+    b = std::sqrt(b);
+    // convert to integers
+    const auto ir = int_from_color_scalar(r);
+    const auto ig = int_from_color_scalar(g);
+    const auto ib = int_from_color_scalar(b);
+    os << ir << " " << ig << " " << ib;
     return os;
 }
 
