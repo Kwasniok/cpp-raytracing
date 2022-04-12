@@ -15,10 +15,7 @@ using namespace ray;
 
 void make_scene(Scene& scene) {
     scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
-    scene.add(make_unique<Sphere>(Vec3(0.0, +0.5, -1.5), 0.5));
-    scene.add(make_unique<Sphere>(Vec3(0.0, -0.5, -1.5), 0.5));
-    scene.add(make_unique<Sphere>(Vec3(+0.5, 0.0, -1.5), 0.5));
-    scene.add(make_unique<Sphere>(Vec3(-0.5, 0.0, -1.5), 0.5));
+    scene.add(make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0));
 }
 
 void print_example_ppm_file() {
