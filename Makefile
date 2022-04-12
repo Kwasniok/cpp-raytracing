@@ -20,6 +20,21 @@ run:
 	$(BIN)/main > $(OUT)/out.ppm
 
 .PHONY: main
+
+MAIN_HEADERS= \
+	$(SRC)/camera.hpp \
+	$(SRC)/color.hpp \
+	$(SRC)/hittable.hpp \
+	$(SRC)/random.hpp  \
+	$(SRC)/ray.hpp \
+	$(SRC)/render.hpp  \
+	$(SRC)/scalar.hpp  \
+	$(SRC)/scene.hpp  \
+	$(SRC)/sphere.hpp \
+	$(SRC)/util.hpp  \
+	$(SRC)/vec3.hpp \
+
+
 main: $(BIN)/main
 $(BIN)/main: $(SRC)/main.cpp
 	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp
