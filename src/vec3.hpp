@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "random.hpp"
 #include "scalar.hpp"
 
 namespace ray {
@@ -13,6 +14,15 @@ class Vec3 {
     constexpr Vec3() : _data{0, 0, 0} {}
     constexpr Vec3(const Scalar x, const Scalar y, const Scalar z)
         : _data{x, y, z} {}
+
+    inline static Vec3 random() {
+        return {random_scalar(), random_scalar(), random_scalar()};
+    }
+
+    inline static Vec3 random(Scalar min, Scalar max) {
+        return {random_scalar(min, max), random_scalar(min, max),
+                random_scalar(min, max)};
+    }
 
     constexpr Scalar x() const { return _data[0]; }
     constexpr Scalar y() const { return _data[1]; }
@@ -82,6 +92,17 @@ inline constexpr Vec3 cross(const Vec3& v1, const Vec3& v2) {
 }
 
 inline constexpr Vec3 unit_vector(const Vec3& v) { return v / v.length(); }
+
+inline Vec3 random_vector_in_unit_sphere() {
+    // rejection based and uniform
+    while (true) {
+        auto v = Vec3::random();
+        if (dot(v, v) >= 1.0) {
+            continue;
+        }
+        return v;
+    }
+}
 
 } // namespace ray
 #endif

@@ -15,6 +15,10 @@ inline Scalar random_scalar() {
     return distribution(generator);
 }
 
+inline Scalar random_scalar(Scalar min, Scalar max) {
+    return min + (max - min) * random_scalar();
+}
+
 } // namespace ray
 
 #endif
