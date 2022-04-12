@@ -4,6 +4,7 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
+#include "random.hpp"
 #include "ray.hpp"
 #include "render.hpp"
 #include "scene.hpp"
@@ -25,10 +26,10 @@ void print_example_ppm_file() {
 
     const bool logging = false;
     const unsigned long max_color = 255;
-    const unsigned long samples = 1;
+    const unsigned long samples = 100;
 
-    const Camera camera{.canvas_width = 1000,
-                        .canvas_height = 1000,
+    const Camera camera{.canvas_width = 250,
+                        .canvas_height = 250,
                         .origin = {0.0, 0.0, 0.0},
                         .direction_x = {1.0, 0.0, 0.0},
                         .direction_y = {0.0, 1.0, 0.0},
@@ -54,8 +55,12 @@ void print_example_ppm_file() {
         for (long i = 0; i < camera.canvas_width; ++i) {
             Color pixel_color = Colors::BLACK;
             for (long s = 0; s < samples; ++s) {
-                const Scalar x = 2.0 * (Scalar(i) / camera.canvas_width - 0.5);
-                const Scalar y = 2.0 * (Scalar(j) / camera.canvas_height - 0.5);
+                // random sub-pixel offset for antialiasing
+                Scalar x = Scalar(i) + random_scalar();
+                Scalar y = Scalar(j) + random_scalar();
+                // transform to camera coordinates
+                x = (2.0 * x / camera.canvas_width - 1.0);
+                y = (2.0 * y / camera.canvas_height - 1.0);
 
                 Ray ray = camera.ray_for_coords(x, y);
                 pixel_color += ray_color(hittables, ray);
