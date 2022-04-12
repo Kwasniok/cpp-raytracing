@@ -48,10 +48,13 @@ Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth) {
         return Colors::BLACK;
     }
     HitRecord record = scene.hit_record(ray);
+    const Color surface_color{0.5, 0.5, 0.5};
     if (record.t < SCALAR_INF) {
-        // diffue surface
+        // diffuse surface
         Vec3 direction = record.normal + random_vector_in_unit_sphere();
-        return 0.5 * ray_color(scene, Ray(record.point, direction), depth - 1);
+        Color color = ray_color(scene, Ray(record.point, direction), depth - 1);
+        color *= surface_color;
+        return color;
     }
     return ray_back_ground_color(ray);
 }
