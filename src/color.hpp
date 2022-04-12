@@ -48,6 +48,12 @@ class Color {
         _data[2] *= fac;
         return *this;
     }
+    constexpr Color& operator*=(const Color& other) {
+        _data[0] *= other[0];
+        _data[1] *= other[1];
+        _data[2] *= other[2];
+        return *this;
+    }
     constexpr Color& operator/=(const ColorScalar fac) {
         return *this *= (1 / fac);
     }
