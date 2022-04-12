@@ -34,18 +34,10 @@ Color normal_color(const HitRecord& record) {
                        record.normal.z() + 1);
 }
 
-Color ray_color(const Scene& hittables, const Ray& ray) {
-    HitRecord closest_record = {.t = SCALAR_INF};
-
-    for (const auto& hittable : hittables) {
-        HitRecord record = hittable->hit_record(ray);
-        if (record.t < closest_record.t) {
-            closest_record = record;
-        }
-    }
-
-    if (closest_record.t < SCALAR_INF) {
-        return normal_color(closest_record);
+Color ray_color(const Scene& scene, const Ray& ray) {
+    HitRecord record = scene.hit_record(ray);
+    if (record.t < SCALAR_INF) {
+        return normal_color(record);
     }
     return ray_back_ground_color(ray);
 }

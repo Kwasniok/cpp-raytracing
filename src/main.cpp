@@ -13,12 +13,12 @@
 using namespace std;
 using namespace ray;
 
-void make_scene(Scene& hittables) {
-    hittables.push_back(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
-    hittables.push_back(make_unique<Sphere>(Vec3(0.0, +0.5, -1.5), 0.5));
-    hittables.push_back(make_unique<Sphere>(Vec3(0.0, -0.5, -1.5), 0.5));
-    hittables.push_back(make_unique<Sphere>(Vec3(+0.5, 0.0, -1.5), 0.5));
-    hittables.push_back(make_unique<Sphere>(Vec3(-0.5, 0.0, -1.5), 0.5));
+void make_scene(Scene& scene) {
+    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
+    scene.add(make_unique<Sphere>(Vec3(0.0, +0.5, -1.5), 0.5));
+    scene.add(make_unique<Sphere>(Vec3(0.0, -0.5, -1.5), 0.5));
+    scene.add(make_unique<Sphere>(Vec3(+0.5, 0.0, -1.5), 0.5));
+    scene.add(make_unique<Sphere>(Vec3(-0.5, 0.0, -1.5), 0.5));
 }
 
 void print_example_ppm_file() {
@@ -35,8 +35,8 @@ void print_example_ppm_file() {
                         .direction_y = {0.0, 1.0, 0.0},
                         .direction_z = {0.0, 0.0, -1.0}};
 
-    Scene hittables;
-    make_scene(hittables);
+    Scene scene;
+    make_scene(scene);
 
     // header
     cout << "P3 # ASCII RGB" << endl;
@@ -63,7 +63,7 @@ void print_example_ppm_file() {
                 y = (2.0 * y / camera.canvas_height - 1.0);
 
                 Ray ray = camera.ray_for_coords(x, y);
-                pixel_color += ray_color(hittables, ray);
+                pixel_color += ray_color(scene, ray);
             }
             cout << "  ";
             write_color_as_int_triple(cout, pixel_color, samples);
