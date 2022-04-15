@@ -7,6 +7,7 @@
 #include "hittable.hpp"
 #include "ray.hpp"
 #include "scene.hpp"
+#include "util.hpp"
 
 namespace ray {
 
@@ -43,13 +44,13 @@ Color normal_color(const HitRecord& record) {
                        record.normal.z() + 1);
 }
 
-Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth) {
+Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth,
+                unsigned long depth_reflection) {
     if (depth == 0) {
         return Colors::BLACK;
     }
     HitRecord record = scene.hit_record(ray, 0.00001);
     constexpr Color COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
-    const Scalar relection = 0.5;
     if (record.t < SCALAR_INF) {
         if (!record.material) {
             return COLOR_NO_MATERIAL;
@@ -57,11 +58,30 @@ Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth) {
         const Material& material = *record.material;
         Color color;
         // diffuse
-        {
-            const Vec3 direction = record.normal + random_unit_vector();
+        if ((1.0 - material.reflection) != 0.0) {
+            Vec3 direction = record.normal + random_unit_vector();
+            if (direction.near_zero(1.0e-12)) {
+                // in case of normal and random vector beeing antiparallel
+                // use normal instead
+                direction = record.normal;
+            }
             const Color diff_ray_color =
-                ray_color(scene, Ray(record.point, direction), depth - 1);
-            color += material.diffuse_color * diff_ray_color;
+                ray_color(scene, Ray(record.point, direction), depth - 1,
+                          depth_reflection);
+            color += (1 - material.reflection) *
+                     (material.diffuse_color * diff_ray_color);
+        }
+        // reflection
+        if (material.reflection != 0.0) {
+            const Vec3 ray_para =
+                dot(record.normal, ray.direction()) * record.normal;
+            const Vec3 ray_ortho = ray.direction() - ray_para;
+            const Vec3 direction = ray_ortho - ray_para;
+            const Color ref_ray_col =
+                ray_color(scene, Ray(record.point, direction),
+                          clip(depth, 0ul, depth_reflection), 0);
+            color +=
+                material.reflection * (material.reflection_color * ref_ray_col);
         }
         return color;
     }
