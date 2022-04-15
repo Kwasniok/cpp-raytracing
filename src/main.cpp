@@ -4,6 +4,7 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
+#include "material.hpp"
 #include "random.hpp"
 #include "ray.hpp"
 #include "render.hpp"
@@ -14,8 +15,10 @@ using namespace std;
 using namespace ray;
 
 void make_scene(Scene& scene) {
-    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5));
-    scene.add(make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0));
+    std::shared_ptr<Material> material =
+        make_shared<Material>(Material{.diffuse_color = {0.5, 0.5, 0.5}});
+    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5, material));
+    scene.add(make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, material));
 }
 
 void print_example_ppm_file() {

@@ -48,12 +48,21 @@ Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth) {
         return Colors::BLACK;
     }
     HitRecord record = scene.hit_record(ray, 0.00001);
-    const Color surface_color{0.5, 0.5, 0.5};
+    constexpr Color COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
+    const Scalar relection = 0.5;
     if (record.t < SCALAR_INF) {
-        // diffuse surface
-        Vec3 direction = record.normal + random_unit_vector();
-        Color color = ray_color(scene, Ray(record.point, direction), depth - 1);
-        color *= surface_color;
+        if (!record.material) {
+            return COLOR_NO_MATERIAL;
+        }
+        const Material& material = *record.material;
+        Color color;
+        // diffuse
+        {
+            const Vec3 direction = record.normal + random_unit_vector();
+            const Color diff_ray_color =
+                ray_color(scene, Ray(record.point, direction), depth - 1);
+            color += material.diffuse_color * diff_ray_color;
+        }
         return color;
     }
     return ray_back_ground_color(ray);

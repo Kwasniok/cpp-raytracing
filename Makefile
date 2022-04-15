@@ -25,6 +25,7 @@ MAIN_HEADERS= \
 	$(SRC)/camera.hpp \
 	$(SRC)/color.hpp \
 	$(SRC)/hittable.hpp \
+	$(SRC)/material.hpp  \
 	$(SRC)/random.hpp  \
 	$(SRC)/ray.hpp \
 	$(SRC)/render.hpp  \

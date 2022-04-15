@@ -10,12 +10,14 @@ namespace ray {
 
 class Sphere : public Hittable {
   public:
-    constexpr Sphere() : _origin(Vec3(0.0, 0.0, 0.0)), _radius(1.0){};
-    constexpr Sphere(const Vec3& origin, const Scalar radius)
-        : _origin(origin), _radius(radius) {}
+    inline Sphere() : _origin(Vec3(0.0, 0.0, 0.0)), _radius(1.0){};
+    inline Sphere(const Vec3& origin, const Scalar radius,
+                  std::shared_ptr<Material> material)
+        : _origin(origin), _radius(radius), _material(material) {}
 
-    constexpr Vec3 origin() const { return _origin; }
-    constexpr Scalar radius() const { return _radius; }
+    inline Vec3 origin() const { return _origin; }
+    inline Scalar radius() const { return _radius; }
+    inline std::shared_ptr<Material> material() const { return _material; }
 
     virtual HitRecord
     hit_record(const Ray& ray, const Scalar t_min = 0.0,
@@ -24,6 +26,7 @@ class Sphere : public Hittable {
   public:
     Vec3 _origin;
     Scalar _radius;
+    std::shared_ptr<Material> _material;
 };
 
 HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
@@ -68,6 +71,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     record.t = t;
     record.point = point;
     record.set_face_normal(ray, normal);
+    record.material = material();
     return record;
 }
 

@@ -81,6 +81,11 @@ inline constexpr Color operator*(const Color& color, const ColorScalar f) {
     return Color(color.r() * f, color.g() * f, color.b() * f);
 }
 
+inline constexpr Color operator*(const Color& color1, const Color& color2) {
+    return Color(color1.r() * color2.r(), color1.g() * color2.g(),
+                 color1.b() * color2.b());
+}
+
 inline constexpr Color operator*(const ColorScalar f, const Color& color) {
     return color * f;
 }

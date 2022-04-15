@@ -1,8 +1,9 @@
 #ifndef CPP_RAYTRACING_HITTABLE_H
 #define CPP_RAYTRACING_HITTABLE_H
 
-#include <limits>
+#include <memory>
 
+#include "material.hpp"
 #include "ray.hpp"
 #include "scalar.hpp"
 #include "vec3.hpp"
@@ -12,6 +13,7 @@ namespace ray {
 struct HitRecord {
     Vec3 point;
     Vec3 normal;
+    std::shared_ptr<Material> material;
     Scalar t;
     bool front_face;
 
