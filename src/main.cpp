@@ -57,8 +57,8 @@ void print_example_ppm_file() {
             Color pixel_color = Colors::BLACK;
             for (long s = 0; s < samples; ++s) {
                 // random sub-pixel offset for antialiasing
-                Scalar x = Scalar(i) + random_scalar();
-                Scalar y = Scalar(j) + random_scalar();
+                Scalar x = Scalar(i) + random_scalar(0.0, 1.0);
+                Scalar y = Scalar(j) + random_scalar(0.0, 1.0);
                 // transform to camera coordinates
                 x = (2.0 * x / camera.canvas_width - 1.0);
                 y = (2.0 * y / camera.canvas_height - 1.0);

@@ -9,14 +9,10 @@
 
 namespace ray {
 
-inline Scalar random_scalar() {
-    static std::uniform_real_distribution<Scalar> distribution(0.0, 1.0);
-    static std::mt19937 generator;
-    return distribution(generator);
-}
-
 inline Scalar random_scalar(Scalar min, Scalar max) {
-    return min + (max - min) * random_scalar();
+    static std::uniform_real_distribution<Scalar> distribution(-1.0, 1.0);
+    static std::mt19937 generator;
+    return min + (max - min) * distribution(generator);
 }
 
 } // namespace ray

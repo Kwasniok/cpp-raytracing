@@ -15,10 +15,6 @@ class Vec3 {
     constexpr Vec3(const Scalar x, const Scalar y, const Scalar z)
         : _data{x, y, z} {}
 
-    inline static Vec3 random() {
-        return {random_scalar(), random_scalar(), random_scalar()};
-    }
-
     inline static Vec3 random(Scalar min, Scalar max) {
         return {random_scalar(min, max), random_scalar(min, max),
                 random_scalar(min, max)};
@@ -52,6 +48,11 @@ class Vec3 {
 
     constexpr Scalar length_squared() const {
         return _data[0] * _data[0] + _data[1] * _data[1] + _data[2] * _data[2];
+    }
+
+    constexpr bool near_zero(const Scalar epsilon) const {
+        return std::abs(_data[0] < epsilon) && std::abs(_data[1] < epsilon) &&
+               std::abs(_data[2] < epsilon);
     }
 
   private:
@@ -96,7 +97,7 @@ inline constexpr Vec3 unit_vector(const Vec3& v) { return v / v.length(); }
 inline Vec3 random_vector_in_unit_sphere() {
     // rejection based and uniform
     while (true) {
-        auto v = Vec3::random();
+        const auto v = Vec3::random(-1.0, +1.0);
         if (dot(v, v) >= 1.0) {
             continue;
         }
