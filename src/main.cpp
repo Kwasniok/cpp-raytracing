@@ -23,8 +23,10 @@ void make_scene(Scene& scene) {
     std::shared_ptr<Material> diffuse_green =
         make_shared<Material>(Material{.diffuse_color = {0.5, 0.75, 0.5}});
     // metal
-    std::shared_ptr<Material> metal = make_shared<Material>(
-        Material{.reflection_color = {0.8, 0.7, 0.6}, .reflection = 1.0});
+    std::shared_ptr<Material> metal =
+        make_shared<Material>(Material{.reflection_color = {0.8, 0.7, 0.6},
+                                       .reflection = 1.0,
+                                       .reflection_roughness = 0.2});
 
     // left
     scene.add(make_unique<Sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, diffuse_red));

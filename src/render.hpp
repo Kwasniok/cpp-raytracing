@@ -73,7 +73,9 @@ Color ray_color_for_material(const Scene& scene, const Ray& ray,
         const Vec3 ray_para =
             dot(record.normal, ray.direction()) * record.normal;
         const Vec3 ray_ortho = ray.direction() - ray_para;
-        const Vec3 direction = ray_ortho - ray_para;
+        const Vec3 direction =
+            ray_ortho - ray_para +
+            material.reflection_roughness * random_vector_in_unit_sphere();
         const Color ref_ray_col =
             ray_color(scene, Ray(record.point, direction),
                       clip(depth, 0ul, depth_reflection), 0);
