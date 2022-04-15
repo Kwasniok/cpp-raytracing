@@ -29,7 +29,7 @@ class Vec3 {
     constexpr Scalar z() const { return _data[2]; }
 
     constexpr Vec3 operator-() const {
-        return Vec3{-_data[0], _data[1], -_data[2]};
+        return Vec3{-_data[0], -_data[1], -_data[2]};
     }
     constexpr Scalar operator[](unsigned long i) const { return _data[i]; }
     constexpr Scalar& operator[](unsigned long i) { return _data[i]; }
