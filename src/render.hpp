@@ -51,7 +51,7 @@ Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth) {
     const Color surface_color{0.5, 0.5, 0.5};
     if (record.t < SCALAR_INF) {
         // diffuse surface
-        Vec3 direction = record.normal + random_vector_in_unit_sphere();
+        Vec3 direction = record.normal + random_unit_vector();
         Color color = ray_color(scene, Ray(record.point, direction), depth - 1);
         color *= surface_color;
         return color;

@@ -104,5 +104,9 @@ inline Vec3 random_vector_in_unit_sphere() {
     }
 }
 
+inline Vec3 random_unit_vector() {
+    return unit_vector(random_vector_in_unit_sphere());
+}
+
 } // namespace ray
 #endif
