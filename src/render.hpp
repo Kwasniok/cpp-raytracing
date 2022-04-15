@@ -46,47 +46,50 @@ constexpr Color normal_color(const HitRecord& record) {
 
 constexpr Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
 
-Color ray_color(const Scene& scene, const Ray& ray, unsigned long depth,
-                unsigned long depth_reflection);
+Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth);
+
+inline Ray scatter_diffuse(const HitRecord& record) {
+    Vec3 direction = record.normal + random_unit_vector();
+    if (direction.near_zero(1.0e-12)) {
+        // in case of normal and random vector beeing antiparallel
+        // use normal instead
+        direction = record.normal;
+    }
+    return Ray(record.point, direction);
+}
+
+inline Ray scatter_reflection(const HitRecord& record, const Ray ray,
+                              const Scalar roughness) {
+    const Vec3 ray_para = dot(record.normal, ray.direction()) * record.normal;
+    const Vec3 ray_ortho = ray.direction() - ray_para;
+    const Vec3 direction =
+        ray_ortho - ray_para + roughness * random_vector_in_unit_sphere();
+    return Ray(record.point, direction);
+}
 
 Color ray_color_for_material(const Scene& scene, const Ray& ray,
-                             const unsigned long depth,
-                             const unsigned long depth_reflection,
-                             const HitRecord& record,
+                             const unsigned long depth, const HitRecord& record,
                              const Material& material) {
     Color color;
-    // diffuse * (1-R)
-    if ((1.0 - material.reflection) != 0.0) {
-        Vec3 direction = record.normal + random_unit_vector();
-        if (direction.near_zero(1.0e-12)) {
-            // in case of normal and random vector beeing antiparallel
-            // use normal instead
-            direction = record.normal;
-        }
-        const Color diff_ray_color = ray_color(
-            scene, Ray(record.point, direction), depth - 1, depth_reflection);
-        color += (1 - material.reflection) *
-                 (material.diffuse_color * diff_ray_color);
+    // diffuse
+    if ((material.absorption) != 0.0) {
+        const Ray scattered_ray = scatter_diffuse(record);
+        const Color diff_ray_color = ray_color(scene, scattered_ray, depth - 1);
+        color +=
+            material.absorption * (material.diffuse_color * diff_ray_color);
     }
-    // reflection * R
+    // reflection
     if (material.reflection != 0.0) {
-        const Vec3 ray_para =
-            dot(record.normal, ray.direction()) * record.normal;
-        const Vec3 ray_ortho = ray.direction() - ray_para;
-        const Vec3 direction =
-            ray_ortho - ray_para +
-            material.reflection_roughness * random_vector_in_unit_sphere();
-        const Color ref_ray_col =
-            ray_color(scene, Ray(record.point, direction),
-                      clip(depth, 0ul, depth_reflection), 0);
+        const Ray scattered_ray =
+            scatter_reflection(record, ray, material.reflection_roughness);
+        const Color ref_ray_col = ray_color(scene, scattered_ray, depth - 1);
         color +=
             material.reflection * (material.reflection_color * ref_ray_col);
     }
     return color;
 }
 
-Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth,
-                const unsigned long depth_reflection) {
+Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth) {
     if (depth == 0) {
         return Colors::BLACK;
     }
@@ -95,8 +98,8 @@ Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth,
         if (!record.material) {
             return RAY_COLOR_NO_MATERIAL;
         }
-        return ray_color_for_material(scene, ray, depth, depth_reflection,
-                                      record, *record.material);
+        return ray_color_for_material(scene, ray, depth, record,
+                                      *record.material);
     }
     return ray_back_ground_color(ray);
 }

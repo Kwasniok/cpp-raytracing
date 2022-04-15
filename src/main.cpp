@@ -46,7 +46,6 @@ void print_example_ppm_file() {
     const unsigned long max_color = 255;
     const unsigned long samples = 100;
     const unsigned long ray_depth = 50;
-    const unsigned long ray_depth_reflection = 10;
 
     const Camera camera{.canvas_width = 500,
                         .canvas_height = 250,
@@ -83,8 +82,7 @@ void print_example_ppm_file() {
                 y = (2.0 * y / camera.canvas_height - 1.0);
 
                 Ray ray = camera.ray_for_coords(x, y);
-                pixel_color +=
-                    ray_color(scene, ray, ray_depth, ray_depth_reflection);
+                pixel_color += ray_color(scene, ray, ray_depth);
             }
             cout << "  ";
             write_color_as_int_triple(cout, pixel_color, samples);
