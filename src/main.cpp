@@ -25,6 +25,7 @@ void make_scene(Scene& scene) {
     // metal
     std::shared_ptr<Material> metal =
         make_shared<Material>(Material{.reflection_color = {0.8, 0.7, 0.6},
+                                       .absorption = 0.0,
                                        .reflection = 1.0,
                                        .reflection_roughness = 0.2});
     // glass
