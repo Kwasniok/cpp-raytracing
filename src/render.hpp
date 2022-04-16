@@ -67,6 +67,34 @@ inline Ray scatter_reflection(const HitRecord& record, const Ray ray,
     return Ray(record.point, direction);
 }
 
+inline Ray scatter_transmission(const HitRecord& record, const Ray& ray,
+                                const Scalar index_of_refraction) {
+    // note: This algorithm assumes vacuum to medium transitions and vice versa
+    //       only.
+    const Scalar refraction_ratio =
+        record.front_face ? (1.0 / index_of_refraction) : index_of_refraction;
+    const Vec3 unit_direction = unit_vector(ray.direction());
+    const auto cos_theta = -dot(record.normal, unit_direction);
+    const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
+    Vec3 ray_para = -cos_theta * record.normal;
+    Vec3 ray_ortho = unit_direction - ray_para;
+
+    Vec3 direction;
+    const bool cannot_refract =
+        std::pow(refraction_ratio, 2) * sin_theta_squared > 1.0;
+    if (cannot_refract) {
+        // total reflection
+        direction = ray_ortho - ray_para;
+    } else {
+        // refraction
+        ray_ortho *= refraction_ratio;
+        ray_para = -std::sqrt(std::abs(1.0 - ray_ortho.length_squared())) *
+                   record.normal;
+        direction = ray_ortho + ray_para;
+    }
+    return Ray(record.point, direction);
+}
+
 Color ray_color_for_material(const Scene& scene, const Ray& ray,
                              const unsigned long depth, const HitRecord& record,
                              const Material& material) {
@@ -85,6 +113,14 @@ Color ray_color_for_material(const Scene& scene, const Ray& ray,
         const Color ref_ray_col = ray_color(scene, scattered_ray, depth - 1);
         color +=
             material.reflection * (material.reflection_color * ref_ray_col);
+    }
+    // transmission
+    if (material.transmission != 0.0) {
+        const Ray scattered_ray =
+            scatter_transmission(record, ray, material.index_of_refraction);
+        const Color trans_ray_col = ray_color(scene, scattered_ray, depth - 1);
+        color += material.transmission *
+                 (material.transmission_color * trans_ray_col);
     }
     return color;
 }

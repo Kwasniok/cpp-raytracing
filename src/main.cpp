@@ -27,13 +27,21 @@ void make_scene(Scene& scene) {
         make_shared<Material>(Material{.reflection_color = {0.8, 0.7, 0.6},
                                        .reflection = 1.0,
                                        .reflection_roughness = 0.2});
+    // glass
+    std::shared_ptr<Material> glass =
+        make_shared<Material>(Material{.transmission_color = {1.0, 1.0, 1.0},
+                                       .absorption = 0.0,
+                                       .transmission = 1.0,
+                                       .index_of_refraction = 1.5});
 
     // left
     scene.add(make_unique<Sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, diffuse_red));
     // middle
     scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5, metal));
-    // right
-    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), 0.5, diffuse_green));
+    // right (outer)
+    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), +0.5, glass));
+    // right (inner)
+    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), -0.4, glass));
     // floor
     scene.add(
         make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, diffuse_gray));
