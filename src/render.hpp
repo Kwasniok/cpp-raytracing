@@ -34,7 +34,7 @@ inline std::ostream& write_color_as_int_triple(std::ostream& os,
 constexpr Color ray_back_ground_color(const Ray& ray) {
     Vec3 direction = ray.direction();
     direction = unit_vector(direction);
-    auto t = 0.5 * std::abs(direction.y()) + 1.0;
+    auto t = 0.5 * (std::abs(direction.y()) + 1.0);
     Color color = (1.0 - t) * Colors::WHITE + t * Color(0.5, 0.7, 1.0);
     return color;
 }
