@@ -15,6 +15,10 @@ class Ray {
 
     constexpr Vec3 at(const Scalar t) const { return _start + t * _direction; }
 
+    constexpr bool direction_near_zero(const Scalar epsilon) const {
+        return _direction.near_zero(epsilon);
+    }
+
   private:
     Vec3 _start;
     Vec3 _direction;
