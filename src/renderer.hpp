@@ -45,7 +45,7 @@ class Renderer {
                     Ray ray = camera.ray_for_coords(x, y);
                     pixel_color += ray_color(scene, ray, ray_depth);
                 }
-                image[{j, i}] = pixel_color * scale;
+                image[{i, j}] = pixel_color * scale;
             }
         }
         return image;

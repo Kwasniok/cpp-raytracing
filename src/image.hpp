@@ -19,13 +19,13 @@ class RawImage {
     unsigned long width() const { return _width; }
     unsigned long height() const { return _height; }
 
-    Color operator[](Index ji) const {
-        auto [j, i] = ji;
-        return _pixel_colors[j * _width + i];
+    Color operator[](Index xy) const {
+        auto [x, y] = xy;
+        return _pixel_colors[y * _width + x];
     }
-    Color& operator[](Index ji) {
-        auto [j, i] = ji;
-        return _pixel_colors[j * _width + i];
+    Color& operator[](Index xy) {
+        auto [x, y] = xy;
+        return _pixel_colors[y * _width + x];
     }
 
   private:
@@ -60,9 +60,9 @@ std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image) {
        << std::endl;
     os << max_color << " # max color value per channel" << std::endl;
 
-    for (long j = image.height() - 1; j >= 0; --j) {
-        for (unsigned long i = 0; i < image.width(); ++i) {
-            write_color_as_int_triple(os, image[{j, i}]);
+    for (long y = image.height() - 1; y >= 0; --y) {
+        for (unsigned long x = 0; x < image.width(); ++x) {
+            write_color_as_int_triple(os, image[{x, y}]);
             os << "   ";
         }
         os << std::endl;
