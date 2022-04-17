@@ -51,8 +51,8 @@ class Vec3 {
     }
 
     constexpr bool near_zero(const Scalar epsilon) const {
-        return std::abs(_data[0] < epsilon) && std::abs(_data[1] < epsilon) &&
-               std::abs(_data[2] < epsilon);
+        return std::abs(_data[0]) < epsilon && std::abs(_data[1]) < epsilon &&
+               std::abs(_data[2]) < epsilon;
     }
 
   private:
