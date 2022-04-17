@@ -4,7 +4,7 @@ BIN=bin
 OUT=out
 
 CPP=g++
-CPP_FLAGS=-std=c++20 -Ofast -g
+CPP_FLAGS=-Wall -std=c++20 -Ofast -g
 
 .PHONY: all
 .DEFAULT_GOAL=all
