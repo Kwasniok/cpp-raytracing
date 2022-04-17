@@ -9,7 +9,12 @@ namespace ray {
 class Camera {
   public:
     Ray ray_for_coords(const Scalar x, const Scalar y) const {
-        return Ray(origin, direction_z + x * direction_x + y * direction_y);
+        Vec3 random_vec = lens_radius * random_in_unit_disk();
+        Vec3 defocus_offset =
+            direction_x * random_vec.x() + direction_y * random_vec.y();
+        return Ray(origin + defocus_offset, direction_z + x * direction_x +
+                                                y * direction_y +
+                                                -defocus_offset);
     }
 
   public:
@@ -19,6 +24,7 @@ class Camera {
     Vec3 direction_x{};
     Vec3 direction_y{};
     Vec3 direction_z{};
+    Scalar lens_radius = 0.0;
 };
 
 } // namespace ray

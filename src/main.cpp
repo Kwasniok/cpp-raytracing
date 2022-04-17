@@ -28,13 +28,13 @@ void make_scene(Scene& scene) {
         make_shared<Emitter>(Emitter({0.95, 0.9, 0.85}));
 
     // left
-    scene.add(make_unique<Sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, diffuse_red));
-    // middle
-    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), 0.5, metal));
-    // right (outer)
-    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), +0.5, glass));
-    // right (inner)
-    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), -0.4, glass));
+    scene.add(make_unique<Sphere>(Vec3(-1.0, 0.0, -0.75), 0.5, diffuse_red));
+    // middle (outer)
+    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), +0.5, glass));
+    // middle (inner)
+    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), -0.4, glass));
+    // right
+    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -0.75), 0.5, metal));
     // above
     scene.add(make_unique<Sphere>(Vec3(+0.0, 1.0, -1.0), 0.5, light));
     // floor
@@ -53,9 +53,10 @@ void print_example_ppm_file() {
     const Camera camera{.canvas_width = 500,
                         .canvas_height = 250,
                         .origin = {0.0, 0.0, 0.0},
-                        .direction_x = {2.0, 0.0, 0.0},
-                        .direction_y = {0.0, 1.0, 0.0},
-                        .direction_z = {0.0, 0.0, -1.0}};
+                        .direction_x = {1.6, 0.0, 0.0},
+                        .direction_y = {0.0, 0.9, 0.0},
+                        .direction_z = {0.0, 0.0, -0.8},
+                        .lens_radius = 0.01};
 
     Scene scene;
     make_scene(scene);
