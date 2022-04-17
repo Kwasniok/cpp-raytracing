@@ -18,6 +18,20 @@ class Material {
                                           const Ray& ray) const = 0;
 };
 
+class Emitter : public Material {
+  public:
+    Emitter(const Color& color) : color(color) {}
+
+    virtual std::pair<Ray, Color> scatter(const HitRecord& record,
+                                          const Ray& ray) const override {
+        const Vec3 direction{0.0, 0.0, 0.0};
+        return {Ray(record.point, direction), color};
+    }
+
+  public:
+    Color color = Colors::WHITE;
+};
+
 class Diffuse : public Material {
   public:
     Diffuse(const Color& color) : color(color) {}

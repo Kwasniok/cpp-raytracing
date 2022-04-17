@@ -24,6 +24,8 @@ void make_scene(Scene& scene) {
         make_shared<Metal>(Metal({0.8, 0.7, 0.6}, 0.2));
     std::shared_ptr<Material> glass =
         make_shared<Dielectric>(Dielectric({1.0, 1.0, 1.0}, 1.5));
+    std::shared_ptr<Material> light =
+        make_shared<Emitter>(Emitter({0.95, 0.9, 0.85}));
 
     // left
     scene.add(make_unique<Sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, diffuse_red));
@@ -33,6 +35,8 @@ void make_scene(Scene& scene) {
     scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), +0.5, glass));
     // right (inner)
     scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -1.0), -0.4, glass));
+    // above
+    scene.add(make_unique<Sphere>(Vec3(+0.0, 1.0, -1.0), 0.5, light));
     // floor
     scene.add(
         make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, diffuse_gray));
