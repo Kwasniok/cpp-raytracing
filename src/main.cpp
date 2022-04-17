@@ -17,7 +17,18 @@
 using namespace std;
 using namespace ray;
 
-void make_scene(Scene& scene) {
+Scene make_scene(const unsigned long resolution_factor) {
+
+    const Camera camera{.canvas_width = 240 * resolution_factor,
+                        .canvas_height = 135 * resolution_factor,
+                        .origin = {0.0, 0.0, 0.0},
+                        .direction_x = {1.6, 0.0, 0.0},
+                        .direction_y = {0.0, 0.9, 0.0},
+                        .direction_z = {0.0, 0.0, -0.8},
+                        .lens_radius = 0.01};
+
+    Scene scene{camera};
+
     // diffuse
     std::shared_ptr<Material> diffuse_gray =
         make_shared<Diffuse>(Diffuse({0.5, 0.5, 0.5}));
@@ -43,6 +54,8 @@ void make_scene(Scene& scene) {
     // floor
     scene.add(
         make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, diffuse_gray));
+
+    return scene;
 }
 
 void write_raw_image(const string& path, const RawImage& image) {
@@ -63,21 +76,12 @@ void render_example_ppm(const string& path, const bool preview) {
     const unsigned long ray_depth = preview ? 20 : 50;
     const unsigned long resolution_factor = preview ? 1 : 8; // 8 <-> 1080p
 
-    const Camera camera{.canvas_width = 240 * resolution_factor,
-                        .canvas_height = 135 * resolution_factor,
-                        .origin = {0.0, 0.0, 0.0},
-                        .direction_x = {1.6, 0.0, 0.0},
-                        .direction_y = {0.0, 0.9, 0.0},
-                        .direction_z = {0.0, 0.0, -0.8},
-                        .lens_radius = 0.01};
-
-    Scene scene;
-    make_scene(scene);
+    Scene scene = make_scene(resolution_factor);
 
     if (logging) {
         cerr << "resolution factor = " << resolution_factor << endl;
     }
-    RawImage image = render(camera, scene, samples, ray_depth, logging);
+    RawImage image = render(scene, samples, ray_depth, logging);
     write_raw_image(path, image);
 }
 

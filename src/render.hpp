@@ -42,10 +42,10 @@ Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth) {
     }
 }
 
-RawImage render(const Camera& camera, const Scene& scene,
-                const unsigned long samples, const unsigned long ray_depth,
-                const bool logging) {
+RawImage render(const Scene& scene, const unsigned long samples,
+                const unsigned long ray_depth, const bool logging) {
     const Scalar scale = 1 / (Scalar(samples));
+    const Camera& camera = scene.camera;
 
     RawImage image{camera.canvas_width, camera.canvas_height};
 

@@ -4,13 +4,15 @@
 #include <memory>
 #include <vector>
 
+#include "camera.hpp"
 #include "hittable.hpp"
 
 namespace ray {
 
 class Scene : public Hittable {
   public:
-    Scene(){};
+    Scene(const Camera& camera) : camera(camera){};
+    Scene(Scene&&) = default;
 
     inline void clear() { _hittables.clear(); }
     inline void add(std::unique_ptr<Hittable>&& hittable) {
@@ -20,6 +22,9 @@ class Scene : public Hittable {
     virtual HitRecord
     hit_record(const Ray& ray, const Scalar t_min = 0.0,
                const Scalar t_max = SCALAR_INF) const override;
+
+  public:
+    Camera camera;
 
   private:
     std::vector<std::unique_ptr<Hittable>> _hittables;
