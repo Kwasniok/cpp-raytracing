@@ -1,9 +1,12 @@
+#include <fstream>
 #include <iostream>
 #include <memory>
+#include <string>
 
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
+#include "image.hpp"
 #include "material.hpp"
 #include "random.hpp"
 #include "ray.hpp"
@@ -42,16 +45,15 @@ void make_scene(Scene& scene) {
         make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, diffuse_gray));
 }
 
-void print_example_ppm_file() {
-    // see: https://en.wikipedia.org/wiki/Netpbm#File_formats
+void render_example_ppm(const string path, const bool preview) {
 
-    const bool logging = false;
-    const unsigned long max_color = 255;
-    const unsigned long samples = 100;
-    const unsigned long ray_depth = 50;
+    const bool logging = true;
+    const unsigned long samples = preview ? 5 : 50;
+    const unsigned long ray_depth = preview ? 20 : 50;
+    const unsigned long resolution_factor = preview ? 1 : 8; // 8 <-> 1080p
 
-    const Camera camera{.canvas_width = 500,
-                        .canvas_height = 250,
+    const Camera camera{.canvas_width = 240 * resolution_factor,
+                        .canvas_height = 135 * resolution_factor,
                         .origin = {0.0, 0.0, 0.0},
                         .direction_x = {1.6, 0.0, 0.0},
                         .direction_y = {0.0, 0.9, 0.0},
@@ -61,39 +63,23 @@ void print_example_ppm_file() {
     Scene scene;
     make_scene(scene);
 
-    // header
-    cout << "P3 # ASCII RGB" << endl;
-    cout << camera.canvas_width << " " << camera.canvas_height
-         << " # width x height" << endl;
-    cout << max_color << " # max color value per channel" << endl;
-
-    // content (checker board)
     if (logging) {
-        cerr << "Rendering image ..." << endl;
+        cerr << "resolution factor = " << resolution_factor << endl;
     }
-    for (long j = camera.canvas_height - 1; j >= 0; --j) {
-        if (logging) {
-            cerr << "line " << (j + 1) << "/" << camera.canvas_height << endl;
-        }
-        for (long i = 0; i < camera.canvas_width; ++i) {
-            Color pixel_color = Colors::BLACK;
-            for (long s = 0; s < samples; ++s) {
-                // random sub-pixel offset for antialiasing
-                Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
-                Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
-                // transform to camera coordinates
-                x = (2.0 * x / camera.canvas_width - 1.0);
-                y = (2.0 * y / camera.canvas_height - 1.0);
+    RawImage image = render(camera, scene, samples, ray_depth, logging);
 
-                Ray ray = camera.ray_for_coords(x, y);
-                pixel_color += ray_color(scene, ray, ray_depth);
-            }
-            cout << "  ";
-            write_color_as_int_triple(cout, pixel_color, samples);
-        }
-        cout << endl;
+    ofstream file;
+    file.open(path);
+    if (file) {
+        write_raw_image_ppm(file, image);
+    } else {
+        cerr << "Could not open file " << path << endl;
     }
-    cerr << "Done." << endl;
+    file.close();
 }
 
-int main(int argc, char** argv) { print_example_ppm_file(); }
+int main(int argc, char** argv) {
+    const string path = "out/out.ppm";
+    render_example_ppm(path, true);  // fast preview
+    render_example_ppm(path, false); // proper render
+}

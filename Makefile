@@ -17,7 +17,7 @@ folders:
 
 .PHONY:run
 run:
-	$(BIN)/main > $(OUT)/out.ppm
+	$(BIN)/main
 
 .PHONY: main
 
@@ -25,6 +25,7 @@ MAIN_HEADERS= \
 	$(SRC)/camera.hpp \
 	$(SRC)/color.hpp \
 	$(SRC)/hittable.hpp \
+	$(SRC)/image.hpp \
 	$(SRC)/material.hpp  \
 	$(SRC)/random.hpp  \
 	$(SRC)/ray.hpp \

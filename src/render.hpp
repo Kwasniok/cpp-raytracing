@@ -2,34 +2,16 @@
 #define CPP_RAYTRACING_RENDER_H value
 
 #include <cmath>
+#include <iostream>
 
 #include "color.hpp"
 #include "hittable.hpp"
+#include "image.hpp"
 #include "ray.hpp"
 #include "scene.hpp"
 #include "util.hpp"
 
 namespace ray {
-
-inline std::ostream& write_color_as_int_triple(std::ostream& os,
-                                               const Color& color,
-                                               const unsigned long samples) {
-    // rescale
-    const auto scale = 1.0 / samples;
-    auto r = color.r() * scale;
-    auto g = color.g() * scale;
-    auto b = color.b() * scale;
-    // gamma correction (raise to the power of 1/gamma)
-    r = std::sqrt(r);
-    g = std::sqrt(g);
-    b = std::sqrt(b);
-    // convert to integers
-    const auto ir = int_from_color_scalar(r);
-    const auto ig = int_from_color_scalar(g);
-    const auto ib = int_from_color_scalar(b);
-    os << ir << " " << ig << " " << ib;
-    return os;
-}
 
 constexpr Color ray_back_ground_color(const Ray& ray) {
     Vec3 direction = ray.direction();
@@ -58,6 +40,40 @@ Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth) {
     } else {
         return color * ray_color(scene, scattered_ray, depth - 1);
     }
+}
+
+RawImage render(const Camera& camera, const Scene& scene,
+                const unsigned long samples, const unsigned long ray_depth,
+                const bool logging) {
+    const Scalar scale = 1 / (Scalar(samples));
+
+    RawImage image{camera.canvas_width, camera.canvas_height};
+
+    if (logging) {
+        std::cerr << "Rendering image ..." << std::endl;
+    }
+    for (long j = 0; j < camera.canvas_height; ++j) {
+        if (logging) {
+            std::cerr << "line " << (j + 1) << "/" << camera.canvas_height
+                      << std::endl;
+        }
+        for (long i = 0; i < camera.canvas_width; ++i) {
+            Color pixel_color = Colors::BLACK;
+            for (long s = 0; s < samples; ++s) {
+                // random sub-pixel offset for antialiasing
+                Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
+                Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
+                // transform to camera coordinates
+                x = (2.0 * x / camera.canvas_width - 1.0);
+                y = (2.0 * y / camera.canvas_height - 1.0);
+
+                Ray ray = camera.ray_for_coords(x, y);
+                pixel_color += ray_color(scene, ray, ray_depth);
+            }
+            image[{j, i}] = pixel_color * scale;
+        }
+    }
+    return image;
 }
 
 } // namespace ray
