@@ -44,12 +44,16 @@ class Metal : public Material {
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
-        const Vec3 ray_para =
-            dot(record.normal, ray.direction()) * record.normal;
-        const Vec3 ray_ortho = ray.direction() - ray_para;
-        const Vec3 direction =
-            ray_ortho - ray_para + roughness * random_vector_in_unit_sphere();
+        const Vec3 para = dot(record.normal, ray.direction()) * record.normal;
+        const Vec3 ortho = ray.direction() - para;
+        const Vec3 direction = reflect(ortho, para, roughness);
         return {Ray(record.point, direction), color};
+    }
+
+  private:
+    static inline Vec3 reflect(const Vec3 ortho, const Vec3 para,
+                               const Scalar roughness) {
+        return ortho - para + roughness * random_vector_in_unit_sphere();
     }
 
   public:
@@ -64,8 +68,8 @@ class Dielectric : public Material {
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
-        // note: This algorithm assumes vacuum to medium transitions and vice
-        // versa
+        // note: This algorithm assumes vacuum to medium transitions and
+        // vice versa
         //       only.
         const Scalar refraction_ratio = record.front_face
                                             ? (1.0 / index_of_refraction)
@@ -73,27 +77,38 @@ class Dielectric : public Material {
         const Vec3 unit_direction = unit_vector(ray.direction());
         const auto cos_theta = -dot(record.normal, unit_direction);
         const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
-        Vec3 ray_para = -cos_theta * record.normal;
-        Vec3 ray_ortho = unit_direction - ray_para;
+        Vec3 para = -cos_theta * record.normal;
+        Vec3 ortho = unit_direction - para;
 
         Vec3 direction;
+        //  Snell's law
         const bool cannot_refract =
             std::pow(refraction_ratio, 2) * sin_theta_squared > 1.0;
-        if (cannot_refract || reflectance(cos_theta, refraction_ratio) >
-                                  random_scalar<0.0, 1.0>()) {
-            // total reflection
-            direction = ray_ortho - ray_para;
+        // Scklick approximation
+        const bool ray_reflects =
+            cannot_refract || reflectance(cos_theta, refraction_ratio) >
+                                  random_scalar<0.0, 1.0>();
+        if (ray_reflects) {
+            direction = reflect(ortho, para);
         } else {
-            // refraction
-            ray_ortho *= refraction_ratio;
-            ray_para = -std::sqrt(std::abs(1.0 - ray_ortho.length_squared())) *
-                       record.normal;
-            direction = ray_ortho + ray_para;
+            direction = refract(ortho, record.normal, refraction_ratio);
         }
         return {Ray(record.point, direction), color};
     }
 
   private:
+    static constexpr Vec3 reflect(const Vec3 ortho, const Vec3 para) {
+        return ortho - para;
+    }
+    static constexpr Vec3 refract(Vec3 ortho, const Vec3 normal,
+                                  const Scalar index_of_refraction) {
+
+        ortho *= index_of_refraction;
+        const Vec3 para =
+            -std::sqrt(std::abs(1.0 - ortho.length_squared())) * normal;
+        return ortho + para;
+    }
+
     static Scalar reflectance(const Scalar cos_theta,
                               const Scalar index_of_refraction) {
         // Schlick approximation
