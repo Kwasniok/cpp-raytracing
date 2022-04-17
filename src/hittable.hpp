@@ -3,12 +3,13 @@
 
 #include <memory>
 
-#include "material.hpp"
 #include "ray.hpp"
 #include "scalar.hpp"
 #include "vec3.hpp"
 
 namespace ray {
+
+class Material;
 
 struct HitRecord {
     Vec3 point;

@@ -39,105 +39,25 @@ constexpr Color ray_back_ground_color(const Ray& ray) {
     return color;
 }
 
-constexpr Color normal_color(const HitRecord& record) {
-    return 0.5 * Color(record.normal.x() + 1, record.normal.y() + 1,
-                       record.normal.z() + 1);
-}
-
 constexpr Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
-
-Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth);
-
-inline Ray scatter_diffuse(const HitRecord& record) {
-    Vec3 direction = record.normal + random_unit_vector();
-    if (direction.near_zero(1.0e-12)) {
-        // in case of normal and random vector beeing antiparallel
-        // use normal instead
-        direction = record.normal;
-    }
-    return Ray(record.point, direction);
-}
-
-inline Ray scatter_reflection(const HitRecord& record, const Ray ray,
-                              const Scalar roughness) {
-    const Vec3 ray_para = dot(record.normal, ray.direction()) * record.normal;
-    const Vec3 ray_ortho = ray.direction() - ray_para;
-    const Vec3 direction =
-        ray_ortho - ray_para + roughness * random_vector_in_unit_sphere();
-    return Ray(record.point, direction);
-}
-
-inline Ray scatter_transmission(const HitRecord& record, const Ray& ray,
-                                const Scalar index_of_refraction) {
-    // note: This algorithm assumes vacuum to medium transitions and vice versa
-    //       only.
-    const Scalar refraction_ratio =
-        record.front_face ? (1.0 / index_of_refraction) : index_of_refraction;
-    const Vec3 unit_direction = unit_vector(ray.direction());
-    const auto cos_theta = -dot(record.normal, unit_direction);
-    const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
-    Vec3 ray_para = -cos_theta * record.normal;
-    Vec3 ray_ortho = unit_direction - ray_para;
-
-    Vec3 direction;
-    const bool cannot_refract =
-        std::pow(refraction_ratio, 2) * sin_theta_squared > 1.0;
-    if (cannot_refract) {
-        // total reflection
-        direction = ray_ortho - ray_para;
-    } else {
-        // refraction
-        ray_ortho *= refraction_ratio;
-        ray_para = -std::sqrt(std::abs(1.0 - ray_ortho.length_squared())) *
-                   record.normal;
-        direction = ray_ortho + ray_para;
-    }
-    return Ray(record.point, direction);
-}
-
-Color ray_color_for_material(const Scene& scene, const Ray& ray,
-                             const unsigned long depth, const HitRecord& record,
-                             const Material& material) {
-    Color color;
-    // diffuse
-    if ((material.absorption) != 0.0) {
-        const Ray scattered_ray = scatter_diffuse(record);
-        const Color diff_ray_color = ray_color(scene, scattered_ray, depth - 1);
-        color +=
-            material.absorption * (material.diffuse_color * diff_ray_color);
-    }
-    // reflection
-    if (material.reflection != 0.0) {
-        const Ray scattered_ray =
-            scatter_reflection(record, ray, material.reflection_roughness);
-        const Color ref_ray_col = ray_color(scene, scattered_ray, depth - 1);
-        color +=
-            material.reflection * (material.reflection_color * ref_ray_col);
-    }
-    // transmission
-    if (material.transmission != 0.0) {
-        const Ray scattered_ray =
-            scatter_transmission(record, ray, material.index_of_refraction);
-        const Color trans_ray_col = ray_color(scene, scattered_ray, depth - 1);
-        color += material.transmission *
-                 (material.transmission_color * trans_ray_col);
-    }
-    return color;
-}
 
 Color ray_color(const Scene& scene, const Ray& ray, const unsigned long depth) {
     if (depth == 0) {
         return Colors::BLACK;
     }
     HitRecord record = scene.hit_record(ray, 0.00001);
-    if (record.t < SCALAR_INF) {
-        if (!record.material) {
-            return RAY_COLOR_NO_MATERIAL;
-        }
-        return ray_color_for_material(scene, ray, depth, record,
-                                      *record.material);
+    if (!(record.t < SCALAR_INF)) {
+        return ray_back_ground_color(ray);
     }
-    return ray_back_ground_color(ray);
+    if (!record.material) {
+        return RAY_COLOR_NO_MATERIAL;
+    }
+    const auto [scattered_ray, color] = record.material->scatter(record, ray);
+    if (scattered_ray.direction_near_zero(1.0e-12)) {
+        return color;
+    } else {
+        return color * ray_color(scene, scattered_ray, depth - 1);
+    }
 }
 
 } // namespace ray
