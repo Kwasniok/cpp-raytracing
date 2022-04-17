@@ -10,7 +10,7 @@
 #include "material.hpp"
 #include "random.hpp"
 #include "ray.hpp"
-#include "render.hpp"
+#include "renderer.hpp"
 #include "scene.hpp"
 #include "sphere.hpp"
 
@@ -72,16 +72,18 @@ void write_raw_image(const string& path, const RawImage& image) {
 void render_example_ppm(const string& path, const bool preview) {
 
     const bool logging = true;
-    const unsigned long samples = preview ? 5 : 50;
-    const unsigned long ray_depth = preview ? 20 : 50;
-    const unsigned long resolution_factor = preview ? 1 : 8; // 8 <-> 1080p
+    // 2 <-> 480p, 8 <-> 1080p, 16 <-> 4k
+    const unsigned long resolution_factor = preview ? 1 : 8;
 
     Scene scene = make_scene(resolution_factor);
 
+    Renderer renderer{.samples = preview ? 5 : 50u,
+                      .ray_depth = preview ? 20u : 50u,
+                      .logging = logging};
     if (logging) {
         cerr << "resolution factor = " << resolution_factor << endl;
     }
-    RawImage image = render(scene, samples, ray_depth, logging);
+    RawImage image = renderer.render(scene);
     write_raw_image(path, image);
 }
 

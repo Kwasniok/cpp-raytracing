@@ -29,7 +29,7 @@ MAIN_HEADERS= \
 	$(SRC)/material.hpp  \
 	$(SRC)/random.hpp  \
 	$(SRC)/ray.hpp \
-	$(SRC)/render.hpp  \
+	$(SRC)/renderer.hpp  \
 	$(SRC)/scalar.hpp  \
 	$(SRC)/scene.hpp  \
 	$(SRC)/sphere.hpp \
