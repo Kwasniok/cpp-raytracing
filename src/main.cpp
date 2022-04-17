@@ -45,7 +45,18 @@ void make_scene(Scene& scene) {
         make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, diffuse_gray));
 }
 
-void render_example_ppm(const string path, const bool preview) {
+void write_raw_image(const string& path, const RawImage& image) {
+    ofstream file;
+    file.open(path);
+    if (file) {
+        write_raw_image_ppm(file, image);
+    } else {
+        cerr << "Could not open file " << path << endl;
+    }
+    file.close();
+}
+
+void render_example_ppm(const string& path, const bool preview) {
 
     const bool logging = true;
     const unsigned long samples = preview ? 5 : 50;
@@ -67,15 +78,7 @@ void render_example_ppm(const string path, const bool preview) {
         cerr << "resolution factor = " << resolution_factor << endl;
     }
     RawImage image = render(camera, scene, samples, ray_depth, logging);
-
-    ofstream file;
-    file.open(path);
-    if (file) {
-        write_raw_image_ppm(file, image);
-    } else {
-        cerr << "Could not open file " << path << endl;
-    }
-    file.close();
+    write_raw_image(path, image);
 }
 
 int main(int argc, char** argv) {
