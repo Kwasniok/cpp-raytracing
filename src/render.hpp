@@ -52,14 +52,14 @@ RawImage render(const Camera& camera, const Scene& scene,
     if (logging) {
         std::cerr << "Rendering image ..." << std::endl;
     }
-    for (long j = 0; j < camera.canvas_height; ++j) {
+    for (unsigned long j = 0; j < camera.canvas_height; ++j) {
         if (logging) {
             std::cerr << "line " << (j + 1) << "/" << camera.canvas_height
                       << std::endl;
         }
-        for (long i = 0; i < camera.canvas_width; ++i) {
+        for (unsigned long i = 0; i < camera.canvas_width; ++i) {
             Color pixel_color = Colors::BLACK;
-            for (long s = 0; s < samples; ++s) {
+            for (unsigned long s = 0; s < samples; ++s) {
                 // random sub-pixel offset for antialiasing
                 Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
                 Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();

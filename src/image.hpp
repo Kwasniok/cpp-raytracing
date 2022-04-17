@@ -13,7 +13,7 @@ class RawImage {
     using Index = std::pair<std::size_t, std::size_t>;
 
     RawImage(unsigned long width, unsigned long height)
-        : _width(width), _height(height), _pixel_colors(width * height) {}
+        : _pixel_colors(width * height), _width(width), _height(height) {}
     RawImage(RawImage&&) = default;
 
     unsigned long width() const { return _width; }
@@ -61,7 +61,7 @@ std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image) {
     os << max_color << " # max color value per channel" << std::endl;
 
     for (long j = image.height() - 1; j >= 0; --j) {
-        for (long i = 0; i < image.width(); ++i) {
+        for (unsigned long i = 0; i < image.width(); ++i) {
             write_color_as_int_triple(os, image[{j, i}]);
             os << "   ";
         }
