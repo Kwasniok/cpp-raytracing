@@ -79,7 +79,8 @@ class Dielectric : public Material {
         Vec3 direction;
         const bool cannot_refract =
             std::pow(refraction_ratio, 2) * sin_theta_squared > 1.0;
-        if (cannot_refract) {
+        if (cannot_refract || reflectance(cos_theta, refraction_ratio) >
+                                  random_scalar<0.0, 1.0>()) {
             // total reflection
             direction = ray_ortho - ray_para;
         } else {
@@ -90,6 +91,15 @@ class Dielectric : public Material {
             direction = ray_ortho + ray_para;
         }
         return {Ray(record.point, direction), color};
+    }
+
+  private:
+    static Scalar reflectance(const Scalar cos_theta,
+                              const Scalar index_of_refraction) {
+        // Schlick approximation
+        auto x = (1.0 - index_of_refraction) / (1.0 + index_of_refraction);
+        x *= x;
+        return x + (1.0 - x) * std::pow(1 - cos_theta, 5);
     }
 
   public:
