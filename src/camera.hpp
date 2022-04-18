@@ -18,8 +18,8 @@ class Camera {
     }
 
   public:
-    unsigned long canvas_width = 0;
-    unsigned long canvas_height = 0;
+    unsigned long canvas_width = 128;
+    unsigned long canvas_height = 128;
     Vec3 origin{};
     Vec3 direction_x{};
     Vec3 direction_y{};
