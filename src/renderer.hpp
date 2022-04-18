@@ -1,5 +1,5 @@
 #ifndef CPP_RAYTRACING_RENDER_H
-#define CPP_RAYTRACING_RENDER_H value
+#define CPP_RAYTRACING_RENDER_H
 
 #include <cmath>
 #include <iostream>
