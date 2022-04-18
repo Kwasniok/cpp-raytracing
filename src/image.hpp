@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief image representation
+ */
+
 #ifndef CPP_RAYTRACING_IMAGE_H
 #define CPP_RAYTRACING_IMAGE_H
 
@@ -8,21 +13,31 @@
 
 namespace ray {
 
+/**
+ * @brief raw image with floating-point channels
+ */
 class RawImage {
   public:
+    /** @brief pixel index type */
     using Index = std::pair<std::size_t, std::size_t>;
 
+    /** @brief initialize with dimensions */
     RawImage(unsigned long width, unsigned long height)
         : _pixel_colors(width * height), _width(width), _height(height) {}
+    /** @brief move constructor */
     RawImage(RawImage&&) = default;
 
+    /** @brief width in pixel */
     unsigned long width() const { return _width; }
+    /** @brief height in pixel */
     unsigned long height() const { return _height; }
 
+    /** @brief get pixel {x, y} */
     Color operator[](Index xy) const {
         auto [x, y] = xy;
         return _pixel_colors[y * _width + x];
     }
+    /** @brief reference to pixel {x, y} */
     Color& operator[](Index xy) {
         auto [x, y] = xy;
         return _pixel_colors[y * _width + x];
@@ -34,6 +49,9 @@ class RawImage {
     unsigned long _height;
 };
 
+/**
+ * @brief write color as space separated ASCII 8-bit RGB channels
+ */
 std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color) {
     auto r = color.r();
     auto g = color.g();
@@ -50,6 +68,11 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color) {
     return os;
 }
 
+/**
+ * @brief write raw image in
+ * [Portable PixMap file format](https://en.wikipedia.org/wiki/Netpbm)
+ * (P3: ASCII 8-bit RGB)
+ */
 std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image) {
 
     const unsigned long max_color = 255;

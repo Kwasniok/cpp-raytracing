@@ -40,3 +40,8 @@ MAIN_HEADERS= \
 main: $(BIN)/main
 $(BIN)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
 	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp
+
+.PHONY: doc
+
+doc:
+	doxygen Doxyfile.in

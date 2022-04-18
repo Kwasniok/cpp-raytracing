@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief scene representation
+ */
+
 #ifndef CPP_RAYTRACING_SCENE_H
 #define CPP_RAYTRACING_SCENE_H
 
@@ -9,12 +14,19 @@
 
 namespace ray {
 
+/**
+ * @brief Collection of hittable objects and a camera.
+ */
 class Scene : public Hittable {
   public:
+    /** @brief initialize with active #camera */
     Scene(const Camera& camera) : camera(camera){};
+    /** @brief move constructor */
     Scene(Scene&&) = default;
 
+    /** @brief remove all objects. */
     inline void clear() { _hittables.clear(); }
+    /** @brief add an object. */
     inline void add(std::unique_ptr<Hittable>&& hittable) {
         _hittables.push_back(std::move(hittable));
     }
@@ -24,6 +36,7 @@ class Scene : public Hittable {
                const Scalar t_max = SCALAR_INF) const override;
 
   public:
+    /** @brief active camera of the scene used for rendering */
     Camera camera;
 
   private:

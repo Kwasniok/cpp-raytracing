@@ -3,3 +3,6 @@ bin/
 
 # output
 out/
+
+# documentation
+doc/

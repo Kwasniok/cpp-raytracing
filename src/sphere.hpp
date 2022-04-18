@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief spherical object representation
+ */
+
 #ifndef CPP_RAYTRACING_SHPERE_H
 #define CPP_RAYTRACING_SHPERE_H
 
@@ -8,15 +13,23 @@
 
 namespace ray {
 
+/**
+ * @brief spherical object
+ */
 class Sphere : public Hittable {
   public:
+    /** @brief initialize as centered unit sphere */
     inline Sphere() : _origin(Vec3(0.0, 0.0, 0.0)), _radius(1.0){};
+    /** @brief initialize with pprameters */
     inline Sphere(const Vec3& origin, const Scalar radius,
                   std::shared_ptr<Material> material)
         : _origin(origin), _radius(radius), _material(material) {}
 
+    /** @brief get origin of the sphere */
     inline Vec3 origin() const { return _origin; }
+    /** @brief get radius of the sphere */
     inline Scalar radius() const { return _radius; }
+    /** @brief get material of the sphere */
     inline std::shared_ptr<Material> material() const { return _material; }
 
     virtual HitRecord

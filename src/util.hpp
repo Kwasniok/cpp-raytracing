@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief utility module
+ */
+
 #ifndef CPP_RAYTRACING_UTIL_H
 #define CPP_RAYTRACING_UTIL_H
 
@@ -5,6 +10,9 @@
 
 namespace ray {
 
+/**
+ * clipping with compiletime boundaries
+ */
 template <typename T, T low, T high> inline constexpr T clip(const T x) {
     if (x < low) {
         return low;
@@ -15,6 +23,9 @@ template <typename T, T low, T high> inline constexpr T clip(const T x) {
     return x;
 }
 
+/**
+ * clipping with runtime boundaries
+ */
 template <typename T>
 inline constexpr T clip(const T x, const T low, const T high) {
     if (x < low) {

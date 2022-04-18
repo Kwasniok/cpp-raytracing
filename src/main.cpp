@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief main
+ */
+
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -17,6 +22,9 @@
 using namespace std;
 using namespace ray;
 
+/**
+ * @brief generate an example scene
+ */
 Scene make_scene(const unsigned long resolution_factor) {
 
     const Camera camera{.canvas_width = 240 * resolution_factor,
@@ -58,6 +66,9 @@ Scene make_scene(const unsigned long resolution_factor) {
     return scene;
 }
 
+/**
+ * @brief write raw image to ppm file
+ */
 void write_raw_image(const string& path, const RawImage& image) {
     ofstream file;
     file.open(path);
@@ -69,6 +80,11 @@ void write_raw_image(const string& path, const RawImage& image) {
     file.close();
 }
 
+/**
+ * @brief render and save example scene
+ * @param path path to ppm file
+ * @param preview generate a preview of reduced quality
+ */
 void render_example_ppm(const string& path, const bool preview) {
 
     const bool logging = true;
@@ -87,6 +103,9 @@ void render_example_ppm(const string& path, const bool preview) {
     write_raw_image(path, image);
 }
 
+/**
+ * @brief program entry point
+ */
 int main(int argc, char** argv) {
     const string path = "out/out.ppm";
     render_example_ppm(path, true);  // fast preview
