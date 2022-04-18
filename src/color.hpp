@@ -13,7 +13,7 @@ using ColorIntegral = unsigned long;
 class Color {
 
   public:
-    constexpr Color() : _data{0, 0, 0} {}
+    constexpr Color() : _data{0.0, 0.0, 0.0} {}
     constexpr Color(const ColorScalar r, const ColorScalar g,
                     const ColorScalar b)
         : _data{r, g, b} {}
