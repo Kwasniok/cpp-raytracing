@@ -2,6 +2,21 @@
 
 - based on: https://raytracing.github.io/
 
+## Build
+```bash
+make main
+```
+
+## Run
+```bash
+./bin/main
+```
+
+## Build Documentation
+```bash
+make doc
+```
+
 ## Requirements
 
 - Linux kernel v5.17+
