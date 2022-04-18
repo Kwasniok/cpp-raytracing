@@ -29,7 +29,7 @@ class Color {
     constexpr ColorScalar b() const { return _data[2]; }
 
     constexpr Color operator-() const {
-        return Color{-_data[0], _data[1], -_data[2]};
+        return Color{-_data[0], -_data[1], -_data[2]};
     }
     constexpr ColorScalar operator[](unsigned long i) const { return _data[i]; }
     constexpr ColorScalar& operator[](unsigned long i) { return _data[i]; }
