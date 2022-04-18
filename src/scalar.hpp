@@ -3,7 +3,7 @@
 
 #include <numbers>
 
-namespace {
+namespace ray {
 using Scalar = double;
 
 constexpr const Scalar SCALAR_INF = std::numeric_limits<Scalar>::infinity();
