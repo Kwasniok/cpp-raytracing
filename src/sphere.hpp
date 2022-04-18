@@ -23,7 +23,7 @@ class Sphere : public Hittable {
     hit_record(const Ray& ray, const Scalar t_min = 0.0,
                const Scalar t_max = SCALAR_INF) const override;
 
-  public:
+  private:
     Vec3 _origin;
     Scalar _radius;
     std::shared_ptr<Material> _material;
