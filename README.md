@@ -13,6 +13,7 @@ make main
 ```bash
 ./bin/main
 ```
+For the image see `out` directory.
 
 ## Build Documentation
 ```bash
