@@ -2,6 +2,8 @@
 
 - based on: https://raytracing.github.io/
 
+![diffuse_metal_glass_emitter_defocus_highres](https://user-images.githubusercontent.com/7516208/164042906-fce16f88-9789-44f0-9081-7691013a5fb1.png)
+
 ## Build
 ```bash
 make main
