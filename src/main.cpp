@@ -68,12 +68,14 @@ Scene make_scene(const unsigned long resolution_factor) {
 
 /**
  * @brief write raw image to ppm file
+ * @param scale factor to multiply each channel's value with
  */
-void write_raw_image(const string& path, const RawImage& image) {
+void write_raw_image(const string& path, const RawImage& image,
+                     const Scalar scale = 1.0) {
     ofstream file;
     file.open(path);
     if (file) {
-        write_raw_image_ppm(file, image);
+        write_raw_image_ppm(file, image, scale);
     } else {
         cerr << "Could not open file " << path << endl;
     }

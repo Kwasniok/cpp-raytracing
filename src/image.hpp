@@ -51,11 +51,17 @@ class RawImage {
 
 /**
  * @brief write color as space separated ASCII 8-bit RGB channels
+ * @param scale factor to multiply each channel's value with
  */
-std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color) {
+std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
+                                        const Scalar scale = 1.0) {
     Scalar r = color.r();
     Scalar g = color.g();
     Scalar b = color.b();
+    // scale (e.g. 1/samples)
+    r *= scale;
+    g *= scale;
+    b *= scale;
     // gamma correction (raise to the power of 1/gamma)
     r = std::sqrt(r);
     g = std::sqrt(g);
@@ -72,8 +78,10 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color) {
  * @brief write raw image in
  * [Portable PixMap file format](https://en.wikipedia.org/wiki/Netpbm)
  * (P3: ASCII 8-bit RGB)
+ * @param scale factor to multiply each channel's value with
  */
-std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image) {
+std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image,
+                                  const Scalar scale = 1.0) {
 
     const unsigned long max_color = 255;
 
@@ -85,7 +93,7 @@ std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image) {
 
     for (long y = image.height() - 1; y >= 0; --y) {
         for (unsigned long x = 0; x < image.width(); ++x) {
-            write_color_as_int_triple(os, image[{x, y}]);
+            write_color_as_int_triple(os, image[{x, y}], scale);
             os << "   ";
         }
         os << std::endl;
