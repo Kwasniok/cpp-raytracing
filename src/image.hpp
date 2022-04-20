@@ -53,17 +53,17 @@ class RawImage {
  * @brief write color as space separated ASCII 8-bit RGB channels
  */
 std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color) {
-    auto r = color.r();
-    auto g = color.g();
-    auto b = color.b();
+    Scalar r = color.r();
+    Scalar g = color.g();
+    Scalar b = color.b();
     // gamma correction (raise to the power of 1/gamma)
     r = std::sqrt(r);
     g = std::sqrt(g);
     b = std::sqrt(b);
     // convert to integers
-    const auto ir = int_from_color_scalar(r);
-    const auto ig = int_from_color_scalar(g);
-    const auto ib = int_from_color_scalar(b);
+    const Scalar ir = int_from_color_scalar(r);
+    const Scalar ig = int_from_color_scalar(g);
+    const Scalar ib = int_from_color_scalar(b);
     os << ir << " " << ig << " " << ib;
     return os;
 }
