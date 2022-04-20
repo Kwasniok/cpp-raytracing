@@ -82,6 +82,15 @@ void write_raw_image(const string& path, const RawImage& image,
     file.close();
 }
 
+void render_callback(const RawImage& current_image,
+                     const unsigned long current_samples) {
+    cout << current_samples << endl;
+    if (current_samples % 100 == 0) {
+        write_raw_image("out/out_current.ppm", current_image,
+                        1.0 / Scalar(current_samples));
+    }
+}
+
 /**
  * @brief render and save example scene
  * @param path path to ppm file
@@ -97,9 +106,10 @@ void render_example_ppm(const string& path, const bool preview) {
 
     Renderer renderer{.samples = preview ? 5 : 50u,
                       .ray_depth = preview ? 20u : 50u,
-                      .logging = logging};
+                      .render_callback = render_callback};
     if (logging) {
         cerr << "resolution factor = " << resolution_factor << endl;
+        cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(scene);
     write_raw_image(path, image);

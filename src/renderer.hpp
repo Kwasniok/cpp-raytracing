@@ -24,6 +24,9 @@ namespace ray {
 class Renderer {
 
   public:
+    using RenderCallbackFunc = void (*)(const RawImage& current_image,
+                                        const unsigned long current_samples);
+
     /** @brief color indicator for missing material */
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
 
@@ -34,17 +37,9 @@ class Renderer {
 
         RawImage image{camera.canvas_width, camera.canvas_height};
 
-        if (logging) {
-            std::cerr << "Rendering image ..." << std::endl;
-        }
-        for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-            if (logging) {
-                std::cerr << "line " << (j + 1) << "/" << camera.canvas_height
-                          << std::endl;
-            }
-            for (unsigned long i = 0; i < camera.canvas_width; ++i) {
-                Color pixel_color = Colors::BLACK;
-                for (unsigned long s = 0; s < samples; ++s) {
+        for (unsigned long s = 0; s < samples; ++s) {
+            for (unsigned long j = 0; j < camera.canvas_height; ++j) {
+                for (unsigned long i = 0; i < camera.canvas_width; ++i) {
                     // random sub-pixel offset for antialiasing
                     Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
                     Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
@@ -53,9 +48,17 @@ class Renderer {
                     y = (2.0 * y / camera.canvas_height - 1.0);
 
                     Ray ray = camera.ray_for_coords(x, y);
-                    pixel_color += ray_color(scene, ray, ray_depth);
+                    Color pixel_color = ray_color(scene, ray, ray_depth);
+                    image[{i, j}] += pixel_color;
                 }
-                image[{i, j}] = pixel_color * scale;
+            }
+            if (render_callback) {
+                render_callback(image, s + 1);
+            }
+        }
+        for (unsigned long j = 0; j < camera.canvas_height; ++j) {
+            for (unsigned long i = 0; i < camera.canvas_width; ++i) {
+                image[{i, j}] *= scale;
             }
         }
         return image;
@@ -111,10 +114,12 @@ class Renderer {
      *      There is no distinction between different types of ray segments.
      */
     unsigned long ray_depth = 1;
+
     /**
-     * @brief enables logging for the render process to provide feedback
+     * @brief callback function to be called regularly during to rendering e.g.
+     * to display the current sate of the image
      */
-    bool logging = false;
+    RenderCallbackFunc render_callback;
 };
 
 } // namespace ray
