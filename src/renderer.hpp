@@ -32,38 +32,63 @@ class Renderer {
 
     /** @brief render Scene as RawImage */
     RawImage render(const Scene& scene) {
-        const Scalar scale = 1 / (Scalar(samples));
         const Camera& camera = scene.camera;
-
         RawImage image{camera.canvas_width, camera.canvas_height};
 
+        // break up image into chunks and render them individually per sample
+        const unsigned long chunk_size = 32;
+        const unsigned long x_chunks =
+            (camera.canvas_width + chunk_size - 1) / chunk_size;
+        const unsigned long y_chunks =
+            (camera.canvas_height + chunk_size - 1) / chunk_size;
         for (unsigned long s = 0; s < samples; ++s) {
-            for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-                for (unsigned long i = 0; i < camera.canvas_width; ++i) {
-                    // random sub-pixel offset for antialiasing
-                    Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
-                    Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
-                    // transform to camera coordinates
-                    x = (2.0 * x / camera.canvas_width - 1.0);
-                    y = (2.0 * y / camera.canvas_height - 1.0);
-
-                    Ray ray = camera.ray_for_coords(x, y);
-                    Color pixel_color = ray_color(scene, ray, ray_depth);
-                    image[{i, j}] += pixel_color;
+            for (unsigned long chunk_x = 0; chunk_x < x_chunks; ++chunk_x) {
+                for (unsigned long chunk_y = 0; chunk_y < y_chunks; ++chunk_y) {
+                    const unsigned long x_start = chunk_x * chunk_size;
+                    const unsigned long y_start = chunk_y * chunk_size;
+                    const unsigned long x_end = std::min(
+                        (chunk_x + 1) * chunk_size, camera.canvas_width);
+                    const unsigned long y_end = std::min(
+                        (chunk_y + 1) * chunk_size, camera.canvas_height);
+                    update_chunk_sample(scene, image, x_start, x_end, y_start,
+                                        y_end);
                 }
             }
+
             if (render_callback) {
                 render_callback(image, s + 1);
             }
         }
-        for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-            for (unsigned long i = 0; i < camera.canvas_width; ++i) {
-                image[{i, j}] *= scale;
-            }
-        }
+
+        image *= 1 / (Scalar(samples));
         return image;
     }
 
+  private:
+    void update_chunk_sample(const Scene& scene, RawImage& image,
+                             const unsigned long x_start,
+                             const unsigned long x_end,
+                             const unsigned long y_start,
+                             const unsigned long y_end) {
+        const Camera& camera = scene.camera;
+
+        for (unsigned long j = y_start; j < y_end; ++j) {
+            for (unsigned long i = x_start; i < x_end; ++i) {
+                // random sub-pixel offset for antialiasing
+                Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
+                Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
+                // transform to camera coordinates
+                x = (2.0 * x / camera.canvas_width - 1.0);
+                y = (2.0 * y / camera.canvas_height - 1.0);
+
+                Ray ray = camera.ray_for_coords(x, y);
+                Color pixel_color = ray_color(scene, ray, ray_depth);
+                image[{i, j}] += pixel_color;
+            }
+        }
+    }
+
+  public:
     /** @brief calculates color of light ray */
     static Color ray_color(const Scene& scene, const Ray& ray,
                            const unsigned long depth) {
