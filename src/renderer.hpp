@@ -70,6 +70,11 @@ class Renderer {
                         image[{i, j}] += pixel_color;
                     }
                 }
+#pragma omp critical
+                {
+                    std::cout << "+1 "
+                              << "(" << omp_get_thread_num() << ") ";
+                    std::cout << std::flush;
                 }
             }
             // update final image buffer with chunk image
