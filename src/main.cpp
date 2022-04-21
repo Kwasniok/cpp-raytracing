@@ -85,10 +85,8 @@ void write_raw_image(const string& path, const RawImage& image,
 void render_callback(const RawImage& current_image,
                      const unsigned long current_samples) {
     cout << current_samples << endl;
-    if (current_samples % 100 == 0) {
-        write_raw_image("out/out_current.ppm", current_image,
-                        1.0 / Scalar(current_samples));
-    }
+    write_raw_image("out/out_current.ppm", current_image,
+                    1.0 / Scalar(current_samples));
 }
 
 /**

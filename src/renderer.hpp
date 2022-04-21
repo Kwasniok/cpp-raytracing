@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <omp.h>
 
 #include "color.hpp"
 #include "hittable.hpp"
@@ -32,35 +33,56 @@ class Renderer {
 
     /** @brief render Scene as RawImage */
     RawImage render(const Scene& scene) {
-        const Scalar scale = 1 / (Scalar(samples));
         const Camera& camera = scene.camera;
 
+        // render samples in chunks and distribute the workload among multiple
+        // threads
+
+        // final result buffer
         RawImage image{camera.canvas_width, camera.canvas_height};
+        // buffer for each chunk
+        // note: after each chunk the results are collected here
+        RawImage chunk_image{camera.canvas_width, camera.canvas_height};
 
-        for (unsigned long s = 0; s < samples; ++s) {
-            for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-                for (unsigned long i = 0; i < camera.canvas_width; ++i) {
-                    // random sub-pixel offset for antialiasing
-                    Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
-                    Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
-                    // transform to camera coordinates
-                    x = (2.0 * x / camera.canvas_width - 1.0);
-                    y = (2.0 * y / camera.canvas_height - 1.0);
+        const unsigned long samples_chunk_size = 16; // TODO: make configurable
+        unsigned long current_samples = 0;
 
-                    Ray ray = camera.ray_for_coords(x, y);
-                    Color pixel_color = ray_color(scene, ray, ray_depth);
-                    image[{i, j}] += pixel_color;
+        for (unsigned long samples_chunk = 0;
+             (samples - current_samples) != 0; // remaining samples
+             ++samples_chunk) {
+
+            const unsigned long samples_in_current_chunk =
+                std::min(samples_chunk_size, (samples - current_samples));
+
+#pragma omp parallel for reduction(+ : chunk_image)
+            for (unsigned long s = 0; s < samples_in_current_chunk; ++s) {
+                for (unsigned long j = 0; j < camera.canvas_height; ++j) {
+                    for (unsigned long i = 0; i < camera.canvas_width; ++i) {
+                        // random sub-pixel offset for antialiasing
+                        Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
+                        Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
+                        // transform to camera coordinates
+                        x = (2.0 * x / camera.canvas_width - 1.0);
+                        y = (2.0 * y / camera.canvas_height - 1.0);
+
+                        Ray ray = camera.ray_for_coords(x, y);
+                        Color pixel_color = ray_color(scene, ray, ray_depth);
+                        image[{i, j}] += pixel_color;
+                    }
+                }
                 }
             }
+            // update final image buffer with chunk image
+            image += chunk_image;
+            current_samples += samples_in_current_chunk;
             if (render_callback) {
-                render_callback(image, s + 1);
+                render_callback(image, current_samples);
             }
         }
-        for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-            for (unsigned long i = 0; i < camera.canvas_width; ++i) {
-                image[{i, j}] *= scale;
-            }
-        }
+
+        const Scalar scale = 1 / (Scalar(samples));
+        image *= scale;
+
         return image;
     }
 

@@ -68,6 +68,8 @@ class RawImage {
     unsigned long _height;
 };
 
+#pragma omp declare reduction(+ : RawImage : omp_out += omp_in) initializer(omp_priv(omp_orig))
+
 /**
  * @brief write color as space separated ASCII 8-bit RGB channels
  * @param scale factor to multiply each channel's value with
