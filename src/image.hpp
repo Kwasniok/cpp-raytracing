@@ -25,6 +25,7 @@ class RawImage {
     RawImage(unsigned long width, unsigned long height)
         : _pixel_colors(width * height), _width(width), _height(height) {}
     /** @brief move constructor */
+    RawImage(RawImage&) = default;
     RawImage(RawImage&&) = default;
 
     /** @brief width in pixel */
@@ -41,6 +42,24 @@ class RawImage {
     Color& operator[](Index xy) {
         auto [x, y] = xy;
         return _pixel_colors[y * _width + x];
+    }
+
+    void operator+=(const RawImage& other) {
+        for (unsigned long y = 0; y < _height; ++y) {
+            for (unsigned long x = 0; x < _width; ++x) {
+                auto i = y * _width + x;
+                _pixel_colors[i] += other._pixel_colors[i];
+            }
+        }
+    }
+
+    void operator*=(const Scalar fac) {
+        for (unsigned long y = 0; y < _height; ++y) {
+            for (unsigned long x = 0; x < _width; ++x) {
+                auto i = y * _width + x;
+                _pixel_colors[i] *= fac;
+            }
+        }
     }
 
   private:
