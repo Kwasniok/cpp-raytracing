@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <omp.h>
 
 #include "color.hpp"
 #include "hittable.hpp"
@@ -32,24 +33,31 @@ class Renderer {
 
     /** @brief render Scene as RawImage */
     RawImage render(const Scene& scene) {
-        const Camera& camera = scene.camera;
-        RawImage image{camera.canvas_width, camera.canvas_height};
+        RawImage image{scene.camera.canvas_width, scene.camera.canvas_height};
 
         // break up image into chunks and render them individually per sample
-        const unsigned long chunk_size = 32;
+        const int num_procs = omp_get_num_procs();
+        const unsigned long chunk_size_x =
+            scene.camera.canvas_width / num_procs;
+        const unsigned long chunk_size_y =
+            scene.camera.canvas_height / num_procs;
         const unsigned long x_chunks =
-            (camera.canvas_width + chunk_size - 1) / chunk_size;
+            ceil_idiv(scene.camera.canvas_width, chunk_size_x);
         const unsigned long y_chunks =
-            (camera.canvas_height + chunk_size - 1) / chunk_size;
+            ceil_idiv(scene.camera.canvas_height, chunk_size_y);
+
         for (unsigned long s = 0; s < samples; ++s) {
-            for (unsigned long chunk_x = 0; chunk_x < x_chunks; ++chunk_x) {
-                for (unsigned long chunk_y = 0; chunk_y < y_chunks; ++chunk_y) {
-                    const unsigned long x_start = chunk_x * chunk_size;
-                    const unsigned long y_start = chunk_y * chunk_size;
-                    const unsigned long x_end = std::min(
-                        (chunk_x + 1) * chunk_size, camera.canvas_width);
-                    const unsigned long y_end = std::min(
-                        (chunk_y + 1) * chunk_size, camera.canvas_height);
+#pragma omp for collapse(2)
+            for (unsigned long chunk_y = 0; chunk_y < y_chunks; ++chunk_y) {
+                for (unsigned long chunk_x = 0; chunk_x < x_chunks; ++chunk_x) {
+                    const unsigned long x_start = chunk_x * chunk_size_x;
+                    const unsigned long y_start = chunk_y * chunk_size_y;
+                    const unsigned long x_end =
+                        std::min((chunk_x + 1) * chunk_size_x,
+                                 scene.camera.canvas_width);
+                    const unsigned long y_end =
+                        std::min((chunk_y + 1) * chunk_size_y,
+                                 scene.camera.canvas_height);
                     update_chunk_sample(scene, image, x_start, x_end, y_start,
                                         y_end);
                 }
