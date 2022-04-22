@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <omp.h>
 
 #include "color.hpp"
 #include "hittable.hpp"
@@ -38,6 +39,9 @@ class Renderer {
         RawImage image{camera.canvas_width, camera.canvas_height};
 
         for (unsigned long s = 0; s < samples; ++s) {
+            // note: Mind the memory layout of image and data acces!
+            //       Static schedule with small chunksize seems to be optimal.
+#pragma omp parallel for shared(scene, camera, image) schedule(static, 1)
             for (unsigned long j = 0; j < camera.canvas_height; ++j) {
                 for (unsigned long i = 0; i < camera.canvas_width; ++i) {
                     // random sub-pixel offset for antialiasing
