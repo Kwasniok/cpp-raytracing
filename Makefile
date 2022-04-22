@@ -4,7 +4,7 @@ BIN=bin
 OUT=out
 
 CPP=g++
-CPP_FLAGS=-Wall -std=c++20 -Ofast -g
+CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp
 
 .PHONY: all
 .DEFAULT_GOAL=all
