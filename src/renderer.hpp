@@ -41,8 +41,8 @@ class Renderer {
             for (unsigned long j = 0; j < camera.canvas_height; ++j) {
                 for (unsigned long i = 0; i < camera.canvas_width; ++i) {
                     // random sub-pixel offset for antialiasing
-                    Scalar x = Scalar(i) + random_scalar<-0.5, +0.5>();
-                    Scalar y = Scalar(j) + random_scalar<-0.5, +0.5>();
+                    Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
+                    Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
                     // transform to camera coordinates
                     x = (2.0 * x / camera.canvas_width - 1.0);
                     y = (2.0 * y / camera.canvas_height - 1.0);

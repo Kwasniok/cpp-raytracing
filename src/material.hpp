@@ -136,8 +136,8 @@ class Dielectric : public Material {
             std::pow(refraction_ratio, 2) * sin_theta_squared > 1.0;
         // Scklick approximation
         const bool ray_reflects =
-            cannot_refract || reflectance(cos_theta, refraction_ratio) >
-                                  random_scalar<0.0, 1.0>();
+            cannot_refract ||
+            reflectance(cos_theta, refraction_ratio) > random_scalar(0.0, 1.0);
         if (ray_reflects) {
             direction = reflect(ortho, para);
         } else {

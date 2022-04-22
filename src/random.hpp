@@ -15,14 +15,9 @@ namespace ray {
 /**
  * @brief generates a uniformly random number between the boundaries
  */
-inline Scalar random_scalar(Scalar min, Scalar max) {
-    return min + (max - min) * (Scalar(std::rand()) / RAND_MAX);
-}
-
-/**
- * @brief generates a uniformly random number between the boundaries
- */
-template <Scalar min, Scalar max> inline Scalar random_scalar() {
+inline Scalar random_scalar(const Scalar min, const Scalar max) {
+    // note: using constexpr does not work due to rand()
+    // note: using template parameters is not supported by all compilers (yet)
     return min + (max - min) * (Scalar(std::rand()) / RAND_MAX);
 }
 

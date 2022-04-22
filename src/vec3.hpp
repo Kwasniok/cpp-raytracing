@@ -143,7 +143,7 @@ inline Vec3 random_in_unit_disk() {
     // rejection based and uniform
     while (true) {
         auto v =
-            Vec3(random_scalar<-1.0, +1.0>(), random_scalar<-1.0, +1.0>(), 0.0);
+            Vec3(random_scalar(-1.0, +1.0), random_scalar(-1.0, +1.0), 0.0);
         if (v.length_squared() >= 1)
             continue;
         return v;
