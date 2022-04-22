@@ -52,6 +52,8 @@ class Hittable {
      */
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = SCALAR_INF) const = 0;
+
+    virtual ~Hittable() = default;
 };
 
 } // namespace ray

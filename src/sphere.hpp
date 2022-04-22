@@ -24,6 +24,7 @@ class Sphere : public Hittable {
     inline Sphere(const Vec3& origin, const Scalar radius,
                   std::shared_ptr<Material> material)
         : _origin(origin), _radius(radius), _material(material) {}
+    virtual ~Sphere() = default;
 
     /** @brief get origin of the sphere */
     inline Vec3 origin() const { return _origin; }

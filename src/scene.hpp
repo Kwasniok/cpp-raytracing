@@ -23,6 +23,7 @@ class Scene : public Hittable {
     Scene(const Camera& camera) : camera(camera){};
     /** @brief move constructor */
     Scene(Scene&&) = default;
+    virtual ~Scene() = default;
 
     /** @brief remove all objects. */
     inline void clear() { _hittables.clear(); }
