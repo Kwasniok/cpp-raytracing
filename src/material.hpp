@@ -28,6 +28,8 @@ class Material {
      */
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const = 0;
+
+    virtual ~Material() = default;
 };
 
 /**
@@ -37,6 +39,7 @@ class Emitter : public Material {
   public:
     /** @brief initialize with parameters */
     Emitter(const Color& color) : color(color) {}
+    virtual ~Emitter() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
@@ -56,6 +59,7 @@ class Diffuse : public Material {
   public:
     /** @brief initialize with parameters */
     Diffuse(const Color& color) : color(color) {}
+    virtual ~Diffuse() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
@@ -81,6 +85,7 @@ class Metal : public Material {
     /** @brief initialize with parameters */
     Metal(const Color& color, const Scalar roughness)
         : color(color), roughness(roughness) {}
+    virtual ~Metal() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
@@ -115,6 +120,7 @@ class Dielectric : public Material {
     /** @brief initialize with parameters */
     Dielectric(const Color& color, const Scalar index_of_refraction)
         : color(color), index_of_refraction(index_of_refraction) {}
+    virtual ~Dielectric() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
