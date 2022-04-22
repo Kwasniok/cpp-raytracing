@@ -51,8 +51,8 @@ class Renderer {
                     x = (2.0 * x / camera.canvas_width - 1.0);
                     y = (2.0 * y / camera.canvas_height - 1.0);
 
-                    Ray ray = camera.ray_for_coords(x, y);
-                    Color pixel_color = ray_color(scene, ray, ray_depth);
+                    const Ray ray = camera.ray_for_coords(x, y);
+                    const Color pixel_color = ray_color(scene, ray, ray_depth);
                     image[{i, j}] += pixel_color;
                 }
             }
