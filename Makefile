@@ -3,8 +3,13 @@ SRC=src
 BIN=bin
 OUT=out
 
+# GCC
 CPP=g++
 CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp
+
+# CLANG
+# CPP=clang++
+# CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp=libomp
 
 .PHONY: all
 .DEFAULT_GOAL=all
