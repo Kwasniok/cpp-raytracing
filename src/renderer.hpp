@@ -25,6 +25,7 @@ namespace ray {
 class Renderer {
 
   public:
+    /** @brief callback type used by Renderer::render() */
     using RenderCallbackFunc = void (*)(const RawImage& current_image,
                                         const unsigned long current_samples);
 
@@ -117,7 +118,7 @@ class Renderer {
 
     /**
      * @brief callback function to be called regularly during to rendering e.g.
-     * to display the current sate of the image
+     *        to display the current sate of the image
      */
     RenderCallbackFunc render_callback;
 };

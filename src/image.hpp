@@ -71,7 +71,9 @@ class RawImage {
 
 /**
  * @brief write color as space separated ASCII 8-bit RGB channels
- * @param scale factor to multiply each channel's value with
+ * @param os output stream
+ * @param color color to be written
+ * @param scale (optinal) factor to multiply each channel's value with
  */
 std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
                                         const Scalar scale = 1.0) {
@@ -98,7 +100,9 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
  * @brief write raw image in
  * [Portable PixMap file format](https://en.wikipedia.org/wiki/Netpbm)
  * (P3: ASCII 8-bit RGB)
- * @param scale factor to multiply each channel's value with
+ * @param os output stream
+ * @param image image to be written
+ * @param scale (optional) factor to multiply each channel's value with
  */
 std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image,
                                   const Scalar scale = 1.0) {

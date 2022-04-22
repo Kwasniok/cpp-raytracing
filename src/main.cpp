@@ -68,7 +68,9 @@ Scene make_scene(const unsigned long resolution_factor) {
 
 /**
  * @brief write raw image to ppm file
- * @param scale factor to multiply each channel's value with
+ * @param path path to ppm file
+ * @param image raw image to be written
+ * @param scale (optinal) factor to multiply each channel's value with
  */
 void write_raw_image(const string& path, const RawImage& image,
                      const Scalar scale = 1.0) {
@@ -82,6 +84,9 @@ void write_raw_image(const string& path, const RawImage& image,
     file.close();
 }
 
+/**
+ * @brief called after each sample for the entire image
+ */
 void render_callback(const RawImage& current_image,
                      const unsigned long current_samples) {
     cout << current_samples << endl;
