@@ -43,6 +43,26 @@ class RawImage {
         return _pixel_colors[y * _width + x];
     }
 
+    /** @brief add another image pixelwise */
+    void operator+=(const RawImage& other) {
+        for (unsigned long y = 0; y < _height; ++y) {
+            for (unsigned long x = 0; x < _width; ++x) {
+                auto i = y * _width + x;
+                _pixel_colors[i] += other._pixel_colors[i];
+            }
+        }
+    }
+
+    /** @brief multiply image pixelwise */
+    void operator*=(const Scalar fac) {
+        for (unsigned long y = 0; y < _height; ++y) {
+            for (unsigned long x = 0; x < _width; ++x) {
+                auto i = y * _width + x;
+                _pixel_colors[i] *= fac;
+            }
+        }
+    }
+
   private:
     std::vector<Color> _pixel_colors;
     unsigned long _width;
