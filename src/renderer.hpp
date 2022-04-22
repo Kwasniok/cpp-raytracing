@@ -33,7 +33,6 @@ class Renderer {
 
     /** @brief render Scene as RawImage */
     RawImage render(const Scene& scene) {
-        const Scalar scale = 1 / (Scalar(samples));
         const Camera& camera = scene.camera;
 
         RawImage image{camera.canvas_width, camera.canvas_height};
@@ -60,11 +59,8 @@ class Renderer {
                 render_callback(image, s + 1);
             }
         }
-        for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-            for (unsigned long i = 0; i < camera.canvas_width; ++i) {
-                image[{i, j}] *= scale;
-            }
-        }
+
+        image *= 1 / (Scalar(samples));
         return image;
     }
 
