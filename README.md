@@ -19,6 +19,7 @@ For the image see `out` directory.
 ```bash
 make doc
 ```
+See `doc/html/index.html` for the documentation.
 
 ## Requirements
 
