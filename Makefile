@@ -1,7 +1,7 @@
 
 INC=include
 SRC=src
-BIN=bin
+BLD=build
 OUT=out
 
 # GCC
@@ -21,11 +21,11 @@ all: folders main run
 # ensure folders exist
 .PHONY: folders
 folders:
-	mkdir -p $(INC) $(SRC) $(BIN) $(OUT)
+	mkdir -p $(INC) $(SRC) $(BLD) $(OUT)
 
 .PHONY:run
 run:
-	$(BIN)/main
+	$(BLD)/main
 
 .PHONY: main
 
@@ -45,9 +45,9 @@ MAIN_HEADERS= \
 	$(INC)/cpp_raytracing/vec3.hpp \
 
 
-main: $(BIN)/main
-$(BIN)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
-	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BIN)/main $(SRC)/main.cpp
+main: $(BLD)/main
+$(BLD)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
+	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BLD)/main $(SRC)/main.cpp
 
 .PHONY: doc
 

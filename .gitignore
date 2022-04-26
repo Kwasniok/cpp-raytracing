@@ -1,4 +1,5 @@
 # build and binaries
+build/
 bin/
 
 # output

@@ -11,7 +11,7 @@ make main
 
 ## Run
 ```bash
-./bin/main
+./build/main
 ```
 For the image see `out` directory.
 
