@@ -7,12 +7,10 @@ OUT=out
 # GCC
 CPP=g++
 CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp -I $(INC)
-CPP_FLAGS_OPENMP=-fopenmp
 
 # CLANG
 # CPP=clang++
 # CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC)
-# CPP_FLAGS_OPENMP=-fopenmp=libomp
 
 
 ### ALL (DEFAULT) ###
