@@ -13,7 +13,8 @@ namespace ray {
 /**
  * clipping with compiletime boundaries
  */
-template <typename T, T low, T high> inline constexpr T clip(const T x) {
+template <typename T, T low, T high>
+inline constexpr T clip(const T x) {
     if (x < low) {
         return low;
     }

@@ -21,6 +21,13 @@ make doc
 ```
 See `doc/html/index.html` for the documentation.
 
+## Auto-Format
+Run
+```
+.auto_format
+```
+to automatically format the entire code base (requires `clang-format`).
+
 ## Requirements
 
 - Linux kernel v5.17+

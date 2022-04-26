@@ -116,7 +116,9 @@ inline constexpr Vec3 operator*(const Vec3& v, const Scalar f) {
 }
 
 /** @brief multiply elementwise */
-inline constexpr Vec3 operator*(const Scalar f, const Vec3& v) { return v * f; }
+inline constexpr Vec3 operator*(const Scalar f, const Vec3& v) {
+    return v * f;
+}
 
 /** @brief divide elementwise */
 inline constexpr Vec3 operator/(const Vec3& v, const Scalar f) {
@@ -136,7 +138,9 @@ inline constexpr Vec3 cross(const Vec3& v1, const Vec3& v2) {
 }
 
 /** @brief get normalized vector */
-inline constexpr Vec3 unit_vector(const Vec3& v) { return v / v.length(); }
+inline constexpr Vec3 unit_vector(const Vec3& v) {
+    return v / v.length();
+}
 
 /** @brief random vector in 2D x-y-unit disk */
 inline Vec3 random_in_unit_disk() {
