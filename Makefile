@@ -24,6 +24,19 @@ folders:
 run:
 	$(BIN)/main
 
+
+.PHONY: io
+
+IO_HEADERS= \
+	$(SRC)/io/all.hpp \
+	$(SRC)/io/base.hpp \
+	$(SRC)/io/scalar.hpp \
+
+io: $(BIN)/io.o
+$(BIN)/io.o: $(IO_HEADERS)
+	$(CPP) $(CPP_FLAGS) -o $(BIN)/io.o -c $(SRC)/io.cpp  -I PEGTL/include
+
+
 .PHONY: main
 
 MAIN_HEADERS= \
@@ -41,10 +54,9 @@ MAIN_HEADERS= \
 	$(SRC)/util.hpp  \
 	$(SRC)/vec3.hpp \
 
-
 main: $(BIN)/main
-$(BIN)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
-	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp
+$(BIN)/main: $(BIN)/io.o $(SRC)/main.cpp $(MAIN_HEADERS)
+	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp $(BIN)/io.o
 
 .PHONY: doc
 
