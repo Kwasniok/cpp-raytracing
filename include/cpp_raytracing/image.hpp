@@ -3,8 +3,8 @@
  * @brief image representation
  */
 
-#ifndef CPP_RAYTRACING_IMAGE_H
-#define CPP_RAYTRACING_IMAGE_H
+#ifndef CPP_RAYTRACING_IMAGE_HPP
+#define CPP_RAYTRACING_IMAGE_HPP
 
 #include <iostream>
 #include <utility>

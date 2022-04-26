@@ -3,8 +3,8 @@
  * @brief object materials
  */
 
-#ifndef CPP_RAYTRACING_SHADER_H
-#define CPP_RAYTRACING_SHADER_H
+#ifndef CPP_RAYTRACING_SHADER_HPP
+#define CPP_RAYTRACING_SHADER_HPP
 
 #include <utility>
 

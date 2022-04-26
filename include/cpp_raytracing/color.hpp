@@ -3,8 +3,8 @@
  * @brief color representation
  */
 
-#ifndef CPP_RAYTRACING_COLOR_H
-#define CPP_RAYTRACING_COLOR_H
+#ifndef CPP_RAYTRACING_COLOR_HPP
+#define CPP_RAYTRACING_COLOR_HPP
 
 #include <iostream>
 

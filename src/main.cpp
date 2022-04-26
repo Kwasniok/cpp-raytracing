@@ -8,16 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "camera.hpp"
-#include "color.hpp"
-#include "hittable.hpp"
-#include "image.hpp"
-#include "material.hpp"
-#include "random.hpp"
-#include "ray.hpp"
-#include "renderer.hpp"
-#include "scene.hpp"
-#include "sphere.hpp"
+#include <cpp_raytracing.hpp>
 
 using namespace std;
 using namespace ray;

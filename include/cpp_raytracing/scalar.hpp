@@ -3,8 +3,8 @@
  * @brief scalar type
  */
 
-#ifndef CPP_RAYTRACING_SCALAR_H
-#define CPP_RAYTRACING_SCALAR_H
+#ifndef CPP_RAYTRACING_SCALAR_HPP
+#define CPP_RAYTRACING_SCALAR_HPP
 
 #include <numbers>
 

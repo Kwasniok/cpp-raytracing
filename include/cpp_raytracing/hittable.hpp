@@ -3,8 +3,8 @@
  * @brief Hittable interface
  */
 
-#ifndef CPP_RAYTRACING_HITTABLE_H
-#define CPP_RAYTRACING_HITTABLE_H
+#ifndef CPP_RAYTRACING_HITTABLE_HPP
+#define CPP_RAYTRACING_HITTABLE_HPP
 
 #include <memory>
 

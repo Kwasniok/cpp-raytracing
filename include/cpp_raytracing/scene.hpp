@@ -3,8 +3,8 @@
  * @brief scene representation
  */
 
-#ifndef CPP_RAYTRACING_SCENE_H
-#define CPP_RAYTRACING_SCENE_H
+#ifndef CPP_RAYTRACING_SCENE_HPP
+#define CPP_RAYTRACING_SCENE_HPP
 
 #include <memory>
 #include <vector>

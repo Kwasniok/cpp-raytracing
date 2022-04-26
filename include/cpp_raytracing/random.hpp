@@ -3,8 +3,8 @@
  * @brief random number generation
  */
 
-#ifndef CPP_RAYTRACING_RANDOM_H
-#define CPP_RAYTRACING_RANDOM_H
+#ifndef CPP_RAYTRACING_RANDOM_HPP
+#define CPP_RAYTRACING_RANDOM_HPP
 
 #include <omp.h>
 #include <random>

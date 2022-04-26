@@ -3,8 +3,8 @@
  * @brief renderer
  */
 
-#ifndef CPP_RAYTRACING_RENDER_H
-#define CPP_RAYTRACING_RENDER_H
+#ifndef CPP_RAYTRACING_RENDER_HPP
+#define CPP_RAYTRACING_RENDER_HPP
 
 #include <cmath>
 #include <iostream>

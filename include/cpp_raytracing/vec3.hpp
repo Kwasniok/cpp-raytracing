@@ -3,8 +3,8 @@
  * @brief 3D vector representation
  */
 
-#ifndef CPP_RAYTRACING_VEC3_H
-#define CPP_RAYTRACING_VEC3_H
+#ifndef CPP_RAYTRACING_VEC3_HPP
+#define CPP_RAYTRACING_VEC3_HPP
 
 #include <cmath>
 #include <iostream>

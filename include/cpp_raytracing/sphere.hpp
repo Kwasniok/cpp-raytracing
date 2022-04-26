@@ -3,8 +3,8 @@
  * @brief spherical object representation
  */
 
-#ifndef CPP_RAYTRACING_SHPERE_H
-#define CPP_RAYTRACING_SHPERE_H
+#ifndef CPP_RAYTRACING_SHPERE_HPP
+#define CPP_RAYTRACING_SHPERE_HPP
 
 #include "hittable.hpp"
 #include "ray.hpp"

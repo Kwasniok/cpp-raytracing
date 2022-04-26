@@ -3,8 +3,8 @@
  * @brief camera
  */
 
-#ifndef CPP_RAYTRACING_CAMERA_H
-#define CPP_RAYTRACING_CAMERA_H
+#ifndef CPP_RAYTRACING_CAMERA_HPP
+#define CPP_RAYTRACING_CAMERA_HPP
 
 #include "ray.hpp"
 #include "vec3.hpp"

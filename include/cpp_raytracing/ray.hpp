@@ -3,8 +3,8 @@
  * @brief light ray
  */
 
-#ifndef CPP_RAYTRACING_RAY_H
-#define CPP_RAYTRACING_RAY_H
+#ifndef CPP_RAYTRACING_RAY_HPP
+#define CPP_RAYTRACING_RAY_HPP
 
 #include "vec3.hpp"
 

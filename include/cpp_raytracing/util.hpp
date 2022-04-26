@@ -3,8 +3,8 @@
  * @brief utility module
  */
 
-#ifndef CPP_RAYTRACING_UTIL_H
-#define CPP_RAYTRACING_UTIL_H
+#ifndef CPP_RAYTRACING_UTIL_HPP
+#define CPP_RAYTRACING_UTIL_HPP
 
 #include <numbers>
 
