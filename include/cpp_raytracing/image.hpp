@@ -11,7 +11,7 @@
 
 #include "color.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief raw image with floating-point channels
@@ -125,6 +125,6 @@ std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image,
     return os;
 }
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

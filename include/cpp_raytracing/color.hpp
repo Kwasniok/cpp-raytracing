@@ -10,7 +10,7 @@
 
 #include "util.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /** @brief floating-point value per color channel */
 using ColorScalar = double;
@@ -144,5 +144,5 @@ constexpr Color GREEN{0.0, 1.0, 0.0}; /**< @brief green */
 constexpr Color BLUE{0.0, 0.0, 1.0};  /**< @brief blue */
 } // namespace Colors
 
-} // namespace ray
+} // namespace cpp_raytracing
 #endif

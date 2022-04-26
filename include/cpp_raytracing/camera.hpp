@@ -9,7 +9,7 @@
 #include "ray.hpp"
 #include "vec3.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief represents camera
@@ -57,6 +57,6 @@ class Camera {
     Scalar lens_radius = 0.0;
 };
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

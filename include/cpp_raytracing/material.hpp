@@ -14,7 +14,7 @@
 #include "scalar.hpp"
 #include "vec3.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief object material interface
@@ -185,6 +185,6 @@ class Dielectric : public Material {
     Scalar index_of_refraction = 1.0;
 };
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

@@ -17,7 +17,7 @@
 #include "scene.hpp"
 #include "util.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief image renderer
@@ -123,6 +123,6 @@ class Renderer {
     RenderCallbackFunc render_callback;
 };
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

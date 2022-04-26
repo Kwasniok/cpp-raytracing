@@ -12,7 +12,7 @@
 #include "random.hpp"
 #include "scalar.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief 3D floating-point Vector
@@ -171,5 +171,5 @@ inline Vec3 random_unit_vector() {
     return unit_vector(random_vector_in_unit_sphere());
 }
 
-} // namespace ray
+} // namespace cpp_raytracing
 #endif

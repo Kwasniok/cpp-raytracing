@@ -11,7 +11,7 @@
 
 #include "scalar.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief generates a uniformly random number between the boundaries
@@ -36,6 +36,6 @@ inline Scalar random_scalar(const Scalar min, const Scalar max) {
     return distribution(generator);
 }
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

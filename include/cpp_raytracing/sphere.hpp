@@ -11,7 +11,7 @@
 #include "scalar.hpp"
 #include "vec3.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief spherical object
@@ -89,6 +89,6 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     return record;
 }
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

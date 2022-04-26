@@ -8,7 +8,7 @@
 
 #include <numbers>
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * clipping with compiletime boundaries
@@ -38,6 +38,6 @@ inline constexpr T clip(const T x, const T low, const T high) {
     return x;
 }
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

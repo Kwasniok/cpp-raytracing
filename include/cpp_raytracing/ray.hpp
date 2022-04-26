@@ -8,7 +8,7 @@
 
 #include "vec3.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief representation of a light ray
@@ -40,6 +40,6 @@ class Ray {
     Vec3 _direction;
 };
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

@@ -11,7 +11,7 @@
 #include <cpp_raytracing.hpp>
 
 using namespace std;
-using namespace ray;
+using namespace cpp_raytracing;
 
 /**
  * @brief generate an example scene

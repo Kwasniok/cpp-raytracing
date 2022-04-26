@@ -6,5 +6,5 @@
 /**
  * @brief namespace for all cpp-raytracing objects
  */
-namespace ray {
+namespace cpp_raytracing {
 }

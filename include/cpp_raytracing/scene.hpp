@@ -12,7 +12,7 @@
 #include "camera.hpp"
 #include "hittable.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 /**
  * @brief Collection of hittable objects and a camera.
@@ -58,6 +58,6 @@ HitRecord Scene::hit_record(const Ray& ray, const Scalar t_min,
     return closest_record;
 }
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

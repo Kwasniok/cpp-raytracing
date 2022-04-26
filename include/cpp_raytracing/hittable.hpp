@@ -12,7 +12,7 @@
 #include "scalar.hpp"
 #include "vec3.hpp"
 
-namespace ray {
+namespace cpp_raytracing {
 
 class Material;
 
@@ -56,6 +56,6 @@ class Hittable {
     virtual ~Hittable() = default;
 };
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif

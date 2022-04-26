@@ -8,7 +8,7 @@
 
 #include <numbers>
 
-namespace ray {
+namespace cpp_raytracing {
 
 /** @brief scalar type */
 using Scalar = double;
@@ -18,6 +18,6 @@ constexpr const Scalar SCALAR_INF = std::numeric_limits<Scalar>::infinity();
 /** @brief pi */
 constexpr const Scalar SCALAR_PI = std::numbers::pi_v<Scalar>;
 
-} // namespace ray
+} // namespace cpp_raytracing
 
 #endif
