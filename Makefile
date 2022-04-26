@@ -14,10 +14,19 @@ CPP_FLAGS_OPENMP=-fopenmp
 # CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC)
 # CPP_FLAGS_OPENMP=-fopenmp=libomp
 
+
+### ALL (DEFAULT) ###
 .PHONY: all
 .DEFAULT_GOAL=all
 all: test main run
 
+### CLEAN ##
+.PHONY:clean
+clean:
+	rm -rf build/*
+	rm -rf doc/*
+
+### RUN ###
 .PHONY:run
 run:
 	@mkdir -p $(OUT)
@@ -39,6 +48,7 @@ $(BLD)/main: $(SRC)/main.cpp $(BLD)/main.d
 include $(BLD)/main.d
 
 
+### DOCUMENTATION ###
 .PHONY: doc
 doc:
 	@mkdir -p doc
