@@ -23,31 +23,23 @@ run:
 	@mkdir -p $(OUT)
 	$(BLD)/main
 
+### MAIN ###
+
 .PHONY: main
-
-MAIN_HEADERS= \
-	$(INC)/cpp_raytracing/camera.hpp \
-	$(INC)/cpp_raytracing/color.hpp \
-	$(INC)/cpp_raytracing/hittable.hpp \
-	$(INC)/cpp_raytracing/image.hpp \
-	$(INC)/cpp_raytracing/material.hpp  \
-	$(INC)/cpp_raytracing/random.hpp  \
-	$(INC)/cpp_raytracing/ray.hpp \
-	$(INC)/cpp_raytracing/renderer.hpp  \
-	$(INC)/cpp_raytracing/scalar.hpp  \
-	$(INC)/cpp_raytracing/scene.hpp  \
-	$(INC)/cpp_raytracing/sphere.hpp \
-	$(INC)/cpp_raytracing/util.hpp  \
-	$(INC)/cpp_raytracing/vec3.hpp \
-
-
 main: $(BLD)/main
-$(BLD)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
+$(BLD)/main.d: $(SRC)/main.cpp
+	@mkdir -p $(@D) # provide parent directory of target
+	$(CPP) $(CPP_FLAGS) -MM -MQ $@ -o $@ $<
+
+$(BLD)/main: $(SRC)/main.cpp $(BLD)/main.d
 	@mkdir -p $(@D) # provide parent directory of target
 	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BLD)/main $(SRC)/main.cpp
 
-.PHONY: doc
+# import dependencies for main binary
+include $(BLD)/main.d
 
+
+.PHONY: doc
 doc:
 	@mkdir -p doc
 	doxygen Doxyfile.in
