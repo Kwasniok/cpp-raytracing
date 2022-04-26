@@ -2,10 +2,8 @@
 
 namespace cpp_raytracing {
 
-bool run_test_suite() {
-    return true;
+void run_test_suite() {
+    TEST_ASSERT_TRUE(true);
 }
 
 } // namespace cpp_raytracing
-
-#include "main.hpp"
