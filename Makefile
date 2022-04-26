@@ -16,7 +16,7 @@ CPP_FLAGS_OPENMP=-fopenmp
 
 .PHONY: all
 .DEFAULT_GOAL=all
-all: main run
+all: test main run
 
 .PHONY:run
 run:
@@ -51,3 +51,26 @@ $(BLD)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
 doc:
 	@mkdir -p doc
 	doxygen Doxyfile.in
+
+
+### TESTS ###
+
+TEST_SOURCES = $(shell find $(SRC)/test -name '*.cpp')
+TEST_DEPENDS = $(TEST_SOURCES:$(SRC)/%.cpp=$(BLD)/%.d)
+TEST_BINARIES = $(TEST_SOURCES:$(SRC)/%.cpp=$(BLD)/%)
+TESTS = $(filter $(BLD)/test/%, $(TEST_BINARIES))
+
+.PHONY: test
+test: $(TESTS);
+	@set -e; for T in $(TESTS); do printf "test: $$T ... "; $$T; done
+
+$(TEST_DEPENDS): $(BLD)/%.d: $(SRC)/%.cpp
+	@mkdir -p $(@D) # provide parent directory of target
+	$(CPP) $(CPP_FLAGS) -MM -MQ $@ -o $@ $<
+
+$(TESTS): $(BLD)/%: $(SRC)/%.cpp $(BLD)/%.d
+	@mkdir -p $(@D) # provide parent directory of target
+	$(CPP) $(CPP_FLAGS) -o $@ $<
+
+# import dependencies for all target binaries
+include $(TEST_DEPENDS)
