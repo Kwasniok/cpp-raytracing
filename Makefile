@@ -7,10 +7,12 @@ OUT=out
 # GCC
 CPP=g++
 CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp -I $(INC)
+CPP_FLAGS_OPENMP=-fopenmp
 
 # CLANG
 # CPP=clang++
 # CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC)
+# CPP_FLAGS_OPENMP=-fopenmp=libomp
 
 .PHONY: all
 .DEFAULT_GOAL=all
@@ -45,7 +47,7 @@ MAIN_HEADERS= \
 
 main: $(BIN)/main
 $(BIN)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
-	$(CPP) $(CPP_FLAGS) -o $(BIN)/main $(SRC)/main.cpp
+	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BIN)/main $(SRC)/main.cpp
 
 .PHONY: doc
 
