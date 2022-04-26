@@ -16,15 +16,11 @@ CPP_FLAGS_OPENMP=-fopenmp
 
 .PHONY: all
 .DEFAULT_GOAL=all
-all: folders main run
-
-# ensure folders exist
-.PHONY: folders
-folders:
-	mkdir -p $(INC) $(SRC) $(BLD) $(OUT)
+all: main run
 
 .PHONY:run
 run:
+	@mkdir -p $(OUT)
 	$(BLD)/main
 
 .PHONY: main
@@ -47,9 +43,11 @@ MAIN_HEADERS= \
 
 main: $(BLD)/main
 $(BLD)/main: $(SRC)/main.cpp $(MAIN_HEADERS)
+	@mkdir -p $(@D) # provide parent directory of target
 	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BLD)/main $(SRC)/main.cpp
 
 .PHONY: doc
 
 doc:
+	@mkdir -p doc
 	doxygen Doxyfile.in
