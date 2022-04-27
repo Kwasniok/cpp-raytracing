@@ -102,6 +102,24 @@ inline void assert_false(const T& x, const char* expr, const char* file,
     }
 }
 
+/**
+ @brief asserts expression is in a range (includes boundaries)
+ @note internal usage only
+ @see TEST_ASSERT_IN_RANGE
+ */
+template <typename T>
+inline void assert_in_range(const T& min, const T& max, const T& x,
+                            const char* expr, const char* file,
+                            const int line) {
+    if (x < min || x > max) {
+
+        std::stringstream msg;
+        msg << "is not in range  [" << min << ", " << max << "]";
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+}
+
 
 /** @brief indicates finishing a test case */
 inline void indicate_finished_test_case() {
