@@ -184,7 +184,7 @@ inline void assert_not_almost_equal(const T& x, const T& y, const T& epsilon,
  @see TEST_ASSERT_IN_RANGE
  */
 template <typename T>
-inline void assert_in_range(const T& min, const T& max, const T& x,
+inline void assert_in_range(const T& x, const T& min, const T& max,
                             const char* expr, const char* file,
                             const int line) {
     if (x < min || x > max) {
@@ -267,8 +267,8 @@ inline void indicate_finished_test_case() {
 /**
  * @brief asserts expression is false
  */
-#define TEST_ASSERT_IN_RANGE(min, max, expr)                                   \
-    cpp_raytracing::test::internal::assert_in_range(min, max, expr, #expr,     \
+#define TEST_ASSERT_IN_RANGE(expr, min, max)                                   \
+    cpp_raytracing::test::internal::assert_in_range(expr, min, max, #expr,     \
                                                     __FILE__, __LINE__)
 /**
  * @brief asserts expression is a container with pairwise unique elements
