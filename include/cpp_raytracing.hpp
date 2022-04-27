@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief entire package
+ */
+
 #ifndef CPP_RAYTRACING_HPP
 #define CPP_RAYTRACING_HPP
 
