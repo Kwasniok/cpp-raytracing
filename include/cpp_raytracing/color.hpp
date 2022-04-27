@@ -46,6 +46,16 @@ class Color {
     /** @brief blue channel*/
     constexpr ColorScalar b() const { return _data[2]; }
 
+    /** @brief tests equivalence */
+    constexpr bool operator==(const Color& other) const {
+        return r() == other.r() && g() == other.g() && b() == other.b();
+    }
+
+    /** @brief tests inequivalence */
+    constexpr bool operator!=(const Color& other) const {
+        return r() != other.r() || g() != other.g() || b() != other.b();
+    }
+
     /** @brief negate channelwise */
     constexpr Color operator-() const {
         return Color{-_data[0], -_data[1], -_data[2]};
@@ -93,6 +103,13 @@ class Color {
   private:
     ColorScalar _data[3];
 };
+
+/** @brief write Color to stream */
+inline std::ostream& operator<<(std::ostream& os, const Color& color) {
+    os << "Color(" << color.r() << ", " << color.g() << ", " << color.b()
+       << ")";
+    return os;
+}
 
 /**
  * @brief convert floating point color value to integer in range 0-255

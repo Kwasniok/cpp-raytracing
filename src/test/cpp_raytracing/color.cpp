@@ -22,6 +22,29 @@ void test_chanels() {
     TEST_ASSERT_EQUAL(color.b(), 3.3);
 }
 
+void test_comparison() {
+    constexpr Color color1{1.1, 2.2, 3.3};
+    constexpr Color color2{1.1, 2.2, 3.3};
+    constexpr Color color3{7.7, 2.2, 3.3};
+    constexpr Color color4{1.1, 7.7, 3.3};
+    constexpr Color color5{1.1, 2.2, 7.7};
+
+    {
+        TEST_ASSERT_TRUE(color1 == color1);
+        TEST_ASSERT_TRUE(color1 == color2);
+        TEST_ASSERT_FALSE(color1 == color3);
+        TEST_ASSERT_FALSE(color1 == color4);
+        TEST_ASSERT_FALSE(color1 == color5);
+    }
+    {
+        TEST_ASSERT_FALSE(color1 != color1);
+        TEST_ASSERT_FALSE(color1 != color2);
+        TEST_ASSERT_TRUE(color1 != color3);
+        TEST_ASSERT_TRUE(color1 != color4);
+        TEST_ASSERT_TRUE(color1 != color5);
+    }
+}
+
 void test_arithmetic() {
     constexpr Color x1{1.1, 2.2, 3.3};
     constexpr Color x2{4.4, 5.5, 6.6};
@@ -176,6 +199,7 @@ void test_color_constants() {
 void run_test_suite() {
     run(test_default_constructor);
     run(test_chanels);
+    run(test_comparison);
     run(test_arithmetic);
     run(test_scalar_to_integral_conversion);
     run(test_color_constants);
