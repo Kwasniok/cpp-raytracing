@@ -6,8 +6,10 @@
 #ifndef TEST_CPP_RAYTRACING_TEST_HPP
 #define TEST_CPP_RAYTRACING_TEST_HPP
 
+#include <array>
 #include <exception>
 #include <iostream>
+#include <omp.h>
 #include <sstream>
 #include <string>
 
@@ -49,6 +51,28 @@ inline std::string message(const char* expr, const char* file, const int line,
 }
 
 /**
+ @brief asserts OpemMP is running with multiple threads
+ @note internal usage only
+ @see TEST_ASSERT_OPENMP_IS_MULTITHREADING
+ */
+inline void assert_openmp_is_multithreading(const char* file, const int line) {
+    constexpr int N = 4;
+    std::array<int, N> buffer{};
+#pragma omp parallel for num_threads(N)
+    for (int i = 0; i < N; ++i) {
+        buffer[i] = omp_get_thread_num();
+    }
+    for (int i = 0; i < N; ++i) {
+        if (buffer[i] != i) {
+            throw AssertionFailedException(
+                message("assert_openmp_is_multithreading()", file, line,
+                        "failed because multithreading in OpenMP is not "
+                        "(properly) enabled. Set OMP_THREAD_LIMIT>=4."));
+        }
+    }
+}
+
+/**
  @brief asserts expression is true
  @note internal usage only
  @see TEST_ASSERT_TRUE
@@ -86,6 +110,12 @@ inline void indicate_finished_test_case() {
 
 } // namespace internal
 
+/**
+ @brief asserts OpemMP is running with multiple threads
+ */
+#define TEST_ASSERT_OPENMP_IS_MULTITHREADING()                                 \
+    cpp_raytracing::test::internal::assert_openmp_is_multithreading(__FILE__,  \
+                                                                    __LINE__)
 /**
  * @brief asserts expression is true
  */
