@@ -33,6 +33,29 @@ void test_chanels() {
     TEST_ASSERT_EQUAL(vec.z(), 3.3);
 }
 
+void test_comparison() {
+    constexpr Vec3 vec1{1.1, 2.2, 3.3};
+    constexpr Vec3 vec2{1.1, 2.2, 3.3};
+    constexpr Vec3 vec3{7.7, 2.2, 3.3};
+    constexpr Vec3 vec4{1.1, 7.7, 3.3};
+    constexpr Vec3 vec5{1.1, 2.2, 7.7};
+
+    {
+        TEST_ASSERT_TRUE(vec1 == vec1);
+        TEST_ASSERT_TRUE(vec1 == vec2);
+        TEST_ASSERT_FALSE(vec1 == vec3);
+        TEST_ASSERT_FALSE(vec1 == vec4);
+        TEST_ASSERT_FALSE(vec1 == vec5);
+    }
+    {
+        TEST_ASSERT_FALSE(vec1 != vec1);
+        TEST_ASSERT_FALSE(vec1 != vec2);
+        TEST_ASSERT_TRUE(vec1 != vec3);
+        TEST_ASSERT_TRUE(vec1 != vec4);
+        TEST_ASSERT_TRUE(vec1 != vec5);
+    }
+}
+
 void test_arithmetic() {
     constexpr Vec3 x1{1.1, 2.2, 3.3};
     constexpr Vec3 x2{4.4, 5.5, 6.6};
@@ -177,6 +200,7 @@ void run_test_suite() {
     run(test_default_constructor);
     run(test_random_constructor);
     run(test_chanels);
+    run(test_comparison);
     run(test_arithmetic);
     run(test_near_zero);
     run(test_random_in_unit_disk);

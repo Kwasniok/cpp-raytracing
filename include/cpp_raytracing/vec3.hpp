@@ -38,6 +38,16 @@ class Vec3 {
     /** @brief get z coefficient */
     constexpr Scalar z() const { return _data[2]; }
 
+    /** @brief tests equivalence */
+    constexpr bool operator==(const Vec3& other) const {
+        return x() == other.x() && y() == other.y() && z() == other.z();
+    }
+
+    /** @brief tests inequivalence */
+    constexpr bool operator!=(const Vec3& other) const {
+        return x() != other.x() || y() != other.y() || z() != other.z();
+    }
+
     /** @brief negate elementwise */
     constexpr Vec3 operator-() const {
         return Vec3{-_data[0], -_data[1], -_data[2]};
