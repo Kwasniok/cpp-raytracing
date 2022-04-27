@@ -6,8 +6,10 @@
 #ifndef CPP_RAYTRACING_IMAGE_HPP
 #define CPP_RAYTRACING_IMAGE_HPP
 
+#include <cmath>
 #include <iostream>
 #include <utility>
+#include <vector>
 
 #include "color.hpp"
 
@@ -54,7 +56,7 @@ class RawImage {
     }
 
     /** @brief multiply image pixelwise */
-    void operator*=(const Scalar fac) {
+    void operator*=(const ColorScalar fac) {
         for (unsigned long y = 0; y < _height; ++y) {
             for (unsigned long x = 0; x < _width; ++x) {
                 auto i = y * _width + x;
@@ -76,10 +78,10 @@ class RawImage {
  * @param scale (optinal) factor to multiply each channel's value with
  */
 std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
-                                        const Scalar scale = 1.0) {
-    Scalar r = color.r();
-    Scalar g = color.g();
-    Scalar b = color.b();
+                                        const ColorScalar scale = 1.0) {
+    ColorScalar r = color.r();
+    ColorScalar g = color.g();
+    ColorScalar b = color.b();
     // scale (e.g. 1/samples)
     r *= scale;
     g *= scale;
@@ -89,9 +91,9 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
     g = std::sqrt(g);
     b = std::sqrt(b);
     // convert to integers
-    const Scalar ir = int_from_color_scalar(r);
-    const Scalar ig = int_from_color_scalar(g);
-    const Scalar ib = int_from_color_scalar(b);
+    const ColorIntegral ir = int_from_color_scalar(r);
+    const ColorIntegral ig = int_from_color_scalar(g);
+    const ColorIntegral ib = int_from_color_scalar(b);
     os << ir << " " << ig << " " << ib;
     return os;
 }
@@ -105,9 +107,9 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
  * @param scale (optional) factor to multiply each channel's value with
  */
 std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image,
-                                  const Scalar scale = 1.0) {
+                                  const ColorScalar scale = 1.0) {
 
-    const unsigned long max_color = 255;
+    const ColorIntegral max_color = 255;
 
     // header
     os << "P3 # ASCII RGB" << std::endl;
