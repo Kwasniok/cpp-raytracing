@@ -15,7 +15,7 @@ namespace cpp_raytracing {
 
 /**
  * @brief generates a uniformly random number between the boundaries
- * @note thread-safe
+ * @note thread-safe (each thread operates independently with a unique seed)
  */
 inline Scalar random_scalar(const Scalar min, const Scalar max) {
     // IMPORTNANT: This version of the function with a thread_local static
