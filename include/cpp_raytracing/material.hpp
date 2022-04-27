@@ -57,6 +57,9 @@ class Emitter : public Material {
  */
 class Diffuse : public Material {
   public:
+    /** @brief Scalars below this threshold are considered to be zero.*/
+    constexpr static Scalar epsilon = 1.0e-12;
+
     /** @brief initialize with parameters */
     Diffuse(const Color& color) : color(color) {}
     virtual ~Diffuse() = default;
@@ -64,7 +67,7 @@ class Diffuse : public Material {
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
         Vec3 direction = record.normal + random_unit_vector();
-        if (direction.near_zero(1.0e-12)) {
+        if (direction.near_zero(epsilon)) {
             // in case of normal and random vector beeing antiparallel
             // use normal instead
             direction = record.normal;
