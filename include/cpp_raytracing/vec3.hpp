@@ -106,7 +106,7 @@ class Vec3 {
 
 /** @brief write vector as space separated components */
 inline std::ostream& operator<<(std::ostream& os, const Vec3 v) {
-    os << v[0] << " " << v[1] << " " << v[2];
+    os << "Vec3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
     return os;
 }
 
