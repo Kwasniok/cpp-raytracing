@@ -94,8 +94,12 @@ class Color {
     ColorScalar _data[3];
 };
 
-/** @brief convert floating point color value to integer in range 0-255
- * channelwise */
+/**
+ * @brief convert floating point color value to integer in range 0-255
+ * channelwise
+ * @note cs > 1.0 infinity and NaN clip to 255
+ * @note cs < 0.0 -infinity clip to 0
+ */
 inline constexpr ColorIntegral int_from_color_scalar(const ColorScalar cs) {
     ColorIntegral ci = static_cast<ColorIntegral>(cs * 255);
     return clip<ColorIntegral, 0, 255>(ci);
