@@ -11,7 +11,7 @@
 namespace cpp_raytracing {
 
 /**
- * clipping with compiletime boundaries
+ * @brief clipping with compiletime boundaries
  */
 template <typename T, T low, T high>
 inline constexpr T clip(const T x) {
@@ -25,7 +25,7 @@ inline constexpr T clip(const T x) {
 }
 
 /**
- * clipping with runtime boundaries
+ * @brief clipping with runtime boundaries
  */
 template <typename T>
 inline constexpr T clip(const T x, const T low, const T high) {
