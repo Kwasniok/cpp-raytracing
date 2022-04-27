@@ -6,11 +6,11 @@ OUT=out
 
 # GCC
 CPP=g++
-CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp -I $(INC)
+CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC)
 
 # CLANG
 # CPP=clang++
-# CPP_FLAGS=-Wall -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC)
+# CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC)
 
 
 ### ALL (DEFAULT) ###
