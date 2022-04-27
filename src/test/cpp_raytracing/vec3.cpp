@@ -26,7 +26,7 @@ void test_random_constructor() {
     }
 }
 
-void test_chanels() {
+void test_axes() {
     Vec3 vec{1.1, 2.2, 3.3};
     TEST_ASSERT_EQUAL(vec.x(), 1.1);
     TEST_ASSERT_EQUAL(vec.y(), 2.2);
@@ -199,7 +199,7 @@ void test_random_unit_vector() {
 void run_test_suite() {
     run(test_default_constructor);
     run(test_random_constructor);
-    run(test_chanels);
+    run(test_axes);
     run(test_comparison);
     run(test_arithmetic);
     run(test_near_zero);
