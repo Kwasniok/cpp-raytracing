@@ -13,6 +13,8 @@
 #include <sstream>
 #include <string>
 
+#include <cpp_raytracing/util.hpp>
+
 namespace cpp_raytracing { namespace test {
 
 /** @brief signature of a test case function */
@@ -120,6 +122,26 @@ inline void assert_in_range(const T& min, const T& max, const T& x,
     }
 }
 
+/**
+ @brief asserts expression is a container with pairwise unique elements
+ @note internal usage only
+ @see TEST_ASSERT_PAIRWISE_UNIQUE
+ */
+template <typename T>
+inline void assert_pairwise_unique(const T& x, const char* expr,
+                                   const char* file, const int line) {
+    for (auto [i, a] : enumerate(x)) {
+        for (auto [j, b] : enumerate(x)) {
+            if (i != j && a == b) {
+                std::stringstream msg;
+                msg << "has equivalent elements " << a << " (@" << i << ") and "
+                    << b << " (@" << j << ")";
+                throw AssertionFailedException(
+                    message(expr, file, line, msg.str().c_str()));
+            }
+        }
+    }
+}
 
 /** @brief indicates finishing a test case */
 inline void indicate_finished_test_case() {
@@ -151,6 +173,12 @@ inline void indicate_finished_test_case() {
 #define TEST_ASSERT_IN_RANGE(min, max, expr)                                   \
     cpp_raytracing::test::internal::assert_in_range(min, max, expr, #expr,     \
                                                     __FILE__, __LINE__)
+/**
+ * @brief asserts expression is a container with pairwise unique elements
+ */
+#define TEST_ASSERT_PAIRWISE_UNIQUE(expr)                                      \
+    cpp_raytracing::test::internal::assert_pairwise_unique(expr, #expr,        \
+                                                           __FILE__, __LINE__)
 /**
  * @brief call a test case function
  */
