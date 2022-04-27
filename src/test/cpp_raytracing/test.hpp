@@ -105,6 +105,80 @@ inline void assert_false(const T& x, const char* expr, const char* file,
 }
 
 /**
+ @brief asserts expression is equal to value
+ @note internal usage only
+ @see TEST_ASSERT_EQUAL
+ */
+template <typename T>
+inline void assert_equal(const T& x, const T& y, const char* expr,
+                         const char* file, const int line) {
+    if (x == y) {
+        // do nothing
+    } else {
+        std::stringstream msg;
+        msg << "= " << x << " is not equal to " << y;
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+}
+
+/**
+ @brief asserts expression is not equal to value
+ @note internal usage only
+ @see TEST_ASSERT_NOT_EQUAL
+ */
+template <typename T>
+inline void assert_not_equal(const T& x, const T& y, const char* expr,
+                             const char* file, const int line) {
+    if (x != y) {
+        // do nothing
+    } else {
+        std::stringstream msg;
+        msg << "= " << x << " is equal to " << y;
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+}
+
+/**
+ @brief asserts expression is almost equal to value
+ @note internal usage only
+ @see TEST_ASSERT_ALMOST_EQUAL
+ */
+template <typename T>
+inline void assert_almost_equal(const T& x, const T& y, const T& epsilon,
+                                const char* expr, const char* file,
+                                const int line) {
+    if (std::abs(x - y) < epsilon) {
+        // do nothing
+    } else {
+        std::stringstream msg;
+        msg << "= " << x << " is not almost equal to " << y
+            << " with precision of epsilon = " << epsilon;
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+}
+
+/**
+ @brief asserts expression is not almost equal to value
+ @note internal usage only
+ @see TEST_ASSERT_NOT_ALMOST_EQUAL
+ */
+template <typename T>
+inline void assert_not_almost_equal(const T& x, const T& y, const T& epsilon,
+                                    const char* expr, const char* file,
+                                    const int line) {
+    if (std::abs(x - y) < epsilon) {
+        std::stringstream msg;
+        msg << "= " << x << " is almost equal to " << y
+            << " with precision of epsilon = " << epsilon;
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+}
+
+/**
  @brief asserts expression is in a range (includes boundaries)
  @note internal usage only
  @see TEST_ASSERT_IN_RANGE
@@ -114,7 +188,6 @@ inline void assert_in_range(const T& min, const T& max, const T& x,
                             const char* expr, const char* file,
                             const int line) {
     if (x < min || x > max) {
-
         std::stringstream msg;
         msg << "is not in range  [" << min << ", " << max << "]";
         throw AssertionFailedException(
@@ -167,6 +240,30 @@ inline void indicate_finished_test_case() {
 #define TEST_ASSERT_FALSE(expr)                                                \
     cpp_raytracing::test::internal::assert_false(expr, #expr, __FILE__,        \
                                                  __LINE__)
+/**
+ * @brief asserts expression is equal to value
+ */
+#define TEST_ASSERT_EQUAL(expr, value)                                         \
+    cpp_raytracing::test::internal::assert_equal(expr, value, #expr, __FILE__, \
+                                                 __LINE__)
+/**
+ * @brief asserts expression is not equal to value
+ */
+#define TEST_ASSERT_NOT_EQUAL(expr, value)                                     \
+    cpp_raytracing::test::internal::assert_not_equal(expr, value, #expr,       \
+                                                     __FILE__, __LINE__)
+/**
+ * @brief asserts expression is almost equal to value
+ */
+#define TEST_ASSERT_ALMOST_EQUAL(expr, value, epsilon)                         \
+    cpp_raytracing::test::internal::assert_almost_equal(                       \
+        expr, value, epsilon, #expr, __FILE__, __LINE__)
+/**
+ * @brief asserts expression is not almost equal to value
+ */
+#define TEST_ASSERT_NOT_ALMOST_EQUAL(expr, value, epsilon)                     \
+    cpp_raytracing::test::internal::assert_not_almost_equal(                   \
+        expr, value, epsilon, #expr, __FILE__, __LINE__)
 /**
  * @brief asserts expression is false
  */
