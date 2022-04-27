@@ -62,8 +62,8 @@ TESTS = $(filter $(BLD)/test/%, $(TEST_BINARIES))
 
 .PHONY: test
 test: $(TESTS);
-	# loop is exited after first failure
-	@set -e; for T in $(TESTS); do printf "test: $$T ... "; $$T; done
+	@# loop is exited after first failure
+	@set -e; for T in $(TESTS); do printf "test: $$T "; $$T; done
 
 $(TEST_DEPENDS): $(BLD)/%.d: $(SRC)/%.cpp
 	@mkdir -p $(@D) # provide parent directory of target

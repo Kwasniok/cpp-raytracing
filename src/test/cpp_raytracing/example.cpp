@@ -1,9 +1,13 @@
 #include "test.hpp"
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace test {
 
-void run_test_suite() {
+void test_example() {
     TEST_ASSERT_TRUE(true);
 }
 
-} // namespace cpp_raytracing
+void run_test_suite() {
+    run(test_example);
+}
+
+}} // namespace cpp_raytracing::test

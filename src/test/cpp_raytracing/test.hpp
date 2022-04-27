@@ -11,10 +11,13 @@
 #include <sstream>
 #include <string>
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace test {
+
+/** @brief signature of a test case function */
+using test_case_t = void (*)(void);
 
 /** @brief entry point for test suite */
-void run_test_suite();
+void run_test_suite(void);
 
 /** @brief signals assertion errors during unit tests */
 struct AssertionFailedException : std::exception {
@@ -51,7 +54,7 @@ inline std::string message(const char* expr, const char* file, const int line,
  @see TEST_ASSERT_TRUE
  */
 template <typename T>
-inline void assert_true(T&& x, const char* expr, const char* file,
+inline void assert_true(const T& x, const char* expr, const char* file,
                         const int line) {
     if (x) {
         // do nothing
@@ -67,12 +70,18 @@ inline void assert_true(T&& x, const char* expr, const char* file,
  @see TEST_ASSERT_FALSE
  */
 template <typename T>
-inline void assert_false(T&& x, const char* expr, const char* file,
+inline void assert_false(const T& x, const char* expr, const char* file,
                          const int line) {
     if (x) {
         throw AssertionFailedException(
             message(expr, file, line, "is not false"));
     }
+}
+
+
+/** @brief indicates finishing a test case */
+inline void indicate_finished_test_case() {
+    std::cout << ".";
 }
 
 } // namespace internal
@@ -81,28 +90,42 @@ inline void assert_false(T&& x, const char* expr, const char* file,
  * @brief asserts expression is true
  */
 #define TEST_ASSERT_TRUE(expr)                                                 \
-    cpp_raytracing::internal::assert_true(expr, #expr, __FILE__, __LINE__)
+    cpp_raytracing::test::internal::assert_true(expr, #expr, __FILE__, __LINE__)
 /**
  * @brief asserts expression is false
  */
 #define TEST_ASSERT_FALSE(expr)                                                \
-    cpp_raytracing::internal::assert_false(expr, #expr, __FILE__, __LINE__)
+    cpp_raytracing::test::internal::assert_false(expr, #expr, __FILE__,        \
+                                                 __LINE__)
+/**
+ * @brief asserts expression is false
+ */
+#define TEST_ASSERT_IN_RANGE(min, max, expr)                                   \
+    cpp_raytracing::test::internal::assert_in_range(min, max, expr, #expr,     \
+                                                    __FILE__, __LINE__)
+/**
+ * @brief call a test case function
+ */
+inline void run(const test_case_t func) {
+    func();
+    cpp_raytracing::test::internal::indicate_finished_test_case();
+}
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::test
 
 /** @brief entry point for unit test program */
 int main() {
     using namespace std;
 
     try {
-        cpp_raytracing::run_test_suite();
-    } catch (const cpp_raytracing::AssertionFailedException& e) {
-        cout << "\033[1;31mfailed\033[0m" << endl;
+        cpp_raytracing::test::run_test_suite();
+    } catch (const cpp_raytracing::test::AssertionFailedException& e) {
+        cout << " \033[1;31mfailed\033[0m" << endl;
         cout << "\033[1;31m" << e.what() << "\033[0m" << endl;
         return EXIT_FAILURE;
     }
 
-    cout << "\033[1;32mpassed\033[0m" << endl;
+    cout << " \033[1;32mpassed\033[0m" << endl;
     return EXIT_SUCCESS;
 }
 
