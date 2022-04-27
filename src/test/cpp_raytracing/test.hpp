@@ -189,7 +189,7 @@ inline void assert_in_range(const T& x, const T& min, const T& max,
                             const int line) {
     if (x < min || x > max) {
         std::stringstream msg;
-        msg << "is not in range  [" << min << ", " << max << "]";
+        msg << "= " << x << " is not in range[" << min << ", " << max << "] ";
         throw AssertionFailedException(
             message(expr, file, line, msg.str().c_str()));
     }
