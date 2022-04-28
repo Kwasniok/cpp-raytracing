@@ -6,8 +6,10 @@
 #ifndef CPP_RAYTRACING_UTIL_HPP
 #define CPP_RAYTRACING_UTIL_HPP
 
+#include <cstddef>
 #include <numbers>
 #include <tuple>
+#include <utility>
 
 namespace cpp_raytracing {
 
