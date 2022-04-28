@@ -1,3 +1,4 @@
+#include <array>
 #include <limits>
 
 #include <cpp_raytracing/color.hpp>
@@ -20,6 +21,30 @@ void test_chanels() {
     TEST_ASSERT_EQUAL(color.r(), 1.1);
     TEST_ASSERT_EQUAL(color.g(), 2.2);
     TEST_ASSERT_EQUAL(color.b(), 3.3);
+}
+
+void test_iterator() {
+    // non-const (read)
+    {
+        Color color{1.1, 2.2, 3.3};
+        std::array<ColorScalar, 3> elems{1.1, 2.2, 3.3};
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color, elems, epsilon);
+    }
+    // non-const (write)
+    {
+        Color color{1.1, 2.2, 3.3};
+        std::array<ColorScalar, 3> elems = {7.7, 7.7, 7.7};
+        for (auto& e : color) {
+            e = 7.7;
+        }
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color, elems, epsilon);
+    }
+    // const
+    {
+        const Color color{1.1, 2.2, 3.3};
+        std::array<ColorScalar, 3> elems{1.1, 2.2, 3.3};
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color, elems, epsilon);
+    }
 }
 
 void test_comparison() {
@@ -199,6 +224,7 @@ void test_color_constants() {
 void run_test_suite() {
     run(test_default_constructor);
     run(test_chanels);
+    run(test_iterator);
     run(test_comparison);
     run(test_arithmetic);
     run(test_scalar_to_integral_conversion);

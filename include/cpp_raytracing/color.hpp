@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_COLOR_HPP
 #define CPP_RAYTRACING_COLOR_HPP
 
+#include <array>
 #include <iostream>
 
 #include "util.hpp"
@@ -45,6 +46,15 @@ class Color {
     constexpr ColorScalar g() const { return _data[1]; }
     /** @brief blue channel*/
     constexpr ColorScalar b() const { return _data[2]; }
+
+    /** @brief const iterator for first element */
+    constexpr auto begin() const { return _data.begin(); }
+    /** @brief const iterator for end */
+    constexpr auto end() const { return _data.end(); }
+    /** @brief iterator for first element */
+    constexpr auto begin() { return _data.begin(); }
+    /** @brief iterator for end */
+    constexpr auto end() { return _data.end(); }
 
     /** @brief tests equivalence */
     constexpr bool operator==(const Color& other) const {
@@ -101,7 +111,7 @@ class Color {
     }
 
   private:
-    ColorScalar _data[3];
+    std::array<ColorScalar, 3> _data;
 };
 
 /** @brief write Color to stream */
