@@ -6,10 +6,13 @@
 #ifndef CPP_RAYTRACING_UTIL_HPP
 #define CPP_RAYTRACING_UTIL_HPP
 
+#include <array>
 #include <cstddef>
+#include <iostream>
 #include <numbers>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 namespace cpp_raytracing {
 
@@ -41,8 +44,42 @@ inline constexpr T clip(const T x, const T low, const T high) {
     return x;
 }
 
+/** @brief write std::array to stream */
+template <typename T, std::size_t N>
+std::ostream& operator<<(std::ostream& os, const std::array<T, N>& array) {
+    os << '{';
+    bool first = true;
+    for (auto& elem : array) {
+        if (first) {
+            first = false;
+        } else {
+            os << ", ";
+        }
+        os << elem;
+    }
+    os << '}';
+    return os;
+}
+
+/** @brief write std::vector to stream */
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& array) {
+    os << '{';
+    bool first = true;
+    for (auto& elem : array) {
+        if (first) {
+            first = false;
+        } else {
+            os << ", ";
+        }
+        os << elem;
+    }
+    os << '}';
+    return os;
+}
+
 /**
- * @brief iterate over a container wiht counter
+ * @brief iterate over a container with counter
  * @note example: @code
  * std::array<int, 3> list= {1, 2, 3};
  * for (auto [i, elem] : enumerate(list))
@@ -76,7 +113,7 @@ constexpr auto enumerate(T&& iterable) {
 
 /**
  * @brief iterate over a container and count the elements
- * @note: complexity: O(n) = n
+ * @note complexity: O(n) = n
  */
 template <typename T, typename TIter = decltype(std::begin(std::declval<T>()))>
 constexpr std::size_t iterable_size(T&& iterable) {
