@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_VEC3_HPP
 #define CPP_RAYTRACING_VEC3_HPP
 
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -37,6 +38,15 @@ class Vec3 {
     constexpr Scalar y() const { return _data[1]; }
     /** @brief get z coefficient */
     constexpr Scalar z() const { return _data[2]; }
+
+    /** @brief const iterator for first element */
+    constexpr auto begin() const { return _data.begin(); }
+    /** @brief const iterator for end */
+    constexpr auto end() const { return _data.end(); }
+    /** @brief iterator for first element */
+    constexpr auto begin() { return _data.begin(); }
+    /** @brief iterator for end */
+    constexpr auto end() { return _data.end(); }
 
     /** @brief tests equivalence */
     constexpr bool operator==(const Vec3& other) const {
@@ -101,7 +111,7 @@ class Vec3 {
     }
 
   private:
-    Scalar _data[3];
+    std::array<Scalar, 3> _data;
 };
 
 /** @brief write vector as space separated components */

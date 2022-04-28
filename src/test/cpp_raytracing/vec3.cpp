@@ -1,5 +1,7 @@
+#include <array>
 #include <limits>
 
+#include <cpp_raytracing/util.hpp>
 #include <cpp_raytracing/vec3.hpp>
 
 #include "test.hpp"
@@ -31,6 +33,30 @@ void test_axes() {
     TEST_ASSERT_EQUAL(vec.x(), 1.1);
     TEST_ASSERT_EQUAL(vec.y(), 2.2);
     TEST_ASSERT_EQUAL(vec.z(), 3.3);
+}
+
+void test_iterator() {
+    // non-const (read)
+    {
+        Vec3 vec{1.1, 2.2, 3.3};
+        std::array<Scalar, 3> elems{1.1, 2.2, 3.3};
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(vec, elems, epsilon);
+    }
+    // non-const (write)
+    {
+        Vec3 vec{1.1, 2.2, 3.3};
+        std::array<Scalar, 3> elems = {7.7, 7.7, 7.7};
+        for (auto& e : vec) {
+            e = 7.7;
+        }
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(vec, elems, epsilon);
+    }
+    // const
+    {
+        const Vec3 cvec{1.1, 2.2, 3.3};
+        std::array<Scalar, 3> elems{1.1, 2.2, 3.3};
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(cvec, elems, epsilon);
+    }
 }
 
 void test_comparison() {
@@ -200,6 +226,7 @@ void run_test_suite() {
     run(test_default_constructor);
     run(test_random_constructor);
     run(test_axes);
+    run(test_iterator);
     run(test_comparison);
     run(test_arithmetic);
     run(test_near_zero);
