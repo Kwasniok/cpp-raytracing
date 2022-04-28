@@ -179,6 +179,72 @@ inline void assert_not_almost_equal(const T& x, const T& y, const T& epsilon,
 }
 
 /**
+ @brief asserts iterable expression is almost equal to iterable value
+ @note internal usage only
+ @note complexity: O(n) = n^2
+ @see TEST_ASSERT_ALMOST_EQUAL_ITERABLE
+ */
+template <typename T, typename U, typename V>
+inline void assert_almost_equal_iterable(const T& x, const U& y,
+                                         const V& epsilon, const char* expr,
+                                         const char* file, const int line) {
+    auto x_size = iterable_size(x);
+    auto y_size = iterable_size(y);
+    if (x_size != y_size) {
+        std::stringstream msg;
+        msg << " has size = " << x_size << " != " << y_size;
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+
+    for (auto [i, a] : enumerate(x)) {
+        for (auto [j, b] : enumerate(y)) {
+            if (i == j) {
+                if (std::abs(a - b) < epsilon) {
+                    // do nothing
+                } else {
+                    std::stringstream msg;
+                    msg << "@" << i << " = " << a << " is not almost equal to "
+                        << b << " with precision of epsilon = " << epsilon;
+                    throw AssertionFailedException(
+                        message(expr, file, line, msg.str().c_str()));
+                }
+            }
+        }
+    }
+}
+/**
+ @brief asserts iterable expression is not almost equal to iterable value
+ @note internal usage only
+ @see TEST_ASSERT_NOT_ALMOST_EQUAL_ITERABLE
+ */
+template <typename T, typename U, typename V>
+inline void assert_not_almost_equal_iterable(const T& x, const U& y,
+                                             const V& epsilon, const char* expr,
+                                             const char* file, const int line) {
+    if (iterable_size(x) != iterable_size(y)) {
+        return;
+    }
+
+    for (auto [i, a] : enumerate(x)) {
+        for (auto [j, b] : enumerate(y)) {
+            if (i == j) {
+                if (std::abs(a - b) < epsilon) {
+                    // do nothing
+                } else {
+                    return;
+                }
+            }
+        }
+    }
+    std::stringstream msg;
+    msg << " = " << x << " is almost equal to " << y
+        << " with precision of epsilon = " << epsilon;
+    throw AssertionFailedException(
+        message(expr, file, line, msg.str().c_str()));
+}
+
+/**
  @brief asserts expression is in a range (includes boundaries)
  @note internal usage only
  @see TEST_ASSERT_IN_RANGE
@@ -264,6 +330,21 @@ inline void indicate_finished_test_case() {
 #define TEST_ASSERT_NOT_ALMOST_EQUAL(expr, value, epsilon)                     \
     cpp_raytracing::test::internal::assert_not_almost_equal(                   \
         expr, value, epsilon, #expr, __FILE__, __LINE__)
+
+/**
+ * @brief asserts iterable expression is almost equal to iterable value
+ */
+#define TEST_ASSERT_ALMOST_EQUAL_ITERABLE(expr, value, epsilon)                \
+    cpp_raytracing::test::internal::assert_almost_equal_iterable(              \
+        expr, value, epsilon, #expr, __FILE__, __LINE__)
+
+/**
+ * @brief asserts iterable expression is not almost equal to iterable value
+ */
+#define TEST_ASSERT_NOT_ALMOST_EQUAL_ITERABLE(expr, value, epsilon)            \
+    cpp_raytracing::test::internal::assert_not_almost_equal_iterable(          \
+        expr, value, epsilon, #expr, __FILE__, __LINE__)
+
 /**
  * @brief asserts expression is false
  */
