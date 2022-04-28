@@ -74,6 +74,19 @@ constexpr auto enumerate(T&& iterable) {
     return iterable_wrapper{std::forward<T>(iterable)};
 }
 
+/**
+ * @brief iterate over a container and count the elements
+ * @note: complexity: O(n) = n
+ */
+template <typename T, typename TIter = decltype(std::begin(std::declval<T>()))>
+constexpr std::size_t iterable_size(T&& iterable) {
+    std::size_t size = 0;
+    for (auto [index, elem] : enumerate<T, TIter>(iterable)) {
+        size = index + 1;
+    }
+    return size;
+}
+
 } // namespace cpp_raytracing
 
 #endif
