@@ -9,6 +9,7 @@
 #include <array>
 #include <iostream>
 
+#include "random.hpp"
 #include "util.hpp"
 
 namespace cpp_raytracing {
@@ -40,6 +41,13 @@ class Color {
               other.g(),
               other.b(),
           } {}
+
+    /** @brief initialize channels with random values */
+    inline static Color random(Scalar min, Scalar max) {
+        return {random_scalar(min, max), random_scalar(min, max),
+                random_scalar(min, max)};
+    }
+
     /** @brief red channel*/
     constexpr ColorScalar r() const { return _data[0]; }
     /** @brief green channel*/
