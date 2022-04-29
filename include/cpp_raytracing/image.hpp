@@ -65,6 +65,15 @@ class RawImage {
         }
     }
 
+    /** @brief set all pixels to random colors */
+    void randomize(Scalar min, Scalar max) {
+        for (unsigned long j = 0; j < _height; ++j) {
+            for (unsigned long i = 0; i < _width; ++i) {
+                this->operator[]({i, j}) += Color::random(min, max);
+            }
+        }
+    }
+
   private:
     std::vector<Color> _pixel_colors;
     unsigned long _width;
