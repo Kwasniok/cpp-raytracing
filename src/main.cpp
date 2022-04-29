@@ -103,9 +103,12 @@ void render_example_ppm(const string& path, const bool preview) {
 
     Scene scene = make_scene();
 
-    Renderer renderer{.samples = preview ? 5 : 50u,
-                      .ray_depth = preview ? 20u : 50u,
-                      .render_callback = render_callback};
+    Renderer renderer{
+        .samples = preview ? 5u : 50u,
+        .ray_depth = preview ? 20u : 50u,
+        .render_callback = render_callback,
+    };
+
     if (logging) {
         cerr << "resolution factor = " << resolution_factor << endl;
         cerr << "cores detected = " << omp_get_num_procs() << endl;
