@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <omp.h>
 #include <string>
 
 #include <cpp_raytracing.hpp>
@@ -76,7 +77,7 @@ void write_raw_image(const string& path, const RawImage& image,
  */
 void render_callback(const RawImage& current_image,
                      const unsigned long current_samples) {
-    cout << current_samples << endl;
+    cout << "samples: " << current_samples << endl;
     if (current_samples % 100 == 0) {
         write_raw_image("out/out_current.ppm", current_image,
                         1.0 / Scalar(current_samples));
@@ -107,6 +108,7 @@ void render_example_ppm(const string& path, const bool preview) {
                       .render_callback = render_callback};
     if (logging) {
         cerr << "resolution factor = " << resolution_factor << endl;
+        cerr << "cores detected = " << omp_get_num_procs() << endl;
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(canvas, scene);
