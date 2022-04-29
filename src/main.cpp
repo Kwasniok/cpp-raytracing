@@ -19,11 +19,11 @@ using namespace cpp_raytracing;
 Scene make_scene(const unsigned long resolution_factor) {
 
     Camera camera{.canvas_width = 240 * resolution_factor,
-                  .canvas_height = 135 * resolution_factor,
-                  .lens_radius = 0.01};
+                  .canvas_height = 135 * resolution_factor};
 
-    camera.configure({0.0, 0.0, 0.0}, {0.0, 0.0, 0.8}, {0.0, 1.0, 0.0}, 90,
-                     16.0 / 9.0);
+    Camera camera{
+        {0.0, 0.0, 0.0}, {0.0, 0.0, 0.8}, {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02,
+    };
 
     Scene scene{camera};
 

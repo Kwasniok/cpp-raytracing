@@ -17,11 +17,19 @@ namespace cpp_raytracing {
  */
 class Camera {
   public:
-    /** @brief configure the camera based on real world paramerters */
-    constexpr void configure(const Vec3 look_from, const Vec3 look_at,
-                             const Vec3 look_up,
-                             const Scalar vertical_field_of_view_deg,
-                             const Scalar aspect_ratio) {
+    /**
+     * @brief configure the camera based on real world paramerters
+     * @param look_from position of the camera
+     * @param look_at center of the focal plane
+     * @param look_up orientation of the camera's up/y-direction
+     * @param vertical_field_of_view_deg vertical field of view in degree
+     * @param aspect_ratio ratio of viewport width to viewport height
+     * @param aperature size of the camera's aperature (arbitrary units)
+     */
+    constexpr Camera(const Vec3 look_from, const Vec3 look_at,
+                     const Vec3 look_up,
+                     const Scalar vertical_field_of_view_deg,
+                     const Scalar aspect_ratio, const Scalar aperature) {
 
         const auto theta = rad_from_deg(vertical_field_of_view_deg);
         const auto viewport_height = 2 * std::tan(theta / 2.0);
@@ -36,6 +44,7 @@ class Camera {
         direction_x = (viewport_width / 2.0) * u;
         direction_y = (viewport_height / 2.0) * v;
         direction_z = focal_length * w;
+        lens_radius = aperature / 2.0;
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
@@ -49,12 +58,8 @@ class Camera {
     }
 
   public:
-    /** @brief canvas width in pixel */
-    unsigned long canvas_width = 128;
-    /** @brief canvas height in pixel */
-    unsigned long canvas_height = 128;
     /** @brief position of camera in space */
-    Vec3 origin{};
+    Vec3 origin{0.0, 0.0, 0.0};
     /**
      * @brief direction of image width in space
      * @note A longer vector will compress the image.
