@@ -34,7 +34,7 @@ class Scene : public Hittable {
 
     virtual HitRecord
     hit_record(const Ray& ray, const Scalar t_min = 0.0,
-               const Scalar t_max = SCALAR_INF) const override;
+               const Scalar t_max = infinity) const override;
 
   public:
     /** @brief active camera of the scene used for rendering */
@@ -46,7 +46,7 @@ class Scene : public Hittable {
 
 HitRecord Scene::hit_record(const Ray& ray, const Scalar t_min,
                             const Scalar t_max) const {
-    HitRecord closest_record = {.t = SCALAR_INF};
+    HitRecord closest_record = {.t = infinity};
 
     for (const auto& hittable : _hittables) {
         HitRecord record = hittable->hit_record(ray, t_min, t_max);

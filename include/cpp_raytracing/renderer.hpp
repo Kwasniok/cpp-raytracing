@@ -72,7 +72,7 @@ class Renderer {
             return Colors::BLACK;
         }
         HitRecord record = scene.hit_record(ray, 0.00001);
-        if (!(record.t < SCALAR_INF)) {
+        if (!(record.t < infinity)) {
             return ray_back_ground_color(ray);
         }
         if (!record.material) {

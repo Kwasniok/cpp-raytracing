@@ -35,7 +35,7 @@ class Sphere : public Hittable {
 
     virtual HitRecord
     hit_record(const Ray& ray, const Scalar t_min = 0.0,
-               const Scalar t_max = SCALAR_INF) const override;
+               const Scalar t_max = infinity) const override;
 
   private:
     Vec3 _origin;
@@ -58,7 +58,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     const auto discriminant = b_half * b_half - a * c;
     if (discriminant < 0.0) {
         // no real solution
-        return HitRecord{.t = SCALAR_INF};
+        return HitRecord{.t = infinity};
     }
 
     // select minimal sloution in given range
@@ -74,7 +74,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
         t = (-b_half + sqrt(discriminant)) / a;
         if (t < t_min || t > t_max) {
             // no soltion in range
-            return HitRecord{.t = SCALAR_INF};
+            return HitRecord{.t = infinity};
         }
     }
 

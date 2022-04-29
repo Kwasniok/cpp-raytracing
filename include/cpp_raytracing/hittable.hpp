@@ -48,10 +48,10 @@ class Hittable {
     /**
      * @brief calculates the intersection of the light ray with the object
      * @returns eihter a defned HitRecord or sets HitRecord::t to
-     * ::SCALAR_INF
+     * ::infinity
      */
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
-                                 const Scalar t_max = SCALAR_INF) const = 0;
+                                 const Scalar t_max = infinity) const = 0;
 
     virtual ~Hittable() = default;
 };

@@ -14,9 +14,9 @@ namespace cpp_raytracing {
 using Scalar = double;
 
 /** @brief positive infinity */
-constexpr const Scalar SCALAR_INF = std::numeric_limits<Scalar>::infinity();
+constexpr const Scalar infinity = std::numeric_limits<Scalar>::infinity();
 /** @brief pi */
-constexpr const Scalar SCALAR_PI = std::numbers::pi_v<Scalar>;
+constexpr const Scalar pi = std::numbers::pi_v<Scalar>;
 
 } // namespace cpp_raytracing
 
