@@ -13,7 +13,7 @@
 namespace cpp_raytracing {
 
 /**
- * @brief represents camera
+ * @brief represents a camera
  */
 class Camera {
   public:

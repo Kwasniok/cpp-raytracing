@@ -16,12 +16,9 @@ using namespace cpp_raytracing;
 /**
  * @brief generate an example scene
  */
-Scene make_scene(const unsigned long resolution_factor) {
+Scene make_scene() {
 
-    Camera camera{.canvas_width = 240 * resolution_factor,
-                  .canvas_height = 135 * resolution_factor};
-
-    Camera camera{
+    const Camera camera{
         {0.0, 0.0, 0.0}, {0.0, 0.0, 0.8}, {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02,
     };
 
@@ -97,7 +94,13 @@ void render_example_ppm(const string& path, const bool preview) {
     // 2 <-> 480p, 8 <-> 1080p, 16 <-> 4k
     const unsigned long resolution_factor = preview ? 1 : 8;
 
-    Scene scene = make_scene(resolution_factor);
+    const Canvas canvas{
+        // 16:9 ratio
+        .width = 240 * resolution_factor,
+        .height = 135 * resolution_factor,
+    };
+
+    Scene scene = make_scene();
 
     Renderer renderer{.samples = preview ? 5 : 50u,
                       .ray_depth = preview ? 20u : 50u,
@@ -106,7 +109,7 @@ void render_example_ppm(const string& path, const bool preview) {
         cerr << "resolution factor = " << resolution_factor << endl;
         cerr << "rendering image ... " << endl;
     }
-    RawImage image = renderer.render(scene);
+    RawImage image = renderer.render(canvas, scene);
     write_raw_image(path, image);
 }
 

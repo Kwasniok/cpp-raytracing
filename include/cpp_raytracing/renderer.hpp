@@ -7,9 +7,9 @@
 #define CPP_RAYTRACING_RENDER_HPP
 
 #include <cmath>
-#include <iostream>
 #include <omp.h>
 
+#include "canvas.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
 #include "image.hpp"
@@ -33,23 +33,23 @@ class Renderer {
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
 
     /** @brief render Scene as RawImage */
-    RawImage render(const Scene& scene) {
+    RawImage render(const Canvas& canvas, const Scene& scene) {
         const Camera& camera = scene.camera;
 
-        RawImage image{camera.canvas_width, camera.canvas_height};
+        RawImage image{canvas.width, canvas.height};
 
         for (unsigned long s = 0; s < samples; ++s) {
             // note: Mind the memory layout of image and data acces!
             //       Static schedule with small chunksize seems to be optimal.
 #pragma omp parallel for shared(scene, camera, image) schedule(static, 1)
-            for (unsigned long j = 0; j < camera.canvas_height; ++j) {
-                for (unsigned long i = 0; i < camera.canvas_width; ++i) {
+            for (unsigned long j = 0; j < canvas.height; ++j) {
+                for (unsigned long i = 0; i < canvas.width; ++i) {
                     // random sub-pixel offset for antialiasing
                     Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
                     Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
                     // transform to camera coordinates
-                    x = (2.0 * x / camera.canvas_width - 1.0);
-                    y = (2.0 * y / camera.canvas_height - 1.0);
+                    x = (2.0 * x / canvas.width - 1.0);
+                    y = (2.0 * y / canvas.height - 1.0);
 
                     const Ray ray = camera.ray_for_coords(x, y);
                     const Color pixel_color = ray_color(scene, ray, ray_depth);
