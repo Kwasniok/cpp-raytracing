@@ -20,10 +20,10 @@ Scene make_scene(const unsigned long resolution_factor) {
 
     Camera camera{.canvas_width = 240 * resolution_factor,
                   .canvas_height = 135 * resolution_factor,
-                  .origin = {0.0, 0.0, 0.0},
                   .lens_radius = 0.01};
 
-    camera.configure(90, 16.0 / 9.0);
+    camera.configure({0.0, 0.0, 0.0}, {0.0, 0.0, 0.8}, {0.0, 1.0, 0.0}, 90,
+                     16.0 / 9.0);
 
     Scene scene{camera};
 

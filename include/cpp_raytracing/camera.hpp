@@ -18,18 +18,24 @@ namespace cpp_raytracing {
 class Camera {
   public:
     /** @brief configure the camera based on real world paramerters */
-    constexpr void configure(const Scalar vertical_field_of_view_deg,
+    constexpr void configure(const Vec3 look_from, const Vec3 look_at,
+                             const Vec3 look_up,
+                             const Scalar vertical_field_of_view_deg,
                              const Scalar aspect_ratio) {
 
         const auto theta = rad_from_deg(vertical_field_of_view_deg);
         const auto viewport_height = 2 * std::tan(theta / 2.0);
         const auto viewport_width = aspect_ratio * viewport_height;
 
-        const Scalar focal_length = 1.0;
+        const auto w = -unit_vector(look_at - look_from);
+        const auto u = unit_vector(cross(w, look_up));
+        const auto v = cross(u, w);
+        const Scalar focal_length = (look_at - look_from).length();
 
-        direction_x = Vec3{viewport_width / 2.0, 0.0, 0.0};
-        direction_y = Vec3{0.0, viewport_height / 2.0, 0.0};
-        direction_z = Vec3{0.0, 0.0, -focal_length};
+        origin = look_from;
+        direction_x = (viewport_width / 2.0) * u;
+        direction_y = (viewport_height / 2.0) * v;
+        direction_z = focal_length * w;
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
