@@ -26,7 +26,7 @@ class Vec3 {
     constexpr Vec3(const Scalar x, const Scalar y, const Scalar z)
         : _data{x, y, z} {}
 
-    /** @brief initializecoefficients with random values */
+    /** @brief initialize coefficients with random values */
     inline static Vec3 random(Scalar min, Scalar max) {
         return {random_scalar(min, max), random_scalar(min, max),
                 random_scalar(min, max)};
