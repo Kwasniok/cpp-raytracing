@@ -109,8 +109,8 @@ inline void assert_false(const T& x, const char* expr, const char* file,
  @note internal usage only
  @see TEST_ASSERT_EQUAL
  */
-template <typename T>
-inline void assert_equal(const T& x, const T& y, const char* expr,
+template <typename T, typename U>
+inline void assert_equal(const T& x, const U& y, const char* expr,
                          const char* file, const int line) {
     if (x == y) {
         // do nothing
@@ -127,8 +127,8 @@ inline void assert_equal(const T& x, const T& y, const char* expr,
  @note internal usage only
  @see TEST_ASSERT_NOT_EQUAL
  */
-template <typename T>
-inline void assert_not_equal(const T& x, const T& y, const char* expr,
+template <typename T, typename U>
+inline void assert_not_equal(const T& x, const U& y, const char* expr,
                              const char* file, const int line) {
     if (x != y) {
         // do nothing
@@ -145,8 +145,8 @@ inline void assert_not_equal(const T& x, const T& y, const char* expr,
  @note internal usage only
  @see TEST_ASSERT_ALMOST_EQUAL
  */
-template <typename T>
-inline void assert_almost_equal(const T& x, const T& y, const T& epsilon,
+template <typename T, typename U, typename V>
+inline void assert_almost_equal(const T& x, const U& y, const V& epsilon,
                                 const char* expr, const char* file,
                                 const int line) {
     if (std::abs(x - y) < epsilon) {
@@ -165,8 +165,8 @@ inline void assert_almost_equal(const T& x, const T& y, const T& epsilon,
  @note internal usage only
  @see TEST_ASSERT_NOT_ALMOST_EQUAL
  */
-template <typename T>
-inline void assert_not_almost_equal(const T& x, const T& y, const T& epsilon,
+template <typename T, typename U, typename V>
+inline void assert_not_almost_equal(const T& x, const U& y, const V& epsilon,
                                     const char* expr, const char* file,
                                     const int line) {
     if (std::abs(x - y) < epsilon) {
