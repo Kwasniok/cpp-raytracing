@@ -9,6 +9,13 @@ namespace cpp_raytracing { namespace test {
 
 void test_write() {
     const std::vector<std::pair<Scalar, const char*>> data = {
+        // integer-like
+        {0, "0"},
+        {-0, "0"},
+        {1, "1"},
+        {-1, "-1"},
+        {12345678, "12345678"},
+        {-12345678, "-12345678"},
         // negative
         {-1.234, "-1.234"},
         // positive
@@ -31,6 +38,13 @@ void test_write() {
 
 void test_read_success() {
     const std::vector<std::pair<Scalar, const char*>> data = {
+        // integer-like
+        {0, "0"},
+        {-0, "0"},
+        {1, "1"},
+        {-1, "-1"},
+        {12345678, "12345678"},
+        {-12345678, "-12345678"},
         // negative
         {-1.234, "-1.234"},
         // positive
@@ -69,6 +83,9 @@ void test_read_failure() {
         "INF",
         "+INF",
         "-INF",
+        // suffix
+        "1.23f",
+        "1.23d",
     };
     for (const auto& str : data) {
         TEST_ASSERT_THROWS((io::read<Scalar>(str)), io::ParsingException);

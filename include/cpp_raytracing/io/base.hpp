@@ -156,6 +156,36 @@ struct quote : pegtl::one<QUOTE> {};
 /** @brief decimal dot */
 struct decimal : pegtl::one<DECIMAL> {};
 
+namespace {
+/**
+ * @brief intercalate rules
+ * @note @a Rs must end with void
+ */
+template <typename S, typename R0, typename... Rs>
+struct intercalate : pegtl::seq<R0, S, intercalate<S, Rs...>> {};
+
+template <typename S, typename R0>
+struct intercalate<S, R0, void> : pegtl::seq<R0, pegtl::opt<S>> {};
+
+template <typename S>
+struct intercalate<S, void> : pegtl::seq<> {};
+} // namespace
+
+/**
+ * @brief intercalate rules @a Rs with whitespace padded separators
+ * @note equivalent to `pegtl::seq<R0, S, R1, S, ..., S, Rn, pegtl::opt<S>>`
+ */
+template <typename... Rs>
+struct listing : intercalate<pegtl::pad<separator, ws>, Rs..., void> {};
+
+/**
+ * @brief brace enclosed tuple
+ * @note e.g. `tuple<digit, digit>` matches `{1, 2}` and `{ 1, 2, }` etc.
+ */
+template <typename... Rs>
+struct tuple
+    : pegtl::seq<brace_open, pegtl::pad<listing<Rs...>, ws>, brace_close> {};
+
 /** @brief single digit */
 struct digit : pegtl::digit {};
 /** @brief multiple digits */
