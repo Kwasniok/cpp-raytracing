@@ -7,6 +7,7 @@
 #define CPP_RAYTRACING_IO_HPP
 
 #include "io/base.hpp"
+#include "io/camera.hpp"
 #include "io/color.hpp"
 #include "io/materials.hpp"
 #include "io/scalar.hpp"
