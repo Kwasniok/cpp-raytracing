@@ -31,6 +31,8 @@ constexpr char SEPARATOR = ',';
 constexpr char QUOTE = '"';
 /** @brief decimal point character for real numbers */
 constexpr char DECIMAL = '.';
+/** @brief assignment character */
+constexpr char ASSIGN = '=';
 
 /** @brief signals parsing errors */
 struct ParsingException : std::exception {
@@ -185,6 +187,15 @@ struct listing : intercalate<pegtl::pad<separator, ws>, Rs..., void> {};
 template <typename... Rs>
 struct tuple
     : pegtl::seq<brace_open, pegtl::pad<listing<Rs...>, ws>, brace_close> {};
+
+/**
+ * @brief C-like static identifier with assignment
+ * @note mind the reversed order or template parameters du to variadics
+ */
+template <typename T, char... Cs>
+struct property
+    : pegtl::seq<pegtl::string<Cs...>, pegtl::pad<pegtl::one<ASSIGN>, ws>, T> {
+};
 
 /** @brief single digit */
 struct digit : pegtl::digit {};
