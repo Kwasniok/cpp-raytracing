@@ -13,6 +13,7 @@
 #include "color.hpp"
 #include "hittable.hpp"
 #include "image.hpp"
+#include "materials/base.hpp"
 #include "ray.hpp"
 #include "scene.hpp"
 #include "util.hpp"
