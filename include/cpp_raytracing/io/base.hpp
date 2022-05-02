@@ -143,6 +143,28 @@ struct quote : pegtl::one<'"'> {};
 /** @brief decimal dot */
 struct decimal : pegtl::one<'.'> {};
 
+/** @brief single digit */
+struct digit : pegtl::digit {};
+/** @brief multiple digits */
+struct digits : pegtl::plus<digit> {};
+/** @brief sign of a number */
+struct sign : pegtl::one<'+', '-'> {};
+
+/** @brief mantissa of a real number */
+struct mantissa
+    : pegtl::seq<pegtl::opt<sign>, digits, pegtl::opt<decimal, digits>> {};
+/** @brief exponent of a real number */
+struct exponent : pegtl::seq<pegtl::one<'e'>, pegtl::opt<sign>, digits> {};
+/** @brief real number */
+struct real : pegtl::seq<mantissa, pegtl::opt<exponent>> {};
+
+// NOTE: no NaN
+/** @brief infinity symbol */
+struct floating_infinity : pegtl::string<'i', 'n', 'f'> {};
+/** @brief non-numerical values of a floating point number */
+struct floating_special : pegtl::seq<pegtl::opt<sign>, floating_infinity> {};
+/** @brief floating point number */
+struct floating : pegtl::sor<real, floating_special> {};
 } // namespace grammar
 }} // namespace cpp_raytracing::io
 
