@@ -18,6 +18,7 @@ struct scalar : grammar::floating {};
 /** @brief grammar for parsing a ::Scalar */
 template <>
 struct grammar_for<Scalar> {
+    /** @brief grammar to be selected */
     using get = scalar;
 };
 
