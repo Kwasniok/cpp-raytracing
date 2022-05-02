@@ -18,7 +18,7 @@ namespace cpp_raytracing {
 class Camera {
   public:
     /**
-     * @brief configure the camera based on real world paramerters
+     * @brief create the camera based on real world paramerters
      * @param look_from position of the camera
      * @param look_at center of the focal plane
      * @param look_up orientation of the camera's up/y-direction
@@ -26,10 +26,10 @@ class Camera {
      * @param aspect_ratio ratio of viewport width to viewport height
      * @param aperature size of the camera's aperature (arbitrary units)
      */
-    constexpr Camera(const Vec3 look_from, const Vec3 look_at,
-                     const Vec3 look_up,
-                     const Scalar vertical_field_of_view_deg,
-                     const Scalar aspect_ratio, const Scalar aperature) {
+    static Camera from(const Vec3 look_from, const Vec3 look_at,
+                       const Vec3 look_up,
+                       const Scalar vertical_field_of_view_deg,
+                       const Scalar aspect_ratio, const Scalar aperature) {
 
         const auto theta = rad_from_deg(vertical_field_of_view_deg);
         const auto viewport_height = 2 * std::tan(theta / 2.0);
@@ -40,11 +40,13 @@ class Camera {
         const auto v = cross(u, w);
         const Scalar focal_length = (look_at - look_from).length();
 
-        origin = look_from;
-        direction_x = (viewport_width / 2.0) * u;
-        direction_y = (viewport_height / 2.0) * v;
-        direction_z = focal_length * w;
-        lens_radius = aperature / 2.0;
+        return Camera{
+            .origin = look_from,
+            .direction_x = (viewport_width / 2.0) * u,
+            .direction_y = (viewport_height / 2.0) * v,
+            .direction_z = focal_length * w,
+            .lens_radius = aperature / 2.0,
+        };
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
