@@ -8,6 +8,7 @@
 
 #include "io/base.hpp"
 #include "io/color.hpp"
+#include "io/materials.hpp"
 #include "io/scalar.hpp"
 #include "io/vec3.hpp"
 
