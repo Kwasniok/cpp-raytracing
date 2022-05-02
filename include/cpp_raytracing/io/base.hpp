@@ -19,6 +19,19 @@ namespace pegtl = tao::pegtl;
 
 namespace cpp_raytracing { namespace io {
 
+/** @brief space character */
+constexpr char SPACE = ' ';
+/** @brief open brace character for listings and alike */
+constexpr char BRACE_OPEN = '{';
+/** @brief close brace character for listings and alike */
+constexpr char BRACE_CLOSE = '}';
+/** @brief separator character for listings and alike */
+constexpr char SEPARATOR = ',';
+/** @brief quotation character */
+constexpr char QUOTE = '"';
+/** @brief decimal point character for real numbers */
+constexpr char DECIMAL = '.';
+
 /** @brief signals parsing errors */
 struct ParsingException : std::exception {
 
@@ -128,20 +141,20 @@ T read(const std::string& str) {
 namespace grammar {
 
 /** @brief white space character */
-struct ws_char : pegtl::one<' ', '\t', '\n'> {};
+struct ws_char : pegtl::one<SPACE, '\t', '\n'> {};
 /** @brief white space */
 struct ws : pegtl::plus<ws_char> {};
 
 /** @brief signal beginning of enumerations and alike */
-struct brace_open : pegtl::string<'{'> {};
+struct brace_open : pegtl::string<BRACE_OPEN> {};
 /** @brief signal end of enumerations and alike */
-struct brace_close : pegtl::string<'}'> {};
+struct brace_close : pegtl::string<BRACE_CLOSE> {};
 /** @brief separator for enumerations and alike */
-struct separator : pegtl::string<','> {};
+struct separator : pegtl::string<SEPARATOR> {};
 /** @brief quotation marks */
-struct quote : pegtl::one<'"'> {};
+struct quote : pegtl::one<QUOTE> {};
 /** @brief decimal dot */
-struct decimal : pegtl::one<'.'> {};
+struct decimal : pegtl::one<DECIMAL> {};
 
 /** @brief single digit */
 struct digit : pegtl::digit {};
