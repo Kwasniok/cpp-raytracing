@@ -52,6 +52,28 @@ inline std::string message(const char* expr, const char* file, const int line,
     return msg.str();
 }
 
+/** @brief generates message of failed assertion */
+inline std::string message(const char* expr, const char* file, const int line,
+                           const std::string& reason) {
+
+    std::stringstream msg;
+    msg << "at " << file << ":" << line << std::endl;
+    msg << "Expression `" << expr << "` " << reason << ".";
+    return msg.str();
+}
+
+/**
+ * @brief throws an AssertionFailedException to indicate a non-thrown expected
+ * exception
+ */
+inline std::string missed_throw(const char* expr, const char* file,
+                                const int line, const char* exception) {
+
+    std::stringstream msg;
+    msg << "did not throw " << exception;
+    throw AssertionFailedException(message(expr, file, line, msg.str()));
+}
+
 /**
  @brief asserts OpemMP is running with multiple threads
  @note internal usage only
@@ -357,6 +379,18 @@ inline void indicate_finished_test_case() {
 #define TEST_ASSERT_PAIRWISE_UNIQUE(expr)                                      \
     cpp_raytracing::test::internal::assert_pairwise_unique(expr, #expr,        \
                                                            __FILE__, __LINE__)
+/**
+ * @brief asserts call results in exception of given type
+ * @note enclose @a call in parenthesis when using `<>` or `{}` to avoid
+ * number of arguments missmatch error from preprocessor
+ */
+#define TEST_ASSERT_THROWS(call, exception)                                    \
+    try {                                                                      \
+        call;                                                                  \
+        cpp_raytracing::test::internal::missed_throw(#call, __FILE__,          \
+                                                     __LINE__, #exception);    \
+    } catch (const exception& e) {                                             \
+    }
 /**
  * @brief call a test case function
  */
