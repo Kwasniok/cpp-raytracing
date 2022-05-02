@@ -9,5 +9,6 @@
 #include "io/base.hpp"
 #include "io/color.hpp"
 #include "io/scalar.hpp"
+#include "io/vec3.hpp"
 
 #endif
