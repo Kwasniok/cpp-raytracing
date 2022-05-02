@@ -32,11 +32,11 @@ struct grammar_for<Dielectric> {
 
 /** @brief selector of cpp_raytracing::Dielectric for partial parse tree */
 template <>
-struct selector<mat_dielectric> : std::true_type {};
+struct selector<mat_dielectric> : remove_content {};
 template <>
-struct selector<mat_dielectric_color> : std::true_type {};
+struct selector<mat_dielectric_color> : remove_content {};
 template <>
-struct selector<mat_dielectric_ior> : std::true_type {};
+struct selector<mat_dielectric_ior> : remove_content {};
 
 } // namespace grammar
 

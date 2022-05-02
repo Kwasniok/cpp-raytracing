@@ -28,9 +28,9 @@ struct grammar_for<Emitter> {
 
 /** @brief selector of cpp_raytracing::Emitter for partial parse tree */
 template <>
-struct selector<mat_emitter> : std::true_type {};
+struct selector<mat_emitter> : remove_content {};
 template <>
-struct selector<mat_emitter_color> : std::true_type {};
+struct selector<mat_emitter_color> : remove_content {};
 
 } // namespace grammar
 

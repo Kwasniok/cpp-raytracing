@@ -28,9 +28,9 @@ struct grammar_for<Diffuse> {
 
 /** @brief selector of cpp_raytracing::Diffuse for partial parse tree */
 template <>
-struct selector<mat_diffuse> : std::true_type {};
+struct selector<mat_diffuse> : remove_content {};
 template <>
-struct selector<mat_diffuse_color> : std::true_type {};
+struct selector<mat_diffuse_color> : remove_content {};
 
 } // namespace grammar
 

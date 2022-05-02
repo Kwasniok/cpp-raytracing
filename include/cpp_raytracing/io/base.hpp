@@ -63,6 +63,20 @@ namespace grammar {
 template <typename T>
 struct selector : std::false_type {};
 
+/** @brief make node and store entire parsing string for it */
+struct store_content : std::true_type {};
+
+#ifdef DEBUG
+/** @brief make node and store entire parsing string for it */
+struct remove_content : std::true_type {};
+#else
+/**
+ * @brief make node but do not store parsing string for it
+ * @note does not affect children
+ */
+struct remove_content : pegtl::parse_tree::remove_content {};
+#endif
+
 /**
  * @brief grammar for parsing an isolated value only
  * @tparam T value type

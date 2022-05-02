@@ -25,7 +25,7 @@ struct grammar_for<Vec3> {
 
 /** @brief selector of cpp_raytracing::Vec3 for partial parse tree */
 template <>
-struct selector<vec3> : std::true_type {};
+struct selector<vec3> : remove_content {};
 
 } // namespace grammar
 

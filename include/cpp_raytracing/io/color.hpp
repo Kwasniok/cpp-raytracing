@@ -25,7 +25,7 @@ struct grammar_for<Color> {
 
 /** @brief selector of cpp_raytracing::Color for partial parse tree */
 template <>
-struct selector<color> : std::true_type {};
+struct selector<color> : remove_content {};
 
 } // namespace grammar
 

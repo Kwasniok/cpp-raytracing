@@ -31,11 +31,11 @@ struct grammar_for<Metal> {
 
 /** @brief selector of cpp_raytracing::Metal for partial parse tree */
 template <>
-struct selector<mat_metal> : std::true_type {};
+struct selector<mat_metal> : remove_content {};
 template <>
-struct selector<mat_metal_color> : std::true_type {};
+struct selector<mat_metal_color> : remove_content {};
 template <>
-struct selector<mat_metal_roughness> : std::true_type {};
+struct selector<mat_metal_roughness> : remove_content {};
 
 } // namespace grammar
 

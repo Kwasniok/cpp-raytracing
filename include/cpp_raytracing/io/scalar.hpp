@@ -24,7 +24,7 @@ struct grammar_for<Scalar> {
 
 /** @brief selector of ::Scalar for partial parse tree */
 template <>
-struct selector<scalar> : std::true_type {};
+struct selector<scalar> : store_content {};
 
 } // namespace grammar
 
