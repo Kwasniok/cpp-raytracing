@@ -12,6 +12,7 @@
 #include <omp.h>
 #include <sstream>
 #include <string>
+#include <typeinfo>
 
 #include <cpp_raytracing/util.hpp>
 
@@ -304,6 +305,21 @@ inline void assert_pairwise_unique(const T& x, const char* expr,
     }
 }
 
+/**
+ * @brief asserts expr has a specific dynamic type
+ * @see TEST_ASSERT_DYNAMIC_TYPE
+ */
+inline void assert_dynamic_type(const std::type_info& x,
+                                const std::type_info& y, const char* expr,
+                                const char* file, const int line) {
+    if (x != y) {
+        std::stringstream msg;
+        msg << "is of type " << x.name() << " not of type " << y.name();
+        throw AssertionFailedException(
+            message(expr, file, line, msg.str().c_str()));
+    }
+}
+
 /** @brief indicates finishing a test case */
 inline void indicate_finished_test_case() {
     std::cout << ".";
@@ -391,6 +407,13 @@ inline void indicate_finished_test_case() {
                                                      __LINE__, #exception);    \
     } catch (const exception& e) {                                             \
     }
+/**
+ * @brief asserts expr has dynamic type T (same typeid)
+ */
+#define TEST_ASSERT_DYNAMIC_TYPE(expr, T)                                      \
+    cpp_raytracing::test::internal::assert_dynamic_type(                       \
+        typeid(expr), typeid(T), #expr, __FILE__, __LINE__);
+
 /**
  * @brief call a test case function
  */
