@@ -4,13 +4,15 @@ SRC=src
 BLD=build
 OUT=out
 
+INCLUDES= -I fmt/include -I PEGTL/include
+
 # GCC
 CPP=g++
-CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC) -I PEGTL/include
+CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC) $(INCLUDES)
 
 # CLANG
 # CPP=clang++
-# CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC) -I PEGTL/include
+# CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC) $(INCLUDES)
 
 
 ### ALL (DEFAULT) ###
