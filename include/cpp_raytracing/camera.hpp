@@ -17,6 +17,7 @@ namespace cpp_raytracing {
  */
 class Camera {
   public:
+    // NOTE: preserves aggregation
     /**
      * @brief create the camera based on real world paramerters
      * @param look_from position of the camera
