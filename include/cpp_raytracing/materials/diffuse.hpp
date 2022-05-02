@@ -20,6 +20,10 @@ class Diffuse : public Material {
 
     /** @brief initialize with parameters */
     Diffuse(const Color& color) : color(color) {}
+    Diffuse(const Diffuse&) = default;
+    Diffuse(Diffuse&&) = default;
+    Diffuse& operator=(const Diffuse&) = default;
+    Diffuse& operator=(Diffuse&&) = default;
     virtual ~Diffuse() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,

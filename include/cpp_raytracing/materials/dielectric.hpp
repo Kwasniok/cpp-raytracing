@@ -20,6 +20,10 @@ class Dielectric : public Material {
     /** @brief initialize with parameters */
     Dielectric(const Color& color, const Scalar index_of_refraction)
         : color(color), index_of_refraction(index_of_refraction) {}
+    Dielectric(const Dielectric&) = default;
+    Dielectric(Dielectric&&) = default;
+    Dielectric& operator=(const Dielectric&) = default;
+    Dielectric& operator=(Dielectric&&) = default;
     virtual ~Dielectric() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,

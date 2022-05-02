@@ -18,6 +18,10 @@ class Metal : public Material {
     /** @brief initialize with parameters */
     Metal(const Color& color, const Scalar roughness)
         : color(color), roughness(roughness) {}
+    Metal(const Metal&) = default;
+    Metal(Metal&&) = default;
+    Metal& operator=(const Metal&) = default;
+    Metal& operator=(Metal&&) = default;
     virtual ~Metal() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,

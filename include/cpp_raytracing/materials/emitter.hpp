@@ -17,6 +17,10 @@ class Emitter : public Material {
   public:
     /** @brief initialize with parameters */
     Emitter(const Color& color) : color(color) {}
+    Emitter(const Emitter&) = default;
+    Emitter(Emitter&&) = default;
+    Emitter& operator=(const Emitter&) = default;
+    Emitter& operator=(Emitter&&) = default;
     virtual ~Emitter() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
