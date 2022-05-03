@@ -28,17 +28,17 @@ struct camera_lens_radius
 struct camera_properties
     : tuple<camera_origin, camera_direction_x, camera_direction_y,
             camera_direction_z, camera_lens_radius> {}; // TODO: relax order
-/** @brief grammar for ::Camera */
+/** @brief grammar for cpp_raytracing::Camera */
 struct camera : pegtl::seq<camera_prefix, pegtl::pad<camera_properties, ws>> {};
 
-/** @brief grammar for parsing a ::Camera */
+/** @brief grammar for parsing a cpp_raytracing::Camera */
 template <>
 struct grammar_for<Camera> {
     /** @brief grammar to be selected */
     using get = camera;
 };
 
-/** @brief selector of ::Camera for partial parse tree */
+/** @brief selector of cpp_raytracing::Camera for partial parse tree */
 template <>
 struct selector<camera> : remove_content {};
 template <>
@@ -54,7 +54,7 @@ struct selector<camera_lens_radius> : remove_content {};
 
 } // namespace grammar
 
-/** @brief write a ::Camera to a stream */
+/** @brief write a cpp_raytracing::Camera to a stream */
 template <>
 void write<Camera>(std::ostream& os, const Camera& val) {
     os << "Camera {";
@@ -76,7 +76,7 @@ void write<Camera>(std::ostream& os, const Camera& val) {
 }
 
 /**
- *@brief parse a ::Camera from a node tree
+ *@brief parse a cpp_raytracing::Camera from a node tree
  */
 template <>
 Camera parse_node(const tao::pegtl::parse_tree::node& node) {

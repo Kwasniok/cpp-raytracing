@@ -19,11 +19,11 @@
 namespace cpp_raytracing { namespace io {
 namespace grammar {
 
-/** @brief grammar for ::Material */
+/** @brief grammar for cpp_raytracing::Material */
 struct material
     : pegtl::sor<mat_emitter, mat_diffuse, mat_metal, mat_dielectric> {};
 
-/** @brief grammar for parsing a ::Material */
+/** @brief grammar for parsing a cpp_raytracing::Material */
 template <>
 struct grammar_for<std::shared_ptr<Material>> {
     /** @brief grammar to be selected */
@@ -43,7 +43,7 @@ inline void write_cast(std::ostream& os, const std::shared_ptr<B>& val) {
 
 } // namespace
 
-/** @brief write a ::Material to a stream */
+/** @brief write a cpp_raytracing::Material to a stream */
 template <>
 void write<std::shared_ptr<Material>>(std::ostream& os,
                                       const std::shared_ptr<Material>& val) {
@@ -67,7 +67,7 @@ void write<std::shared_ptr<Material>>(std::ostream& os,
 }
 
 /**
- *@brief parse a ::Material from a node tree
+ *@brief parse a cpp_raytracing::Material from a node tree
  */
 template <>
 std::shared_ptr<Material> parse_node(const tao::pegtl::parse_tree::node& node) {

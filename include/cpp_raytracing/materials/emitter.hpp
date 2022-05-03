@@ -17,9 +17,13 @@ class Emitter : public Material {
   public:
     /** @brief initialize with parameters */
     Emitter(const Color& color) : color(color) {}
+    /** @brief copy constructor */
     Emitter(const Emitter&) = default;
+    /** @brief move constructor */
     Emitter(Emitter&&) = default;
+    /** @brief copy operation */
     Emitter& operator=(const Emitter&) = default;
+    /** @brief move operation */
     Emitter& operator=(Emitter&&) = default;
     virtual ~Emitter() = default;
 

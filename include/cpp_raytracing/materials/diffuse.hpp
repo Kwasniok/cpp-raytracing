@@ -20,9 +20,13 @@ class Diffuse : public Material {
 
     /** @brief initialize with parameters */
     Diffuse(const Color& color) : color(color) {}
+    /** @brief copy constructor */
     Diffuse(const Diffuse&) = default;
+    /** @brief move constructor */
     Diffuse(Diffuse&&) = default;
+    /** @brief copy operation */
     Diffuse& operator=(const Diffuse&) = default;
+    /** @brief move operation */
     Diffuse& operator=(Diffuse&&) = default;
     virtual ~Diffuse() = default;
 

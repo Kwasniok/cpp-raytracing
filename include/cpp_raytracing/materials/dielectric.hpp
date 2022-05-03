@@ -20,9 +20,13 @@ class Dielectric : public Material {
     /** @brief initialize with parameters */
     Dielectric(const Color& color, const Scalar index_of_refraction)
         : color(color), index_of_refraction(index_of_refraction) {}
+    /** @brief copy constructor */
     Dielectric(const Dielectric&) = default;
+    /** @brief move constructor */
     Dielectric(Dielectric&&) = default;
+    /** @brief copy operation */
     Dielectric& operator=(const Dielectric&) = default;
+    /** @brief move operation */
     Dielectric& operator=(Dielectric&&) = default;
     virtual ~Dielectric() = default;
 

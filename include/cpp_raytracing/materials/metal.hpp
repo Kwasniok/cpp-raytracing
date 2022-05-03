@@ -18,9 +18,13 @@ class Metal : public Material {
     /** @brief initialize with parameters */
     Metal(const Color& color, const Scalar roughness)
         : color(color), roughness(roughness) {}
+    /** @brief copy constructor */
     Metal(const Metal&) = default;
+    /** @brief move constructor */
     Metal(Metal&&) = default;
+    /** @brief copy operation */
     Metal& operator=(const Metal&) = default;
+    /** @brief move operation */
     Metal& operator=(Metal&&) = default;
     virtual ~Metal() = default;
 
