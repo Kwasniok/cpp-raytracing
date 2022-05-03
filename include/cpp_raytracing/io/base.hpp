@@ -15,6 +15,9 @@
 #include <fmt/core.h>
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
+#ifdef DEBUG
+#include <tao/pegtl/contrib/parse_tree_to_dot.hpp>
+#endif
 namespace pegtl = tao::pegtl;
 
 namespace cpp_raytracing { namespace io {
@@ -207,6 +210,11 @@ T read(pegtl::memory_input<>& in) {
         const auto root = pegtl::parse_tree::parse<pegtl::must<G, pegtl::eof>,
                                                    grammar::selector>(in);
         if (root) {
+#ifdef DEBUG
+            std::cout << "Obtained parsing tree while reading (DOT format):"
+                      << std::endl;
+            pegtl::parse_tree::print_dot(std::cout, *root);
+#endif
             return parse_node<T>(*(root->children[0]));
         }
         // this part is never reached ...
