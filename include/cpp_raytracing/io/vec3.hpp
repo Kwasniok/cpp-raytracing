@@ -32,13 +32,7 @@ struct selector<vec3> : remove_content {};
 /** @brief write a cpp_raytracing::Vec3 to a stream */
 template <>
 void write<Vec3>(std::ostream& os, const Vec3& val) {
-    os << BRACE_OPEN;
-    write<Scalar>(os, val.x());
-    os << SEPARATOR << SPACE;
-    write<Scalar>(os, val.y());
-    os << SEPARATOR << SPACE;
-    write<Scalar>(os, val.z());
-    os << BRACE_CLOSE;
+    write_tuple(os, val.x(), val.y(), val.z());
 }
 
 /**

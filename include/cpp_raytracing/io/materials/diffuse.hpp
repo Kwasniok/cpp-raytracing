@@ -37,10 +37,8 @@ struct selector<mat_diffuse_color> : remove_content {};
 /** @brief write a cpp_raytracing::Diffuse to a stream */
 template <>
 void write<Diffuse>(std::ostream& os, const Diffuse& val) {
-    os << "Diffuse {";
-    os << "color = ";
-    write(os, val.color);
-    os << "}";
+    os << "Diffuse ";
+    write_tuple(os, Property{"color", val.color});
 }
 
 /**

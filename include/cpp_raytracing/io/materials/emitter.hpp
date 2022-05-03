@@ -37,10 +37,8 @@ struct selector<mat_emitter_color> : remove_content {};
 /** @brief write a cpp_raytracing::Emitter to a stream */
 template <>
 void write<Emitter>(std::ostream& os, const Emitter& val) {
-    os << "Emitter {";
-    os << "color = ";
-    write(os, val.color);
-    os << "}";
+    os << "Emitter ";
+    write_tuple(os, Property{"color", val.color});
 }
 
 /**

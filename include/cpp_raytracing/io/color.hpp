@@ -32,13 +32,7 @@ struct selector<color> : remove_content {};
 /** @brief write a cpp_raytracing::Color to a stream */
 template <>
 void write<Color>(std::ostream& os, const Color& val) {
-    os << BRACE_OPEN;
-    write<Scalar>(os, val.r());
-    os << SEPARATOR << SPACE;
-    write<Scalar>(os, val.g());
-    os << SEPARATOR << SPACE;
-    write<Scalar>(os, val.b());
-    os << BRACE_CLOSE;
+    write_tuple(os, val.r(), val.g(), val.b());
 }
 
 /**

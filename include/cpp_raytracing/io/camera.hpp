@@ -57,22 +57,12 @@ struct selector<camera_lens_radius> : remove_content {};
 /** @brief write a cpp_raytracing::Camera to a stream */
 template <>
 void write<Camera>(std::ostream& os, const Camera& val) {
-    os << "Camera {";
-    os << "origin = ";
-    write(os, val.origin);
-    os << ", ";
-    os << "direction_x = ";
-    write(os, val.direction_x);
-    os << ", ";
-    os << "direction_y = ";
-    write(os, val.direction_y);
-    os << ", ";
-    os << "direction_z = ";
-    write(os, val.direction_z);
-    os << ", ";
-    os << "lens_radius = ";
-    write(os, val.lens_radius);
-    os << "}";
+    os << "Camera ";
+    write_tuple(os, Property{"origin", val.origin},
+                Property{"direction_x", val.direction_x},
+                Property{"direction_y", val.direction_y},
+                Property{"direction_z", val.direction_z},
+                Property{"lens_radius", val.lens_radius});
 }
 
 /**

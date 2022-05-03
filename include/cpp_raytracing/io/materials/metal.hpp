@@ -42,13 +42,9 @@ struct selector<mat_metal_roughness> : remove_content {};
 /** @brief write a cpp_raytracing::Metal to a stream */
 template <>
 void write<Metal>(std::ostream& os, const Metal& val) {
-    os << "Metal {";
-    os << "color = ";
-    write(os, val.color);
-    os << ", ";
-    os << "roughness = ";
-    write(os, val.roughness);
-    os << "}";
+    os << "Metal ";
+    write_tuple(os, Property{"color", val.color},
+                Property{"roughness", val.roughness});
 }
 
 /**

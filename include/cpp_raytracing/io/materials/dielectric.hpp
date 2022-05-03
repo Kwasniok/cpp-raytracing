@@ -43,13 +43,9 @@ struct selector<mat_dielectric_ior> : remove_content {};
 /** @brief write a cpp_raytracing::Dielectric to a stream */
 template <>
 void write<Dielectric>(std::ostream& os, const Dielectric& val) {
-    os << "Dielectric {";
-    os << "color = ";
-    write(os, val.color);
-    os << ", ";
-    os << "ior = ";
-    write(os, val.index_of_refraction);
-    os << "}";
+    os << "Dielectric ";
+    write_tuple(os, Property{"color", val.color},
+                Property{"ior", val.index_of_refraction});
 }
 
 /**
