@@ -98,6 +98,82 @@ template <typename T>
 void write(std::ostream& os, const T&);
 
 /**
+ * @brief (specilazation) write an empty listing
+ * @note: trailing comma is omitted
+ * @see grammar::listing, ::SEPARATOR
+ */
+inline void write_listing(std::ostream& os) {}
+
+/**
+ * @brief (specilazation) write a listing of a single value
+ * @tparam T value type
+ * @note: trailing comma is omitted
+ * @see grammar::listing, ::SEPARATOR
+ */
+template <typename T>
+inline void write_listing(std::ostream& os, const T& val) {
+    write(os, val);
+}
+
+/**
+ * @brief write a listing of known size
+ * @tparam Ts value types
+ * @note: comma separated, trailing comma is omitted
+ * @see grammar::listing, ::SEPARATOR
+ */
+template <typename T0, typename... Ts>
+inline void write_listing(std::ostream& os, const T0& val0, const Ts&... vals) {
+    write(os, val0);
+    os << SEPARATOR << SPACE;
+    write_listing<Ts...>(os, vals...);
+}
+
+/**
+ * @brief write a brace-enclosed listing of known size
+ * @tparam Ts value types
+ * @see grammar::tuple, ::SEPARATOR, ::BRACE_OPEN, ::BRACE_CLOSE
+ */
+template <typename... Ts>
+inline void write_tuple(std::ostream& os, const Ts&... vals) {
+    os << BRACE_OPEN;
+    write_listing<Ts...>(os, vals...);
+    os << BRACE_CLOSE;
+}
+
+/**
+ * @brief wrapper type to write a property
+ * @see grammar::property
+ * @note: This object is entended to be optimizd away by the compiler.
+ */
+template <typename T>
+struct Property {
+    /**
+     * @brief wrapper type to write a property
+     * @param name property name
+     * @param value property value
+     * @see grammar::property
+     */
+    constexpr explicit Property(const char* name, const T& value)
+        : name(name), value(value){};
+
+    /** @brief property name */
+    const char* name;
+    /** @brief property value */
+    const T& value;
+};
+
+/**
+ * @brief write a Property as an assignment
+ * @tparam T value type
+ * @see grammar::property
+ */
+template <typename T>
+inline void write(std::ostream& os, const Property<T>& prop) {
+    os << prop.name << ' ' << ASSIGN << ' ';
+    write(os, prop.value);
+}
+
+/**
  * @brief parse a value from a node tree
  * @tparam T value type
  * @note asserts successful parsing of the tree
