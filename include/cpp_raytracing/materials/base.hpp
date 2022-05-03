@@ -7,7 +7,7 @@
 #define CPP_RAYTRACING_MATERIALS_BASE_HPP
 
 #include "../color.hpp"
-#include "../hittable.hpp"
+#include "../hittables.hpp"
 #include "../ray.hpp"
 #include "../scalar.hpp"
 

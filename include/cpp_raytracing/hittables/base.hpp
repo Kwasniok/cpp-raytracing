@@ -1,16 +1,16 @@
 /**
  * @file
- * @brief Hittable interface
+ * @brief Hittable base module
  */
 
-#ifndef CPP_RAYTRACING_HITTABLE_HPP
-#define CPP_RAYTRACING_HITTABLE_HPP
+#ifndef CPP_RAYTRACING_HITTABLES_BASE_HPP
+#define CPP_RAYTRACING_HITTABLES_BASE_HPP
 
 #include <memory>
 
-#include "ray.hpp"
-#include "scalar.hpp"
-#include "vec3.hpp"
+#include "../ray.hpp"
+#include "../scalar.hpp"
+#include "../vec3.hpp"
 
 namespace cpp_raytracing {
 

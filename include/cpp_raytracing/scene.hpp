@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "camera.hpp"
-#include "hittable.hpp"
+#include "hittables.hpp"
 
 namespace cpp_raytracing {
 

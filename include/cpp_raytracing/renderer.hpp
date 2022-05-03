@@ -11,7 +11,7 @@
 
 #include "canvas.hpp"
 #include "color.hpp"
-#include "hittable.hpp"
+#include "hittables.hpp"
 #include "image.hpp"
 #include "materials/base.hpp"
 #include "ray.hpp"

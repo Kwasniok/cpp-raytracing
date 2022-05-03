@@ -1,20 +1,17 @@
 /**
  * @file
- * @brief spherical object representation
+ * @brief hittable spherical object
  */
 
-#ifndef CPP_RAYTRACING_SHPERE_HPP
-#define CPP_RAYTRACING_SHPERE_HPP
+#ifndef CPP_RAYTRACING_HITTABLES_SHPERE_HPP
+#define CPP_RAYTRACING_HITTABLES_SHPERE_HPP
 
-#include "hittable.hpp"
-#include "ray.hpp"
-#include "scalar.hpp"
-#include "vec3.hpp"
+#include "base.hpp"
 
 namespace cpp_raytracing {
 
 /**
- * @brief spherical object
+ * @brief hittable spherical object
  */
 class Sphere : public Hittable {
   public:
@@ -33,9 +30,8 @@ class Sphere : public Hittable {
     /** @brief get material of the sphere */
     inline std::shared_ptr<Material> material() const { return _material; }
 
-    virtual HitRecord
-    hit_record(const Ray& ray, const Scalar t_min = 0.0,
-               const Scalar t_max = infinity) const override;
+    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+                                 const Scalar t_max = infinity) const override;
 
   private:
     Vec3 _origin;
