@@ -11,7 +11,7 @@ void test_write() {
     const std::vector<std::pair<Dielectric, const char*>> data = {
         {
             Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric {color = {0, 0.5, 1}, ior = 0.7}",
+            "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
         },
     };
     for (const auto& [val, str] : data) {
@@ -25,16 +25,16 @@ void test_read_success() {
     const std::vector<std::pair<Dielectric, const char*>> data = {
         {
             Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric {color = {0, 0.5, 1}, ior = 0.7}",
+            "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
         },
         // variations
         {
             Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric{color={0,0.5,1},ior=0.7}",
+            "Dielectric{color={0,0.5,1},index_of_refraction=0.7}",
         },
         {
             Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric { color = { 0, 0.5, 1, } , ior = 0.7 }",
+            "Dielectric { color = { 0, 0.5, 1, } , index_of_refraction = 0.7 }",
         },
     };
     for (const auto& [val, str] : data) {
@@ -47,7 +47,7 @@ void test_read_success() {
 void test_read_failure() {
     const std::vector<const char*> data = {
         // variations
-        "Dielectric {color = 0, 0.5, 1, ior=0.7}",
+        "Dielectric {color = 0, 0.5, 1, index_of_refraction=0.7}",
         "Dielectric {0, 0.5, 1}",
     };
     for (const auto& str : data) {

@@ -15,7 +15,9 @@ namespace grammar {
 struct mat_dielectric_prefix
     : pegtl::string<'D', 'i', 'e', 'l', 'e', 'c', 't', 'r', 'i', 'c'> {};
 struct mat_dielectric_color : property<color, 'c', 'o', 'l', 'o', 'r'> {};
-struct mat_dielectric_ior : property<scalar, 'i', 'o', 'r'> {};
+struct mat_dielectric_ior
+    : property<scalar, 'i', 'n', 'd', 'e', 'x', '_', 'o', 'f', '_', 'r', 'e',
+               'f', 'r', 'a', 'c', 't', 'i', 'o', 'n'> {};
 struct mat_dielectric_properties
     : tuple<mat_dielectric_color, mat_dielectric_ior> {}; // TODO: relax order
 /** @brief grammar for cpp_raytracing::Dielectric */
@@ -45,7 +47,7 @@ template <>
 void write<Dielectric>(std::ostream& os, const Dielectric& val) {
     os << "Dielectric ";
     write_tuple(os, Property{"color", val.color},
-                Property{"ior", val.index_of_refraction});
+                Property{"index_of_refraction", val.index_of_refraction});
 }
 
 /**

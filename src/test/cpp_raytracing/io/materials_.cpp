@@ -24,7 +24,7 @@ void test_write() {
             },
             {
                 std::make_shared<Dielectric>(Color{0.0, 0.5, 1}, 0.7),
-                "Dielectric {color = {0, 0.5, 1}, ior = 0.7}",
+                "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
             },
         };
     for (const auto& [val, str] : data) {
@@ -85,7 +85,7 @@ void test_read_success_dielectric() {
         data = {
             {
                 std::make_shared<Dielectric>(Color{0.0, 0.5, 1}, 0.7),
-                "Dielectric {color = {0, 0.5, 1}, ior = 0.7}",
+                "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
             },
         };
     for (const auto& [val, str] : data) {
