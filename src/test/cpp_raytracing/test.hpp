@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <typeinfo>
+#include <utility>
 
 #include <cpp_raytracing/util.hpp>
 
@@ -50,7 +51,7 @@ inline std::string message(const char* expr, const char* file, const int line,
     std::stringstream msg;
     msg << "at " << file << ":" << line << std::endl;
     msg << "Expression `" << expr << "` " << reason << ".";
-    return msg.str();
+    return std::move(msg).str();
 }
 
 /** @brief generates message of failed assertion */
@@ -60,7 +61,7 @@ inline std::string message(const char* expr, const char* file, const int line,
     std::stringstream msg;
     msg << "at " << file << ":" << line << std::endl;
     msg << "Expression `" << expr << "` " << reason << ".";
-    return msg.str();
+    return std::move(msg).str();
 }
 
 /**
@@ -72,7 +73,8 @@ inline std::string missed_throw(const char* expr, const char* file,
 
     std::stringstream msg;
     msg << "did not throw " << exception;
-    throw AssertionFailedException(message(expr, file, line, msg.str()));
+    throw AssertionFailedException(
+        message(expr, file, line, std::move(msg).str()));
 }
 
 /**
@@ -141,7 +143,7 @@ inline void assert_equal(const T& x, const U& y, const char* expr,
         std::stringstream msg;
         msg << "= " << x << " is not equal to " << y;
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 }
 
@@ -159,7 +161,7 @@ inline void assert_not_equal(const T& x, const U& y, const char* expr,
         std::stringstream msg;
         msg << "= " << x << " is equal to " << y;
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 }
 
@@ -179,7 +181,7 @@ inline void assert_almost_equal(const T& x, const U& y, const V& epsilon,
         msg << "= " << x << " is not almost equal to " << y
             << " with precision of epsilon = " << epsilon;
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 }
 
@@ -197,7 +199,7 @@ inline void assert_not_almost_equal(const T& x, const U& y, const V& epsilon,
         msg << "= " << x << " is almost equal to " << y
             << " with precision of epsilon = " << epsilon;
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 }
 
@@ -217,7 +219,7 @@ inline void assert_almost_equal_iterable(const T& x, const U& y,
         std::stringstream msg;
         msg << " has size = " << x_size << " != " << y_size;
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 
     for (auto [i, a] : enumerate(x)) {
@@ -230,7 +232,7 @@ inline void assert_almost_equal_iterable(const T& x, const U& y,
                     msg << "@" << i << " = " << a << " is not almost equal to "
                         << b << " with precision of epsilon = " << epsilon;
                     throw AssertionFailedException(
-                        message(expr, file, line, msg.str().c_str()));
+                        message(expr, file, line, std::move(msg).str()));
                 }
             }
         }
@@ -264,7 +266,7 @@ inline void assert_not_almost_equal_iterable(const T& x, const U& y,
     msg << " = " << x << " is almost equal to " << y
         << " with precision of epsilon = " << epsilon;
     throw AssertionFailedException(
-        message(expr, file, line, msg.str().c_str()));
+        message(expr, file, line, std::move(msg).str()));
 }
 
 /**
@@ -280,7 +282,7 @@ inline void assert_in_range(const T& x, const T& min, const T& max,
         std::stringstream msg;
         msg << "= " << x << " is not in range[" << min << ", " << max << "] ";
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 }
 
@@ -299,7 +301,7 @@ inline void assert_pairwise_unique(const T& x, const char* expr,
                 msg << "has equivalent elements " << a << " (@" << i << ") and "
                     << b << " (@" << j << ")";
                 throw AssertionFailedException(
-                    message(expr, file, line, msg.str().c_str()));
+                    message(expr, file, line, std::move(msg).str()));
             }
         }
     }
@@ -316,7 +318,7 @@ inline void assert_dynamic_type(const std::type_info& x,
         std::stringstream msg;
         msg << "is of type " << x.name() << " not of type " << y.name();
         throw AssertionFailedException(
-            message(expr, file, line, msg.str().c_str()));
+            message(expr, file, line, std::move(msg).str()));
     }
 }
 

@@ -32,7 +32,7 @@ to automatically format the entire code base (requires `clang-format`).
 
 - Linux kernel v5.17+
 - C++20
-- gcc v11.2+ or clang v13.0+
+- gcc v11.2+
 - make v4.3+
 - doxygen v1.9+
 - valgrind v3.18+ (optional)
