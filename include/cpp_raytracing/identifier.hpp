@@ -54,12 +54,35 @@ class UniqueRegister {
 } // namespace internal
 
 /**
+ * @brief helper class to determine the default identifier for a type
+ * @see Identifer
+ */
+template <typename T>
+struct default_identifier {
+    /** @brief generic fallback value of the default identifer */
+    static constexpr const char* value = "identifier";
+};
+
+/**
  * @brief represents an identifier for data of type T which are alphanumerical
  * strtings
  */
 template <typename T>
 class Identifier {
   public:
+    /**
+     * @brief initialize identifer with root based on default_identifier
+     * @note Since a non-occupied identifier must be found, this initialization
+     *       **might be costly**. Consider using Identifier::make_if_available
+     *       or Identifier::make_always with a specific string if possible.
+     *       (Move the value if necessary.)
+     */
+    Identifier() : _value() {
+        std::string str = default_identifier<T>::value;
+        set_to_next_free(str);
+        _value = std::move(str);
+    }
+
     /** @brief move constructor */
     Identifier(Identifier&& other) = default;
     /** @brief move assignment */
@@ -113,7 +136,7 @@ class Identifier {
      */
     static Identifier make_always(std::string&& str) {
         if (!valid(str)) {
-            str = "identifier";
+            str = default_identifier<T>::value;
         }
         set_to_next_free(str);
         return {std::move(str)};
