@@ -32,6 +32,7 @@ class Dielectric : public Material {
         : Material(std::move(id)),
           color(color),
           index_of_refraction(index_of_refraction) {}
+    /**@brief initialize with parameters */
     Dielectric(const Color& color, const Scalar index_of_refraction)
         : Material(), color(color), index_of_refraction(index_of_refraction) {}
 
