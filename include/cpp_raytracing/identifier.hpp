@@ -65,7 +65,10 @@ struct default_identifier {
 
 /**
  * @brief represents an identifier for data of type T which are alphanumerical
- * strtings
+ * @tparam identifies the collection of objects to be identified
+ * @note Each object collection has its own identifier pool. Therefore, two
+ *       identifiers of equal value but from different collections can be
+ *       considered unequal.
  */
 template <typename T>
 class Identifier {
@@ -116,13 +119,29 @@ class Identifier {
         return {std::move(str)};
     }
 
-    /** @brief move constructor */
+    /**
+     * @brief move constructor
+     * @note Moving preserves the identity.
+     */
     Identifier(Identifier&& other) = default;
-    /** @brief move assignment */
+    /**
+     * @brief move assignment
+     * @note Moving preserves the identity.
+     */
     Identifier& operator=(Identifier&& other) = default;
-    /** @brief copy and modify identifier to avoid collision */
+    /**
+     * @brief non-copiable use explicit copy() instead
+     * @note Copying would require to generate a new (incemented) identifer,
+     *       this is non-trivial and should not happen silently.
+     * @see copy
+     */
     Identifier(const Identifier& other) = delete;
-    /** @brief copy and modify identifier to avoid collision */
+    /**
+     * @brief non-copiable use explicit copy() instead
+     * @note Copying would require to generate a new (incemented) identifer,
+     *       this is non-trivial and should not happen silently.
+     * @see copy
+     */
     Identifier& operator=(const Identifier& other) = delete;
 
     ~Identifier() {
