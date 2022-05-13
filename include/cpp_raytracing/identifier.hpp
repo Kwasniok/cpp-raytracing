@@ -87,9 +87,18 @@ class Identifier {
     Identifier(Identifier&& other) = default;
     /** @brief move assignment */
     Identifier& operator=(Identifier&& other) = default;
-
-    Identifier(const Identifier& other) = delete;
-    Identifier& operator=(const Identifier& other) = delete;
+    /** @brief copy and modify identifier to avoid collision */
+    Identifier(const Identifier& other) {
+        std::string str = other.str();
+        set_to_next_free(str);
+        _value = std::move(str);
+    }
+    /** @brief copy and modify identifier to avoid collision */
+    Identifier& operator=(const Identifier& other) {
+        std::string str = other.str();
+        set_to_next_free(str);
+        _value = std::move(str);
+    }
 
     ~Identifier() {
         if (has_value()) {
