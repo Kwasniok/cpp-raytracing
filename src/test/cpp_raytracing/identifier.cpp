@@ -53,12 +53,20 @@ void test_comparison() {
     TEST_ASSERT_TRUE(id1 != id2);
 }
 
+void test_copy() {
+    Identifier<void> id1 = Identifier<void>::make_always("abc");
+    Identifier<void> id2 = id1.copy();
+
+    TEST_ASSERT_NOT_EQUAL(id1, id2);
+}
+
 void run_test_suite() {
     run(test_make_if_available);
     run(test_make_always);
     run(test_valid_good);
     run(test_valid_bad);
     run(test_comparison);
+    run(test_copy);
 }
 
 }} // namespace cpp_raytracing::test

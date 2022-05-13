@@ -88,17 +88,9 @@ class Identifier {
     /** @brief move assignment */
     Identifier& operator=(Identifier&& other) = default;
     /** @brief copy and modify identifier to avoid collision */
-    Identifier(const Identifier& other) {
-        std::string str = other.str();
-        set_to_next_free(str);
-        _value = std::move(str);
-    }
+    Identifier(const Identifier& other) = delete;
     /** @brief copy and modify identifier to avoid collision */
-    Identifier& operator=(const Identifier& other) {
-        std::string str = other.str();
-        set_to_next_free(str);
-        _value = std::move(str);
-    }
+    Identifier& operator=(const Identifier& other) = delete;
 
     ~Identifier() {
         if (has_value()) {
@@ -123,6 +115,16 @@ class Identifier {
     }
     /** @brief unequals comparison */
     bool operator!=(const char* other) const { return _value != other; }
+
+    /**
+     * @brief explicitly copies the identifer and increments it to a
+     *        non-occupied value
+     */
+    Identifier copy() {
+        std::string str = _value;
+        set_to_next_free(str);
+        return {std::move(str)};
+    }
 
     /**
      * @brief conditionally transforms string to identifier if it is not
