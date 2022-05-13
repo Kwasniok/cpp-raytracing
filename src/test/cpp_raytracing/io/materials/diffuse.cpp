@@ -8,24 +8,22 @@
 namespace cpp_raytracing { namespace test {
 
 void test_write() {
-    const std::vector<std::pair<Diffuse, const char*>> data = {
-        {Diffuse{{0.0, 0.5, 1.0}}, "Diffuse {color = {0, 0.5, 1}}"},
-    };
-    for (const auto& [val, str] : data) {
-        std::stringstream os;
-        io::write(os, val);
-        TEST_ASSERT_EQUAL(os.str(), str);
-    }
+    const auto val = Diffuse{"mat", {0.0, 0.5, 1.0}};
+    const auto str = "Diffuse {id = \"mat\", color = {0, 0.5, 1}}";
+    std::stringstream os;
+    io::write(os, val);
+    TEST_ASSERT_EQUAL(os.str(), str);
 }
 
 void test_read_success() {
-    const std::vector<std::pair<Diffuse, const char*>> data = {
-        {Diffuse{{0.0, 0.5, 1.0}}, "Diffuse {color = {0, 0.5, 1}}"},
+    const auto val = Diffuse{"mat", {0.0, 0.5, 1.0}};
+    const std::vector<const char*> data = {
+        "Diffuse {id = \"mat\", color = {0, 0.5, 1}}",
         // variations
-        {Diffuse{{0.0, 0.5, 1.0}}, "Diffuse{color={0,0.5,1}}"},
-        {Diffuse{{0.0, 0.5, 1.0}}, "Diffuse { color = { 0, 0.5, 1, } }"},
+        "Diffuse{id=\"mat\",color={0,0.5,1}}",
+        "Diffuse { id = \"mat\" , color = { 0, 0.5, 1, } }",
     };
-    for (const auto& [val, str] : data) {
+    for (const auto str : data) {
         Diffuse x = io::read<Diffuse>(str);
         TEST_ASSERT_EQUAL(x.color, val.color);
     }
@@ -33,8 +31,12 @@ void test_read_success() {
 
 void test_read_failure() {
     const std::vector<const char*> data = {
-        "Diffuse {color = 0, 0.5, 1, }",
-        "Diffuse {0, 0.5, 1}",
+        // missing id
+        "Metal {color = {0, 0.5, 1},}",
+        // missing braces
+        "Metal {id = \"mat\", color = 0, 0.5, 1}",
+        // missing fields
+        "Metal {\"mat\", 0, 0.5, 1, 0.7}",
     };
     for (const auto& str : data) {
         TEST_ASSERT_THROWS((io::read<Diffuse>(str)), io::ParsingException);

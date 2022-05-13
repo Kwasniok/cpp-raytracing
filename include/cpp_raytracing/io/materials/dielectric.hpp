@@ -8,18 +8,21 @@
 
 #include "../../materials/dielectric.hpp"
 #include "../color.hpp"
+#include "../identifier.hpp"
 
 namespace cpp_raytracing { namespace io {
 namespace grammar {
 
 struct mat_dielectric_prefix
     : pegtl::string<'D', 'i', 'e', 'l', 'e', 'c', 't', 'r', 'i', 'c'> {};
+struct mat_dielectric_id : property<identifier, 'i', 'd'> {};
 struct mat_dielectric_color : property<color, 'c', 'o', 'l', 'o', 'r'> {};
 struct mat_dielectric_ior
     : property<scalar, 'i', 'n', 'd', 'e', 'x', '_', 'o', 'f', '_', 'r', 'e',
                'f', 'r', 'a', 'c', 't', 'i', 'o', 'n'> {};
 struct mat_dielectric_properties
-    : tuple<mat_dielectric_color, mat_dielectric_ior> {}; // TODO: relax order
+    : tuple<mat_dielectric_id, mat_dielectric_color, mat_dielectric_ior> {
+}; // TODO: relax order
 /** @brief grammar for cpp_raytracing::Dielectric */
 struct mat_dielectric : pegtl::seq<mat_dielectric_prefix,
                                    pegtl::pad<mat_dielectric_properties, ws>> {
@@ -46,7 +49,7 @@ struct selector<mat_dielectric_ior> : remove_content {};
 template <>
 void write<Dielectric>(std::ostream& os, const Dielectric& val) {
     os << "Dielectric ";
-    write_tuple(os, Property{"color", val.color},
+    write_tuple(os, Property{"id", val.id}, Property{"color", val.color},
                 Property{"index_of_refraction", val.index_of_refraction});
 }
 
@@ -55,9 +58,13 @@ void write<Dielectric>(std::ostream& os, const Dielectric& val) {
  */
 template <>
 Dielectric parse_node(const tao::pegtl::parse_tree::node& node) {
+    Identifier<Material> id;
     Color color = Colors::BLACK;
     Scalar index_of_refraction = 0.0;
     for (const auto& child : node.children) {
+        if (child->is_type<grammar::mat_dielectric_id>()) {
+            id = parse_node<Identifier<Material>>(*(child->children[0]));
+        }
         if (child->is_type<grammar::mat_dielectric_color>()) {
             color = parse_node<Color>(*(child->children[0]));
         }

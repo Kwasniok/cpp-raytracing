@@ -8,36 +8,25 @@
 namespace cpp_raytracing { namespace test {
 
 void test_write() {
-    const std::vector<std::pair<Dielectric, const char*>> data = {
-        {
-            Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
-        },
-    };
-    for (const auto& [val, str] : data) {
-        std::stringstream os;
-        io::write(os, val);
-        TEST_ASSERT_EQUAL(os.str(), str);
-    }
+    const auto val = Dielectric{"mat", {0.0, 0.5, 1.0}, 0.7};
+    const auto str = "Dielectric {id = \"mat\", color = {0, 0.5, 1}, "
+                     "index_of_refraction = 0.7}";
+    std::stringstream os;
+    io::write(os, val);
+    TEST_ASSERT_EQUAL(os.str(), str);
 }
 
 void test_read_success() {
-    const std::vector<std::pair<Dielectric, const char*>> data = {
-        {
-            Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
-        },
+    const auto val = Dielectric{"mat", {0.0, 0.5, 1.0}, 0.7};
+    const std::vector<const char*> data = {
+        "Dielectric {id = \"mat\", color = {0, 0.5, 1}, index_of_refraction = "
+        "0.7}",
         // variations
-        {
-            Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric{color={0,0.5,1},index_of_refraction=0.7}",
-        },
-        {
-            Dielectric{{0.0, 0.5, 1.0}, 0.7},
-            "Dielectric { color = { 0, 0.5, 1, } , index_of_refraction = 0.7 }",
-        },
+        "Dielectric{id=\"mat\",color={0,0.5,1},index_of_refraction=0.7}",
+        "Dielectric { id = \"mat\" ,  color = { 0, 0.5, 1, } , "
+        "index_of_refraction = 0.7 }",
     };
-    for (const auto& [val, str] : data) {
+    for (const auto str : data) {
         Dielectric x = io::read<Dielectric>(str);
         TEST_ASSERT_EQUAL(x.color, val.color);
         TEST_ASSERT_EQUAL(x.index_of_refraction, val.index_of_refraction);
@@ -46,9 +35,12 @@ void test_read_success() {
 
 void test_read_failure() {
     const std::vector<const char*> data = {
-        // variations
-        "Dielectric {color = 0, 0.5, 1, index_of_refraction=0.7}",
-        "Dielectric {0, 0.5, 1}",
+        // missing id
+        "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
+        // missing braces
+        "Dielectric {id = \"mat\", color = 0, 0.5, 1, index_of_refraction=0.7}",
+        // missing fields
+        "Dielectric {\"mat\", 0, 0.5, 1, 0.7}",
     };
     for (const auto& str : data) {
         TEST_ASSERT_THROWS((io::read<Dielectric>(str)), io::ParsingException);

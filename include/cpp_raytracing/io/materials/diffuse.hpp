@@ -8,13 +8,15 @@
 
 #include "../../materials/diffuse.hpp"
 #include "../color.hpp"
+#include "../identifier.hpp"
 
 namespace cpp_raytracing { namespace io {
 namespace grammar {
 
 struct mat_diffuse_prefix : pegtl::string<'D', 'i', 'f', 'f', 'u', 's', 'e'> {};
+struct mat_diffuse_id : property<identifier, 'i', 'd'> {};
 struct mat_diffuse_color : property<color, 'c', 'o', 'l', 'o', 'r'> {};
-struct mat_diffuse_properties : tuple<mat_diffuse_color> {};
+struct mat_diffuse_properties : tuple<mat_diffuse_id, mat_diffuse_color> {};
 /** @brief grammar for cpp_raytracing::Diffuse */
 struct mat_diffuse
     : pegtl::seq<mat_diffuse_prefix, pegtl::pad<mat_diffuse_properties, ws>> {};
@@ -38,7 +40,7 @@ struct selector<mat_diffuse_color> : remove_content {};
 template <>
 void write<Diffuse>(std::ostream& os, const Diffuse& val) {
     os << "Diffuse ";
-    write_tuple(os, Property{"color", val.color});
+    write_tuple(os, Property{"id", val.id}, Property{"color", val.color});
 }
 
 /**
@@ -46,14 +48,18 @@ void write<Diffuse>(std::ostream& os, const Diffuse& val) {
  */
 template <>
 Diffuse parse_node(const tao::pegtl::parse_tree::node& node) {
+    Identifier<Material> id;
     Color color = Colors::BLACK;
     for (const auto& child : node.children) {
+        if (child->is_type<grammar::mat_diffuse_id>()) {
+            id = parse_node<Identifier<Material>>(*(child->children[0]));
+        }
         if (child->is_type<grammar::mat_diffuse_color>()) {
             color = parse_node<Color>(*(child->children[0]));
         }
     }
     // assert success
-    return Diffuse{color};
+    return Diffuse{std::move(id), color};
 }
 
 }} // namespace cpp_raytracing::io

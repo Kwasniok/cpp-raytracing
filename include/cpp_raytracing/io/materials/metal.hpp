@@ -8,15 +8,18 @@
 
 #include "../../materials/metal.hpp"
 #include "../color.hpp"
+#include "../identifier.hpp"
 
 namespace cpp_raytracing { namespace io {
 namespace grammar {
 
 struct mat_metal_prefix : pegtl::string<'M', 'e', 't', 'a', 'l'> {};
+struct mat_metal_id : property<identifier, 'i', 'd'> {};
 struct mat_metal_color : property<color, 'c', 'o', 'l', 'o', 'r'> {};
 struct mat_metal_roughness
     : property<scalar, 'r', 'o', 'u', 'g', 'h', 'n', 'e', 's', 's'> {};
-struct mat_metal_properties : tuple<mat_metal_color, mat_metal_roughness> {
+struct mat_metal_properties
+    : tuple<mat_metal_id, mat_metal_color, mat_metal_roughness> {
 }; // TODO: relax order
 /** @brief grammar for cpp_raytracing::Metal */
 struct mat_metal
@@ -43,7 +46,7 @@ struct selector<mat_metal_roughness> : remove_content {};
 template <>
 void write<Metal>(std::ostream& os, const Metal& val) {
     os << "Metal ";
-    write_tuple(os, Property{"color", val.color},
+    write_tuple(os, Property{"id", val.id}, Property{"color", val.color},
                 Property{"roughness", val.roughness});
 }
 
@@ -52,9 +55,13 @@ void write<Metal>(std::ostream& os, const Metal& val) {
  */
 template <>
 Metal parse_node(const tao::pegtl::parse_tree::node& node) {
+    Identifier<Material> id;
     Color color = Colors::BLACK;
     Scalar roughness = 0.0;
     for (const auto& child : node.children) {
+        if (child->is_type<grammar::mat_metal_id>()) {
+            id = parse_node<Identifier<Material>>(*(child->children[0]));
+        }
         if (child->is_type<grammar::mat_metal_color>()) {
             color = parse_node<Color>(*(child->children[0]));
         }
@@ -63,7 +70,7 @@ Metal parse_node(const tao::pegtl::parse_tree::node& node) {
         }
     }
     // assert success
-    return Metal{color, roughness};
+    return Metal{std::move(id), color, roughness};
 }
 
 }} // namespace cpp_raytracing::io

@@ -11,20 +11,21 @@ void test_write() {
     const std::vector<std::pair<std::shared_ptr<Material>, const char*>> data =
         {
             {
-                std::make_shared<Emitter>(Color{0.0, 0.5, 1}),
-                "Emitter {color = {0, 0.5, 1}}",
+                std::make_shared<Emitter>("mat_1", Color{0.0, 0.5, 1}),
+                "Emitter {id = \"mat_1\", color = {0, 0.5, 1}}",
             },
             {
-                std::make_shared<Diffuse>(Color{0.0, 0.5, 1}),
-                "Diffuse {color = {0, 0.5, 1}}",
+                std::make_shared<Diffuse>("mat_2", Color{0.0, 0.5, 1}),
+                "Diffuse {id = \"mat_2\", color = {0, 0.5, 1}}",
             },
             {
-                std::make_shared<Metal>(Color{0.0, 0.5, 1}, 0.7),
-                "Metal {color = {0, 0.5, 1}, roughness = 0.7}",
+                std::make_shared<Metal>("mat_3", Color{0.0, 0.5, 1}, 0.7),
+                "Metal {id = \"mat_3\", color = {0, 0.5, 1}, roughness = 0.7}",
             },
             {
-                std::make_shared<Dielectric>(Color{0.0, 0.5, 1}, 0.7),
-                "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
+                std::make_shared<Dielectric>("mat_4", Color{0.0, 0.5, 1}, 0.7),
+                "Dielectric {id = \"mat_4\", color = {0, 0.5, 1}, "
+                "index_of_refraction = 0.7}",
             },
         };
     for (const auto& [val, str] : data) {
@@ -37,8 +38,8 @@ void test_write() {
 void test_read_success_emitter() {
     const std::vector<std::pair<std::shared_ptr<Emitter>, const char*>> data = {
         {
-            std::make_shared<Emitter>(Color{0.0, 0.5, 1}),
-            "Emitter {color = {0, 0.5, 1}}",
+            std::make_shared<Emitter>("mat", Color{0.0, 0.5, 1}),
+            "Emitter {id = \"mat\", color = {0, 0.5, 1}}",
         },
     };
     for (const auto& [val, str] : data) {
@@ -52,8 +53,8 @@ void test_read_success_emitter() {
 void test_read_success_diffuse() {
     const std::vector<std::pair<std::shared_ptr<Diffuse>, const char*>> data = {
         {
-            std::make_shared<Diffuse>(Color{0.0, 0.5, 1}),
-            "Diffuse {color = {0, 0.5, 1}}",
+            std::make_shared<Diffuse>("mat", Color{0.0, 0.5, 1}),
+            "Diffuse {id = \"mat\", color = {0, 0.5, 1}}",
         },
     };
     for (const auto& [val, str] : data) {
@@ -67,8 +68,8 @@ void test_read_success_diffuse() {
 void test_read_success_metal() {
     const std::vector<std::pair<std::shared_ptr<Metal>, const char*>> data = {
         {
-            std::make_shared<Metal>(Color{0.0, 0.5, 1}, 0.7),
-            "Metal {color = {0, 0.5, 1}, roughness = 0.7}",
+            std::make_shared<Metal>("mat", Color{0.0, 0.5, 1}, 0.7),
+            "Metal {id = \"mat\", color = {0, 0.5, 1}, roughness = 0.7}",
         },
     };
     for (const auto& [val, str] : data) {
@@ -84,8 +85,9 @@ void test_read_success_dielectric() {
     const std::vector<std::pair<std::shared_ptr<Dielectric>, const char*>>
         data = {
             {
-                std::make_shared<Dielectric>(Color{0.0, 0.5, 1}, 0.7),
-                "Dielectric {color = {0, 0.5, 1}, index_of_refraction = 0.7}",
+                std::make_shared<Dielectric>("mat", Color{0.0, 0.5, 1}, 0.7),
+                "Dielectric {id = \"mat\", color = {0, 0.5, 1}, "
+                "index_of_refraction = 0.7}",
             },
         };
     for (const auto& [val, str] : data) {
@@ -99,7 +101,7 @@ void test_read_success_dielectric() {
 
 void test_read_failure() {
     const std::vector<const char*> data = {
-        "UnsopportedMaterial {color = {0, 0.5, 1}}",
+        "UnsopportedMaterial {id = \"mat\", color = {0, 0.5, 1}}",
     };
     for (const auto& str : data) {
         TEST_ASSERT_THROWS((io::read<std::shared_ptr<Material>>(str)),

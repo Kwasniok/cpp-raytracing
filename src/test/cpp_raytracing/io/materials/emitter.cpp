@@ -8,24 +8,22 @@
 namespace cpp_raytracing { namespace test {
 
 void test_write() {
-    const std::vector<std::pair<Emitter, const char*>> data = {
-        {Emitter{{0.0, 0.5, 1.0}}, "Emitter {color = {0, 0.5, 1}}"},
-    };
-    for (const auto& [val, str] : data) {
-        std::stringstream os;
-        io::write(os, val);
-        TEST_ASSERT_EQUAL(os.str(), str);
-    }
+    const auto val = Emitter{"mat", {0.0, 0.5, 1.0}};
+    const auto str = "Emitter {id = \"mat\", color = {0, 0.5, 1}}";
+    std::stringstream os;
+    io::write(os, val);
+    TEST_ASSERT_EQUAL(os.str(), str);
 }
 
 void test_read_success() {
-    const std::vector<std::pair<Emitter, const char*>> data = {
-        {Emitter{{0.0, 0.5, 1.0}}, "Emitter {color = {0, 0.5, 1}}"},
+    const auto val = Emitter{"mat", {0.0, 0.5, 1.0}};
+    const std::vector<const char*> data = {
+        "Emitter {id = \"mat\", color = {0, 0.5, 1}}",
         // variations
-        {Emitter{{0.0, 0.5, 1.0}}, "Emitter{color={0,0.5,1}}"},
-        {Emitter{{0.0, 0.5, 1.0}}, "Emitter { color = { 0, 0.5, 1, } }"},
+        "Emitter{id=\"mat\",color={0,0.5,1}}",
+        "Emitter { id = \"mat\" ,  color = { 0, 0.5, 1, } }",
     };
-    for (const auto& [val, str] : data) {
+    for (const auto str : data) {
         Emitter x = io::read<Emitter>(str);
         TEST_ASSERT_EQUAL(x.color, val.color);
     }
@@ -33,8 +31,12 @@ void test_read_success() {
 
 void test_read_failure() {
     const std::vector<const char*> data = {
-        "Emitter {color = 0, 0.5, 1, }",
-        "Emitter {0, 0.5, 1}",
+        // missing id
+        "Emitter {color = {0, 0.5, 1}}",
+        // missing braces
+        "Emitter {id = \"mat\", color = 0, 0.5, 1}",
+        // missing fields
+        "Emitter {\"mat\", 0, 0.5, 1}",
     };
     for (const auto& str : data) {
         TEST_ASSERT_THROWS((io::read<Emitter>(str)), io::ParsingException);

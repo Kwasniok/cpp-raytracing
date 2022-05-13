@@ -15,17 +15,23 @@ namespace cpp_raytracing {
  */
 class Metal : public Material {
   public:
+    /** @brief initialize with identifier and parameters */
+    Metal(Identifier<Material>&& id, const Color& color, const Scalar roughness)
+        : Material(std::move(id)), color(color), roughness(roughness) {}
+    /** @brief initialize with identifier and parameters */
+    Metal(const char* id, const Color& color, const Scalar roughness)
+        : Material(id), color(color), roughness(roughness) {}
     /** @brief initialize with parameters */
     Metal(const Color& color, const Scalar roughness)
-        : color(color), roughness(roughness) {}
-    /** @brief copy constructor */
-    Metal(const Metal&) = default;
+        : Material(), color(color), roughness(roughness) {}
+
     /** @brief move constructor */
     Metal(Metal&&) = default;
-    /** @brief copy operation */
-    Metal& operator=(const Metal&) = default;
-    /** @brief move operation */
+    /** @brief move assignment */
     Metal& operator=(Metal&&) = default;
+    Metal(const Metal&) = delete;
+    Metal& operator=(const Metal&) = delete;
+
     virtual ~Metal() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,

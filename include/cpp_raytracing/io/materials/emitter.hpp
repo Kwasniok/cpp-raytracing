@@ -8,13 +8,15 @@
 
 #include "../../materials/emitter.hpp"
 #include "../color.hpp"
+#include "../identifier.hpp"
 
 namespace cpp_raytracing { namespace io {
 namespace grammar {
 
 struct mat_emitter_prefix : pegtl::string<'E', 'm', 'i', 't', 't', 'e', 'r'> {};
+struct mat_emitter_id : property<identifier, 'i', 'd'> {};
 struct mat_emitter_color : property<color, 'c', 'o', 'l', 'o', 'r'> {};
-struct mat_emitter_properties : tuple<mat_emitter_color> {};
+struct mat_emitter_properties : tuple<mat_emitter_id, mat_emitter_color> {};
 /** @brief grammar for cpp_raytracing::Emitter */
 struct mat_emitter
     : pegtl::seq<mat_emitter_prefix, pegtl::pad<mat_emitter_properties, ws>> {};
@@ -38,7 +40,7 @@ struct selector<mat_emitter_color> : remove_content {};
 template <>
 void write<Emitter>(std::ostream& os, const Emitter& val) {
     os << "Emitter ";
-    write_tuple(os, Property{"color", val.color});
+    write_tuple(os, Property{"id", val.id}, Property{"color", val.color});
 }
 
 /**
@@ -46,14 +48,18 @@ void write<Emitter>(std::ostream& os, const Emitter& val) {
  */
 template <>
 Emitter parse_node(const tao::pegtl::parse_tree::node& node) {
+    Identifier<Material> id;
     Color color = Colors::BLACK;
     for (const auto& child : node.children) {
+        if (child->is_type<grammar::mat_emitter_id>()) {
+            id = parse_node<Identifier<Material>>(*(child->children[0]));
+        }
         if (child->is_type<grammar::mat_emitter_color>()) {
             color = parse_node<Color>(*(child->children[0]));
         }
     }
     // assert success
-    return Emitter{color};
+    return Emitter{std::move(id), color};
 }
 
 }} // namespace cpp_raytracing::io

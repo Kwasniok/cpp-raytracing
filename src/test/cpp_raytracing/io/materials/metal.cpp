@@ -1,3 +1,4 @@
+
 #include <cpp_raytracing/io/materials/metal.hpp>
 #include <sstream>
 #include <utility>
@@ -8,36 +9,23 @@
 namespace cpp_raytracing { namespace test {
 
 void test_write() {
-    const std::vector<std::pair<Metal, const char*>> data = {
-        {
-            Metal{{0.0, 0.5, 1.0}, 0.7},
-            "Metal {color = {0, 0.5, 1}, roughness = 0.7}",
-        },
-    };
-    for (const auto& [val, str] : data) {
-        std::stringstream os;
-        io::write(os, val);
-        TEST_ASSERT_EQUAL(os.str(), str);
-    }
+    const auto val = Metal{"mat", {0.0, 0.5, 1.0}, 0.7};
+    const auto str =
+        "Metal {id = \"mat\", color = {0, 0.5, 1}, roughness = 0.7}";
+    std::stringstream os;
+    io::write(os, val);
+    TEST_ASSERT_EQUAL(os.str(), str);
 }
 
 void test_read_success() {
-    const std::vector<std::pair<Metal, const char*>> data = {
-        {
-            Metal{{0.0, 0.5, 1.0}, 0.7},
-            "Metal {color = {0, 0.5, 1}, roughness = 0.7}",
-        },
+    const auto val = Metal{"mat", {0.0, 0.5, 1.0}, 0.7};
+    const std::vector<const char*> data = {
+        "Metal {id = \"mat\", color = {0, 0.5, 1}, roughness = 0.7}",
         // variations
-        {
-            Metal{{0.0, 0.5, 1.0}, 0.7},
-            "Metal{color={0,0.5,1},roughness=0.7}",
-        },
-        {
-            Metal{{0.0, 0.5, 1.0}, 0.7},
-            "Metal { color = { 0, 0.5, 1, } , roughness = 0.7 }",
-        },
+        "Metal{id=\"mat\",color={0,0.5,1},roughness=0.7}",
+        "Metal { id = \"mat\" ,  color = { 0, 0.5, 1, } , roughness = 0.7 }",
     };
-    for (const auto& [val, str] : data) {
+    for (const auto str : data) {
         Metal x = io::read<Metal>(str);
         TEST_ASSERT_EQUAL(x.color, val.color);
         TEST_ASSERT_EQUAL(x.roughness, val.roughness);
@@ -46,9 +34,12 @@ void test_read_success() {
 
 void test_read_failure() {
     const std::vector<const char*> data = {
-        // variations
-        "Metal {color = 0, 0.5, 1, roughness=0.7}",
-        "Metal {0, 0.5, 1}",
+        // missing id
+        "Metal {color = {0, 0.5, 1}, roughness = 0.7}",
+        // missing braces
+        "Metal {id = \"mat\", color = 0, 0.5, 1, roughness=0.7}",
+        // missing fields
+        "Metal {\"mat\", 0, 0.5, 1, 0.7}",
     };
     for (const auto& str : data) {
         TEST_ASSERT_THROWS((io::read<Metal>(str)), io::ParsingException);
