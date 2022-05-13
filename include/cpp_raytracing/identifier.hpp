@@ -72,15 +72,48 @@ class Identifier {
   public:
     /**
      * @brief initialize identifer with root based on default_identifier
+     * @note Use this initializer if you don't care about the value.
      * @note Since a non-occupied identifier must be found, this initialization
      *       **might be costly**. Consider using Identifier::make_if_available
      *       or Identifier::make_always with a specific string if possible.
      *       (Move the value if necessary.)
+     * @see make_if_available, make_always
      */
     Identifier() : _value() {
         std::string str = default_identifier<T>::value;
         set_to_next_free(str);
         _value = std::move(str);
+    }
+
+    /**
+     * @brief conditionally transforms string to identifier if it is not
+     *        colliding
+     * @returns identifer if it is not colliding with any other identifer else
+     *          nothing
+     * @note Use this 'initializer' if you want to determine the exact value of
+     *       the identifier.
+     */
+    static std::optional<Identifier> make_if_available(std::string&& str) {
+        if (!valid(str) || !_register.claim(str)) {
+            return {};
+        }
+        return {Identifier{std::move(str)}};
+    }
+    /**
+     * @brief unconditionally transforms string to identifier
+     * @returns identifer which is either identical to the string (if it is
+     *          non-colliding) or has a modified suffix (to avoid collisions)
+     * @note Use this 'initializer' if you want to determine at least part of
+     *       the value of the identifier.
+     * @note In case the original string was not valid, a value based on the
+     *       default identifier is generated.
+     */
+    static Identifier make_always(std::string&& str) {
+        if (!valid(str)) {
+            str = default_identifier<T>::value;
+        }
+        set_to_next_free(str);
+        return {std::move(str)};
     }
 
     /** @brief move constructor */
@@ -122,33 +155,6 @@ class Identifier {
      */
     Identifier copy() {
         std::string str = _value;
-        set_to_next_free(str);
-        return {std::move(str)};
-    }
-
-    /**
-     * @brief conditionally transforms string to identifier if it is not
-     *        colliding
-     * @returns identifer if it is not colliding with any other identifer else
-     *          nothing
-     */
-    static std::optional<Identifier> make_if_available(std::string&& str) {
-        if (!valid(str) || !_register.claim(str)) {
-            return {};
-        }
-        return {Identifier{std::move(str)}};
-    }
-    /**
-     * @brief unconditionally transforms string to identifier
-     * @returns identifer which is either identical to the string (if it is
-     *          non-colliding) or has a modified suffix (to avoid collisions)
-     * @note In case the original string was not valid, an arbitrary valid root
-     *       name is chosen.
-     */
-    static Identifier make_always(std::string&& str) {
-        if (!valid(str)) {
-            str = default_identifier<T>::value;
-        }
         set_to_next_free(str);
         return {std::move(str)};
     }
