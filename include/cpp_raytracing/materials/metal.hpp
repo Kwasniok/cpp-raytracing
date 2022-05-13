@@ -18,7 +18,10 @@ class Metal : public Material {
     /** @brief initialize with identifier and parameters */
     Metal(Identifier<Material>&& id, const Color& color, const Scalar roughness)
         : Material(std::move(id)), color(color), roughness(roughness) {}
-    /** @brief initialize with identifier and parameters */
+    /**
+     * @brief initialize with (similar) identifier and parameters
+     * @see Identifier::make_always
+     */
     Metal(const char* id, const Color& color, const Scalar roughness)
         : Material(id), color(color), roughness(roughness) {}
     /** @brief initialize with parameters */

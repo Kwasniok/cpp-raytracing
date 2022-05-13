@@ -21,7 +21,10 @@ class Diffuse : public Material {
     /** @brief initialize with identifier and parameters */
     Diffuse(Identifier<Material>&& id, const Color& color)
         : Material(std::move(id)), color(color) {}
-    /** @brief initialize with identifier and parameters */
+  /**
+   * @brief initialize with (similar) identifier and parameters
+   * @see Identifier::make_always
+   */
     Diffuse(const char* id, const Color& color)
         : Material(std::move(id)), color(color) {}
     /** @brief initialize with parameters */

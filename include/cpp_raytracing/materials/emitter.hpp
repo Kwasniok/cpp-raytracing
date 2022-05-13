@@ -18,7 +18,10 @@ class Emitter : public Material {
     /** @brief initialize with identifier and parameters */
     Emitter(Identifier<Material>&& id, const Color& color)
         : Material(std::move(id)), color(color) {}
-    /** @brief initialize with identifier and parameters */
+    /**
+     * @brief initialize with (similar) identifier and parameters
+     * @see Identifier::make_always
+     */
     Emitter(const char* id, const Color& color) : Material(id), color(color) {}
     /** @brief initialize with parameters */
     Emitter(const Color& color) : Material(), color(color) {}
