@@ -22,8 +22,8 @@ struct identifier_content : pegtl::plus<identifier_content_char> {};
 struct identifier : quoted<identifier_content> {};
 
 /** @brief grammar for parsing a cpp_raytracing::Identifier */
-template <>
-struct grammar_for<Identifier> {
+template <typename T>
+struct grammar_for<Identifier<T>> {
     /** @brief grammar to be selected */
     using get = identifier;
 };
@@ -34,28 +34,33 @@ struct selector<identifier_content> : store_content {};
 
 } // namespace grammar
 
-/** @brief write a cpp_raytracing::Identifier to a stream */
-template <>
-void write<Identifier>(std::ostream& os, const Identifier& val) {
-    write(os, Quoted{val.str()});
-}
-
 /**
- *@brief parse a cpp_raytracing::Identifier from a node tree
+ * @brief dummy struct to bundle io operations in case of partial template
+ *        specialization for Identifier
+ * @see io::PartialSpecialDummy
  */
-template <>
-Identifier parse_node(const tao::pegtl::parse_tree::node& node) {
-    std::string value{node.string_view()};
-    std::optional<Identifier> opt_identifier =
-        Identifier::make_if_available(std::move(value));
-    if (!opt_identifier) {
-        std::stringstream msg;
-        msg << "Cannot parse identifier `" << node.string_view()
-            << "`. Identifier is either invalid or taken.";
-        throw ParsingException(std::move(msg).str());
+template <typename T>
+struct PartialSpecialDummy<Identifier<T>> {
+    /** @brief write a cpp_raytracing::Identifier to a stream */
+    static void write(std::ostream& os, const Identifier<T>& val) {
+        io::write(os, Quoted{val.str()});
     }
-    return std::move(opt_identifier).value();
-}
+    /**
+     *@brief parse a cpp_raytracing::Identifier from a node tree
+     */
+    static Identifier<T> parse_node(const tao::pegtl::parse_tree::node& node) {
+        std::string value{node.string_view()};
+        std::optional<Identifier<T>> opt_identifier =
+            Identifier<T>::make_if_available(std::move(value));
+        if (!opt_identifier) {
+            std::stringstream msg;
+            msg << "Cannot parse identifier `" << node.string_view()
+                << "`. Identifier is either invalid or taken.";
+            throw ParsingException(std::move(msg).str());
+        }
+        return std::move(opt_identifier).value();
+    }
+};
 
 }} // namespace cpp_raytracing::io
 

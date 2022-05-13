@@ -16,7 +16,7 @@ void test_write() {
         {"_", "\"_\""},
     };
     for (const auto& [str, q_str] : data) {
-        Identifier val = Identifier::make_always(str);
+        Identifier<void> val = Identifier<void>::make_always(str);
         std::stringstream os;
         io::write(os, val);
         TEST_ASSERT_EQUAL(os.str(), q_str);
@@ -32,7 +32,7 @@ void test_read_success() {
         {"_", "\"_\""},
     };
     for (const auto& [str, q_str] : data) {
-        Identifier x = io::read<Identifier>(q_str);
+        Identifier<void> x = io::read<Identifier<void>>(q_str);
         TEST_ASSERT_EQUAL(x, str);
     }
 }
@@ -42,7 +42,8 @@ void test_read_failure() {
         "", "unquoted_ID", "\"\"", "\"bad ID\"", "\"bäd→ID\"",
     };
     for (const auto& str : data) {
-        TEST_ASSERT_THROWS((io::read<Identifier>(str)), io::ParsingException);
+        TEST_ASSERT_THROWS((io::read<Identifier<void>>(str)),
+                           io::ParsingException);
     }
 }
 

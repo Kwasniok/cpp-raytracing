@@ -95,11 +95,38 @@ struct grammar_for {
 } // namespace grammar
 
 /**
- * @brief write a value to a stream
- * @tparam T value type
+ * @brief dummy struct to bundle io operations in case of partial template
+ *        specialization
+ * @note Ignore this class as long as partial template specialization is not
+         needed!
+ * @note This struct is nedded for partial template specialization since it is
+ *       currently supported for classes but not for functions.
+ * @note namespace io level ::write and ::parse_node will fall back to these
+ *       in case of partial specialization.
+ * @note For a discussion see
+ https://www.fluentcpp.com/2017/08/15/function-templates-partial-specialization-cpp/
  */
 template <typename T>
-void write(std::ostream& os, const T&);
+struct PartialSpecialDummy {
+    /** @brief write a value to a stream */
+    static void write(std::ostream& os, const T&);
+
+    /**
+     * @brief parse a value from a node tree
+     * @note asserts successful parsing of the tree according to
+     *       `grammar_for<T>`
+     * @note asserts node not to be the root of the tree
+     */
+    static T parse_node(const tao::pegtl::parse_tree::node& node);
+};
+
+/** @brief write a value to a stream*/
+template <typename T>
+inline void write(std::ostream& os, const T& val) {
+    // NOTE: fallback for partial template specialization (see
+    //       PartialSpecialDummy)
+    PartialSpecialDummy<T>::write(os, val);
+}
 
 /**
  * @brief (specilazation) write an empty listing
@@ -218,12 +245,16 @@ inline void write(std::ostream& os, const Quoted<std::string>& quoted) {
 
 /**
  * @brief parse a value from a node tree
- * @tparam T value type
- * @note asserts successful parsing of the tree
+ * @note asserts successful parsing of the tree according to
+ *       `grammar_for<T>`
  * @note asserts node not to be the root of the tree
  */
 template <typename T>
-T parse_node(const tao::pegtl::parse_tree::node& node);
+inline T parse_node(const tao::pegtl::parse_tree::node& node) {
+    // NOTE: fallback for partial template specialization (see
+    //       PartialSpecialDummy)
+    return PartialSpecialDummy<T>::parse_node(node);
+}
 
 namespace {
 inline void throw_read_exception(const pegtl::memory_input<>& in,

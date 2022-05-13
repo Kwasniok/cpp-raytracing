@@ -57,6 +57,7 @@ class UniqueRegister {
  * @brief represents an identifier for data of type T which are alphanumerical
  * strtings
  */
+template <typename T>
 class Identifier {
   public:
     /** @brief move constructor */
@@ -174,10 +175,12 @@ class Identifier {
     std::string _value; // NOTE: do not make const, must be movable
 };
 
-internal::UniqueRegister Identifier::_register;
+template <typename T>
+internal::UniqueRegister Identifier<T>::_register;
 
 /** @brief write Identifier to ostream */
-std::ostream& operator<<(std::ostream& os, const Identifier& identifier) {
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Identifier<T>& identifier) {
     return os << identifier.str();
 }
 

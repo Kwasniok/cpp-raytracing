@@ -10,7 +10,7 @@ namespace cpp_raytracing { namespace test {
 
 void test_make_if_available() {
     const char* str = "good_ID1";
-    auto opt_identifier = Identifier::make_if_available({str});
+    auto opt_identifier = Identifier<void>::make_if_available({str});
     TEST_ASSERT_TRUE(opt_identifier);
     if (opt_identifier) {
         TEST_ASSERT_EQUAL(opt_identifier->str(), str);
@@ -19,7 +19,7 @@ void test_make_if_available() {
 
 void test_make_always() {
     const char* str{"good_ID1"};
-    Identifier identifier = Identifier::make_always({str});
+    Identifier<void> identifier = Identifier<void>::make_always({str});
     TEST_ASSERT_EQUAL(identifier.str(), str);
 }
 
@@ -28,7 +28,7 @@ void test_valid_good() {
         "good_ID1", "1", "g", "G", "_",
     };
     for (const auto& v : values) {
-        TEST_ASSERT_TRUE(Identifier::valid(v));
+        TEST_ASSERT_TRUE(Identifier<void>::valid(v));
     }
 }
 
@@ -39,13 +39,13 @@ void test_valid_bad() {
         "bäd→ID",
     };
     for (const auto& v : values) {
-        TEST_ASSERT_FALSE(Identifier::valid(v));
+        TEST_ASSERT_FALSE(Identifier<void>::valid(v));
     }
 }
 
 void test_comparison() {
-    Identifier id1 = Identifier::make_always("abc");
-    Identifier id2 = Identifier::make_always("ABC");
+    Identifier<void> id1 = Identifier<void>::make_always("abc");
+    Identifier<void> id2 = Identifier<void>::make_always("ABC");
     TEST_ASSERT_EQUAL(id1, "abc"); // precondition
     TEST_ASSERT_EQUAL(id2, "ABC"); // precondition
 
