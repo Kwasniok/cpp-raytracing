@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 
 #define FMT_HEADER_ONLY
 #include <fmt/core.h>
@@ -177,6 +178,45 @@ inline void write(std::ostream& os, const Property<T>& prop) {
 }
 
 /**
+ * @brief wrapper type to write an object in quotes
+ * @see grammar::quoted
+ * @note: This object is entended to be optimizd away by the compiler.
+ */
+template <typename T>
+struct Quoted {
+    /**
+     * @brief wrapper type to write an object in quotes
+     * @see grammar::quoted
+     * @note: This object is entended to be optimizd away by the compiler.
+     */
+    constexpr explicit Quoted(const T& value) : value(value){};
+
+    /** @brief quoted value */
+    const T& value;
+};
+
+/**
+ * @brief write a quoted value
+ * @tparam T value type
+ * @see grammar::quoted
+ */
+template <typename T>
+inline void write(std::ostream& os, const Quoted<T>& quoted) {
+    os << QUOTE;
+    write(os, quoted.value);
+    os << QUOTE;
+}
+
+/**
+ * @brief write a quoted string
+ * @see grammar::quoted
+ */
+template <>
+inline void write(std::ostream& os, const Quoted<std::string>& quoted) {
+    os << QUOTE << quoted.value << QUOTE;
+}
+
+/**
  * @brief parse a value from a node tree
  * @tparam T value type
  * @note asserts successful parsing of the tree
@@ -294,6 +334,14 @@ template <typename T, char... Cs>
 struct property
     : pegtl::seq<pegtl::string<Cs...>, pegtl::pad<pegtl::one<ASSIGN>, ws>, T> {
 };
+
+/**
+ * @brief quoted value
+ * @tparam R rule for quoted value
+ * @note Do NOT allow ::QUOTE to appear inside of @a R!
+ */
+template <typename R>
+struct quoted : pegtl::seq<quote, R, quote> {};
 
 /** @brief single digit */
 struct digit : pegtl::digit {};
