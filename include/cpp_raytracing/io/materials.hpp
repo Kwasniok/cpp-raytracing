@@ -54,15 +54,19 @@ void write<std::shared_ptr<Material>>(std::ostream& os,
     //       versa.)
     if (typeid(*val) == typeid(Emitter)) {
         write_cast<Emitter>(os, val);
+        return;
     }
     if (typeid(*val) == typeid(Diffuse)) {
         write_cast<Diffuse>(os, val);
+        return;
     }
     if (typeid(*val) == typeid(Metal)) {
         write_cast<Metal>(os, val);
+        return;
     }
     if (typeid(*val) == typeid(Dielectric)) {
         write_cast<Dielectric>(os, val);
+        return;
     }
 }
 
