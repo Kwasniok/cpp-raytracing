@@ -9,8 +9,8 @@
 #include <functional>
 #include <istream>
 #include <optional>
-#include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 namespace cpp_raytracing {
@@ -48,7 +48,7 @@ class UniqueRegister {
     }
 
   private:
-    std::set<hash_t> _storage;
+    std::unordered_set<hash_t> _storage;
 };
 
 } // namespace internal
