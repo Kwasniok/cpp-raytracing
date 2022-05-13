@@ -3,8 +3,8 @@
  * @brief Identifier IO
  */
 
-#ifndef CPP_RAYTRACING_IO_SCALAR_HPP
-#define CPP_RAYTRACING_IO_SCALAR_HPP
+#ifndef CPP_RAYTRACING_IO_IDENTIFIER_HPP
+#define CPP_RAYTRACING_IO_IDENTIFIER_HPP
 
 #include <sstream>
 #include <utility>
