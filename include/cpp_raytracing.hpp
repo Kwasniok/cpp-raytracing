@@ -10,7 +10,6 @@
 #include "cpp_raytracing/color.hpp"
 #include "cpp_raytracing/hittables.hpp"
 #include "cpp_raytracing/image.hpp"
-#include "cpp_raytracing/io.hpp"
 #include "cpp_raytracing/materials.hpp"
 #include "cpp_raytracing/random.hpp"
 #include "cpp_raytracing/ray.hpp"
