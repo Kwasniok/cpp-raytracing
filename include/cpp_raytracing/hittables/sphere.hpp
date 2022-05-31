@@ -16,8 +16,15 @@ namespace cpp_raytracing {
 class Sphere : public Transformable {
 
   public:
+    /**
+     * @brief radius
+     * @note Negative radii relate to spheres with the inside out. This is
+     *       usefull for the inner surface of glass etc.
+     */
     Scalar radius;
+    /** @brief material of the sphere */
     std::shared_ptr<Material> material;
+
     virtual ~Sphere() = default;
 
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
