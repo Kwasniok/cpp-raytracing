@@ -17,16 +17,20 @@ class Transformable : public Hittable {
   public:
     /** @brief current position */
     Vec3 position;
-    /** @brief current velocity */
+    /**
+     * @brief current velocity
+     * @note `position + velocity = next(position)position of next frame`
+     */
     Vec3 velocity;
     virtual ~Transformable() = default;
 
     /**
      * @brief effective subframe position
+     * @param subframe_time 0.0..1.0
      * @note Required for motion blur.
      */
-    Vec3 effective_position() const {
-        return position + random_scalar(-0.1, +0.1) * velocity;
+    Vec3 subframe_position(const Scalar subframe_time) const {
+        return position + subframe_time * velocity;
     }
 };
 

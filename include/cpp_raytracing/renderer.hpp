@@ -42,6 +42,7 @@ class Renderer {
         for (unsigned long s = 0; s < samples; ++s) {
             // note: Mind the memory layout of image and data acces!
             //       Static schedule with small chunksize seems to be optimal.
+            const Scalar subframe_time = random_scalar(0.0, 1.0);
 #pragma omp parallel for shared(scene, camera, image) schedule(static, 1)
             for (unsigned long j = 0; j < canvas.height; ++j) {
                 for (unsigned long i = 0; i < canvas.width; ++i) {
@@ -52,8 +53,9 @@ class Renderer {
                     x = (2.0 * x / canvas.width - 1.0);
                     y = (2.0 * y / canvas.height - 1.0);
 
-                    const Ray ray = camera.ray_for_coords(x, y);
-                    const Color pixel_color = ray_color(scene, ray, ray_depth);
+                    const Ray ray = camera.ray_for_coords(subframe_time, x, y);
+                    const Color pixel_color =
+                        ray_color(scene, subframe_time, ray, ray_depth);
                     image[{i, j}] += pixel_color;
                 }
             }
@@ -67,12 +69,12 @@ class Renderer {
     }
 
     /** @brief calculates color of light ray */
-    static Color ray_color(const Scene& scene, const Ray& ray,
-                           const unsigned long depth) {
+    static Color ray_color(const Scene& scene, const Scalar subframe_time,
+                           const Ray& ray, const unsigned long depth) {
         if (depth == 0) {
             return Colors::BLACK;
         }
-        HitRecord record = scene.hit_record(ray, 0.00001);
+        HitRecord record = scene.hit_record(subframe_time, ray, 0.00001);
         if (!(record.t < infinity)) {
             return ray_back_ground_color(ray);
         }
@@ -84,7 +86,8 @@ class Renderer {
         if (scattered_ray.direction_near_zero(1.0e-12)) {
             return color;
         } else {
-            return color * ray_color(scene, scattered_ray, depth - 1);
+            return color *
+                   ray_color(scene, subframe_time, scattered_ray, depth - 1);
         }
     }
 

@@ -42,7 +42,7 @@ class Camera {
         const Scalar focal_length = (look_at - look_from).length();
 
         return Camera{
-            .origin = look_from,
+            .position = look_from,
             .direction_x = (viewport_width / 2.0) * u,
             .direction_y = (viewport_height / 2.0) * v,
             .direction_z = focal_length * w,
@@ -51,18 +51,25 @@ class Camera {
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
-    Ray ray_for_coords(const Scalar x, const Scalar y) const {
+    Ray ray_for_coords(const Scalar subframe_time, const Scalar x,
+                       const Scalar y) const {
+        Vec3 position = this->position + subframe_time * velocity;
         Vec3 random_vec = lens_radius * random_in_unit_disk();
         Vec3 defocus_offset =
             direction_x * random_vec.x() + direction_y * random_vec.y();
-        return Ray(origin + defocus_offset, direction_z + x * direction_x +
-                                                y * direction_y +
-                                                -defocus_offset);
+        return Ray(position + defocus_offset, direction_z + x * direction_x +
+                                                  y * direction_y +
+                                                  -defocus_offset);
     }
 
   public:
     /** @brief position of camera in space */
-    Vec3 origin{0.0, 0.0, 0.0};
+    Vec3 position{0.0, 0.0, 0.0};
+    /**
+     * @brief velocity of camera
+     * @note `position + velocity = next frame position`
+     */
+    Vec3 velocity{0.0, 0.0, 0.0};
     /**
      * @brief direction of image width in space
      * @note A longer vector will compress the image.

@@ -19,8 +19,9 @@ using namespace cpp_raytracing;
  */
 Scene make_scene() {
 
-    const Camera camera = Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, 0.8},
-                                       {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02);
+    Camera camera = Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, 0.8},
+                                 {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02);
+    camera.velocity = Vec3{0.0, 0.1, 0.0};
 
     Scene scene{camera};
 
@@ -36,11 +37,12 @@ Scene make_scene() {
     std::shared_ptr<Material> light =
         make_shared<Emitter>(Emitter({0.95, 0.9, 0.85}));
 
+    const auto velocity = Vec3{0.0, 0.0, 0.5};
     // left
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
         sphere->position = Vec3(-1.0, 0.0, -0.75);
-        sphere->velocity = Vec3(0.0, 0.0, 0.1);
+        sphere->velocity = velocity;
         sphere->radius = 0.5;
         sphere->material = diffuse_red;
         scene.add(std::move(sphere));
@@ -65,6 +67,7 @@ Scene make_scene() {
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
         sphere->position = Vec3(+1.0, 0.0, -0.75);
+        sphere->velocity = velocity;
         sphere->radius = 0.5;
         sphere->material = metal;
         scene.add(std::move(sphere));

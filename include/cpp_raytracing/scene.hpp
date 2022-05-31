@@ -32,9 +32,9 @@ class Scene : public Hittable {
         _hittables.push_back(std::move(hittable));
     }
 
-    virtual HitRecord
-    hit_record(const Ray& ray, const Scalar t_min = 0.0,
-               const Scalar t_max = infinity) const override;
+    virtual HitRecord hit_record(const Scalar subframe_time, const Ray& ray,
+                                 const Scalar t_min = 0.0,
+                                 const Scalar t_max = infinity) const override;
 
   public:
     /** @brief active camera of the scene used for rendering */
@@ -44,12 +44,13 @@ class Scene : public Hittable {
     std::vector<std::unique_ptr<Hittable>> _hittables;
 };
 
-HitRecord Scene::hit_record(const Ray& ray, const Scalar t_min,
-                            const Scalar t_max) const {
+HitRecord Scene::hit_record(const Scalar subframe_time, const Ray& ray,
+                            const Scalar t_min, const Scalar t_max) const {
     HitRecord closest_record = {.t = infinity};
 
     for (const auto& hittable : _hittables) {
-        HitRecord record = hittable->hit_record(ray, t_min, t_max);
+        HitRecord record =
+            hittable->hit_record(subframe_time, ray, t_min, t_max);
         if (record.t < closest_record.t) {
             closest_record = record;
         }

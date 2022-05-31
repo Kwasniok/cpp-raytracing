@@ -50,7 +50,8 @@ class Hittable {
      * @returns eihter a defned HitRecord or sets HitRecord::t to
      * ::infinity
      */
-    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const Scalar subframe_time, const Ray& ray,
+                                 const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const = 0;
 
     virtual ~Hittable() = default;
