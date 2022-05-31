@@ -4,7 +4,7 @@ SRC=src
 BLD=build
 OUT=out
 
-INCLUDES= -I fmt/include -I PEGTL/include
+INCLUDES=
 
 # GCC
 CPP=g++
