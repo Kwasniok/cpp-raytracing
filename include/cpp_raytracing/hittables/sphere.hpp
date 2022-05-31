@@ -6,37 +6,22 @@
 #ifndef CPP_RAYTRACING_HITTABLES_SHPERE_HPP
 #define CPP_RAYTRACING_HITTABLES_SHPERE_HPP
 
-#include "base.hpp"
+#include "transformable.hpp"
 
 namespace cpp_raytracing {
 
 /**
  * @brief hittable spherical object
  */
-class Sphere : public Hittable {
-  public:
-    /** @brief initialize as centered unit sphere */
-    inline Sphere() : _origin(Vec3(0.0, 0.0, 0.0)), _radius(1.0){};
-    /** @brief initialize with pprameters */
-    inline Sphere(const Vec3& origin, const Scalar radius,
-                  std::shared_ptr<Material> material)
-        : _origin(origin), _radius(radius), _material(material) {}
-    virtual ~Sphere() = default;
+class Sphere : public Transformable {
 
-    /** @brief get origin of the sphere */
-    inline Vec3 origin() const { return _origin; }
-    /** @brief get radius of the sphere */
-    inline Scalar radius() const { return _radius; }
-    /** @brief get material of the sphere */
-    inline std::shared_ptr<Material> material() const { return _material; }
+  public:
+    Scalar radius;
+    std::shared_ptr<Material> material;
+    virtual ~Sphere() = default;
 
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
-
-  private:
-    Vec3 _origin;
-    Scalar _radius;
-    std::shared_ptr<Material> _material;
 };
 
 HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
@@ -47,10 +32,10 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     // solve: a*t^2 + b*t + c = 0
     // where a = d^2 >= 0, b = 2*d*(s-o), c = (s-o)^2 - R^2
     // solution: t = (-b +/- sqrt(b^2 - 4ac))/(2a)
-    const auto delta = ray.start() - origin();
+    const auto delta = ray.start() - position;
     const auto a = dot(ray.direction(), ray.direction());
     const auto b_half = dot(ray.direction(), delta);
-    const auto c = dot(delta, delta) - radius() * radius();
+    const auto c = dot(delta, delta) - radius * radius;
     const auto discriminant = b_half * b_half - a * c;
     if (discriminant < 0.0) {
         // no real solution
@@ -76,12 +61,12 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
 
     // found solution in range
     const Vec3 point = ray.at(t);
-    const Vec3 normal = (point - origin()) / radius();
+    const Vec3 normal = (point - position) / radius;
     HitRecord record;
     record.t = t;
     record.point = point;
     record.set_face_normal(ray, normal);
-    record.material = material();
+    record.material = material;
     return record;
 }
 

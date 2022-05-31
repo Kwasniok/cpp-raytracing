@@ -37,18 +37,53 @@ Scene make_scene() {
         make_shared<Emitter>(Emitter({0.95, 0.9, 0.85}));
 
     // left
-    scene.add(make_unique<Sphere>(Vec3(-1.0, 0.0, -0.75), 0.5, diffuse_red));
+    {
+        auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->position = Vec3(-1.0, 0.0, -0.75);
+        sphere->radius = 0.5;
+        sphere->material = diffuse_red;
+        scene.add(std::move(sphere));
+    }
     // middle (outer)
-    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), +0.5, glass));
+    {
+        auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->position = Vec3(0.0, 0.0, -1.0);
+        sphere->radius = 0.5;
+        sphere->material = glass;
+        scene.add(std::move(sphere));
+    }
     // middle (inner)
-    scene.add(make_unique<Sphere>(Vec3(0.0, 0.0, -1.0), -0.4, glass));
+    {
+        auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->position = Vec3(0.0, 0.0, -1.0);
+        sphere->radius = -0.4;
+        sphere->material = glass;
+        scene.add(std::move(sphere));
+    }
     // right
-    scene.add(make_unique<Sphere>(Vec3(+1.0, 0.0, -0.75), 0.5, metal));
+    {
+        auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->position = Vec3(+1.0, 0.0, -0.75);
+        sphere->radius = 0.5;
+        sphere->material = metal;
+        scene.add(std::move(sphere));
+    }
     // above
-    scene.add(make_unique<Sphere>(Vec3(+0.0, 1.0, -1.0), 0.5, light));
+    {
+        auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->position = Vec3(0.0, 1.0, -1.0);
+        sphere->radius = 0.5;
+        sphere->material = light;
+        scene.add(std::move(sphere));
+    }
     // floor
-    scene.add(
-        make_unique<Sphere>(Vec3(0.0, -100.5, -1.0), 100.0, diffuse_gray));
+    {
+        auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->position = Vec3(0.0, -100.5, -1.0);
+        sphere->radius = 100.0;
+        sphere->material = diffuse_gray;
+        scene.add(std::move(sphere));
+    }
 
     return scene;
 }
