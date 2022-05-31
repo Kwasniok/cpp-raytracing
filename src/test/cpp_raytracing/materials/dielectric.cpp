@@ -31,7 +31,13 @@ void test_dielectric_air() {
      */
     const Color mat_col{0.0, 0.5, 1.0};
     const Scalar ior = 1.0;
-    std::shared_ptr<Material> mat = std::make_shared<Dielectric>(mat_col, ior);
+    std::shared_ptr<Material> mat;
+    {
+        auto dielectric = std::make_unique_for_overwrite<Dielectric>();
+        dielectric->color = mat_col;
+        dielectric->index_of_refraction = ior;
+        mat = std::move(dielectric);
+    }
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
@@ -77,7 +83,13 @@ void test_dielectric_into_glass() {
      */
     const Color mat_col{0.0, 0.5, 1.0};
     const Scalar ior = 1.5;
-    std::shared_ptr<Material> mat = std::make_shared<Dielectric>(mat_col, ior);
+    std::shared_ptr<Material> mat;
+    {
+        auto dielectric = std::make_unique_for_overwrite<Dielectric>();
+        dielectric->color = mat_col;
+        dielectric->index_of_refraction = ior;
+        mat = std::move(dielectric);
+    }
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
@@ -152,7 +164,13 @@ void test_dielectric_total_reflection() {
      */
     const Color mat_col{0.0, 0.5, 1.0};
     const Scalar ior = 1 / 1.5;
-    std::shared_ptr<Material> mat = std::make_shared<Dielectric>(mat_col, ior);
+    std::shared_ptr<Material> mat;
+    {
+        auto dielectric = std::make_unique_for_overwrite<Dielectric>();
+        dielectric->color = mat_col;
+        dielectric->index_of_refraction = ior;
+        mat = std::move(dielectric);
+    }
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},

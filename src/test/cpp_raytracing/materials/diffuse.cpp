@@ -25,7 +25,12 @@ void test_diffuse() {
               (if zero, then equal to normal)
      */
     const Color mat_col{0.0, 0.5, 1.0};
-    std::shared_ptr<Material> mat = std::make_shared<Diffuse>(mat_col);
+    std::shared_ptr<Material> mat;
+    {
+        auto diffuse = std::make_unique_for_overwrite<Diffuse>();
+        diffuse->color = mat_col;
+        mat = std::move(diffuse);
+    }
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},

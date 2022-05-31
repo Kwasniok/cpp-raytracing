@@ -16,32 +16,15 @@ namespace cpp_raytracing {
  * @brief colored translucent dielectric material
  */
 class Dielectric : public Material {
-  public:
-    /** @brief initialize with identifier and parameters */
-    Dielectric(Identifier<Material>&& id, const Color& color,
-               const Scalar index_of_refraction)
-        : Material(std::move(id)),
-          color(color),
-          index_of_refraction(index_of_refraction) {}
-    /**
-     * @brief initialize with (similar) identifier and parameters
-     * @see Identifier::make_always
-     */
-    Dielectric(const char* id, const Color& color,
-               const Scalar index_of_refraction)
-        : Material(std::move(id)),
-          color(color),
-          index_of_refraction(index_of_refraction) {}
-    /**@brief initialize with parameters */
-    Dielectric(const Color& color, const Scalar index_of_refraction)
-        : Material(), color(color), index_of_refraction(index_of_refraction) {}
 
-    /** @brief move constructor */
-    Dielectric(Dielectric&&) = default;
-    /** @brief move operation */
-    Dielectric& operator=(Dielectric&&) = default;
-    Dielectric(const Dielectric&) = delete;
-    Dielectric& operator=(const Dielectric&) = delete;
+  public:
+    /** @brief color of the dielectric */
+    Color color = Colors::WHITE;
+    /**
+     * @brief index of refraction
+     * @note 1.0=air, >1.0=typical, <1.0=atypical
+     */
+    Scalar index_of_refraction = 1.0;
 
     virtual ~Dielectric() = default;
 
@@ -97,15 +80,6 @@ class Dielectric : public Material {
         x *= x;
         return x + (1.0 - x) * std::pow(1 - cos_theta, 5);
     }
-
-  public:
-    /** @brief color of the dielectric */
-    Color color = Colors::WHITE;
-    /**
-     * @brief index of refraction
-     * @note 1.0=air, >1.0=typical, <1.0=atypical
-     */
-    Scalar index_of_refraction = 1.0;
 };
 } // namespace cpp_raytracing
 

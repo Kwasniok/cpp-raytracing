@@ -24,17 +24,43 @@ Scene make_scene() {
 
     Scene scene{camera};
 
-    // diffuse
-    std::shared_ptr<Material> diffuse_gray =
-        make_shared<Diffuse>(Diffuse({0.5, 0.5, 0.5}));
-    std::shared_ptr<Material> diffuse_red =
-        make_shared<Diffuse>(Diffuse({0.75, 0.5, 0.5}));
-    std::shared_ptr<Material> metal =
-        make_shared<Metal>(Metal({0.8, 0.7, 0.6}, 0.2));
-    std::shared_ptr<Material> glass =
-        make_shared<Dielectric>(Dielectric({1.0, 1.0, 1.0}, 1.5));
-    std::shared_ptr<Material> light =
-        make_shared<Emitter>(Emitter({0.95, 0.9, 0.85}));
+    // diffuse (gray)
+    std::shared_ptr<Material> diffuse_gray;
+    {
+        auto mat = std::make_unique_for_overwrite<Diffuse>();
+        mat->color = {0.5, 0.5, 0.5};
+        diffuse_gray = std::move(mat);
+    }
+    // diffuse (red)
+    std::shared_ptr<Material> diffuse_red;
+    {
+        auto mat = std::make_unique_for_overwrite<Diffuse>();
+        mat->color = {0.75, 0.5, 0.5};
+        diffuse_red = std::move(mat);
+    }
+    // metal
+    std::shared_ptr<Material> metal;
+    {
+        auto mat = std::make_unique_for_overwrite<Metal>();
+        mat->color = {0.8, 0.7, 0.6};
+        mat->roughness = 0.2;
+        metal = std::move(mat);
+    }
+    // glass
+    std::shared_ptr<Material> glass;
+    {
+        auto mat = std::make_unique_for_overwrite<Dielectric>();
+        mat->color = {1.0, 1.0, 1.0};
+        mat->index_of_refraction = 1.5;
+        glass = std::move(mat);
+    }
+    // light
+    std::shared_ptr<Material> light;
+    {
+        auto mat = std::make_unique_for_overwrite<Emitter>();
+        mat->color = {0.95, 0.9, 0.85};
+        light = std::move(mat);
+    }
 
     // left
     {

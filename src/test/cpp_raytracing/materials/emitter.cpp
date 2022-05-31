@@ -23,7 +23,12 @@ void test_emitter() {
               outgoing ray has no direction
      */
     const Color mat_col{0.0, 0.5, 1.0};
-    std::shared_ptr<Material> mat = std::make_shared<Emitter>(mat_col);
+    std::shared_ptr<Material> mat;
+    {
+        auto emitter = std::make_unique_for_overwrite<Emitter>();
+        emitter->color = mat_col;
+        mat = std::move(emitter);
+    }
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},

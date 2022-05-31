@@ -26,7 +26,13 @@ void test_metal_no_roughness() {
      */
     const Color mat_col{0.0, 0.5, 1.0};
     const Scalar mat_rough = 0.0;
-    std::shared_ptr<Material> mat = std::make_shared<Metal>(mat_col, mat_rough);
+    std::shared_ptr<Material> mat;
+    {
+        auto metal = std::make_unique_for_overwrite<Metal>();
+        metal->color = mat_col;
+        metal->roughness = mat_rough;
+        mat = std::move(metal);
+    }
     const Vec3 normal{-1.0, 0.0, 0.0};
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
@@ -72,7 +78,13 @@ void test_metal_with_roughness() {
      */
     const Color mat_col{0.0, 0.5, 1.0};
     const Scalar mat_rough = 0.25;
-    std::shared_ptr<Material> mat = std::make_shared<Metal>(mat_col, mat_rough);
+    std::shared_ptr<Material> mat;
+    {
+        auto metal = std::make_unique_for_overwrite<Metal>();
+        metal->color = mat_col;
+        metal->roughness = mat_rough;
+        mat = std::move(metal);
+    }
     const Vec3 normal{-1.0, 0.0, 0.0};
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},

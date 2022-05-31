@@ -14,26 +14,15 @@ namespace cpp_raytracing {
  * @brief simple colored metal material
  */
 class Metal : public Material {
-  public:
-    /** @brief initialize with identifier and parameters */
-    Metal(Identifier<Material>&& id, const Color& color, const Scalar roughness)
-        : Material(std::move(id)), color(color), roughness(roughness) {}
-    /**
-     * @brief initialize with (similar) identifier and parameters
-     * @see Identifier::make_always
-     */
-    Metal(const char* id, const Color& color, const Scalar roughness)
-        : Material(id), color(color), roughness(roughness) {}
-    /** @brief initialize with parameters */
-    Metal(const Color& color, const Scalar roughness)
-        : Material(), color(color), roughness(roughness) {}
 
-    /** @brief move constructor */
-    Metal(Metal&&) = default;
-    /** @brief move assignment */
-    Metal& operator=(Metal&&) = default;
-    Metal(const Metal&) = delete;
-    Metal& operator=(const Metal&) = delete;
+  public:
+    /** @brief color of the metal surface */
+    Color color = Colors::WHITE;
+    /**
+     * @brief roughness of the diffuse surface
+     * note: `roughness=0.0...1.0`
+     */
+    Scalar roughness = 0.0;
 
     virtual ~Metal() = default;
 
@@ -51,15 +40,6 @@ class Metal : public Material {
                                const Scalar roughness) {
         return ortho - para + roughness * random_vector_in_unit_sphere();
     }
-
-  public:
-    /** @brief color of the metal surface */
-    Color color = Colors::WHITE;
-    /**
-     * @brief roughness of the diffuse surface
-     * note: `roughness=0.0...1.0`
-     */
-    Scalar roughness = 0.0;
 };
 
 } // namespace cpp_raytracing
