@@ -16,8 +16,15 @@ namespace cpp_raytracing {
 class Sphere : public Transformable {
 
   public:
+    /**
+     * @brief radius
+     * @note Negative radii relate to spheres with the inside out. This is
+     *       usefull for the inner surface of glass etc.
+     */
     Scalar radius;
+    /** @brief material of the sphere */
     std::shared_ptr<Material> material;
+
     virtual ~Sphere() = default;
 
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
@@ -32,7 +39,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     // solve: a*t^2 + b*t + c = 0
     // where a = d^2 >= 0, b = 2*d*(s-o), c = (s-o)^2 - R^2
     // solution: t = (-b +/- sqrt(b^2 - 4ac))/(2a)
-    const auto delta = ray.start() - position;
+    const auto delta = ray.start() - effective_position();
     const auto a = dot(ray.direction(), ray.direction());
     const auto b_half = dot(ray.direction(), delta);
     const auto c = dot(delta, delta) - radius * radius;
@@ -61,7 +68,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
 
     // found solution in range
     const Vec3 point = ray.at(t);
-    const Vec3 normal = (point - position) / radius;
+    const Vec3 normal = (point - effective_position()) / radius;
     HitRecord record;
     record.t = t;
     record.point = point;

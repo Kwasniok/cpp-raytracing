@@ -21,6 +21,13 @@ class Transformable : public Hittable {
     Vec3 velocity;
     virtual ~Transformable() = default;
 
+    /**
+     * @brief effective subframe position
+     * @note Required for motion blur.
+     */
+    Vec3 effective_position() const {
+        return position + random_scalar(-0.1, +0.1) * velocity;
+    }
 };
 
 } // namespace cpp_raytracing

@@ -40,6 +40,7 @@ Scene make_scene() {
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
         sphere->position = Vec3(-1.0, 0.0, -0.75);
+        sphere->velocity = Vec3(0.0, 0.0, 0.1);
         sphere->radius = 0.5;
         sphere->material = diffuse_red;
         scene.add(std::move(sphere));
