@@ -9,6 +9,9 @@
 #include <array>
 #include <iostream>
 
+#include <glm/detail/qualifier.hpp>
+#include <glm/geometric.hpp>
+
 #include "random.hpp"
 #include "util.hpp"
 
@@ -56,28 +59,27 @@ class Color {
     constexpr ColorScalar b() const { return _data[2]; }
 
     /** @brief const iterator for first element */
-    constexpr auto begin() const { return _data.begin(); }
+    constexpr auto begin() const { return &_data[0]; }
     /** @brief const iterator for end */
-    constexpr auto end() const { return _data.end(); }
+    constexpr auto end() const { return &_data[0] + 3; }
     /** @brief iterator for first element */
-    constexpr auto begin() { return _data.begin(); }
+    constexpr auto begin() { return &_data[0]; }
     /** @brief iterator for end */
-    constexpr auto end() { return _data.end(); }
+    constexpr auto end() { return &_data[0] + 3; }
 
     /** @brief tests equivalence */
     constexpr bool operator==(const Color& other) const {
-        return r() == other.r() && g() == other.g() && b() == other.b();
+        return _data == other._data;
     }
 
     /** @brief tests inequivalence */
     constexpr bool operator!=(const Color& other) const {
-        return r() != other.r() || g() != other.g() || b() != other.b();
+        return _data != other._data;
     }
 
     /** @brief negate channelwise */
-    constexpr Color operator-() const {
-        return Color{-_data[0], -_data[1], -_data[2]};
-    }
+    constexpr Color operator-() const { return Color{-_data}; }
+
     /**
      * @brief enumerated channel access
      * @note 0=red, 1=green, 2=blue
@@ -90,36 +92,42 @@ class Color {
     constexpr ColorScalar& operator[](unsigned long i) { return _data[i]; }
     /** @brief add channelwise */
     constexpr Color& operator+=(const Color& other) {
-        _data[0] += other._data[0];
-        _data[1] += other._data[1];
-        _data[2] += other._data[2];
+        _data += other._data;
         return *this;
     }
     /** @brief subtract channelwise */
     constexpr Color& operator-=(const Color& other) {
-        return *this += (-other);
+        _data -= other._data;
+        return *this;
     }
     /** @brief multiply channelwise */
     constexpr Color& operator*=(const ColorScalar fac) {
-        _data[0] *= fac;
-        _data[1] *= fac;
-        _data[2] *= fac;
+        _data *= fac;
         return *this;
     }
     /** @brief multiply channelwise */
     constexpr Color& operator*=(const Color& other) {
-        _data[0] *= other[0];
-        _data[1] *= other[1];
-        _data[2] *= other[2];
+        _data *= other._data;
         return *this;
     }
     /** @brief divide channelwise */
     constexpr Color& operator/=(const ColorScalar fac) {
-        return *this *= (1 / fac);
+        _data /= fac;
+        return *this;
     }
 
+    friend constexpr Color operator+(const Color&, const Color&);
+    friend constexpr Color operator-(const Color&, const Color&);
+    friend constexpr Color operator*(const Color&, const ColorScalar);
+    friend constexpr Color operator*(const Color&, const Color&);
+    friend constexpr Color operator*(const ColorScalar, const Color&);
+    friend constexpr Color operator/(const Color&, const ColorScalar);
+
   private:
-    std::array<ColorScalar, 3> _data;
+    using data_type = glm::vec<3, ColorScalar>;
+    constexpr Color(const data_type data) : _data(data) {}
+
+    data_type _data;
 };
 
 /** @brief write Color to stream */
@@ -142,25 +150,22 @@ inline constexpr ColorIntegral int_from_color_scalar(const ColorScalar cs) {
 
 /** @brief add channelwise */
 inline constexpr Color operator+(const Color& color1, const Color& color2) {
-    return Color(color1.r() + color2.r(), color1.g() + color2.g(),
-                 color1.b() + color2.b());
+    return Color(color1._data + color2._data);
 }
 
 /** @brief subtract channelwise */
 inline constexpr Color operator-(const Color& color1, const Color& color2) {
-    return Color(color1.r() - color2.r(), color1.g() - color2.g(),
-                 color1.b() - color2.b());
+    return Color(color1._data - color2._data);
 }
 
 /** @brief multiply channelwise */
 inline constexpr Color operator*(const Color& color, const ColorScalar f) {
-    return Color(color.r() * f, color.g() * f, color.b() * f);
+    return Color(color._data * f);
 }
 
 /** @brief multiply channelwise */
 inline constexpr Color operator*(const Color& color1, const Color& color2) {
-    return Color(color1.r() * color2.r(), color1.g() * color2.g(),
-                 color1.b() * color2.b());
+    return Color(color1._data * color2._data);
 }
 
 /** @brief multiply channelwise */
@@ -170,8 +175,7 @@ inline constexpr Color operator*(const ColorScalar f, const Color& color) {
 
 /** @brief divide channelwise */
 inline constexpr Color operator/(const Color& color, const ColorScalar f) {
-    const ColorScalar f_inv = 1 / f;
-    return Color(color.r() * f_inv, color.g() * f_inv, color.b() * f_inv);
+    return Color(color._data / f);
 }
 
 /** @brief color constants */
