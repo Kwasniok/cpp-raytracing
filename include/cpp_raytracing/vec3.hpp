@@ -62,9 +62,7 @@ class Vec3 {
     }
 
     /** @brief negate elementwise */
-    constexpr Vec3 operator-() const {
-        return Vec3{-_data.x, -_data.y, -_data.z};
-    }
+    constexpr Vec3 operator-() const { return Vec3{-_data}; }
 
     /**
      * @brief enumerated accces to coefficients
@@ -116,14 +114,14 @@ class Vec3 {
                std::abs(_data.z) < epsilon;
     }
 
-    friend inline constexpr Vec3 operator+(const Vec3& v1, const Vec3& v2);
-    friend inline constexpr Vec3 operator-(const Vec3& v1, const Vec3& v2);
-    friend inline constexpr Vec3 operator*(const Vec3& v, const Scalar f);
-    friend inline constexpr Vec3 operator*(const Scalar f, const Vec3& v);
-    friend inline constexpr Vec3 operator/(const Vec3& v, const Scalar f);
-    friend inline constexpr Scalar dot(const Vec3& v1, const Vec3& v2);
-    friend inline constexpr Vec3 cross(const Vec3& v1, const Vec3& v2);
-    friend inline constexpr Vec3 unit_vector(const Vec3& v);
+    friend constexpr Vec3 operator+(const Vec3&, const Vec3&);
+    friend constexpr Vec3 operator-(const Vec3&, const Vec3&);
+    friend constexpr Vec3 operator*(const Vec3&, const Scalar);
+    friend constexpr Vec3 operator*(const Scalar, const Vec3&);
+    friend constexpr Vec3 operator/(const Vec3&, const Scalar);
+    friend constexpr Scalar dot(const Vec3&, const Vec3&);
+    friend constexpr Vec3 cross(const Vec3&, const Vec3&);
+    friend constexpr Vec3 unit_vector(const Vec3&);
 
   private:
     using data_type = glm::vec<3, Scalar>;
