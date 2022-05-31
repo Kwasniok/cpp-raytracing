@@ -4,7 +4,7 @@ SRC=src
 BLD=build
 OUT=out
 
-INCLUDES=
+INCLUDES=-I third_party/glm
 
 # GCC
 CPP=g++
