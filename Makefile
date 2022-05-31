@@ -18,7 +18,7 @@ CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC) $(INCLUDES)
 ### ALL (DEFAULT) ###
 .PHONY: all
 .DEFAULT_GOAL=all
-all: test main run
+all: test run
 
 ### CLEAN ##
 .PHONY:clean
@@ -28,7 +28,7 @@ clean:
 
 ### RUN ###
 .PHONY:run
-run:
+run: main
 	@mkdir -p $(OUT)
 	$(BLD)/main
 
