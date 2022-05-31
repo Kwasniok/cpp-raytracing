@@ -17,6 +17,31 @@ namespace cpp_raytracing {
  */
 class Camera {
   public:
+    /** @brief position of camera in space */
+    Vec3 origin{0.0, 0.0, 0.0};
+    /**
+     * @brief direction of image width in space
+     * @note A longer vector will compress the image.
+     */
+    Vec3 direction_x{1.0, 0.0, 0.0};
+    /**
+     * @brief direction of image height in space
+     * @note A longer vector will compress the image.
+     */
+    Vec3 direction_y{0.0, 1.0, 0.0};
+    /**
+     * @brief direction of image depth in space
+     * @note The vector length is the focus distance (where the focal plane is).
+     */
+    Vec3 direction_z{0.0, 0.0, -1.0};
+    /**
+     * @brief size of the lens radius
+     * @note A wider radius leads to an increased defocus and a thighter focus
+     * around the focal plane.
+     * @note `lens_radius = aperature / 2`
+     */
+    Scalar lens_radius = 0.0;
+
     // NOTE: preserves aggregation
     /**
      * @brief create the camera based on real world paramerters
@@ -59,32 +84,6 @@ class Camera {
                                                 y * direction_y +
                                                 -defocus_offset);
     }
-
-  public:
-    /** @brief position of camera in space */
-    Vec3 origin{0.0, 0.0, 0.0};
-    /**
-     * @brief direction of image width in space
-     * @note A longer vector will compress the image.
-     */
-    Vec3 direction_x{1.0, 0.0, 0.0};
-    /**
-     * @brief direction of image height in space
-     * @note A longer vector will compress the image.
-     */
-    Vec3 direction_y{0.0, 1.0, 0.0};
-    /**
-     * @brief direction of image depth in space
-     * @note The vector length is the focus distance (where the focal plane is).
-     */
-    Vec3 direction_z{0.0, 0.0, -1.0};
-    /**
-     * @brief size of the lens radius
-     * @note A wider radius leads to an increased defocus and a thighter focus
-     * around the focal plane.
-     * @note `lens_radius = aperature / 2`
-     */
-    Scalar lens_radius = 0.0;
 };
 
 } // namespace cpp_raytracing
