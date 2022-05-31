@@ -36,3 +36,8 @@ to automatically format the entire code base (requires `clang-format`).
 - make v4.3+
 - doxygen v1.9+
 - valgrind v3.18+ (optional)
+
+## Features
+### (Translational) Motion Blur
+![out](https://user-images.githubusercontent.com/7516208/171229392-9d9960a9-1b39-418b-8a5e-fca56b6c3676.png)
+
