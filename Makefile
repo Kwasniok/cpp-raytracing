@@ -18,7 +18,7 @@ CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC) $(INCLUDES)
 ### ALL (DEFAULT) ###
 .PHONY: all
 .DEFAULT_GOAL=all
-all: test run
+all: test run_all
 
 ### CLEAN ##
 .PHONY:clean
@@ -27,25 +27,28 @@ clean:
 	rm -rf doc/*
 
 ### RUN ###
-.PHONY:run
-run: main
+.PHONY: run_all
+run_all: run_example_01
+
+### EXAMPLE 01 ###
+
+.PHONY: run_example_01
+run_example_01: example_01
 	@mkdir -p $(OUT)
-	$(BLD)/main
+	$(BLD)/example_01
 
-### MAIN ###
-
-.PHONY: main
-main: $(BLD)/main
-$(BLD)/main.d: $(SRC)/main.cpp
+.PHONY: example_01
+example_01: $(BLD)/example_01
+$(BLD)/example_01.d: $(SRC)/example_01.cpp
 	@mkdir -p $(@D) # provide parent directory of target
 	$(CPP) $(CPP_FLAGS) -MM -MQ $@ -o $@ $<
 
-$(BLD)/main: $(SRC)/main.cpp $(BLD)/main.d
+$(BLD)/example_01: $(SRC)/example_01.cpp $(BLD)/example_01.d
 	@mkdir -p $(@D) # provide parent directory of target
-	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BLD)/main $(SRC)/main.cpp
+	$(CPP) $(CPP_FLAGS) $(CPP_FLAGS_OPENMP) -o $(BLD)/example_01 $(SRC)/example_01.cpp
 
 # import dependencies for main binary
-include $(BLD)/main.d
+include $(BLD)/example_01.d
 
 
 ### DOCUMENTATION ###
