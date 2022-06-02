@@ -72,6 +72,10 @@ struct default_identifier {
  */
 template <typename T>
 class Identifier {
+  private:
+    /** @brief dummy struct to distinguish internal only overloads */
+    struct InternalOnly {};
+
   public:
     /**
      * @brief initialize identifer with root based on default_identifier
@@ -100,7 +104,7 @@ class Identifier {
         if (!valid(str) || !_register.claim(str)) {
             return {};
         }
-        return {Identifier{std::move(str)}};
+        return {Identifier{std::move(str), InternalOnly()}};
     }
     /**
      * @brief unconditionally transforms string to identifier
@@ -116,7 +120,7 @@ class Identifier {
             str = default_identifier<T>::value;
         }
         set_to_next_free(str);
-        return {std::move(str)};
+        return {std::move(str), InternalOnly()};
     }
 
     /**
@@ -175,7 +179,7 @@ class Identifier {
     Identifier copy() {
         std::string str = _value;
         set_to_next_free(str);
-        return {std::move(str)};
+        return {std::move(str), InternalOnly()};
     }
 
     /**
@@ -196,7 +200,7 @@ class Identifier {
     /**
      * @brief initialize with std::string
      */
-    Identifier(std::string&& str) : _value(std::move(str)) {}
+    Identifier(std::string&& str, InternalOnly) : _value(std::move(str)) {}
 
     /** @brief true if object has a value (which is then also registered) */
     bool has_value() const { return _value.size() > 0; }
