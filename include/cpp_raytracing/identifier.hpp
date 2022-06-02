@@ -69,6 +69,9 @@ struct default_identifier {
  * @note Each object collection has its own identifier pool. Therefore, two
  *       identifiers of equal value but from different collections can be
  *       considered unequal.
+ * @note Identifers are 'slippery' which means they might change the the suffix
+ *       of their value in order to avoid collissions when created or changed.
+ *       Use make_always if this is undesired.
  */
 template <typename T>
 class Identifier {
@@ -80,7 +83,7 @@ class Identifier {
     /**
      * @brief initialize identifer with root based on default_identifier
      * @note Use this initializer if you don't care about the value.
-     * @note Since a non-occupied identifier must be found, this initialization
+     * @note Since a unoccupied identifier must be found, this initialization
      *       **might be costly**. Consider using Identifier::make_if_available
      *       or Identifier::make_always with a specific string if possible.
      *       (Move the value if necessary.)
@@ -88,6 +91,49 @@ class Identifier {
      */
     Identifier() : _value() {
         std::string str = default_identifier<T>::value;
+        set_to_next_free(str);
+        _value = std::move(str);
+    }
+
+    /**
+     * @brief move constructor
+     * @note Moving preserves the identity.
+     */
+    Identifier(Identifier&& other) = default;
+
+    /**
+     * @brief move assignment
+     * @note Moving preserves the identity.
+     */
+    Identifier& operator=(Identifier&& other) = default;
+
+    /**
+     * @brief non-copiable use explicit copy() instead
+     * @note Copying would require to generate a new (incemented) identifer,
+     *       this is non-trivial and should not happen silently.
+     * @see copy
+     */
+    Identifier(const Identifier& other) = delete;
+
+    /**
+     * @brief non-copiable use explicit copy() instead
+     * @note Copying would require to generate a new (incemented) identifer,
+     *       this is non-trivial and should not happen silently.
+     * @see copy
+     */
+    Identifier& operator=(const Identifier& other) = delete;
+
+    /**
+     * @brief initialize identifer with root based on parameter
+     * @note Use this initializer if you care about the root of the value but
+     *       not its exact value.
+     * @note Since a unoccupied identifier must be found, this initialization
+     *       **might be costly**. Consider using Identifier::make_if_available
+     *       or Identifier::make_always with a specific string if possible.
+     *       (Move the value if necessary.)
+     * @see make_if_available, make_always
+     */
+    Identifier(std::string&& str) : _value() {
         set_to_next_free(str);
         _value = std::move(str);
     }
@@ -123,31 +169,6 @@ class Identifier {
         return {std::move(str), InternalOnly()};
     }
 
-    /**
-     * @brief move constructor
-     * @note Moving preserves the identity.
-     */
-    Identifier(Identifier&& other) = default;
-    /**
-     * @brief move assignment
-     * @note Moving preserves the identity.
-     */
-    Identifier& operator=(Identifier&& other) = default;
-    /**
-     * @brief non-copiable use explicit copy() instead
-     * @note Copying would require to generate a new (incemented) identifer,
-     *       this is non-trivial and should not happen silently.
-     * @see copy
-     */
-    Identifier(const Identifier& other) = delete;
-    /**
-     * @brief non-copiable use explicit copy() instead
-     * @note Copying would require to generate a new (incemented) identifer,
-     *       this is non-trivial and should not happen silently.
-     * @see copy
-     */
-    Identifier& operator=(const Identifier& other) = delete;
-
     ~Identifier() {
         if (has_value()) {
             _register.release(_value);
@@ -174,7 +195,7 @@ class Identifier {
 
     /**
      * @brief explicitly copies the identifer and increments it to a
-     *        non-occupied value
+     *        unoccupied value
      */
     Identifier copy() {
         std::string str = _value;
