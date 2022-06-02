@@ -32,9 +32,8 @@ class Scene : public Hittable {
         _hittables.push_back(std::move(hittable));
     }
 
-    virtual HitRecord
-    hit_record(const Ray& ray, const Scalar t_min = 0.0,
-               const Scalar t_max = infinity) const override;
+    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+                                 const Scalar t_max = infinity) const override;
 
   public:
     /** @brief active camera of the scene used for rendering */
