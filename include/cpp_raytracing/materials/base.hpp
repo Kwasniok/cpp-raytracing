@@ -24,6 +24,11 @@ class Material {
     /** @brief unique material identifier */
     Identifier<class Material> id;
 
+    /** @brief default construct with default idenfifier root */
+    Material() = default;
+    /** @brief move constructor */
+    Material(Material&& other) = default;
+
     virtual ~Material() = default;
 
     /**
