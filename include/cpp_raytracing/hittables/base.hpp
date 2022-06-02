@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "../hit_record.hpp"
+#include "../identifier.hpp"
 #include "../ray.hpp"
 #include "../scalar.hpp"
 #include "../vec3.hpp"
@@ -20,6 +21,14 @@ namespace cpp_raytracing {
  */
 class Hittable {
   public:
+    /** @brief unique hittable identifier */
+    Identifier<class Hittable> id;
+
+    /** @brief default construct with default idenfifier root */
+    Hittable() = default;
+    /** @brief move constructor */
+    Hittable(Hittable&& other) = default;
+
     /**
      * @brief calculates the intersection of the light ray with the object
      * @returns eihter a defned HitRecord or sets HitRecord::t to
@@ -29,6 +38,13 @@ class Hittable {
                                  const Scalar t_max = infinity) const = 0;
 
     virtual ~Hittable() = default;
+};
+
+/** @brief default identifier for hittables */
+template <>
+struct default_identifier<Hittable> {
+    /** @brief default identifier for hittables */
+    static constexpr const char* value = "hittable";
 };
 
 } // namespace cpp_raytracing
