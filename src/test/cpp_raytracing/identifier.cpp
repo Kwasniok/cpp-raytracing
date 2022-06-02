@@ -82,18 +82,18 @@ void test_valid_bad() {
 void test_comparison() {
     Identifier<void> id1 = Identifier<void>::make_always("abc");
     Identifier<void> id2 = Identifier<void>::make_always("ABC");
-    TEST_ASSERT_EQUAL(id1, "abc"); // precondition
-    TEST_ASSERT_EQUAL(id2, "ABC"); // precondition
+    TEST_ASSERT_EQUAL(id1.str(), "abc"); // precondition
+    TEST_ASSERT_EQUAL(id2.str(), "ABC"); // precondition
 
-    TEST_ASSERT_TRUE(id1 == id1);
-    TEST_ASSERT_TRUE(id1 != id2);
+    TEST_ASSERT_TRUE(id1.str() == id1.str());
+    TEST_ASSERT_TRUE(id1.str() != id2.str());
 }
 
 void test_copy() {
     Identifier<void> id1 = Identifier<void>::make_always("abc");
     Identifier<void> id2 = id1.copy();
 
-    TEST_ASSERT_NOT_EQUAL(id1, id2);
+    TEST_ASSERT_NOT_EQUAL(id1.str(), id2.str());
 }
 
 void run_test_suite() {

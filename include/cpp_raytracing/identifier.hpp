@@ -180,16 +180,16 @@ class Identifier {
     /** @brief get c-string value */
     const char* c_str() const { return _value.c_str(); }
 
+    // NOTE: Identifiers are equals if and only if they have the same memory
+    //       address. They are unique! So there is no reason to implement
+    //       comparisons for identifiers.
+
     /** @brief equals comparison */
-    bool operator==(const Identifier& other) const {
-        return _value == other._value;
-    }
+    bool operator==(const std::string& str) const { return _value == str; }
     /** @brief equals comparison */
     bool operator==(const char* other) const { return _value == other; }
     /** @brief unequals comparison */
-    bool operator!=(const Identifier& other) const {
-        return _value != other._value;
-    }
+    bool operator!=(const std::string& str) const { return _value != str; }
     /** @brief unequals comparison */
     bool operator!=(const char* other) const { return _value != other; }
 
