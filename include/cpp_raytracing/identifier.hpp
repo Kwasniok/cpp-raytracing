@@ -133,7 +133,7 @@ class Identifier {
      *       (Move the value if necessary.)
      * @see make_if_available, make_always
      */
-    Identifier(std::string&& str) : _value() {
+    explicit Identifier(std::string&& str) : _value() {
         set_to_next_free(str);
         _value = std::move(str);
     }
