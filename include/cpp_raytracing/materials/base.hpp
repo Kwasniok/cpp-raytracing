@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "../color.hpp"
-#include "../hittables.hpp"
+#include "../hit_record.hpp"
 #include "../identifier.hpp"
 #include "../ray.hpp"
 #include "../scalar.hpp"
