@@ -33,6 +33,31 @@ class Renderer {
     /** @brief color indicator for missing material */
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
 
+    /**
+     * @brief amount of samples per pixels
+     * @note 'The higher the better.'
+     *       Typical values are:
+     *       - 1...10 for previews (major noise)
+     *       - 10...1000 for mid quality (some noise)
+     *       - 1000...10000 for high quality (minor to no noise)
+     *
+     *       But this **heavily depends on the complexity of the scene!**
+     */
+    unsigned long samples = 1;
+    /**
+     * @brief max amount of ray segments to be simulated
+     * @note Each interaction with an object creates a new segment even if not
+     *      apparent in the final image.
+     *      There is no distinction between different types of ray segments.
+     */
+    unsigned long ray_depth = 1;
+
+    /**
+     * @brief callback function to be called regularly during to rendering e.g.
+     *        to display the current sate of the image
+     */
+    RenderCallbackFunc render_callback;
+
     /** @brief render Scene as RawImage */
     RawImage render(const Canvas& canvas, const Scene& scene) {
         const Camera& camera = scene.camera;
@@ -96,32 +121,6 @@ class Renderer {
         Color color = (1.0 - t) * Colors::WHITE + t * Color(0.5, 0.7, 1.0);
         return color;
     }
-
-  public:
-    /**
-     * @brief amount of samples per pixels
-     * @note 'The higher the better.'
-     *       Typical values are:
-     *       - 1...10 for previews (major noise)
-     *       - 10...1000 for mid quality (some noise)
-     *       - 1000...10000 for high quality (minor to no noise)
-     *
-     *       But this **heavily depends on the complexity of the scene!**
-     */
-    unsigned long samples = 1;
-    /**
-     * @brief max amount of ray segments to be simulated
-     * @note Each interaction with an object creates a new segment even if not
-     *      apparent in the final image.
-     *      There is no distinction between different types of ray segments.
-     */
-    unsigned long ray_depth = 1;
-
-    /**
-     * @brief callback function to be called regularly during to rendering e.g.
-     *        to display the current sate of the image
-     */
-    RenderCallbackFunc render_callback;
 };
 
 } // namespace cpp_raytracing
