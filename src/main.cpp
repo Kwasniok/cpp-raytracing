@@ -28,6 +28,7 @@ Scene make_scene() {
     std::shared_ptr<Material> diffuse_gray;
     {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
+        mat->id.change("diffuse gray");
         mat->color = {0.5, 0.5, 0.5};
         diffuse_gray = std::move(mat);
     }
@@ -35,6 +36,7 @@ Scene make_scene() {
     std::shared_ptr<Material> diffuse_red;
     {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
+        mat->id.change("diffuse red");
         mat->color = {0.75, 0.5, 0.5};
         diffuse_red = std::move(mat);
     }
@@ -42,6 +44,7 @@ Scene make_scene() {
     std::shared_ptr<Material> metal;
     {
         auto mat = std::make_unique_for_overwrite<Metal>();
+        mat->id.change("metal");
         mat->color = {0.8, 0.7, 0.6};
         mat->roughness = 0.2;
         metal = std::move(mat);
@@ -50,6 +53,7 @@ Scene make_scene() {
     std::shared_ptr<Material> glass;
     {
         auto mat = std::make_unique_for_overwrite<Dielectric>();
+        mat->id.change("glass");
         mat->color = {1.0, 1.0, 1.0};
         mat->index_of_refraction = 1.5;
         glass = std::move(mat);
@@ -58,6 +62,7 @@ Scene make_scene() {
     std::shared_ptr<Material> light;
     {
         auto mat = std::make_unique_for_overwrite<Emitter>();
+        mat->id.change("light");
         mat->color = {0.95, 0.9, 0.85};
         light = std::move(mat);
     }
@@ -65,6 +70,7 @@ Scene make_scene() {
     // left
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("left sphere");
         sphere->position = Vec3(-1.0, 0.0, -0.75);
         sphere->radius = 0.5;
         sphere->material = diffuse_red;
@@ -73,6 +79,7 @@ Scene make_scene() {
     // middle (outer)
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("middle sphere outer surface");
         sphere->position = Vec3(0.0, 0.0, -1.0);
         sphere->radius = 0.5;
         sphere->material = glass;
@@ -81,6 +88,7 @@ Scene make_scene() {
     // middle (inner)
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("middle sphere inner surface");
         sphere->position = Vec3(0.0, 0.0, -1.0);
         sphere->radius = -0.4;
         sphere->material = glass;
@@ -89,14 +97,16 @@ Scene make_scene() {
     // right
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("right sphere");
         sphere->position = Vec3(+1.0, 0.0, -0.75);
         sphere->radius = 0.5;
         sphere->material = metal;
         scene.add(std::move(sphere));
     }
-    // above
+    // top
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("top sphere");
         sphere->position = Vec3(0.0, 1.0, -1.0);
         sphere->radius = 0.5;
         sphere->material = light;
@@ -105,6 +115,7 @@ Scene make_scene() {
     // floor
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("floor sphere");
         sphere->position = Vec3(0.0, -100.5, -1.0);
         sphere->radius = 100.0;
         sphere->material = diffuse_gray;
