@@ -204,6 +204,17 @@ class Identifier {
     }
 
     /**
+     * @brief changes the value to a string similar to str
+     * @note If the values is unoccupied, it will be exacly equal to str.
+     *       Otherwise it will share a common root.
+     * @note If an exact value is desired, use make_if_available.
+     */
+    void change(std::string&& str) {
+        set_to_next_free(str);
+        _value = std::move(str);
+    }
+
+    /**
      * @brief tests if string is valid
      * @note valid means it matches the regular expression `[a-zA-Z0-9_]+`
      */

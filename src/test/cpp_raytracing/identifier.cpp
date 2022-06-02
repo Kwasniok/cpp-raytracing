@@ -46,6 +46,19 @@ void test_move() {
     }
 }
 
+void test_change() {
+    Identifier<void> id = Identifier<void>::make_always({"id"});
+    id.change("test");
+    TEST_ASSERT_EQUAL(id.str(), "test");
+    {
+        // change suffix for occupied id
+        auto other_id = Identifier<void>::make_always({"occupided"});
+        id.change("occupided");
+        TEST_ASSERT_NOT_EQUAL(id.str(), "occupided");
+        TEST_ASSERT_EQUAL(other_id.str(), "occupided");
+    }
+}
+
 void test_valid_good() {
     const std::vector<std::string> values{
         "good_ID1", "1", "g", "G", "_",
@@ -88,6 +101,7 @@ void run_test_suite() {
     run(test_make_if_available);
     run(test_make_always);
     run(test_move);
+    run(test_change);
     run(test_valid_good);
     run(test_valid_bad);
     run(test_comparison);
