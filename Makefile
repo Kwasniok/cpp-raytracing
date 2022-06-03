@@ -35,6 +35,7 @@ run_all_previews: run_example_01_preview
 .PHONY: run_example_01_preview
 run_example_01_preview: example_01
 	@mkdir -p $(OUT)
+	@echo "example_01:"
 	@echo "rendering preview image"
 	@$(BLD)/example_01 \
 		--out $(OUT)/example_01.preview.ppm \
@@ -46,6 +47,7 @@ run_example_01_preview: example_01
 .PHONY: run_example_01
 run_example_01: run_example_01_preview
 	@mkdir -p $(OUT)
+	@echo "example_01:"
 	@echo "rendering final image"
 	@$(BLD)/example_01 \
 		--out $(OUT)/example_01.ppm \
