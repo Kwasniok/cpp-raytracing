@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief example 01
+ * @brief basic example executable
  * @note Basic scene.
  */
 
