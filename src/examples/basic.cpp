@@ -206,7 +206,7 @@ void render_ppm(const RenderConfig& config) {
  * @brief program entry point
  */
 int main(int argc, char** argv) {
-    argparse::ArgumentParser parser("example_01");
+    argparse::ArgumentParser parser("basic");
     parser.add_argument("-o", "--out").required().help("file output path");
     parser.add_argument("-v", "--verbose")
         .default_value<bool>(false) // store_true
