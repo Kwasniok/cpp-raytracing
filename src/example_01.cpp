@@ -1,8 +1,10 @@
 /**
  * @file
- * @brief main
+ * @brief example 01
+ * @note Basic scene.
  */
 
+#include <argparse/argparse.hpp>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -149,51 +151,94 @@ void write_raw_image(const string& path, const RawImage& image,
 void render_callback(const RawImage& current_image,
                      const unsigned long current_samples) {
     cout << "samples: " << current_samples << endl;
-    if (current_samples % 100 == 0) {
-        write_raw_image("out/out_current.ppm", current_image,
+    if (current_samples % 10 == 0) {
+        write_raw_image("out/current.ppm", current_image,
                         1.0 / Scalar(current_samples));
     }
 }
 
+/** @brief configuration for render_ppm */
+struct RenderConfig {
+    /** @brief wheather to log detailed information during the render process */
+    bool verbose;
+    /** @brief path to ppm output file */
+    string path;
+    /**
+     * @brief factor to upscale the resolution
+     * @note 1 <-> 240p, 8 <-> 1080p, 16 <-> 4k
+     */
+    unsigned long resolution_factor;
+    /** @brief samples per pixel */
+    unsigned long samples;
+    /** @brief depth per ray */
+    unsigned long ray_depth;
+};
+
 /**
  * @brief render and save example scene
- * @param path path to ppm file
- * @param preview generate a preview of reduced quality
  */
-void render_example_ppm(const string& path, const bool preview) {
-
-    const bool logging = true;
-    // 2 <-> 480p, 8 <-> 1080p, 16 <-> 4k
-    const unsigned long resolution_factor = preview ? 1 : 8;
+void render_ppm(const RenderConfig& config) {
 
     const Canvas canvas{
         // 16:9 ratio
-        .width = 240 * resolution_factor,
-        .height = 135 * resolution_factor,
+        .width = 240 * config.resolution_factor,
+        .height = 135 * config.resolution_factor,
     };
 
     Scene scene = make_scene();
 
     Renderer renderer{
-        .samples = preview ? 5u : 50u,
-        .ray_depth = preview ? 20u : 50u,
+        .samples = config.samples,
+        .ray_depth = config.ray_depth,
         .render_callback = render_callback,
     };
 
-    if (logging) {
-        cerr << "resolution factor = " << resolution_factor << endl;
+    if (config.verbose) {
+        cerr << "resolution factor = " << config.resolution_factor << endl;
         cerr << "cores detected = " << omp_get_num_procs() << endl;
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(canvas, scene);
-    write_raw_image(path, image);
+    write_raw_image(config.path, image);
 }
 
 /**
  * @brief program entry point
  */
 int main(int argc, char** argv) {
-    const string path = "out/out.ppm";
-    render_example_ppm(path, true);  // fast preview
-    render_example_ppm(path, false); // proper render
+    argparse::ArgumentParser parser("example_01");
+    parser.add_argument("-o", "--out").required().help("file output path");
+    parser.add_argument("-v", "--verbose")
+        .default_value<bool>(false) // store_true
+        .implicit_value(true)
+        .help("enable logging");
+    parser.add_argument("--resolution_factor")
+        .default_value<unsigned long>(1)
+        .help("resolution factor")
+        .scan<'d', unsigned long>();
+    parser.add_argument("--samples")
+        .required()
+        .help("samples per pixel")
+        .scan<'d', unsigned long>();
+    parser.add_argument("--ray_depth")
+        .required()
+        .help("depth per ray")
+        .scan<'d', unsigned long>();
+
+    try {
+        parser.parse_args(argc, argv);
+    } catch (const std::runtime_error& err) {
+        std::cerr << err.what() << std::endl;
+        std::cerr << parser;
+        std::exit(1);
+    }
+
+    RenderConfig config;
+    config.verbose = parser.get<bool>("-v");
+    config.path = parser.get("-o");
+    config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
+    config.samples = parser.get<unsigned long>("--samples");
+    config.ray_depth = parser.get<unsigned long>("--ray_depth");
+
+    render_ppm(config);
 }

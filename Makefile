@@ -35,7 +35,22 @@ run_all: run_example_01
 .PHONY: run_example_01
 run_example_01: example_01
 	@mkdir -p $(OUT)
-	$(BLD)/example_01
+	@echo "rendering preview image"
+	@$(BLD)/example_01 \
+		--out $(OUT)/example_01.preview.ppm \
+		--resolution_factor 1 \
+		--samples 5 \
+		--ray_depth 20 \
+		--verbose \
+
+	@echo "rendering final image"
+	@$(BLD)/example_01 \
+		--out $(OUT)/example_01.ppm \
+		--resolution_factor 8 \
+		--samples 50 \
+		--ray_depth 50 \
+		--verbose \
+
 
 .PHONY: example_01
 example_01: $(BLD)/example_01
