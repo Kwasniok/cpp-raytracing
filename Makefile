@@ -35,14 +35,13 @@ run_all_previews: run_example_basic_preview
 .PHONY: run_example_basic_preview
 run_example_basic_preview: example_basic
 	@mkdir -p $(OUT)
-	@echo "example_basic:"
-	@echo "rendering preview image"
+	@echo "example_basic preview image ..."
 	@$(BLD)/example_basic \
 		--out $(OUT)/example_basic.preview.ppm \
 		--resolution_factor 1 \
 		--samples 5 \
 		--ray_depth 20 \
-		--verbose \
+		#--verbose \
 
 .PHONY: run_example_basic
 run_example_basic: run_example_basic_preview
