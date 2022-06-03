@@ -18,7 +18,7 @@ CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC) $(INCLUDES)
 ### ALL (DEFAULT) ###
 .PHONY: all
 .DEFAULT_GOAL=all
-all: test run_all
+all: test run_all_previews
 
 ### CLEAN ##
 .PHONY:clean
@@ -27,13 +27,13 @@ clean:
 	rm -rf doc/*
 
 ### RUN ###
-.PHONY: run_all
-run_all: run_example_01
+.PHONY: run_all_previews
+run_all_previews: run_example_01_preview
 
 ### EXAMPLE 01 ###
 
-.PHONY: run_example_01
-run_example_01: example_01
+.PHONY: run_example_01_preview
+run_example_01_preview: example_01
 	@mkdir -p $(OUT)
 	@echo "rendering preview image"
 	@$(BLD)/example_01 \
@@ -43,6 +43,9 @@ run_example_01: example_01
 		--ray_depth 20 \
 		--verbose \
 
+.PHONY: run_example_01
+run_example_01: run_example_01_preview
+	@mkdir -p $(OUT)
 	@echo "rendering final image"
 	@$(BLD)/example_01 \
 		--out $(OUT)/example_01.ppm \
