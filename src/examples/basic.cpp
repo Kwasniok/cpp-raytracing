@@ -21,7 +21,7 @@ using namespace cpp_raytracing;
  */
 Scene make_scene() {
 
-    const Camera camera = Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, 0.8},
+    const Camera camera = Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, -0.8},
                                        {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02);
 
     Scene scene{camera};

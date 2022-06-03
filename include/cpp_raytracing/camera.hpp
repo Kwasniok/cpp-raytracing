@@ -61,7 +61,7 @@ class Camera {
         const auto viewport_height = 2 * std::tan(theta / 2.0);
         const auto viewport_width = aspect_ratio * viewport_height;
 
-        const auto w = -unit_vector(look_at - look_from);
+        const auto w = unit_vector(look_at - look_from);
         const auto u = unit_vector(cross(w, look_up));
         const auto v = cross(u, w);
         const Scalar focal_length = (look_at - look_from).length();
