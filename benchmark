@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+make build/examples/benchmark
+
+mkdir -p out
+date -Iseconds -u >> out/benchmark.log
+
+{ time \
+    build/examples/benchmark \
+    --out out/example_benchmark.ppm \
+    --samples 50 \
+    --resolution_factor 2 \
+    --ray_depth 25 \
+    > /dev/null ; \
+} 2>> out/benchmark.log
