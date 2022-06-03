@@ -20,7 +20,6 @@ class Transformable : public Hittable {
     /** @brief current velocity */
     Vec3 velocity;
     virtual ~Transformable() = default;
-
 };
 
 } // namespace cpp_raytracing
