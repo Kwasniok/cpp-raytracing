@@ -206,7 +206,7 @@ class Identifier {
     /**
      * @brief changes the value to a string similar to str
      * @note If the values is unoccupied, it will be exacly equal to str.
-     *       Otherwise it will share a common root.
+     *       Otherwise it will be incremented until it is unoccupied.
      * @note If an exact value is desired, use make_if_available.
      */
     void change(std::string&& str) {
@@ -237,8 +237,12 @@ class Identifier {
     /** @brief true if object has a value (which is then also registered) */
     bool has_value() const { return _value.size() > 0; }
 
+    static void add_suffix(std::string& str) {
+        constexpr static std::string_view suffix = "_2";
+        str += suffix;
+    }
     /**
-     * @biref increment suffix in place
+     * @biref increment suffix in place (or add one if none present)
      * @param str must be Identifier::valid()
      * @note The end of @a str will be modified by one incremental step, e.g. to
      *       avoid an identifier collission.
@@ -248,8 +252,37 @@ class Identifier {
      *       generated before (= iteration).
      */
     static void set_to_next(std::string& str) {
-        // TODO: IMPROVE naming scheme (mind memory usage)
-        str += "__2";
+        // find begin of suffix
+        std::size_t pos = str.length() - 1;
+        while (pos > 0 && str[pos] != '_') {
+            --pos;
+        }
+
+        if (pos == 0) {
+            // not a proper clone suffix -> add a new suffix
+            add_suffix(str);
+            return;
+        }
+
+        // start of expected number
+        pos += 1;
+
+        // check if suffix is a number
+        for (std::size_t i = pos; i < str.length(); ++i) {
+            if (!std::isdigit(str[i])) {
+                // not a proper clone suffix -> add a new suffix
+                add_suffix(str);
+                return;
+            }
+        }
+
+        // obtain and increment number
+        unsigned long number = atoi(str.c_str() + pos);
+        number += 1;
+
+        // replace number
+        str.resize(pos);
+        str += std::to_string(number);
     }
     /**
      * @biref update string in place to next possible free identifer

@@ -90,10 +90,19 @@ void test_comparison() {
 }
 
 void test_copy() {
-    Identifier<void> id1 = Identifier<void>::make_always("abc");
-    Identifier<void> id2 = id1.copy();
+    Identifier<void> id = Identifier<void>::make_always("abc");
+    for (int l = 0; l < 2; ++l) {
+        std::vector<Identifier<void>> clone_ids;
+        for (int i = 2; i < 1005; ++i) {
+            auto clone_id = id.copy();
+            std::string expected = "abc";
+            expected += '_';
+            expected += std::to_string(i);
+            TEST_ASSERT_EQUAL(clone_id.str(), expected);
 
-    TEST_ASSERT_NOT_EQUAL(id1.str(), id2.str());
+            clone_ids.push_back(std::move(clone_id));
+        }
+    }
 }
 
 void run_test_suite() {
