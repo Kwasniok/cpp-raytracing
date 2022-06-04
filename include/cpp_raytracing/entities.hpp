@@ -8,7 +8,9 @@
 
 #include <memory>
 
-#include "hittables/base.hpp"
-#include "hittables/sphere.hpp"
+#include "entities/entity.hpp"
+#include "entities/object.hpp"
+#include "entities/scene.hpp"
+#include "entities/sphere.hpp"
 
 #endif

@@ -3,18 +3,17 @@
  * @brief hittable spherical object
  */
 
-#ifndef CPP_RAYTRACING_HITTABLES_SHPERE_HPP
-#define CPP_RAYTRACING_HITTABLES_SHPERE_HPP
+#ifndef CPP_RAYTRACING_ENTITIES_SHPERE_HPP
+#define CPP_RAYTRACING_ENTITIES_SHPERE_HPP
 
-#include "hittable_object.hpp"
+#include "object.hpp"
 
 namespace cpp_raytracing {
 
 /**
- * @brief hittable spherical object
+ * @brief spherical object
  */
-class Sphere : public HittableObject {
-
+class Sphere : public Object {
   public:
     /**
      * @brief radius
@@ -29,12 +28,11 @@ class Sphere : public HittableObject {
 
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
-
-    virtual void set_time(const Scalar time) override {}
 };
 
 HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
                              const Scalar t_max) const {
+
     // analytical geometry: line hits sphere
     // ray: s + t*d
     // sphere: (x-o)^2 = R^2

@@ -1,10 +1,10 @@
-#include <cpp_raytracing/object.hpp>
+#include <cpp_raytracing/entities/entity.hpp>
 
-#include "test.hpp"
+#include "../test.hpp"
 
 namespace cpp_raytracing { namespace test {
 
-class Dummy : public Object {};
+class Dummy : public Entity {};
 
 void test_id() {
     Dummy dummy;
