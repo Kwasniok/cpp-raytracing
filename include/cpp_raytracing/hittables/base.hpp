@@ -28,6 +28,9 @@ class Hittable {
     /**
      * @brief requests hittable to take its appearence for the given time
      * @note A static hittable might ignore this entirely.
+     * @note Setting the time is part of the Hittable interface to enable
+     * effects like motion blur and rolling shutter. Both require to slightly
+     * change the time of the scene during the rendering process.
      */
     virtual void set_time(const Scalar time) = 0;
 
