@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "../camera.hpp"
+#include "camera.hpp"
 #include "entity.hpp"
 
 namespace cpp_raytracing {
@@ -20,7 +20,7 @@ namespace cpp_raytracing {
 class Scene : public Entity {
   public:
     /** @brief initialize with active camera */
-    Scene(const Camera& camera) : camera(camera){};
+    Scene() = default;
     /** @brief move constructor */
     Scene(Scene&&) = default;
     virtual ~Scene() = default;

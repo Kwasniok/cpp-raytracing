@@ -29,6 +29,8 @@ struct Object : public Entity {
     Object() = default;
     /** @brief move constructor */
     Object(Object&& other) = default;
+    /** @brief move assignment */
+    Object& operator=(Object&& other) = default;
 
     virtual ~Object() = default;
 };

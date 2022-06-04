@@ -21,10 +21,9 @@ using namespace cpp_raytracing;
  */
 Scene make_scene() {
 
-    const Camera camera = Camera::from({0.0, 1.0, 0.0}, {0.0, 0.0, -5.0},
-                                       {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02);
-
-    Scene scene{camera};
+    Scene scene;
+    scene.camera = Camera::from({0.0, 1.0, 0.0}, {0.0, 0.0, -5.0},
+                                {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02);
 
     const int num_material_variations = 250;
     const int num_spheres = 2000;

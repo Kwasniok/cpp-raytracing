@@ -6,19 +6,19 @@
 #ifndef CPP_RAYTRACING_CAMERA_HPP
 #define CPP_RAYTRACING_CAMERA_HPP
 
-#include "ray.hpp"
-#include "scalar.hpp"
-#include "vec3.hpp"
+#include "../ray.hpp"
+#include "../scalar.hpp"
+#include "../vec3.hpp"
+#include "object.hpp"
 
 namespace cpp_raytracing {
 
 /**
  * @brief represents a camera
+ * @note Ignores rotation and scale.
  */
-class Camera {
+class Camera : public Object {
   public:
-    /** @brief position of camera in space */
-    Vec3 origin{0.0, 0.0, 0.0};
     /**
      * @brief direction of image width in space
      * @note A longer vector will compress the image.
@@ -41,6 +41,14 @@ class Camera {
      * @note `lens_radius = aperature / 2`
      */
     Scalar lens_radius = 0.0;
+
+    /** @brief default construct with default idenfifier root */
+    Camera() = default;
+    /** @brief move constructor */
+    Camera(Camera&& other) = default;
+    /** @brief move assignment */
+    Camera& operator=(Camera&& other) = default;
+    virtual ~Camera() = default;
 
     // NOTE: preserves aggregation
     /**
@@ -66,13 +74,15 @@ class Camera {
         const auto v = cross(u, w);
         const Scalar focal_length = (look_at - look_from).length();
 
-        return Camera{
-            .origin = look_from,
-            .direction_x = (viewport_width / 2.0) * u,
-            .direction_y = (viewport_height / 2.0) * v,
-            .direction_z = focal_length * w,
-            .lens_radius = aperature / 2.0,
-        };
+        Camera camera;
+        camera.position = look_from;
+        // note: ignore rotation and scale
+        camera.direction_x = (viewport_width / 2.0) * u;
+        camera.direction_y = (viewport_height / 2.0) * v;
+        camera.direction_z = focal_length * w;
+        camera.lens_radius = aperature / 2.0;
+
+        return camera;
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
@@ -80,9 +90,9 @@ class Camera {
         Vec3 random_vec = lens_radius * random_in_unit_disk();
         Vec3 defocus_offset =
             direction_x * random_vec.x() + direction_y * random_vec.y();
-        return Ray(origin + defocus_offset, direction_z + x * direction_x +
-                                                y * direction_y +
-                                                -defocus_offset);
+        return Ray(position + defocus_offset, direction_z + x * direction_x +
+                                                  y * direction_y +
+                                                  -defocus_offset);
     }
 };
 

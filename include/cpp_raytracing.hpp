@@ -6,7 +6,6 @@
 #ifndef CPP_RAYTRACING_HPP
 #define CPP_RAYTRACING_HPP
 
-#include "cpp_raytracing/camera.hpp"
 #include "cpp_raytracing/color.hpp"
 #include "cpp_raytracing/entities.hpp"
 #include "cpp_raytracing/image.hpp"

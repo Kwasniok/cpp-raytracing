@@ -29,6 +29,8 @@ struct Entity {
     Entity() = default;
     /** @brief move constructor */
     Entity(Entity&& other) = default;
+    /** @brief move assignment */
+    Entity& operator=(Entity&& other) = default;
 
     virtual ~Entity() = default;
 
