@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "../animator.hpp"
+#include "../animators/animator.hpp"
 #include "../hit_record.hpp"
 #include "../identifier.hpp"
 #include "../scalar.hpp"
