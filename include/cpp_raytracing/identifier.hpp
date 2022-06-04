@@ -258,7 +258,7 @@ class Identifier {
      * @note The new value will have no identifer collision.
      */
     static void set_to_next_free(std::string& str) {
-        if (!_register.claim(str)) {
+        while (!_register.claim(str)) {
             set_to_next(str);
         }
     }
