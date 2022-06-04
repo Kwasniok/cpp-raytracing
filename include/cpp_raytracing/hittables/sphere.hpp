@@ -21,7 +21,7 @@ class Sphere : public HittableObject {
      * @note Negative radii relate to spheres with the inside out. This is
      *       usefull for the inner surface of glass etc.
      */
-    Scalar radius;
+    Scalar radius = 1.0;
     /** @brief material of the sphere */
     std::shared_ptr<Material> material;
 
