@@ -156,6 +156,77 @@ RawImage GlobalShutterRenderer::render(Scene& scene) {
     return image;
 }
 
+/** @brief renderer with rolling shutter and motion blur */
+class RollingShutterRenderer : public Renderer {
+  public:
+    /**
+     * @brief total duration of the frame's exposure
+     * @note `0.0` means instant image
+     * @note should be larger than zero to be realistic
+     * @note should be smaller than the distance of two frames
+     *       to be realistic
+     */
+    Scalar exposure_time = 0.0;
+
+    /**
+     * @brief exposure time per line scanned times total number of lines
+     * @note `0.0` means no motion blur
+     * @note should be (much) smaller than the distance of two frames
+     *       to be realistic
+     */
+    Scalar motion_blur = 0.0;
+
+    /** @brief render with rolling shutter and motion blur */
+    virtual RawImage render(Scene& scene) override;
+
+  private:
+    // rolling shutter + motion blur
+    Scalar mid_frame_time(const unsigned horizonal_line) {
+        auto res = time;
+        // time shift linear with line position
+        res += exposure_time * (Scalar(horizonal_line) / Scalar(canvas.height));
+        // random shift for motion blur
+        res += random_scalar(0.0, motion_blur);
+        return res;
+    }
+};
+
+RawImage RollingShutterRenderer::render(Scene& scene) {
+    const Camera& camera = scene.camera;
+
+    RawImage image{canvas.width, canvas.height};
+
+    for (unsigned long s = 0; s < samples; ++s) {
+        for (unsigned long j = 0; j < canvas.height; ++j) {
+            // update scene per line (rolling shutter + motion blur)
+            scene.set_time(mid_frame_time(j));
+
+            // note: Mind the memory layout of image and data acces!
+            //       Static schedule with small chunksize seems to be
+            //       optimal.
+#pragma omp parallel for shared(scene, camera, image) schedule(static, 1)
+            for (unsigned long i = 0; i < canvas.width; ++i) {
+                // random sub-pixel offset for antialiasing
+                Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
+                Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
+                // transform to camera coordinates
+                x = (2.0 * x / canvas.width - 1.0);
+                y = (2.0 * y / canvas.height - 1.0);
+
+                const Ray ray = camera.ray_for_coords(x, y);
+                const Color pixel_color = ray_color(scene, ray, ray_depth);
+                image[{i, j}] += pixel_color;
+            }
+        }
+        if (render_callback) {
+            render_callback(image, s + 1);
+        }
+    }
+
+    image *= 1 / (Scalar(samples));
+    return image;
+}
+
 } // namespace cpp_raytracing
 
 #endif

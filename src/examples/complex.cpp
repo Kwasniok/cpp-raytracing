@@ -141,10 +141,12 @@ void render_ppm(const RenderConfig& config) {
 
     Scene scene = make_scene();
 
-    GlobalShutterRenderer renderer;
+    RollingShutterRenderer renderer;
     renderer.canvas = canvas;
     renderer.samples = config.samples;
     renderer.ray_depth = config.ray_depth;
+    renderer.exposure_time = 1.0;
+    renderer.motion_blur = 0.01;
     renderer.render_callback = render_callback;
 
     if (config.verbose) {
