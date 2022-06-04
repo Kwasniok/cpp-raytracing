@@ -100,15 +100,18 @@ class Renderer {
     }
 };
 
+/** @brief renderer with global shutter and motion blur */
 class GlobalShutterRenderer : public Renderer {
   public:
     /**
      * @brief total duration of the frame's exposure
      * @note `0.0` means no motion blur
+     * @note should be smaller than the distance of two frames
+     *        to be realistic
      */
     Scalar exposure_time = 0.0;
 
-    /** @brief render Scene as RawImage */
+    /** @brief render with global shutter and motion blur */
     virtual RawImage render(Scene& scene) override;
 };
 
