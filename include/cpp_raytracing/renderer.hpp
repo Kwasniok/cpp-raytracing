@@ -58,8 +58,9 @@ class Renderer {
     /**
      * @brief callback function to be called regularly during to rendering e.g.
      *        to display the current sate of the image
+     * @note set to `nullptr` if no callback is desired
      */
-    RenderCallbackFunc render_callback;
+    RenderCallbackFunc render_callback = nullptr;
 
     /** @brief time the exposure of the frame starts */
     Scalar time = 0.0;
