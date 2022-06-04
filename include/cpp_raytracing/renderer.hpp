@@ -61,38 +61,11 @@ class Renderer {
      */
     RenderCallbackFunc render_callback;
 
+    /** @brief time the exposure of the frame starts */
+    Scalar time = 0.0;
+
     /** @brief render Scene as RawImage */
-    RawImage render(Scene& scene) {
-        const Camera& camera = scene.camera;
-
-        RawImage image{canvas.width, canvas.height};
-
-        for (unsigned long s = 0; s < samples; ++s) {
-            // note: Mind the memory layout of image and data acces!
-            //       Static schedule with small chunksize seems to be optimal.
-#pragma omp parallel for shared(scene, camera, image) schedule(static, 1)
-            for (unsigned long j = 0; j < canvas.height; ++j) {
-                for (unsigned long i = 0; i < canvas.width; ++i) {
-                    // random sub-pixel offset for antialiasing
-                    Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
-                    Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
-                    // transform to camera coordinates
-                    x = (2.0 * x / canvas.width - 1.0);
-                    y = (2.0 * y / canvas.height - 1.0);
-
-                    const Ray ray = camera.ray_for_coords(x, y);
-                    const Color pixel_color = ray_color(scene, ray, ray_depth);
-                    image[{i, j}] += pixel_color;
-                }
-            }
-            if (render_callback) {
-                render_callback(image, s + 1);
-            }
-        }
-
-        image *= 1 / (Scalar(samples));
-        return image;
-    }
+    virtual RawImage render(Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
     static Color ray_color(const Scene& scene, const Ray& ray,
@@ -125,6 +98,59 @@ class Renderer {
         return color;
     }
 };
+
+class GlobalShutterRenderer : public Renderer {
+  public:
+    /**
+     * @brief total duration of the frame's exposure
+     * @note `0.0` means no motion blur
+     */
+    Scalar exposure_time = 0.0;
+
+    /** @brief render Scene as RawImage */
+    virtual RawImage render(Scene& scene) override;
+};
+
+RawImage GlobalShutterRenderer::render(Scene& scene) {
+    const Camera& camera = scene.camera;
+
+    RawImage image{canvas.width, canvas.height};
+
+    // necessary if exposure_time == 0.0
+    scene.set_time(time);
+
+    for (unsigned long s = 0; s < samples; ++s) {
+
+        // motion blur
+        if (exposure_time != 0.0) {
+            scene.set_time(random_scalar(time, time + exposure_time));
+        }
+
+        // note: Mind the memory layout of image and data acces!
+        //       Static schedule with small chunksize seems to be optimal.
+#pragma omp parallel for shared(scene, camera, image) schedule(static, 1)
+        for (unsigned long j = 0; j < canvas.height; ++j) {
+            for (unsigned long i = 0; i < canvas.width; ++i) {
+                // random sub-pixel offset for antialiasing
+                Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
+                Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
+                // transform to camera coordinates
+                x = (2.0 * x / canvas.width - 1.0);
+                y = (2.0 * y / canvas.height - 1.0);
+
+                const Ray ray = camera.ray_for_coords(x, y);
+                const Color pixel_color = ray_color(scene, ray, ray_depth);
+                image[{i, j}] += pixel_color;
+            }
+        }
+        if (render_callback) {
+            render_callback(image, s + 1);
+        }
+    }
+
+    image *= 1 / (Scalar(samples));
+    return image;
+}
 
 } // namespace cpp_raytracing
 

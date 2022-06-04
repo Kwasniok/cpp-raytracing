@@ -141,12 +141,11 @@ void render_ppm(const RenderConfig& config) {
 
     Scene scene = make_scene();
 
-    Renderer renderer{
-        .canvas = canvas,
-        .samples = config.samples,
-        .ray_depth = config.ray_depth,
-        .render_callback = render_callback,
-    };
+    GlobalShutterRenderer renderer;
+    renderer.canvas = canvas;
+    renderer.samples = config.samples;
+    renderer.ray_depth = config.ray_depth;
+    renderer.render_callback = render_callback;
 
     if (config.verbose) {
         cerr << "resolution factor = " << config.resolution_factor << endl;
