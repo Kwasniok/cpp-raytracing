@@ -6,14 +6,14 @@
 #ifndef CPP_RAYTRACING_HITTABLES_SHPERE_HPP
 #define CPP_RAYTRACING_HITTABLES_SHPERE_HPP
 
-#include "transformable.hpp"
+#include "hittable_object.hpp"
 
 namespace cpp_raytracing {
 
 /**
  * @brief hittable spherical object
  */
-class Sphere : public Transformable {
+class Sphere : public HittableObject {
 
   public:
     /**
