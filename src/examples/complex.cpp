@@ -17,6 +17,66 @@ using namespace std;
 using namespace cpp_raytracing;
 
 /**
+ * @brief linear motion based object animator
+ */
+class LinearMotionObjectAnimator : public ObjectAnimator {
+  public:
+    /** @brief start position for `time = time_offset` */
+    Vec3 start;
+    /** @brief constant velocity */
+    Vec3 velocity;
+    /** @brief time for which `position = start` */
+    Scalar time_offset = 0.0;
+
+    virtual ~LinearMotionObjectAnimator() = default;
+
+  protected:
+    virtual void update_for_time_hook(const Scalar time,
+                                      Object* object) override;
+};
+
+void LinearMotionObjectAnimator::update_for_time_hook(const Scalar time,
+                                                      Object* object) {
+    if (object == nullptr)
+        return;
+    object->position = start + (time - time_offset) * velocity;
+}
+
+/**
+ * @brief spiral motion based object animator
+ */
+class SpiralMotionObjectAnimator : public ObjectAnimator {
+  public:
+    /** @brief start position for `time = time_offset` */
+    Vec3 start;
+    /** @brief radius of circular part of motion */
+    Scalar radius;
+    /** @brief frequency of circular motion (in radians) */
+    Scalar frequency = 1.0;
+    /** @brief time for which `position = start` */
+    Scalar time_offset = 0.0;
+    /** @brief phase of circular motion for `time = time_offset` */
+    Scalar phase_offset = 0.0;
+
+    virtual ~SpiralMotionObjectAnimator() = default;
+
+  protected:
+    virtual void update_for_time_hook(const Scalar time,
+                                      Object* object) override;
+};
+
+void SpiralMotionObjectAnimator::update_for_time_hook(const Scalar time,
+                                                      Object* object) {
+    if (object == nullptr)
+        return;
+    const Scalar t = time - time_offset;
+    const Scalar phi = frequency * t - phase_offset;
+    const Scalar cos_phi = std::cos(phi);
+    const Scalar sin_phi = std::sin(phi);
+    object->position = start + (t * radius) * Vec3{cos_phi, sin_phi, 0.0};
+}
+
+/**
  * @brief generate an example scene
  */
 Scene make_scene() {
@@ -27,8 +87,9 @@ Scene make_scene() {
                      16.0 / 9.0, 0.02));
 
     const int num_material_variations = 250;
-    const int num_spheres = 2000;
+    const int num_spheres = 1000;
 
+    // list of random materials
     std::vector<std::shared_ptr<Material>> materials;
     for (int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
@@ -57,24 +118,54 @@ Scene make_scene() {
         materials.emplace_back(std::move(mat));
     }
 
-    // spheres
+    // random small spheres
     for (int i = 0; i < num_spheres; ++i) {
         auto sphere = make_unique_for_overwrite<Sphere>();
-        sphere->id.change("sphere");
-        const auto x = random_scalar(-5.0, +5.0);
-        const auto y = 0.1;
-        const auto z = random_scalar(-100.0, -1.0);
-        sphere->position = Vec3(x, y, z);
-        sphere->radius = std::abs(y);
-        sphere->material = materials[rand() % materials.size()];
+        {
+            sphere->id.change("sphere");
+            const auto y = random_scalar(0.05, 0.15);
+            const auto z = random_scalar(-100.0, -1.0);
+            const auto x = std::abs(z) / 10.0 * random_scalar(-5.0, +5.0);
+            sphere->position = Vec3(x, y, z);
+            sphere->radius = std::abs(y);
+            sphere->material = materials[rand() % materials.size()];
+        }
+        // random animation per object
+        if (rand() % 2) {
+            auto anim = make_unique<LinearMotionObjectAnimator>();
+            {
+                anim->start = {sphere->position};
+                const auto x = random_scalar(-1.0, +1.0);
+                const auto y = random_scalar(0.0, +1.0);
+                const auto z = 0.0;
+                anim->velocity = {x, y, z};
+            }
+            sphere->set_animator(std::move(anim));
+        } else {
+            auto anim = make_unique<SpiralMotionObjectAnimator>();
+            {
+                anim->start = sphere->position;
+                anim->radius = sphere->radius;
+                anim->frequency = random_scalar(-1.0, 1.0);
+            }
+            sphere->set_animator(std::move(anim));
+        }
         scene.add(std::move(sphere));
     }
+
     // floor
     {
         auto sphere = make_unique_for_overwrite<Sphere>();
+        sphere->id.change("floor");
         sphere->position = Vec3(0.0, -100000.0, 0.0);
         sphere->radius = 100000.0;
-        sphere->material = materials[rand() % materials.size()];
+        {
+            auto mat = std::make_unique_for_overwrite<Metal>();
+            mat->id.change("floor");
+            mat->color = {0.7, 0.8, 0.9};
+            mat->roughness = 0.3;
+            sphere->material = std::move(mat);
+        }
         scene.add(std::move(sphere));
     }
 
@@ -145,7 +236,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.canvas = canvas;
     renderer.samples = config.samples;
     renderer.ray_depth = config.ray_depth;
-    renderer.exposure_time = 1.0;
+    renderer.exposure_time = 0.5;
     renderer.motion_blur = 0.01;
     renderer.render_callback = render_callback;
 
