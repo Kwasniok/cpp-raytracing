@@ -29,6 +29,8 @@ class Sphere : public HittableObject {
 
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
+
+    virtual void set_time(const Scalar time) override {}
 };
 
 HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,

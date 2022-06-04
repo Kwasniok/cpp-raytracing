@@ -35,6 +35,8 @@ class Scene : public Hittable {
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
 
+    virtual void set_time(const Scalar time) override;
+
   public:
     /** @brief active camera of the scene used for rendering */
     Camera camera;
@@ -55,6 +57,12 @@ HitRecord Scene::hit_record(const Ray& ray, const Scalar t_min,
     }
 
     return closest_record;
+}
+
+void Scene::set_time(const Scalar time) {
+    for (const auto& hittable : _hittables) {
+        hittable->set_time(time);
+    }
 }
 
 } // namespace cpp_raytracing

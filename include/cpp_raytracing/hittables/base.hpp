@@ -25,6 +25,12 @@ class Hittable {
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const = 0;
 
+    /**
+     * @brief requests hittable to take its appearence for the given time
+     * @note A static hittable might ignore this entirely.
+     */
+    virtual void set_time(const Scalar time) = 0;
+
     virtual ~Hittable() = default;
 };
 
