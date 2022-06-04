@@ -1,10 +1,10 @@
 /**
  * @file
- * @brief hittables
+ * @brief entities
  */
 
-#ifndef CPP_RAYTRACING_HITTABLES_HPP
-#define CPP_RAYTRACING_HITTABLES_HPP
+#ifndef CPP_RAYTRACING_ENTITIES_HPP
+#define CPP_RAYTRACING_ENTITIES_HPP
 
 #include <memory>
 
