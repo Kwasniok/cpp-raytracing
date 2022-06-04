@@ -116,7 +116,10 @@ class GlobalShutterRenderer : public Renderer {
 };
 
 RawImage GlobalShutterRenderer::render(Scene& scene) {
-    const Camera& camera = scene.camera;
+    if (!scene.active_camera) {
+        throw std::runtime_error("Renderer needs an active camera.");
+    }
+    const Camera& camera = *scene.active_camera;
 
     RawImage image{canvas.width, canvas.height};
 
@@ -192,7 +195,10 @@ class RollingShutterRenderer : public Renderer {
 };
 
 RawImage RollingShutterRenderer::render(Scene& scene) {
-    const Camera& camera = scene.camera;
+    if (!scene.active_camera) {
+        throw std::runtime_error("Renderer needs an active camera.");
+    }
+    const Camera& camera = *scene.active_camera;
 
     RawImage image{canvas.width, canvas.height};
 

@@ -22,8 +22,9 @@ using namespace cpp_raytracing;
 Scene make_scene() {
 
     Scene scene;
-    scene.camera = Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, -0.8},
-                                {0.0, 1.0, 0.0}, 90, 16.0 / 9.0, 0.02);
+    scene.active_camera = std::make_unique<Camera>(
+        Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, -0.8}, {0.0, 1.0, 0.0}, 90,
+                     16.0 / 9.0, 0.02));
 
     // diffuse (gray)
     std::shared_ptr<Material> diffuse_gray;

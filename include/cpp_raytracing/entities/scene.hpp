@@ -39,7 +39,7 @@ class Scene : public Entity {
 
   public:
     /** @brief active camera of the scene used for rendering */
-    Camera camera;
+    std::unique_ptr<Camera> active_camera;
 
   private:
     std::vector<std::unique_ptr<Entity>> _entities;
