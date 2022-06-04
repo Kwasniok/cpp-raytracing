@@ -142,6 +142,7 @@ void render_ppm(const RenderConfig& config) {
     Scene scene = make_scene();
 
     Renderer renderer{
+        .canvas = canvas,
         .samples = config.samples,
         .ray_depth = config.ray_depth,
         .render_callback = render_callback,
@@ -152,7 +153,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "cores detected = " << omp_get_num_procs() << endl;
         cerr << "rendering image ... " << endl;
     }
-    RawImage image = renderer.render(canvas, scene);
+    RawImage image = renderer.render(scene);
     write_raw_image(config.path, image);
 }
 

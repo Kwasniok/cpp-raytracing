@@ -33,6 +33,9 @@ class Renderer {
     /** @brief color indicator for missing material */
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
 
+    /** @brief canvas for the image to be rendered */
+    Canvas canvas;
+
     /**
      * @brief amount of samples per pixels
      * @note 'The higher the better.'
@@ -59,7 +62,7 @@ class Renderer {
     RenderCallbackFunc render_callback;
 
     /** @brief render Scene as RawImage */
-    RawImage render(const Canvas& canvas, const Scene& scene) {
+    RawImage render(Scene& scene) {
         const Camera& camera = scene.camera;
 
         RawImage image{canvas.width, canvas.height};
