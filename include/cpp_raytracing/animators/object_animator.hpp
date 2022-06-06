@@ -25,6 +25,7 @@ class ObjectAnimator : public Animator {
     virtual void update_for_time(const Scalar time, Entity* entity) override;
 
   protected:
+    /** @brief hook for update_for_time*/
     virtual void update_for_time_hook(const Scalar time, Object* object) = 0;
 };
 

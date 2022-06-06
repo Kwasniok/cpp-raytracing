@@ -33,6 +33,7 @@ class CircularMotionObjectAnimator : public ObjectAnimator {
     virtual ~CircularMotionObjectAnimator() = default;
 
   protected:
+    /** @brief hook for update_for_time*/
     virtual void update_for_time_hook(const Scalar time,
                                       Object* object) override;
 };
@@ -47,6 +48,7 @@ void CircularMotionObjectAnimator::update_for_time_hook(const Scalar time,
     object->position = center + radius * Vec3{cos_phi, sin_phi, 0.0};
 }
 
+/** @brief convert HSV to color */
 Color color_from_hsv(const ColorScalar hue, const ColorScalar saturation,
                      const ColorScalar value) {
 
@@ -83,6 +85,7 @@ Color color_from_hsv(const ColorScalar hue, const ColorScalar saturation,
     return {r, g, b};
 }
 
+/** @brief configuration of the scene */
 struct SceneConfig {
     /** @brief number of blades in the rotor */
     unsigned int num_blades = 2;

@@ -26,6 +26,7 @@ class Animator {
     virtual void update_for_time(const Scalar time, Entity* entity) = 0;
 
   protected:
+    /** @brief internal: throw after bad cast attempt */
     inline static void throw_bad_entity_type(const char* type,
                                              const Identifier<Entity>& id) {
         std::stringstream msg;
