@@ -176,6 +176,8 @@ struct RenderConfig {
     unsigned long samples;
     /** @brief depth per ray */
     unsigned long ray_depth;
+    /** @brief time of the frame */
+    Scalar time;
     /** @brief configuration of the scene */
     SceneConfig scene;
 };
@@ -200,6 +202,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.exposure_time = 1.0;
     renderer.motion_blur = 0.005; // sharp
     renderer.render_callback = render_callback;
+    renderer.time = config.time;
 
     if (config.verbose) {
         cerr << "resolution factor = " << config.resolution_factor << endl;
@@ -232,6 +235,10 @@ int main(int argc, char** argv) {
         .required()
         .help("depth per ray")
         .scan<'d', unsigned long>();
+    parser.add_argument("--time")
+        .default_value<Scalar>(0.0)
+        .help("time of the frame")
+        .scan<'f', Scalar>();
     parser.add_argument("--frequency")
         .default_value<Scalar>(2.0 * pi)
         .help("frequency of the rotor")
@@ -255,6 +262,7 @@ int main(int argc, char** argv) {
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
+    config.time = parser.get<Scalar>("--time");
     config.scene.frequency = parser.get<Scalar>("--frequency");
     config.scene.num_blades = parser.get<unsigned int>("--num_blades");
 

@@ -172,6 +172,8 @@ struct RenderConfig {
     unsigned long samples;
     /** @brief depth per ray */
     unsigned long ray_depth;
+    /** @brief time of the frame */
+    Scalar time;
 };
 
 /**
@@ -192,6 +194,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.samples = config.samples;
     renderer.ray_depth = config.ray_depth;
     renderer.render_callback = render_callback;
+    renderer.time = config.time;
 
     if (config.verbose) {
         cerr << "resolution factor = " << config.resolution_factor << endl;
@@ -224,6 +227,10 @@ int main(int argc, char** argv) {
         .required()
         .help("depth per ray")
         .scan<'d', unsigned long>();
+    parser.add_argument("--time")
+        .default_value<Scalar>(0.0)
+        .help("time of the frame")
+        .scan<'f', Scalar>();
 
     try {
         parser.parse_args(argc, argv);
@@ -239,6 +246,7 @@ int main(int argc, char** argv) {
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
+    config.time = parser.get<Scalar>("--time");
 
     render_ppm(config);
 }
