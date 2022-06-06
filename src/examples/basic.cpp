@@ -148,19 +148,17 @@ void write_raw_image(const string& path, const RawImage& image,
 /**
  * @brief called after each sample for the entire image
  */
-void frequent_render_callback(const RawImage& current_image,
-                              const unsigned long current_samples) {
-    cout << "samples: " << current_samples << endl;
+void frequent_render_callback(const Renderer::State& current_state) {
+    cout << "samples: " << current_state.samples << endl;
 }
 
 /**
  * @brief called regularly to save the progress
  */
-void infrequent_render_callback(const RawImage& current_image,
-                                const unsigned long current_samples) {
+void infrequent_render_callback(const Renderer::State& current_state) {
     cerr << "save current ..." << endl;
-    write_raw_image("out/current.ppm", current_image,
-                    1.0 / Scalar(current_samples));
+    write_raw_image("out/current.ppm", current_state.image,
+                    1.0 / Scalar(current_state.samples));
 }
 
 /** @brief configuration for render_ppm */

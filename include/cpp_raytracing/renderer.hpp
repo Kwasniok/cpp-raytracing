@@ -26,9 +26,20 @@ namespace cpp_raytracing {
 class Renderer {
 
   public:
+    /**
+     * @brief callback parameter type representing the current state of the
+     *        render process
+     * @see RenderCallbackFunc, frequent_render_callback,
+     *      infrequent_render_callback
+     */
+    struct State {
+        /** @brief image */
+        RawImage& image;
+        /** @brief samples */
+        unsigned long samples;
+    };
     /** @brief callback type used by Renderer::render() */
-    using RenderCallbackFunc = void (*)(const RawImage& current_image,
-                                        const unsigned long current_samples);
+    using RenderCallbackFunc = void (*)(const State& current_state);
 
     /** @brief color indicator for missing material */
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
@@ -165,11 +176,11 @@ RawImage GlobalShutterRenderer::render(Scene& scene) {
             }
         }
         if (frequent_render_callback) {
-            frequent_render_callback(image, s);
+            frequent_render_callback(State{image, s});
         }
         if (infrequent_render_callback &&
             (s % infrequent_callback_frequency == 0)) {
-            infrequent_render_callback(image, s);
+            infrequent_render_callback(State{image, s});
         }
     }
 
@@ -243,11 +254,11 @@ RawImage RollingShutterRenderer::render(Scene& scene) {
             }
         }
         if (frequent_render_callback) {
-            frequent_render_callback(image, s);
+            frequent_render_callback(State{image, s});
         }
         if (infrequent_render_callback &&
             (s % infrequent_callback_frequency == 0)) {
-            infrequent_render_callback(image, s);
+            infrequent_render_callback(State{image, s});
         }
     }
 
