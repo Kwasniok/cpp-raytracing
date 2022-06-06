@@ -193,13 +193,19 @@ void write_raw_image(const string& path, const RawImage& image,
 /**
  * @brief called after each sample for the entire image
  */
-void render_callback(const RawImage& current_image,
-                     const unsigned long current_samples) {
+void frequent_render_callback(const RawImage& current_image,
+                              const unsigned long current_samples) {
     cerr << "samples: " << current_samples << endl;
-    if (current_samples % 10 == 0) {
-        write_raw_image("out/current.ppm", current_image,
-                        1.0 / Scalar(current_samples));
-    }
+}
+
+/**
+ * @brief called regularly to save the progress
+ */
+void infrequent_render_callback(const RawImage& current_image,
+                                const unsigned long current_samples) {
+    cerr << "save current ..." << endl;
+    write_raw_image("out/current.ppm", current_image,
+                    1.0 / Scalar(current_samples));
 }
 
 /** @brief configuration for render_ppm */
@@ -240,7 +246,8 @@ void render_ppm(const RenderConfig& config) {
     renderer.ray_depth = config.ray_depth;
     renderer.exposure_time = 0.5;
     renderer.motion_blur = 0.01;
-    renderer.render_callback = render_callback;
+    renderer.frequent_render_callback = frequent_render_callback;
+    renderer.infrequent_render_callback = infrequent_render_callback;
     renderer.time = config.time;
 
     if (config.verbose) {

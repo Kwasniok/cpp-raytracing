@@ -56,11 +56,25 @@ class Renderer {
     unsigned long ray_depth = 1;
 
     /**
-     * @brief callback function to be called regularly during to rendering e.g.
-     *        to display the current sate of the image
+     * @brief callback function to be called frequently during rendering e.g.
+     *        to inform about the progress of rendering
      * @note set to `nullptr` if no callback is desired
+     * @note Typically called after a full image sample.
      */
-    RenderCallbackFunc render_callback = nullptr;
+    RenderCallbackFunc frequent_render_callback = nullptr;
+    /**
+     * @brief callback function to be called infrequently during rendering
+     *        rendering e.g. to save the current progress
+     * @note set to `nullptr` if no callback is desired
+     * @see infrequent_render_callback
+     */
+    RenderCallbackFunc infrequent_render_callback = nullptr;
+    /**
+     * @brief call infrequent_render_callback every
+     *        `infrequent_render_callback` steps
+     * @note A step might be a full image sample.
+     */
+    unsigned long infrequent_callback_frequency = 10;
 
     /** @brief time the exposure of the frame starts */
     Scalar time = 0.0;
@@ -126,7 +140,7 @@ RawImage GlobalShutterRenderer::render(Scene& scene) {
     // necessary if exposure_time == 0.0
     scene.set_time(time);
 
-    for (unsigned long s = 0; s < samples; ++s) {
+    for (unsigned long s = 1; s < samples + 1; ++s) {
 
         // motion blur
         if (exposure_time != 0.0) {
@@ -150,8 +164,12 @@ RawImage GlobalShutterRenderer::render(Scene& scene) {
                 image[{i, j}] += pixel_color;
             }
         }
-        if (render_callback) {
-            render_callback(image, s + 1);
+        if (frequent_render_callback) {
+            frequent_render_callback(image, s);
+        }
+        if (infrequent_render_callback &&
+            (s % infrequent_callback_frequency == 0)) {
+            infrequent_render_callback(image, s);
         }
     }
 
@@ -202,7 +220,7 @@ RawImage RollingShutterRenderer::render(Scene& scene) {
 
     RawImage image{canvas.width, canvas.height};
 
-    for (unsigned long s = 0; s < samples; ++s) {
+    for (unsigned long s = 1; s < samples + 1; ++s) {
         for (unsigned long j = 0; j < canvas.height; ++j) {
             // update scene per line (rolling shutter + motion blur)
             scene.set_time(mid_frame_time(j));
@@ -224,8 +242,12 @@ RawImage RollingShutterRenderer::render(Scene& scene) {
                 image[{i, j}] += pixel_color;
             }
         }
-        if (render_callback) {
-            render_callback(image, s + 1);
+        if (frequent_render_callback) {
+            frequent_render_callback(image, s);
+        }
+        if (infrequent_render_callback &&
+            (s % infrequent_callback_frequency == 0)) {
+            infrequent_render_callback(image, s);
         }
     }
 
