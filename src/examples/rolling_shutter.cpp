@@ -181,6 +181,8 @@ struct RenderConfig {
     unsigned long resolution_factor;
     /** @brief samples per pixel */
     unsigned long samples;
+    /** @brief save progress every n samples */
+    unsigned long save_frequency;
     /** @brief depth per ray */
     unsigned long ray_depth;
     /** @brief time of the frame */
@@ -210,6 +212,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.motion_blur = 0.005; // sharp
     renderer.frequent_render_callback = frequent_render_callback;
     renderer.infrequent_render_callback = infrequent_render_callback;
+    renderer.infrequent_callback_frequency = config.save_frequency;
     renderer.time = config.time;
 
     if (config.verbose) {
@@ -238,6 +241,10 @@ int main(int argc, char** argv) {
     parser.add_argument("--samples")
         .required()
         .help("samples per pixel")
+        .scan<'d', unsigned long>();
+    parser.add_argument("--save_frequency")
+        .default_value<unsigned long>(10)
+        .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
         .required()
@@ -269,6 +276,7 @@ int main(int argc, char** argv) {
     config.path = parser.get("-o");
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
+    config.save_frequency = parser.get<unsigned long>("--save_frequency");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
     config.time = parser.get<Scalar>("--time");
     config.scene.frequency = parser.get<Scalar>("--frequency");
