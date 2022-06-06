@@ -83,10 +83,17 @@ Color color_from_hsv(const ColorScalar hue, const ColorScalar saturation,
     return {r, g, b};
 }
 
+struct SceneConfig {
+    /** @brief number of blades in the rotor */
+    unsigned int num_blades = 2;
+    /** @brief frequency of blades */
+    Scalar frequency = 1.0;
+};
+
 /**
  * @brief generate an example scene
  */
-Scene make_scene(const Scalar frequency, const unsigned int num_blades) {
+Scene make_scene(const SceneConfig& config) {
 
     const Vec3 center = {0.0, 1.5, -3.0};
 
@@ -96,7 +103,7 @@ Scene make_scene(const Scalar frequency, const unsigned int num_blades) {
                      16.0 / 9.0, 0.02));
 
     // rotor
-    for (unsigned int i = 0; i < num_blades; ++i) {
+    for (unsigned int i = 0; i < config.num_blades; ++i) {
         auto sphere = make_unique_for_overwrite<Sphere>();
         sphere->id.change("sphere");
         sphere->position = center;
@@ -105,15 +112,16 @@ Scene make_scene(const Scalar frequency, const unsigned int num_blades) {
             auto mat = std::make_unique_for_overwrite<Diffuse>();
             mat->id.change("metal");
             mat->color = color_from_hsv(
-                ColorScalar(i) / ColorScalar(num_blades) * 2.0 * pi, 0.8, 0.8);
+                ColorScalar(i) / ColorScalar(config.num_blades) * 2.0 * pi, 0.8,
+                0.8);
             sphere->material = std::move(mat);
         }
         auto anim = make_unique<CircularMotionObjectAnimator>();
         {
             anim->center = center;
             anim->radius = 1.0;
-            anim->frequency = frequency;
-            anim->phase_offset = i * 2.0 * pi / num_blades;
+            anim->frequency = config.frequency;
+            anim->phase_offset = i * 2.0 * pi / config.num_blades;
         }
         sphere->set_animator(std::move(anim));
 
@@ -168,11 +176,8 @@ struct RenderConfig {
     unsigned long samples;
     /** @brief depth per ray */
     unsigned long ray_depth;
-
-    /** @brief frequency of the rotor */
-    Scalar frequency;
-    /** @brief number of blades in the rotor */
-    unsigned int num_blades;
+    /** @brief configuration of the scene */
+    SceneConfig scene;
 };
 
 /**
@@ -186,7 +191,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    Scene scene = make_scene(config.frequency, config.num_blades);
+    Scene scene = make_scene(config.scene);
 
     RollingShutterRenderer renderer;
     renderer.canvas = canvas;
@@ -250,8 +255,8 @@ int main(int argc, char** argv) {
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
-    config.frequency = parser.get<Scalar>("--frequency");
-    config.num_blades = parser.get<unsigned int>("--num_blades");
+    config.scene.frequency = parser.get<Scalar>("--frequency");
+    config.scene.num_blades = parser.get<unsigned int>("--num_blades");
 
     render_ppm(config);
 }
