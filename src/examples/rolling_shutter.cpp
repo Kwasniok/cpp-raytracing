@@ -187,6 +187,10 @@ struct RenderConfig {
     unsigned long ray_depth;
     /** @brief time of the frame */
     Scalar time;
+    /** @brief exposure frame */
+    Scalar exposure_time;
+    /** @brief motion blur */
+    Scalar motion_blur;
     /** @brief configuration of the scene */
     SceneConfig scene;
 };
@@ -208,8 +212,8 @@ void render_ppm(const RenderConfig& config) {
     renderer.canvas = canvas;
     renderer.samples = config.samples;
     renderer.ray_depth = config.ray_depth;
-    renderer.exposure_time = 1.0;
-    renderer.motion_blur = 0.005; // sharp
+    renderer.exposure_time = config.exposure_time;
+    renderer.motion_blur = config.motion_blur;
     renderer.frequent_render_callback = frequent_render_callback;
     renderer.infrequent_render_callback = infrequent_render_callback;
     renderer.infrequent_callback_frequency = config.save_frequency;
@@ -254,6 +258,14 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(0.0)
         .help("time of the frame")
         .scan<'f', Scalar>();
+    parser.add_argument("--exposure_time")
+        .default_value<Scalar>(1.0)
+        .help("total exposure time per frame")
+        .scan<'f', Scalar>();
+    parser.add_argument("--motion_blur")
+        .default_value<Scalar>(0.0)
+        .help("exposure time per line")
+        .scan<'f', Scalar>();
     parser.add_argument("--frequency")
         .default_value<Scalar>(2.0 * pi)
         .help("frequency of the rotor")
@@ -279,6 +291,8 @@ int main(int argc, char** argv) {
     config.save_frequency = parser.get<unsigned long>("--save_frequency");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
     config.time = parser.get<Scalar>("--time");
+    config.exposure_time = parser.get<Scalar>("--exposure_time");
+    config.motion_blur = parser.get<Scalar>("--motion_blur");
     config.scene.frequency = parser.get<Scalar>("--frequency");
     config.scene.num_blades = parser.get<unsigned int>("--num_blades");
 
