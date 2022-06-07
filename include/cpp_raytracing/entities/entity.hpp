@@ -67,10 +67,19 @@ struct Entity {
      * @brief might return a boundaring box if the entity is bounded
      * @param time_min start of the time interval
      * @param time_max end of the time interval
+     * @note If none, the entity might be infinitely large or have no appreance
+     *       at all.
      */
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const {
         return std::nullopt;
     }
+
+    /**
+     * @brief returns true if entity is bounded
+     * @note It MUST be equal to `bounding_box().has_value()` and might be
+     *       redefined for optimization only!
+     */
+    virtual bool is_bounded() const { return bounding_box().has_value(); }
 
   private:
     /**
