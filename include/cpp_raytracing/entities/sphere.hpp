@@ -28,6 +28,8 @@ class Sphere : public Object {
 
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
+
+    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 };
 
 HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
@@ -75,6 +77,11 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     record.set_face_normal(ray, normal);
     record.material = material;
     return record;
+}
+
+std::optional<AxisAlignedBoundingBox> Sphere::bounding_box() const {
+    return AxisAlignedBoundingBox{position + Vec3{radius, radius, radius},
+                                  position - Vec3{radius, radius, radius}};
 }
 
 } // namespace cpp_raytracing

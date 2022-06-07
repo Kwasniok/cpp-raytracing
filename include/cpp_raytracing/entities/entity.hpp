@@ -7,8 +7,10 @@
 #define CPP_RAYTRACING_ENTITIES_ENTITY_HPP
 
 #include <memory>
+#include <optional>
 
 #include "../animators/animator.hpp"
+#include "../bounding_volume.hpp"
 #include "../hit_record.hpp"
 #include "../identifier.hpp"
 #include "../scalar.hpp"
@@ -59,6 +61,15 @@ struct Entity {
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const {
         return {.t = infinity};
+    }
+
+    /**
+     * @brief might return a boundaring box if the entity is bounded
+     * @param time_min start of the time interval
+     * @param time_max end of the time interval
+     */
+    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const {
+        return std::nullopt;
     }
 
   private:
