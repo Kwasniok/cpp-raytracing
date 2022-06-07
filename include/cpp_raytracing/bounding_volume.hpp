@@ -48,6 +48,18 @@ class AxisAlignedBoundingBox {
     Vec3 _max;
 };
 
+/** @brief construct smallest box containing both boxes */
+inline AxisAlignedBoundingBox
+surrounding_box(const AxisAlignedBoundingBox& box1,
+                const AxisAlignedBoundingBox& box2) {
+    auto [x_min, x_max] = std::minmax(box1.min()[0], box2.min()[0]);
+    auto [y_min, y_max] = std::minmax(box1.min()[1], box2.min()[1]);
+    auto [z_min, z_max] = std::minmax(box1.min()[2], box2.min()[2]);
+
+    return AxisAlignedBoundingBox{Vec3{x_min, y_min, z_min},
+                                  Vec3{x_max, y_max, z_max}};
+}
+
 } // namespace cpp_raytracing
 
 #endif

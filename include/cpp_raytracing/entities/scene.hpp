@@ -46,6 +46,17 @@ class Scene : public Entity {
 
   private:
     std::vector<std::unique_ptr<Entity>> _entities;
+
+  private:
+    /** @brief like sourrounding_box but for optional values */
+    static std::optional<AxisAlignedBoundingBox>
+    surrounding_opt_box(const std::optional<AxisAlignedBoundingBox>& box1,
+                        const std::optional<AxisAlignedBoundingBox>& box2) {
+        if (box1 && box2) {
+            return surrounding_opt_box(*box1, *box2);
+        }
+        return std::nullopt;
+    }
 };
 
 void Scene::set_time(const Scalar time) {
@@ -68,25 +79,6 @@ HitRecord Scene::hit_record(const Ray& ray, const Scalar t_min,
     return closest_record;
 }
 
-namespace internal {
-
-std::optional<AxisAlignedBoundingBox>
-update_super_box(const std::optional<AxisAlignedBoundingBox>& super,
-                 const std::optional<AxisAlignedBoundingBox>& include) {
-    if (super && include) {
-        auto [x_min, x_max] = std::minmax(super->min()[0], include->min()[0]);
-        auto [y_min, y_max] = std::minmax(super->min()[1], include->min()[1]);
-        auto [z_min, z_max] = std::minmax(super->min()[2], include->min()[2]);
-
-        return AxisAlignedBoundingBox{Vec3{x_min, y_min, z_min},
-                                      Vec3{x_max, y_max, z_max}};
-    }
-
-    return std::nullopt;
-}
-
-} // namespace internal
-
 std::optional<AxisAlignedBoundingBox> Scene::bounding_box() const {
     std::optional<AxisAlignedBoundingBox> super_boundaries{std::nullopt};
 
@@ -96,8 +88,8 @@ std::optional<AxisAlignedBoundingBox> Scene::bounding_box() const {
             super_boundaries = entity->bounding_box();
             is_first = false;
         } else {
-            internal::update_super_box(super_boundaries,
-                                       entity->bounding_box());
+            super_boundaries =
+                surrounding_opt_box(super_boundaries, entity->bounding_box());
         }
         if (!super_boundaries.has_value()) {
             break;
