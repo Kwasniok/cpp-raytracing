@@ -43,15 +43,10 @@ struct HitRecord {
     }
 
     /**
-     * @biref returns true iff t is finite
+     * @brief returns true iff t is finite
      * @note Used for debugging and testing.
      */
-    bool hits() const { return std::isfinite(t); }
-    /**
-     * @biref returns true iff t is not finite
-     * @note Used for debugging and testing.
-     */
-    bool misses() const { return !hits(); }
+    bool hits() const { return t < infinity; }
 };
 
 } // namespace cpp_raytracing
