@@ -43,7 +43,7 @@ Run
 to automatically format the entire code base (requires `clang-format`).
 
 ## Debug
-Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` command.
+Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` instead.
 
 ## Profile
 Run
