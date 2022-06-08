@@ -97,18 +97,3 @@ example_previews: $(EXAMPLES);
 		--ray_depth 20 \
 		#--verbose \
 	done
-
-### PROFILE ###
-
-.PHONY: profile
-profile: $(BLD)/profile
-
-$(BLD)/profile.d: $(SRC)/examples/benchmark.cpp
-	@mkdir -p $(@D) # provide parent directory of target
-	$(CPP) $(CPP_PROFILE_FLAGS) -MM -MQ $@ -o $@ $<
-
-$(BLD)/profile: $(SRC)/examples/benchmark.cpp $(BLD)/profile.d
-	@mkdir -p $(@D) # provide parent directory of target
-	$(CPP) $(CPP_PROFILE_FLAGS) -o $@ $<
-
-include $(BLD)/profile.d

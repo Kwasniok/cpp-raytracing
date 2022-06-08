@@ -33,12 +33,12 @@ to automatically format the entire code base (requires `clang-format`).
 ## DEBUG
 Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` command.
 
-## PROFILE
+## Profile
 Run
-```
+```bash
 ./profile
 ```
-to get a profile (requires `gprof`).
+to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 
 ## Requirements
 
@@ -48,4 +48,4 @@ to get a profile (requires `gprof`).
 - make v4.3+
 - doxygen v1.9+
 - valgrind v3.18+ (optional)
-- gprof v2.38+ (optional)
+- kcachegrind v22.04+ (optional)

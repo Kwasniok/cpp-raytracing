@@ -1,15 +1,15 @@
 #!/usr/bin/bash
 
-make build/profile
+make build/examples/benchmark
 
 mkdir -p out/profiles
 
-./build/profile \
+valgrind \
+    --tool=callgrind \
+    --callgrind-out-file="out/profiles/callgrind.out.latest" \
+    ./build/examples/benchmark \
     --out out/out.ppm \
     --samples 50 \
-    --resolution_factor 2 \
-    --ray_depth 25 \
+    --ray_depth 50 \
 
-mv gmon.out out/profiles/
-
-gprof ./build/profile out/profiles/gmon.out | less
+kcachegrind "out/profiles/callgrind.out.latest"
