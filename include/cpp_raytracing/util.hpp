@@ -136,6 +136,14 @@ constexpr std::pair<T, T> minmax(const T x, const T y) {
     return {y, x};
 }
 
+/**
+ * @brief returns true iff object is polymorphically derived from @a Base
+ */
+template <typename Base, typename T>
+inline bool is_instanceof(const T* const ptr) {
+    return dynamic_cast<const Base* const>(ptr) != nullptr;
+}
+
 } // namespace cpp_raytracing
 
 #endif
