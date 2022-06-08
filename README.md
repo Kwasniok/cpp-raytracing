@@ -2,7 +2,19 @@
 
 - based on: https://raytracing.github.io/
 
-![diffuse_metal_glass_emitter_defocus_highres](https://user-images.githubusercontent.com/7516208/164042906-fce16f88-9789-44f0-9081-7691013a5fb1.png)
+## Features
+
+- Materials
+![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
+
+- Rolling Shutter & Motion Blur
+![rolling shutter: rotor at rest](https://user-images.githubusercontent.com/7516208/172665290-341e4786-5dcd-45e0-b850-2956b121007c.png)
+![rolling shutter: rotor in motion](https://user-images.githubusercontent.com/7516208/172665270-88ba7a69-5337-4cf6-bba5-7247ee334ffb.png)
+
+- Multi-Threaded
+
+- Bounding Volume Hierachy (BVH)
+
 
 ## Build, Test & Preview
 ```bash
