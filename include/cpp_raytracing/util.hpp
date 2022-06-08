@@ -124,6 +124,18 @@ constexpr std::size_t iterable_size(T&& iterable) {
     return size;
 }
 
+/**
+ * @brief returns pair with minimal value first and maximal value second
+ *  @note like std::minmax but passes arguments by value
+ */
+template <typename T>
+constexpr std::pair<T, T> minmax(const T x, const T y) {
+    if (x < y) {
+        return {x, y};
+    }
+    return {y, x};
+}
+
 } // namespace cpp_raytracing
 
 #endif
