@@ -41,7 +41,7 @@ class AxisAlignedBoundingBox {
         // note: mind branch prediction and reduce
         for (int i = 0; i < 3; ++i) {
 
-            if (ray.direction()[i] == 0.0) {
+            if (ray.direction()[i] == 0.0) [[unlikely]] {
                 if (ray.start()[i] < _min[i] || ray.start()[i] > _max[i]) {
                     return false;
                 }
