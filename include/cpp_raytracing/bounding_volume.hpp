@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief bounding volume (BVH)
+ * @brief bounding volume
  */
 
 #ifndef CPP_RAYTRACING_BOUNDING_VOLUME_HPP
@@ -16,7 +16,8 @@
 namespace cpp_raytracing {
 
 /**
- * @brief represents a bounding volume (BVH)
+ * @brief represents a bounding volume
+ * @see BVHTree
  */
 class AxisAlignedBoundingBox {
   public:
