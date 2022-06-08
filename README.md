@@ -25,12 +25,12 @@ See `doc/html/index.html` for the documentation.
 
 ## Auto-Format
 Run
-```
+```bash
 .auto_format
 ```
 to automatically format the entire code base (requires `clang-format`).
 
-## DEBUG
+## Debug
 Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` command.
 
 ## Profile
@@ -46,6 +46,6 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 - C++20
 - gcc v12.1+
 - make v4.3+
-- doxygen v1.9+
+- doxygen v1.9+ (optional)
 - valgrind v3.18+ (optional)
 - kcachegrind v22.04+ (optional)
