@@ -149,13 +149,17 @@ RawImage GlobalShutterRenderer::render(Scene& scene) {
     RawImage image{canvas.width, canvas.height};
 
     // necessary if exposure_time == 0.0
-    scene.set_time(time);
+    if (exposure_time == 0.0) {
+        scene.set_time(time);
+        scene.ensure_cache();
+    }
 
     for (unsigned long s = 1; s < samples + 1; ++s) {
 
         // motion blur
         if (exposure_time != 0.0) {
             scene.set_time(random_scalar(time, time + exposure_time));
+            scene.ensure_cache();
         }
 
         // note: Mind the memory layout of image and data acces!
@@ -235,6 +239,7 @@ RawImage RollingShutterRenderer::render(Scene& scene) {
         for (unsigned long j = 0; j < canvas.height; ++j) {
             // update scene per line (rolling shutter + motion blur)
             scene.set_time(mid_frame_time(j));
+            scene.ensure_cache();
 
             // note: Mind the memory layout of image and data acces!
             //       Static schedule with small chunksize seems to be

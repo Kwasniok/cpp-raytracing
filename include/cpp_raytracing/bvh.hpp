@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <iterator>
 #include <memory>
 #include <vector>
 
@@ -26,6 +27,8 @@ class BVHTree {
   private:
     /** @brief node of BVH tree for bounded entities only */
     struct Node {
+        using Iter = std::vector<const Entity*>::iterator;
+
         /** @note might be nullptr  */
         const Entity* value = nullptr;
         /** @brief left branch*/
@@ -39,29 +42,27 @@ class BVHTree {
         AxisAlignedBoundingBox bounds{Vec3{}, Vec3{}};
 
         Node() = default;
-        Node(std::vector<const Entity*>& bounded_entities,
-             const std::size_t begin, const std::size_t end) {
+        Node(const Iter first, const Iter last) {
 
-            const std::size_t span = end - begin;
+            const auto span = std::distance(first, last);
 
             if (span == 0) {
                 return;
             }
             if (span == 1) {
-                value = bounded_entities[begin];
-                bounds = bounded_entities[begin]->bounding_box().value();
+                value = *first;
+                bounds = value->bounding_box().value();
             } else {
                 const int axis = rand() % 3;
                 const auto comp = pseudo_comparators[axis];
-                std::sort(bounded_entities.begin() + begin,
-                          bounded_entities.begin() + end, comp);
+                std::sort(first, last, comp);
 
-                auto mid = begin + span / 2;
-                if (begin != mid) {
-                    left = std::make_unique<Node>(bounded_entities, begin, mid);
+                const auto mid = std::next(first, span / 2);
+                if (first != mid) {
+                    left = std::make_unique<Node>(first, mid);
                 }
-                if (end != mid) {
-                    right = std::make_unique<Node>(bounded_entities, mid, end);
+                if (last != mid) {
+                    right = std::make_unique<Node>(mid, last);
                 }
 
                 if (left && right) {
@@ -96,7 +97,7 @@ class BVHTree {
                     left->hit_record(ray, t_min, t_max, closest_record);
                 }
                 if (right) {
-                    left->hit_record(ray, t_min, t_max, closest_record);
+                    right->hit_record(ray, t_min, t_max, closest_record);
                 }
             }
         }
@@ -106,7 +107,7 @@ class BVHTree {
          *        branches
          */
         std::size_t size() const {
-            std::size_t count = value != nullptr;
+            std::size_t count = value != nullptr ? 1 : 0;
             if (left) {
                 count += left->size();
             }
@@ -122,10 +123,13 @@ class BVHTree {
      * @brief construct BVH tree with container of bounded and unbounded
      *         entities
      * @tparam container of smart pointers to entities
+     * @note IMORTANT: The container must be unaltered for the entire lifetime
+     *       of this tree! Any change of the container or its elements
+     *       invalidates this tree.
      */
     template <typename Container>
     BVHTree(const Container& container) {
-        std::vector<const Entity*> bounded_entities(container.size());
+        std::vector<const Entity*> bounded_entities;
 
         for (const auto& e : container) {
             if (e->is_bounded()) {
@@ -135,7 +139,7 @@ class BVHTree {
             }
         }
 
-        _root = Node(bounded_entities, 0, bounded_entities.size());
+        _root = Node(bounded_entities.begin(), bounded_entities.end());
     }
 
     /**
@@ -154,19 +158,28 @@ class BVHTree {
     /** @brief returns a boundaring box off all entities */
     AxisAlignedBoundingBox bounding_box() const { return _root.bounds; }
 
+    /** @brief returns number of bounded entities managed by this tree */
+    std::size_t size_bounded() const { return _root.size(); }
+
+    /** @brief returns number of unbounded entities managed by this tree */
+    std::size_t size_unbounded() const { return _unbounded_entitites.size(); }
+
     /** @brief returns number of entities managed by this tree */
-    std::size_t size() const { return _root.size(); }
+    std::size_t size() const { return size_bounded() + size_unbounded(); }
 
   private:
-    /** @note entities must not be nullptr and bounded */
+    /**
+     * @note entities must not be nullptr and bounded
+     * @note strict weak ordering (required by std::sort)
+     */
     static bool pseudo_comparator(const int axis, const Entity* e1,
                                   const Entity* e2) {
         auto const b1 = e1->bounding_box();
         auto const b2 = e2->bounding_box();
         if (b1 && b2) {
-            return b1->min()[axis] <= b2->min()[axis];
+            return b1->min()[axis] < b2->min()[axis];
         }
-        return true;
+        return false; // strict weak ordering
     }
 
     /** @note entities must not be nullptr and bounded */
