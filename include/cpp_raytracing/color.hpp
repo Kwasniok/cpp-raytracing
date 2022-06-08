@@ -143,8 +143,12 @@ inline std::ostream& operator<<(std::ostream& os, const Color& color) {
  * @note cs > 1.0 infinity and NaN clip to 255
  * @note cs < 0.0 -infinity clip to 0
  */
-inline constexpr ColorIntegral int_from_color_scalar(const ColorScalar cs) {
-    ColorIntegral ci = static_cast<ColorIntegral>(cs * 255);
+inline constexpr ColorIntegral int_from_color_scalar(ColorScalar cs) {
+    if (std::isnan(cs)) {
+        return 0;
+    }
+    cs = clip<ColorScalar, 0.0, 1.0>(cs);
+    const ColorIntegral ci = static_cast<ColorIntegral>(cs * 255.0);
     return clip<ColorIntegral, 0, 255>(ci);
 }
 

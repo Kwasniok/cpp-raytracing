@@ -1,19 +1,27 @@
 
-INC=include
-SRC=src
-BLD=build
-OUT=out
+INC:=include
+SRC:=src
+BLD:=build
+OUT:=out
 
 INCLUDES=-I third_party/glm -I third_party/argparse/include
 
 # GCC
 CPP=g++
-CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp -I $(INC) $(INCLUDES)
+CPP_FLAGS=-Wall -pedantic -std=c++20 -g -fopenmp -I $(INC) $(INCLUDES)
 
 # CLANG
 # CPP=clang++
-# CPP_FLAGS=-Wall -pedantic -std=c++20 -Ofast -g -fopenmp=libomp -I $(INC) $(INCLUDES)
+# CPP_FLAGS=-Wall -pedantic -std=c++20 -g -fopenmp=libomp -I $(INC) $(INCLUDES)
 
+
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+    CPP_FLAGS += -O0 -DDEBUG
+    BLD:=$(BLD)/debug
+else
+    CPP_FLAGS += -Ofast
+endif
 
 ### ALL (DEFAULT) ###
 .PHONY: all

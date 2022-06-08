@@ -30,6 +30,9 @@ Run
 ```
 to automatically format the entire code base (requires `clang-format`).
 
+## DEBUG
+Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` command.
+
 ## Requirements
 
 - Linux kernel v5.17+
