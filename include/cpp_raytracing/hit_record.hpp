@@ -41,6 +41,17 @@ struct HitRecord {
         front_face = dot(face_normal, ray.direction()) < 0.0;
         normal = front_face ? face_normal : -face_normal;
     }
+
+    /**
+     * @biref returns true iff t is finite
+     * @note Used for debugging and testing.
+     */
+    bool hits() const { return std::isfinite(t); }
+    /**
+     * @biref returns true iff t is not finite
+     * @note Used for debugging and testing.
+     */
+    bool misses() const { return !hits(); }
 };
 
 } // namespace cpp_raytracing
