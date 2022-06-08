@@ -33,6 +33,13 @@ to automatically format the entire code base (requires `clang-format`).
 ## DEBUG
 Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` command.
 
+## PROFILE
+Run
+```
+./profile
+```
+to get a profile (requires `gprof`).
+
 ## Requirements
 
 - Linux kernel v5.17+
@@ -41,3 +48,4 @@ Add `DEBUG=1` to `make`. The executables will be placed in `build/debug` command
 - make v4.3+
 - doxygen v1.9+
 - valgrind v3.18+ (optional)
+- gprof v2.38+ (optional)

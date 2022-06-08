@@ -9,6 +9,7 @@ INCLUDES=-I third_party/glm -I third_party/argparse/include
 # GCC
 CPP=g++
 CPP_FLAGS=-Wall -pedantic -std=c++20 -g -fopenmp -I $(INC) $(INCLUDES)
+CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 
 # CLANG
 # CPP=clang++
@@ -96,3 +97,18 @@ example_previews: $(EXAMPLES);
 		--ray_depth 20 \
 		#--verbose \
 	done
+
+### PROFILE ###
+
+.PHONY: profile
+profile: $(BLD)/profile
+
+$(BLD)/profile.d: $(SRC)/examples/benchmark.cpp
+	@mkdir -p $(@D) # provide parent directory of target
+	$(CPP) $(CPP_PROFILE_FLAGS) -MM -MQ $@ -o $@ $<
+
+$(BLD)/profile: $(SRC)/examples/benchmark.cpp $(BLD)/profile.d
+	@mkdir -p $(@D) # provide parent directory of target
+	$(CPP) $(CPP_PROFILE_FLAGS) -o $@ $<
+
+include $(BLD)/profile.d
