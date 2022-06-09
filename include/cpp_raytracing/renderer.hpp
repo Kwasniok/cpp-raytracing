@@ -12,10 +12,10 @@
 #include "canvas.hpp"
 #include "color.hpp"
 #include "entities/entity.hpp"
-#include "entities/scene.hpp"
 #include "image.hpp"
 #include "materials/base.hpp"
 #include "ray.hpp"
+#include "scene.hpp"
 #include "util.hpp"
 
 namespace cpp_raytracing {

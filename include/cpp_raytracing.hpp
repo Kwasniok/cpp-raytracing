@@ -14,6 +14,7 @@
 #include "cpp_raytracing/random.hpp"
 #include "cpp_raytracing/ray.hpp"
 #include "cpp_raytracing/renderer.hpp"
+#include "cpp_raytracing/scene.hpp"
 #include "cpp_raytracing/util.hpp"
 #include "cpp_raytracing/vec3.hpp"
 

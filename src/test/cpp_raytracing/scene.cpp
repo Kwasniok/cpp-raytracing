@@ -1,11 +1,11 @@
 #include <memory>
 #include <vector>
 
-#include <cpp_raytracing/entities/scene.hpp>
 #include <cpp_raytracing/entities/sphere.hpp>
 #include <cpp_raytracing/ray.hpp>
+#include <cpp_raytracing/scene.hpp>
 
-#include "../test.hpp"
+#include "test.hpp"
 
 namespace cpp_raytracing { namespace test {
 
