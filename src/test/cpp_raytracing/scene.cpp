@@ -26,70 +26,60 @@ Scene make_scene() {
     return scene;
 }
 
-void test_bounding_box() {
+void test_freeze() {
 
     Scene scene = make_scene();
-    static constexpr Vec3 min{-0.5, -0.5, -0.5};
-    static constexpr Vec3 max{1.5, 1.5, 1.5};
+    TEST_ASSERT_FALSE(scene.is_frozen());
 
-    // cache
-    TEST_ASSERT_THROWS(scene.bounding_box(), std::runtime_error);
-
-    scene.generate_cache();
-    const auto bounds = scene.bounding_box();
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->min(), min, epsilon);
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->max(), max, epsilon);
-}
-
-void test_hit_record() {
-
-    Scene scene = make_scene();
-
-    // cache
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
-        TEST_ASSERT_THROWS(scene.hit_record(ray, 0.0, infinity),
+        const Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
+
+        // frozen
+        TEST_ASSERT_TRUE(scene.is_frozen());
+        TEST_ASSERT_THROWS(scene.clear(), std::runtime_error);
+        TEST_ASSERT_THROWS(scene.add(make_sphere(Vec3{}, 0.5)),
                            std::runtime_error);
-    }
-    scene.generate_cache();
 
-    // hits
-    {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
-        auto record = scene.hit_record(ray, 0.0, infinity);
-        TEST_ASSERT_TRUE(record.hits());
+        // hits
+        {
+            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
+            auto record = guard.hit_record(ray, 0.0, infinity);
+            TEST_ASSERT_TRUE(record.hits());
+        }
+        {
+            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
+            auto record = guard.hit_record(ray, 0.0, infinity);
+            TEST_ASSERT_TRUE(record.hits());
+        }
+        {
+            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
+            auto record = guard.hit_record(ray, 0.0, infinity);
+            TEST_ASSERT_TRUE(record.hits());
+        }
+        // misses
+        {
+            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
+            auto record = guard.hit_record(ray, 0.0, infinity);
+            TEST_ASSERT_FALSE(record.hits());
+        }
+        {
+            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
+            auto record = guard.hit_record(ray, 0.0, infinity);
+            TEST_ASSERT_FALSE(record.hits());
+        }
+        {
+            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
+            auto record = guard.hit_record(ray, 0.0, infinity);
+            TEST_ASSERT_FALSE(record.hits());
+        }
     }
-    {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
-        auto record = scene.hit_record(ray, 0.0, infinity);
-        TEST_ASSERT_TRUE(record.hits());
-    }
-    {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
-        auto record = scene.hit_record(ray, 0.0, infinity);
-        TEST_ASSERT_TRUE(record.hits());
-    }
-    // misses
-    {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
-        auto record = scene.hit_record(ray, 0.0, infinity);
-        TEST_ASSERT_FALSE(record.hits());
-    }
-    {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
-        auto record = scene.hit_record(ray, 0.0, infinity);
-        TEST_ASSERT_FALSE(record.hits());
-    }
-    {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
-        auto record = scene.hit_record(ray, 0.0, infinity);
-        TEST_ASSERT_FALSE(record.hits());
-    }
+
+    // unfrozen
+    TEST_ASSERT_FALSE(scene.is_frozen());
 }
 
 void run_test_suite() {
-    run(test_bounding_box);
-    run(test_hit_record);
+    run(test_freeze);
 }
 
 }} // namespace cpp_raytracing::test
