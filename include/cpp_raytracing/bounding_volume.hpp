@@ -20,6 +20,7 @@ namespace cpp_raytracing {
  * @see BVHTree
  */
 class AxisAlignedBoundingBox {
+
   public:
     /** @brief construct box from two arbitrary corners */
     constexpr AxisAlignedBoundingBox(const Vec3 corner1, const Vec3 corner2) {
@@ -69,6 +70,22 @@ class AxisAlignedBoundingBox {
     }
 
   private:
+    friend constexpr AxisAlignedBoundingBox
+    surrounding_box(const AxisAlignedBoundingBox& box1,
+                    const AxisAlignedBoundingBox& box2);
+
+    /** @brief dummy type to indicate internal trusted calls */
+    struct Trusted {};
+
+    /**
+     * @brief internal only: construct box from min and max corners
+     * @param min MUST be corner with minimal coefficients
+     * @param max MUST be corner with maximal coefficients
+     */
+    constexpr AxisAlignedBoundingBox(const Vec3 min, const Vec3 max, Trusted)
+        : _min(min), _max(max) {}
+
+  private:
     Vec3 _min;
     Vec3 _max;
 };
@@ -88,7 +105,8 @@ surrounding_box(const AxisAlignedBoundingBox& box1,
     const auto y_max = std::max(max1[1], max2[1]);
     const auto z_max = std::max(max1[2], max2[2]);
     return AxisAlignedBoundingBox{Vec3{x_min, y_min, z_min},
-                                  Vec3{x_max, y_max, z_max}};
+                                  Vec3{x_max, y_max, z_max},
+                                  AxisAlignedBoundingBox::Trusted{}};
 }
 
 } // namespace cpp_raytracing
