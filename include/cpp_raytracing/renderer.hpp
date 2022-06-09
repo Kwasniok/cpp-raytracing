@@ -91,17 +91,7 @@ class Renderer {
     Scalar time = 0.0;
 
     /** @brief render Scene as RawImage */
-    RawImage render(Scene& scene) {
-
-        RawImage buffer{canvas.width, canvas.height};
-
-        for (unsigned long s = 1; s < samples + 1; ++s) {
-            render_sample(s, buffer, scene);
-        }
-
-        buffer *= 1 / (Scalar(samples));
-        return buffer;
-    }
+    virtual RawImage render(Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
     static Color ray_color(const Scene::FreezeGuard& frozen_scene,
@@ -134,18 +124,6 @@ class Renderer {
         Color color = (1.0 - t) * Colors::WHITE + t * Color(0.5, 0.7, 1.0);
         return color;
     }
-
-  private:
-    /**
-     * @brief render a single sample
-     * @param sample `0..samples` in order
-     * @param buffer image buffer
-     * @param scene scene to render
-     * @note Hook method.
-     * @see render
-     */
-    virtual void render_sample(const unsigned long sample, RawImage& buffer,
-                               Scene& scene) = 0;
 };
 
 /** @brief renderer with global shutter and motion blur */
@@ -159,38 +137,54 @@ class GlobalShutterRenderer : public Renderer {
      */
     Scalar exposure_time = 0.0;
 
+    virtual RawImage render(Scene& scene) override {
+
+        RawImage buffer{canvas.width, canvas.height};
+
+        for (unsigned long s = 1; s < samples + 1; ++s) {
+            render_sample(s, buffer, scene);
+        }
+
+        buffer *= 1 / (Scalar(samples));
+        return buffer;
+    }
+
   private:
     /** @brief render with global shutter and motion blur */
-    virtual void render_sample(const unsigned long sample, RawImage& buffer,
-                               Scene& scene) override;
-};
+    inline void render_sample(const unsigned long sample, RawImage& buffer,
+                              Scene& scene) {
 
-void GlobalShutterRenderer::render_sample(const unsigned long sample,
-                                          RawImage& buffer, Scene& scene) {
+        // motion blur
+        const Scene::FreezeGuard& frozen_scene =
+            scene.freeze_for_time(random_scalar(time, time + exposure_time));
 
-    // motion blur
-    const Scene::FreezeGuard& frozen_scene =
-        scene.freeze_for_time(random_scalar(time, time + exposure_time));
-    const Camera& camera = frozen_scene.active_camera;
-
-    // note: Mind the memory layout of image buffer and data acces!
-    //       Static schedule with small chunksize seems to be optimal.
-#pragma omp parallel for shared(scene, camera, buffer) schedule(static, 1)
-    for (unsigned long j = 0; j < canvas.height; ++j) {
-        for (unsigned long i = 0; i < canvas.width; ++i) {
-            // random sub-pixel offset for antialiasing
-            Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
-            Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
-            // transform to camera coordinates
-            x = (2.0 * x / canvas.width - 1.0);
-            y = (2.0 * y / canvas.height - 1.0);
-
-            const Ray ray = camera.ray_for_coords(x, y);
-            const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
-            buffer[{i, j}] += pixel_color;
+// note: Mind the memory layout of image buffer and data acces!
+//       Static schedule with small chunksize seems to be optimal.
+#pragma omp parallel for shared(buffer) schedule(static, 1)
+        for (unsigned long j = 0; j < canvas.height; ++j) {
+            for (unsigned long i = 0; i < canvas.width; ++i) {
+                render_pixel_sample(i, j, frozen_scene, buffer);
+            }
         }
     }
-}
+
+    /** @brief render a single sample for a single pixel */
+    inline void render_pixel_sample(const unsigned long i,
+                                    const unsigned long j,
+                                    const Scene::FreezeGuard& frozen_scene,
+                                    RawImage& buffer) {
+        // random sub-pixel offset for antialiasing
+        Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
+        Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
+        // transform to camera coordinates
+        x = (2.0 * x / canvas.width - 1.0);
+        y = (2.0 * y / canvas.height - 1.0);
+
+        const Ray ray = frozen_scene.active_camera.ray_for_coords(x, y);
+        const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
+        buffer[{i, j}] += pixel_color;
+    }
+};
 
 /** @brief renderer with rolling shutter and motion blur */
 class RollingShutterRenderer : public Renderer {
@@ -212,13 +206,44 @@ class RollingShutterRenderer : public Renderer {
      */
     Scalar motion_blur = 0.0;
 
+    virtual RawImage render(Scene& scene) override {
+
+        RawImage buffer{canvas.width, canvas.height};
+
+        for (unsigned long s = 1; s < samples + 1; ++s) {
+            render_sample(s, buffer, scene);
+        }
+
+        buffer *= 1 / (Scalar(samples));
+        return buffer;
+    }
+
   private:
     /** @brief render with rolling shutter and motion blur */
-    virtual void render_sample(const unsigned long sample, RawImage& buffer,
-                               Scene& scene) override;
+    inline void render_sample(const unsigned long sample, RawImage& buffer,
+                              Scene& scene) const {
 
-    // rolling shutter + motion blur
-    Scalar mid_frame_time(const unsigned horizonal_line) {
+        for (unsigned long j = 0; j < canvas.height; ++j) {
+
+            // update scene per line (rolling shutter + motion blur)
+            const Scene::FreezeGuard& frozen_scene =
+                scene.freeze_for_time(mid_frame_time(j));
+
+// note: Mind the memory layout of image buffer and data acces!
+//       Static schedule with small chunksize seems to be
+//       optimal.
+#pragma omp parallel for shared(buffer) schedule(static, 1)
+            for (unsigned long i = 0; i < canvas.width; ++i) {
+                render_pixel_sample(i, j, frozen_scene, buffer);
+            }
+        }
+    }
+
+    /**
+     * @brief returns a randomized time for the current image line
+     * @note Realizes rolling shutter and motion blur.
+     */
+    inline Scalar mid_frame_time(const unsigned horizonal_line) const {
         auto res = time;
         // time shift linear with line position
         res += exposure_time * (Scalar(horizonal_line) / Scalar(canvas.height));
@@ -226,36 +251,24 @@ class RollingShutterRenderer : public Renderer {
         res += random_scalar(0.0, motion_blur);
         return res;
     }
-};
 
-void RollingShutterRenderer::render_sample(const unsigned long sample,
-                                           RawImage& buffer, Scene& scene) {
+    /** @brief render a single sample for a single pixel */
+    inline void render_pixel_sample(const unsigned long i,
+                                    const unsigned long j,
+                                    const Scene::FreezeGuard& frozen_scene,
+                                    RawImage& buffer) const {
+        // random sub-pixel offset for antialiasing
+        Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
+        Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
+        // transform to camera coordinates
+        x = (2.0 * x / canvas.width - 1.0);
+        y = (2.0 * y / canvas.height - 1.0);
 
-    for (unsigned long j = 0; j < canvas.height; ++j) {
-
-        // update scene per line (rolling shutter + motion blur)
-        const Scene::FreezeGuard& frozen_scene =
-            scene.freeze_for_time(mid_frame_time(j));
-        const Camera& camera = frozen_scene.active_camera;
-
-        // note: Mind the memory layout of image buffer and data acces!
-        //       Static schedule with small chunksize seems to be
-        //       optimal.
-#pragma omp parallel for shared(scene, camera, buffer) schedule(static, 1)
-        for (unsigned long i = 0; i < canvas.width; ++i) {
-            // random sub-pixel offset for antialiasing
-            Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
-            Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
-            // transform to camera coordinates
-            x = (2.0 * x / canvas.width - 1.0);
-            y = (2.0 * y / canvas.height - 1.0);
-
-            const Ray ray = camera.ray_for_coords(x, y);
-            const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
-            buffer[{i, j}] += pixel_color;
-        }
+        const Ray ray = frozen_scene.active_camera.ray_for_coords(x, y);
+        const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
+        buffer[{i, j}] += pixel_color;
     }
-}
+};
 
 } // namespace cpp_raytracing
 
