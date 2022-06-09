@@ -118,7 +118,8 @@ class Renderer {
         }
         const auto [scattered_ray, color] =
             record.material->scatter(record, ray);
-        if (scattered_ray.direction_near_zero(1.0e-12)) {
+        if (scattered_ray.direction_exactly_zero()) {
+            // emissive material
             return color;
         } else {
             return color * ray_color(frozen_scene, scattered_ray, depth - 1);

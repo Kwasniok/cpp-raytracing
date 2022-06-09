@@ -33,7 +33,10 @@ class Material {
 
     /**
      * @brief calculates scattered ray and coloring based on the ray hitting the
-     * object
+     *        object
+     * @note If the returned ray has a direction which is perfectly zero, the
+     *       material is emissive at the scattering point.
+     * @see Ray::direction_exactly_zero()
      */
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const = 0;

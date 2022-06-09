@@ -35,6 +35,12 @@ class Ray {
         return _direction.near_zero(epsilon);
     }
 
+    /** @brief tests if direction of ray is a perfect zero vector */
+    constexpr bool direction_exactly_zero() const {
+        return _direction[0] == 0.0 && _direction[1] == 0.0 &&
+               _direction[2] == 0.0;
+    }
+
   private:
     Vec3 _start;
     Vec3 _direction;
