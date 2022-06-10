@@ -141,8 +141,27 @@ class GlobalShutterRenderer : public Renderer {
 
         RawImage buffer{canvas.width, canvas.height};
 
-        for (unsigned long s = 1; s < samples + 1; ++s) {
-            render_sample(s, buffer, scene);
+        // optimization: reduce cache generation if possible
+        if (exposure_time == 0.0) {
+            // note: ideal image: no motion blur -> no nned for repeated
+            //       temporal updates
+            const Scene::FreezeGuard& frozen_scene = scene.freeze_for_time(
+                random_scalar(time, time + exposure_time));
+
+            for (unsigned long s = 1; s < samples + 1; ++s) {
+                render_sample(s, buffer, frozen_scene);
+            }
+
+        } else {
+            // with motion blur
+            for (unsigned long s = 1; s < samples + 1; ++s) {
+
+                // scene for random time in exposure window
+                const Scene::FreezeGuard& frozen_scene = scene.freeze_for_time(
+                    random_scalar(time, time + exposure_time));
+
+                render_sample(s, buffer, frozen_scene);
+            }
         }
 
         buffer *= 1 / (Scalar(samples));
@@ -152,11 +171,7 @@ class GlobalShutterRenderer : public Renderer {
   private:
     /** @brief render with global shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              Scene& scene) {
-
-        // motion blur
-        const Scene::FreezeGuard& frozen_scene =
-            scene.freeze_for_time(random_scalar(time, time + exposure_time));
+                              const Scene::FreezeGuard& frozen_scene) {
 
 // note: Mind the memory layout of image buffer and data acces!
 //       Static schedule with small chunksize seems to be optimal.
