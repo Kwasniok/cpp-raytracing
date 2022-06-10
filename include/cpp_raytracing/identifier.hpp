@@ -108,18 +108,18 @@ class Identifier {
     Identifier& operator=(Identifier&& other) = default;
 
     /**
-     * @brief non-copiable use explicit copy() instead
+     * @brief non-copiable use explicit clone() instead
      * @note Copying would require to generate a new (incemented) identifer,
      *       this is non-trivial and should not happen silently.
-     * @see copy
+     * @see clone
      */
     Identifier(const Identifier& other) = delete;
 
     /**
-     * @brief non-copiable use explicit copy() instead
+     * @brief non-copiable use explicit clone() instead
      * @note Copying would require to generate a new (incemented) identifer,
      *       this is non-trivial and should not happen silently.
-     * @see copy
+     * @see clone
      */
     Identifier& operator=(const Identifier& other) = delete;
 
@@ -197,7 +197,7 @@ class Identifier {
      * @brief explicitly copies the identifer and increments it to a
      *        unoccupied value
      */
-    Identifier copy() {
+    Identifier clone() {
         std::string str = _value;
         set_to_next_free(str);
         return {std::move(str), InternalOnly()};

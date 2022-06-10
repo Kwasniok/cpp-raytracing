@@ -89,12 +89,12 @@ void test_comparison() {
     TEST_ASSERT_TRUE(id1.str() != id2.str());
 }
 
-void test_copy() {
+void test_clone() {
     Identifier<void> id = Identifier<void>::make_always("abc");
     for (int l = 0; l < 2; ++l) {
         std::vector<Identifier<void>> clone_ids;
         for (int i = 2; i < 1005; ++i) {
-            auto clone_id = id.copy();
+            auto clone_id = id.clone();
             std::string expected = "abc";
             expected += '_';
             expected += std::to_string(i);
@@ -114,7 +114,7 @@ void run_test_suite() {
     run(test_valid_good);
     run(test_valid_bad);
     run(test_comparison);
-    run(test_copy);
+    run(test_clone);
 }
 
 }} // namespace cpp_raytracing::test
