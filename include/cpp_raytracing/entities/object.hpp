@@ -11,8 +11,6 @@
 
 namespace cpp_raytracing {
 
-class Animator;
-
 /**
  * @brief represents an object
  */
