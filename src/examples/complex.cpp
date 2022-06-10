@@ -17,9 +17,9 @@ using namespace std;
 using namespace cpp_raytracing;
 
 /**
- * @brief linear motion based object animator
+ * @brief linear motion based instance animator
  */
-class LinearMotionObjectAnimator : public ObjectAnimator {
+class LinearMotionInstanceAnimator : public InstanceAnimator {
   public:
     /** @brief start position for `time = time_offset` */
     Vec3 start;
@@ -28,24 +28,24 @@ class LinearMotionObjectAnimator : public ObjectAnimator {
     /** @brief time for which `position = start` */
     Scalar time_offset = 0.0;
 
-    virtual ~LinearMotionObjectAnimator() = default;
+    virtual ~LinearMotionInstanceAnimator() = default;
 
   protected:
     virtual void update_for_time_hook(const Scalar time,
-                                      Object* object) override;
+                                      Instance* object) override;
 };
 
-void LinearMotionObjectAnimator::update_for_time_hook(const Scalar time,
-                                                      Object* object) {
+void LinearMotionInstanceAnimator::update_for_time_hook(const Scalar time,
+                                                        Instance* object) {
     if (object == nullptr)
         return;
     object->position = start + (time - time_offset) * velocity;
 }
 
 /**
- * @brief spiral motion based object animator
+ * @brief spiral motion based instance animator
  */
-class SpiralMotionObjectAnimator : public ObjectAnimator {
+class SpiralMotionInstanceAnimator : public InstanceAnimator {
   public:
     /** @brief start position for `time = time_offset` */
     Vec3 start;
@@ -58,15 +58,15 @@ class SpiralMotionObjectAnimator : public ObjectAnimator {
     /** @brief phase of circular motion for `time = time_offset` */
     Scalar phase_offset = 0.0;
 
-    virtual ~SpiralMotionObjectAnimator() = default;
+    virtual ~SpiralMotionInstanceAnimator() = default;
 
   protected:
     virtual void update_for_time_hook(const Scalar time,
-                                      Object* object) override;
+                                      Instance* object) override;
 };
 
-void SpiralMotionObjectAnimator::update_for_time_hook(const Scalar time,
-                                                      Object* object) {
+void SpiralMotionInstanceAnimator::update_for_time_hook(const Scalar time,
+                                                        Instance* object) {
     if (object == nullptr)
         return;
     const Scalar t = time - time_offset;
@@ -74,6 +74,19 @@ void SpiralMotionObjectAnimator::update_for_time_hook(const Scalar time,
     const Scalar cos_phi = std::cos(phi);
     const Scalar sin_phi = std::sin(phi);
     object->position = start + (t * radius) * Vec3{cos_phi, sin_phi, 0.0};
+}
+
+/** @brief generate a sphere instance */
+std::unique_ptr<Instance>
+make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
+    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    sphere->radius = radius;
+    sphere->material = material;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = sphere;
+
+    return instance;
 }
 
 /**
@@ -120,19 +133,17 @@ Scene make_scene() {
 
     // random small spheres
     for (int i = 0; i < num_spheres; ++i) {
-        auto sphere = make_unique_for_overwrite<Sphere>();
-        {
-            sphere->id.change("sphere");
-            const auto y = random_scalar(0.05, 0.15);
-            const auto z = random_scalar(-100.0, -1.0);
-            const auto x = std::abs(z) / 10.0 * random_scalar(-5.0, +5.0);
-            sphere->position = Vec3(x, y, z);
-            sphere->radius = std::abs(y);
-            sphere->material = materials[rand() % materials.size()];
-        }
+        const auto y = random_scalar(0.05, 0.15);
+        const auto z = random_scalar(-100.0, -1.0);
+        const auto x = std::abs(z) / 10.0 * random_scalar(-5.0, +5.0);
+        const auto radius = std::abs(y);
+        auto sphere = make_sphere(radius, materials[rand() % materials.size()]);
+        sphere->id.change("sphere");
+        sphere->position = Vec3(x, y, z);
+
         // random animation per object
         if (rand() % 2) {
-            auto anim = make_unique<LinearMotionObjectAnimator>();
+            auto anim = make_unique<LinearMotionInstanceAnimator>();
             {
                 anim->start = {sphere->position};
                 const auto x = random_scalar(-1.0, +1.0);
@@ -142,10 +153,10 @@ Scene make_scene() {
             }
             sphere->set_animator(std::move(anim));
         } else {
-            auto anim = make_unique<SpiralMotionObjectAnimator>();
+            auto anim = make_unique<SpiralMotionInstanceAnimator>();
             {
                 anim->start = sphere->position;
-                anim->radius = sphere->radius;
+                anim->radius = radius;
                 anim->frequency = random_scalar(-1.0, 1.0);
             }
             sphere->set_animator(std::move(anim));

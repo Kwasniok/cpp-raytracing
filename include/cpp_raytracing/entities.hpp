@@ -10,6 +10,7 @@
 
 #include "entities/camera.hpp"
 #include "entities/entity.hpp"
+#include "entities/instance.hpp"
 #include "entities/object.hpp"
 #include "entities/sphere.hpp"
 

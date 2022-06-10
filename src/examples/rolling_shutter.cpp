@@ -17,9 +17,9 @@ using namespace std;
 using namespace cpp_raytracing;
 
 /**
- * @brief circular motion based object animator
+ * @brief circular motion based instance animator
  */
-class CircularMotionObjectAnimator : public ObjectAnimator {
+class CircularMotionInstanceAnimator : public InstanceAnimator {
   public:
     /** @brief start position for `time = time_offset` */
     Vec3 center;
@@ -30,22 +30,22 @@ class CircularMotionObjectAnimator : public ObjectAnimator {
     /** @brief phase of circular motion for `time = time_offset` */
     Scalar phase_offset = 0.0;
 
-    virtual ~CircularMotionObjectAnimator() = default;
+    virtual ~CircularMotionInstanceAnimator() = default;
 
   protected:
     /** @brief hook for update_for_time*/
     virtual void update_for_time_hook(const Scalar time,
-                                      Object* object) override;
+                                      Instance* instance) override;
 };
 
-void CircularMotionObjectAnimator::update_for_time_hook(const Scalar time,
-                                                        Object* object) {
-    if (object == nullptr)
+void CircularMotionInstanceAnimator::update_for_time_hook(const Scalar time,
+                                                          Instance* instance) {
+    if (instance == nullptr)
         return;
     const Scalar phi = frequency * time - phase_offset;
     const Scalar cos_phi = std::cos(phi);
     const Scalar sin_phi = std::sin(phi);
-    object->position = center + radius * Vec3{cos_phi, sin_phi, 0.0};
+    instance->position = center + radius * Vec3{cos_phi, sin_phi, 0.0};
 }
 
 /** @brief convert HSV to color */
@@ -85,6 +85,19 @@ Color color_from_hsv(const ColorScalar hue, const ColorScalar saturation,
     return {r, g, b};
 }
 
+/** @brief generate a sphere instance */
+std::unique_ptr<Instance>
+make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
+    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    sphere->radius = radius;
+    sphere->material = material;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = sphere;
+
+    return instance;
+}
+
 /** @brief configuration of the scene */
 struct SceneConfig {
     /** @brief number of blades in the rotor */
@@ -107,19 +120,16 @@ Scene make_scene(const SceneConfig& config) {
 
     // rotor
     for (unsigned int i = 0; i < config.num_blades; ++i) {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+
+        auto mat = std::make_shared_for_overwrite<Diffuse>();
+        mat->id.change("metal");
+        mat->color = color_from_hsv(
+            ColorScalar(i) / ColorScalar(config.num_blades) * 2.0 * pi, 0.8,
+            0.8);
+        auto sphere = make_sphere(0.5, std::move(mat));
         sphere->id.change("sphere");
         sphere->position = center;
-        sphere->radius = 0.5;
-        {
-            auto mat = std::make_unique_for_overwrite<Diffuse>();
-            mat->id.change("metal");
-            mat->color = color_from_hsv(
-                ColorScalar(i) / ColorScalar(config.num_blades) * 2.0 * pi, 0.8,
-                0.8);
-            sphere->material = std::move(mat);
-        }
-        auto anim = make_unique<CircularMotionObjectAnimator>();
+        auto anim = make_unique<CircularMotionInstanceAnimator>();
         {
             anim->center = center;
             anim->radius = 1.0;

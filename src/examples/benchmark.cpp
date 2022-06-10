@@ -16,6 +16,19 @@
 using namespace std;
 using namespace cpp_raytracing;
 
+/** @brief generate a sphere instance */
+std::unique_ptr<Instance>
+make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
+    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    sphere->radius = radius;
+    sphere->material = material;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = sphere;
+
+    return instance;
+}
+
 /**
  * @brief generate an example scene
  */
@@ -59,22 +72,20 @@ Scene make_scene() {
 
     // spheres
     for (int i = 0; i < num_spheres; ++i) {
-        auto sphere = make_unique_for_overwrite<Sphere>();
-        sphere->id.change("sphere");
         const auto x = random_scalar(-5.0, +5.0);
         const auto y = 0.1;
         const auto z = random_scalar(-100.0, -1.0);
+        auto sphere =
+            make_sphere(std::abs(y), materials[rand() % materials.size()]);
+        sphere->id.change("sphere");
         sphere->position = Vec3(x, y, z);
-        sphere->radius = std::abs(y);
-        sphere->material = materials[rand() % materials.size()];
         scene.add(std::move(sphere));
     }
     // floor
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere =
+            make_sphere(100000.0, materials[rand() % materials.size()]);
         sphere->position = Vec3(0.0, -100000.0, 0.0);
-        sphere->radius = 100000.0;
-        sphere->material = materials[rand() % materials.size()];
         scene.add(std::move(sphere));
     }
 

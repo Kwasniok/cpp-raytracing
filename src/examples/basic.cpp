@@ -16,6 +16,19 @@
 using namespace std;
 using namespace cpp_raytracing;
 
+/** @brief generate a sphere instance */
+std::unique_ptr<Instance>
+make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
+    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    sphere->radius = radius;
+    sphere->material = material;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = sphere;
+
+    return instance;
+}
+
 /**
  * @brief generate an example scene
  */
@@ -71,56 +84,44 @@ Scene make_scene() {
 
     // left
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere = make_sphere(0.5, diffuse_red);
         sphere->id.change("left sphere");
         sphere->position = Vec3(-1.0, 0.0, -0.75);
-        sphere->radius = 0.5;
-        sphere->material = diffuse_red;
         scene.add(std::move(sphere));
     }
     // middle (outer)
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere = make_sphere(0.5, glass);
         sphere->id.change("middle sphere outer surface");
         sphere->position = Vec3(0.0, 0.0, -1.0);
-        sphere->radius = 0.5;
-        sphere->material = glass;
         scene.add(std::move(sphere));
     }
     // middle (inner)
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere = make_sphere(-0.4, glass);
         sphere->id.change("middle sphere inner surface");
         sphere->position = Vec3(0.0, 0.0, -1.0);
-        sphere->radius = -0.4;
-        sphere->material = glass;
         scene.add(std::move(sphere));
     }
     // right
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere = make_sphere(0.5, metal);
         sphere->id.change("right sphere");
         sphere->position = Vec3(+1.0, 0.0, -0.75);
-        sphere->radius = 0.5;
-        sphere->material = metal;
         scene.add(std::move(sphere));
     }
     // top
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere = make_sphere(0.5, light);
         sphere->id.change("top sphere");
         sphere->position = Vec3(0.0, 1.0, -1.0);
-        sphere->radius = 0.5;
-        sphere->material = light;
         scene.add(std::move(sphere));
     }
     // floor
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
+        auto sphere = make_sphere(100.0, diffuse_gray);
         sphere->id.change("floor sphere");
         sphere->position = Vec3(0.0, -100.5, -1.0);
-        sphere->radius = 100.0;
-        sphere->material = diffuse_gray;
         scene.add(std::move(sphere));
     }
 
