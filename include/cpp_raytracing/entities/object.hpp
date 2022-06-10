@@ -14,7 +14,7 @@ namespace cpp_raytracing {
 /**
  * @brief represents an object
  */
-struct Object : public Entity {
+class Object : public Entity {
   public:
     /** @brief object's current position in scene */
     Vec3 position = {0.0, 0.0, 0.0};

@@ -20,7 +20,8 @@ namespace cpp_raytracing {
 /**
  * @brief represents an entity
  */
-struct Entity {
+class Entity {
+  public:
     /** @brief unique entity identifier */
     Identifier<class Entity> id;
 
