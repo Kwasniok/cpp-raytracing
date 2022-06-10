@@ -1,8 +1,8 @@
 #include <array>
 #include <limits>
 
+#include <cpp_raytracing/math.hpp>
 #include <cpp_raytracing/util.hpp>
-#include <cpp_raytracing/vec3.hpp>
 
 #include "test.hpp"
 

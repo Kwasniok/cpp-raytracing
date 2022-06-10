@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "../vec3.hpp"
+#include "../math.hpp"
 #include "entity.hpp"
 
 namespace cpp_raytracing {

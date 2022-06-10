@@ -1,17 +1,17 @@
 /**
  * @file
- * @brief 3D vector representation
+ * @brief affine math
  */
 
-#ifndef CPP_RAYTRACING_VEC3_HPP
-#define CPP_RAYTRACING_VEC3_HPP
+#ifndef CPP_RAYTRACING_MATH_HPP
+#define CPP_RAYTRACING_MATH_HPP
 
-#include <array>
 #include <cmath>
 #include <iostream>
 
 #include <glm/detail/qualifier.hpp>
 #include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
 
 #include "random.hpp"
 #include "scalar.hpp"
@@ -125,7 +125,8 @@ class Vec3 {
 
   private:
     using data_type = glm::vec<3, Scalar>;
-    constexpr Vec3(const data_type data) : _data(data) {}
+    constexpr Vec3(const data_type& data) : _data(data) {}
+    constexpr Vec3(data_type&& data) : _data(std::move(data)) {}
 
     data_type _data;
 };

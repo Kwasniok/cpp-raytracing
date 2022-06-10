@@ -1,7 +1,7 @@
 #include <limits>
 
 #include <cpp_raytracing/bounding_volume.hpp>
-#include <cpp_raytracing/vec3.hpp>
+#include <cpp_raytracing/math.hpp>
 
 #include "test.hpp"
 

@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_RAY_HPP
 #define CPP_RAYTRACING_RAY_HPP
 
-#include "vec3.hpp"
+#include "math.hpp"
 
 namespace cpp_raytracing {
 

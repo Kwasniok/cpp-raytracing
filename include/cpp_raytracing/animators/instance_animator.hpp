@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "../entities/instance.hpp"
-#include "../vec3.hpp"
+#include "../math.hpp"
 #include "animator.hpp"
 
 namespace cpp_raytracing {

@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_ENTITIES_OBJECT_HPP
 #define CPP_RAYTRACING_ENTITIES_OBJECT_HPP
 
-#include "../vec3.hpp"
+#include "../math.hpp"
 #include "entity.hpp"
 
 namespace cpp_raytracing {
