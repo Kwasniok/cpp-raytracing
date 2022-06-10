@@ -181,6 +181,14 @@ class GlobalShutterRenderer : public Renderer {
                 render_pixel_sample(i, j, frozen_scene, buffer);
             }
         }
+
+        if (frequent_render_callback) {
+            frequent_render_callback(State{buffer, sample});
+        }
+        if (infrequent_render_callback &&
+            (sample % infrequent_callback_frequency == 0)) {
+            infrequent_render_callback(State{buffer, sample});
+        }
     }
 
     /** @brief render a single sample for a single pixel */
@@ -251,6 +259,14 @@ class RollingShutterRenderer : public Renderer {
             for (unsigned long i = 0; i < canvas.width; ++i) {
                 render_pixel_sample(i, j, frozen_scene, buffer);
             }
+        }
+
+        if (frequent_render_callback) {
+            frequent_render_callback(State{buffer, sample});
+        }
+        if (infrequent_render_callback &&
+            (sample % infrequent_callback_frequency == 0)) {
+            infrequent_render_callback(State{buffer, sample});
         }
     }
 
