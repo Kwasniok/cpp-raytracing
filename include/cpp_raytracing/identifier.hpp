@@ -197,7 +197,7 @@ class Identifier {
      * @brief explicitly copies the identifer and increments it to a
      *        unoccupied value
      */
-    Identifier clone() {
+    Identifier clone() const {
         std::string str = _value;
         set_to_next_free(str);
         return {std::move(str), InternalOnly()};
