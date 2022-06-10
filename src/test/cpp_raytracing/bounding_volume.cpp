@@ -1,6 +1,7 @@
 #include <limits>
 
 #include <cpp_raytracing/bounding_volume.hpp>
+#include <cpp_raytracing/vec3.hpp>
 
 #include "test.hpp"
 
@@ -147,10 +148,36 @@ void test_surrounding_box() {
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(box.max(), max, epsilon);
 }
 
+void test_arithmetic() {
+    static constexpr AxisAlignedBoundingBox box{
+        Vec3{1.0, 2.0, 3.0},
+        Vec3{4.0, 5.0, 6.0},
+    };
+    static constexpr Vec3 vec{7.0, 8.0, 9.0};
+
+    // addition
+    static constexpr AxisAlignedBoundingBox expected{
+        Vec3{8.0, 10.0, 12.0},
+        Vec3{11.0, 13.0, 15.0},
+    };
+    {
+        const AxisAlignedBoundingBox res = box + vec;
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.min(), expected.min(), epsilon);
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.max(), expected.max(), epsilon);
+    }
+    {
+        AxisAlignedBoundingBox res = box;
+        res += vec;
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.min(), expected.min(), epsilon);
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.max(), expected.max(), epsilon);
+    }
+}
+
 void run_test_suite() {
     run(test_constructor);
     run(test_hit);
     run(test_hit_corner_cases);
+    run(test_arithmetic);
 }
 
 }} // namespace cpp_raytracing::test

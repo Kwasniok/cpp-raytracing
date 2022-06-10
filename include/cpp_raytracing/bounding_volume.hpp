@@ -69,10 +69,19 @@ class AxisAlignedBoundingBox {
         return true;
     }
 
+    /** @brief shifts the box by the given vector */
+    constexpr AxisAlignedBoundingBox& operator+=(const Vec3& vec) {
+        _min += vec;
+        _max += vec;
+        return *this;
+    }
+
   private:
     friend constexpr AxisAlignedBoundingBox
     surrounding_box(const AxisAlignedBoundingBox& box1,
                     const AxisAlignedBoundingBox& box2);
+    friend constexpr AxisAlignedBoundingBox
+    operator+(const AxisAlignedBoundingBox& box, const Vec3& vec);
 
     /** @brief dummy type to indicate internal trusted calls */
     struct Trusted {};
@@ -107,6 +116,16 @@ surrounding_box(const AxisAlignedBoundingBox& box1,
     return AxisAlignedBoundingBox{Vec3{x_min, y_min, z_min},
                                   Vec3{x_max, y_max, z_max},
                                   AxisAlignedBoundingBox::Trusted{}};
+}
+
+/** @brief shifts the box by the given vector */
+constexpr AxisAlignedBoundingBox operator+(const AxisAlignedBoundingBox& box,
+                                           const Vec3& vec) {
+    return AxisAlignedBoundingBox{
+        box.min() + vec,
+        box.max() + vec,
+        AxisAlignedBoundingBox::Trusted{},
+    };
 }
 
 } // namespace cpp_raytracing
