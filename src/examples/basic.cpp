@@ -29,6 +29,22 @@ make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
     return instance;
 }
 
+/** @brief generate a plane instance */
+std::unique_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
+                                     const bool finite = true) {
+    auto plane = std::make_shared_for_overwrite<Plane>();
+    plane->material = material;
+    plane->finite_neg_x = finite;
+    plane->finite_pos_x = finite;
+    plane->finite_neg_y = finite;
+    plane->finite_pos_y = finite;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = plane;
+
+    return instance;
+}
+
 /**
  * @brief generate an example scene
  */
@@ -119,10 +135,11 @@ Scene make_scene() {
     }
     // floor
     {
-        auto sphere = make_sphere(100.0, diffuse_gray);
-        sphere->id.change("floor sphere");
-        sphere->position = Vec3(0.0, -100.5, -1.0);
-        scene.add(std::move(sphere));
+        auto plane = make_plane(diffuse_gray, false);
+        plane->id.change("floor");
+        plane->rotation = Vec3(pi / 2.0, 0.0, 0.0);
+        plane->position = Vec3(0.0, -0.5, -1.0);
+        scene.add(std::move(plane));
     }
 
     return scene;

@@ -12,6 +12,7 @@
 #include "entities/entity.hpp"
 #include "entities/instance.hpp"
 #include "entities/object.hpp"
+#include "entities/plane.hpp"
 #include "entities/sphere.hpp"
 
 #endif

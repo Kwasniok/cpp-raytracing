@@ -89,6 +89,22 @@ make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
     return instance;
 }
 
+/** @brief generate a plane instance */
+std::unique_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
+                                     const bool finite = true) {
+    auto plane = std::make_shared_for_overwrite<Plane>();
+    plane->material = material;
+    plane->finite_neg_x = finite;
+    plane->finite_pos_x = finite;
+    plane->finite_neg_y = finite;
+    plane->finite_pos_y = finite;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = plane;
+
+    return instance;
+}
+
 /**
  * @brief generate an example scene
  */
@@ -166,18 +182,15 @@ Scene make_scene() {
 
     // floor
     {
-        auto sphere = make_unique_for_overwrite<Sphere>();
-        sphere->id.change("floor");
-        sphere->position = Vec3(0.0, -100000.0, 0.0);
-        sphere->radius = 100000.0;
-        {
-            auto mat = std::make_unique_for_overwrite<Metal>();
-            mat->id.change("floor");
-            mat->color = {0.7, 0.8, 0.9};
-            mat->roughness = 0.3;
-            sphere->material = std::move(mat);
-        }
-        scene.add(std::move(sphere));
+        auto mat = std::make_unique_for_overwrite<Metal>();
+        mat->id.change("floor");
+        mat->color = {0.7, 0.8, 0.9};
+        mat->roughness = 0.3;
+        auto plane = make_plane(std::move(mat), false);
+        plane->id.change("floor");
+        plane->scale = Vec3(1e5, 1e5, 1.0);
+        plane->rotation = Vec3(pi / 2.0, 0.0, 0.0);
+        scene.add(std::move(plane));
     }
 
     return scene;
