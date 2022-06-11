@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_ENTITIES_INSTANCE_HPP
 #define CPP_RAYTRACING_ENTITIES_INSTANCE_HPP
 
+#include <cmath>
 #include <memory>
 
 #include "../math.hpp"
@@ -15,11 +16,23 @@ namespace cpp_raytracing {
 
 /**
  * @brief represents an instance
+ * @note From instance space to parent space the affine transfomation is
+ *       performed in order: scaling, rotation, translation. All parameters
+ *       (position, rotation, scale) describe these transformations in this
+ *       direction.
  */
 class Instance : public Entity {
   public:
     /** @brief translation */
     Vec3 position = {0.0, 0.0, 0.0};
+    /**
+     * @brief rotation (Trait-Bryan angles)
+     * @note The application order is: roll, pitch, yaw
+     * @see rotation_mat
+     */
+    Vec3 rotation = {0.0, 0.0, 0.0};
+    /** @brief scaling */
+    Vec3 scale = {1.0, 1.0, 1.0};
 
     /** @brief instanced entity */
     std::shared_ptr<Entity> entity;
@@ -62,9 +75,20 @@ struct default_identifier<Instance> {
 HitRecord Instance::hit_record(const Ray& ray, const Scalar t_min,
                                const Scalar t_max) const {
     if (entity) {
-        const Ray r{ray.start() - position, ray.direction()};
-        HitRecord record = entity->hit_record(r, t_min, t_max);
-        record.point += position;
+        const Mat3x3 inv_transformation =
+            inverse_scaling_mat(scale) * inverse_rotation_mat(rotation);
+        // affine
+        const Vec3 start = inv_transformation * (ray.start() - position);
+        // linear
+        const Vec3 direction = inv_transformation * ray.direction();
+        HitRecord record =
+            entity->hit_record(Ray{start, direction}, t_min, t_max);
+        if (record.t < infinity) {
+            const Mat3x3 transformation =
+                rotation_mat(rotation) * scaling_mat(scale);
+            record.point = transformation * record.point + position;
+            record.normal = transformation * record.normal;
+        }
         return record;
     } else {
         return {.t = infinity};
@@ -75,7 +99,38 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
     if (entity) {
         const auto bounds = entity->bounding_box();
         if (bounds) {
-            return *bounds + position;
+            const Scalar x[2] = {bounds->min().x(), bounds->max().x()};
+            const Scalar y[2] = {bounds->min().y(), bounds->max().y()};
+            const Scalar z[2] = {bounds->min().z(), bounds->max().z()};
+
+            // linear transformation (translation is deferred)
+            const Mat3x3 transformation =
+                rotation_mat(rotation) * scaling_mat(scale);
+
+            // transform all corners and select min/max coefficients
+            Vec3 min{infinity, infinity, infinity};
+            Vec3 max{-infinity, -infinity, -infinity};
+            for (auto i = 0; i < 2; ++i) {
+                for (auto j = 0; j < 2; ++j) {
+                    for (auto k = 0; k < 2; ++k) {
+                        const Vec3 corner =
+                            transformation * Vec3{x[i], y[j], z[k]};
+                        min = Vec3{
+                            std::min(min.x(), corner.x()),
+                            std::min(min.y(), corner.y()),
+                            std::min(min.z(), corner.z()),
+                        };
+                        max = Vec3{
+                            std::max(max.x(), corner.x()),
+                            std::max(max.y(), corner.y()),
+                            std::max(max.z(), corner.z()),
+                        };
+                    }
+                }
+            }
+
+            // complete affine transformation via translation
+            return AxisAlignedBoundingBox{min + position, max + position};
         }
     }
     return std::nullopt;
