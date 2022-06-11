@@ -10,6 +10,5 @@
 
 #include "animators/animator.hpp"
 #include "animators/instance_animator.hpp"
-#include "animators/object_animator.hpp"
 
 #endif

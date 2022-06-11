@@ -6,14 +6,14 @@
 #ifndef CPP_RAYTRACING_ENTITIES_SHPERE_HPP
 #define CPP_RAYTRACING_ENTITIES_SHPERE_HPP
 
-#include "object.hpp"
+#include "entity.hpp"
 
 namespace cpp_raytracing {
 
 /**
  * @brief spherical object
  */
-class Sphere : public Object {
+class Sphere : public Entity {
   public:
     /**
      * @brief radius
@@ -41,7 +41,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     // solve: a*t^2 + b*t + c = 0
     // where a = d^2 >= 0, b = 2*d*(s-o), c = (s-o)^2 - R^2
     // solution: t = (-b +/- sqrt(b^2 - 4ac))/(2a)
-    const auto delta = ray.start() - position;
+    const auto delta = ray.start();
     const auto a = dot(ray.direction(), ray.direction());
     const auto b_half = dot(ray.direction(), delta);
     const auto c = dot(delta, delta) - radius * radius;
@@ -70,7 +70,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
 
     // found solution in range
     const Vec3 point = ray.at(t);
-    const Vec3 normal = (point - position) / radius;
+    const Vec3 normal = point / radius;
     HitRecord record;
     record.t = t;
     record.point = point;
@@ -80,8 +80,8 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
 }
 
 std::optional<AxisAlignedBoundingBox> Sphere::bounding_box() const {
-    return AxisAlignedBoundingBox{position + Vec3{radius, radius, radius},
-                                  position - Vec3{radius, radius, radius}};
+    return AxisAlignedBoundingBox{-Vec3{radius, radius, radius},
+                                  Vec3{radius, radius, radius}};
 }
 
 } // namespace cpp_raytracing

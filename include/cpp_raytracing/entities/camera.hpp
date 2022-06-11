@@ -9,7 +9,7 @@
 #include "../math.hpp"
 #include "../ray.hpp"
 #include "../scalar.hpp"
-#include "object.hpp"
+#include "entity.hpp"
 
 namespace cpp_raytracing {
 
@@ -17,8 +17,10 @@ namespace cpp_raytracing {
  * @brief represents a camera
  * @note Ignores rotation and scale.
  */
-class Camera : public Object {
+class Camera : public Entity {
   public:
+    /** @brief  camera origin  */
+    Vec3 position = {0.0, 0.0, 0.0};
     /**
      * @brief direction of image width in space
      * @note A longer vector will compress the image.

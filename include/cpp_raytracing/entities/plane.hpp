@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_ENTITIES_PLANE_HPP
 #define CPP_RAYTRACING_ENTITIES_PLANE_HPP
 
-#include "object.hpp"
+#include "entity.hpp"
 
 namespace cpp_raytracing {
 
@@ -14,7 +14,7 @@ namespace cpp_raytracing {
  * @brief planar object
  * @note centered unit square in of x-y plane facing upwards
  */
-class Plane : public Object {
+class Plane : public Entity {
   public:
     /** @brief true iff plane is limited by `x >= -0.5` */
     bool finite_neg_x = true;

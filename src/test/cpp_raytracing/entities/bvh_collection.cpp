@@ -2,6 +2,7 @@
 #include <vector>
 
 #include <cpp_raytracing/entities/bvh_collection.hpp>
+#include <cpp_raytracing/entities/instance.hpp>
 #include <cpp_raytracing/entities/sphere.hpp>
 #include <cpp_raytracing/ray.hpp>
 
@@ -11,11 +12,16 @@ namespace cpp_raytracing { namespace test {
 
 constexpr Scalar epsilon = 1e-16;
 
-std::unique_ptr<Sphere> make_sphere(const Vec3 position, const Scalar radius) {
-    auto sphere = std::make_unique_for_overwrite<Sphere>();
-    sphere->position = position;
+std::unique_ptr<Instance> make_sphere(const Vec3 position,
+                                      const Scalar radius) {
+    auto sphere = std::make_shared_for_overwrite<Sphere>();
     sphere->radius = radius;
-    return sphere;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = sphere;
+    instance->position = position;
+
+    return instance;
 }
 
 BVHCollection make_collection() {
