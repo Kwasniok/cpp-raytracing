@@ -36,8 +36,8 @@ class Plane : public Entity {
 
   private:
     static constexpr Scalar finite_x_min = -1.0;
-    static constexpr Scalar finite_x_max = -1.0;
-    static constexpr Scalar finite_y_min = +1.0;
+    static constexpr Scalar finite_x_max = +1.0;
+    static constexpr Scalar finite_y_min = -1.0;
     static constexpr Scalar finite_y_max = +1.0;
 };
 
