@@ -78,7 +78,6 @@ class Camera : public Entity {
 
         Camera camera;
         camera.position = look_from;
-        // note: ignore rotation and scale
         camera.direction_x = (viewport_width / 2.0) * u;
         camera.direction_y = (viewport_height / 2.0) * v;
         camera.direction_z = focal_length * w;
