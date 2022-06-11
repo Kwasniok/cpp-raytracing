@@ -11,12 +11,16 @@
 
 #include <glm/detail/qualifier.hpp>
 #include <glm/geometric.hpp>
+#include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
 
 #include "random.hpp"
 #include "scalar.hpp"
 
 namespace cpp_raytracing {
+
+class Vec3;
+class Mat3x3;
 
 /**
  * @brief 3D floating-point Vector
@@ -123,6 +127,10 @@ class Vec3 {
     friend constexpr Vec3 cross(const Vec3&, const Vec3&);
     friend constexpr Vec3 unit_vector(const Vec3&);
 
+    friend class Mat3x3;
+    friend Vec3 operator*(const Mat3x3&, const Vec3&);
+    friend Vec3 operator*(const Vec3&, const Mat3x3&);
+
   private:
     using data_type = glm::vec<3, Scalar>;
     constexpr Vec3(const data_type& data) : _data(data) {}
@@ -204,6 +212,222 @@ inline Vec3 random_vector_in_unit_sphere() {
 /** @brief random vector in 2D surface of unit sphere */
 inline Vec3 random_unit_vector() {
     return unit_vector(random_vector_in_unit_sphere());
+}
+
+// note: Some of the functions are laking constexpr because this was not
+//      supported by GLM v0.9.9 at the time of writing.
+
+/**
+ * @brief 3Dx3D floating-point Matrix
+ */
+class Mat3x3 {
+  public:
+    /**
+     * @brief initialize as identity matrix
+     * @note Coefficients are listed row first.
+     */
+    constexpr Mat3x3() : _data{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0} {}
+    /**
+     *  @brief initialize with vectors
+     * @note Each vector is a row.
+     */
+    constexpr Mat3x3(const Vec3& x, const Vec3& y, const Vec3& z)
+        : _data{
+              // note: glm stortes column first!
+              x._data[0], y._data[0], z._data[0], x._data[1], y._data[1],
+              z._data[1], x._data[2], y._data[2], z._data[2],
+          } {}
+
+    /** @brief get x coefficient */
+    constexpr Vec3 x() const {
+        // note: glm stortes column first!
+        return Vec3{_data[0][0], _data[1][0], _data[2][0]};
+    }
+    /** @brief get y coefficient */
+    constexpr Vec3 y() const {
+        // note: glm stortes column first!
+        return Vec3{_data[0][1], _data[1][1], _data[2][1]};
+    }
+    /** @brief get z coefficient */
+    constexpr Vec3 z() const {
+        // note: glm stortes column first!
+        return Vec3{_data[0][2], _data[1][2], _data[2][2]};
+    }
+
+    /** @brief const iterator for first element */
+    constexpr auto begin() const { return &_data[0][0]; }
+    /** @brief const iterator for end */
+    constexpr auto end() const { return &_data[0][0] + 9; }
+    /** @brief iterator for first element */
+    auto begin() { return &_data[0][0]; }
+    /** @brief iterator for end */
+    auto end() { return &_data[0][0] + 9; }
+
+    /** @brief tests equivalence */
+    constexpr bool operator==(const Mat3x3& other) const {
+        return _data == other._data;
+    }
+
+    /** @brief tests inequivalence */
+    bool operator!=(const Mat3x3& other) const { return _data != other._data; }
+
+    /**
+     * @brief enumerated accces to coefficients
+     * @note: `0=x, 1=y, 2=z`
+     */
+    constexpr Vec3 operator[](unsigned long i) const { return Vec3{_data[i]}; }
+
+    /** @brief negate elementwise */
+    Mat3x3 operator-() const { return Mat3x3{-_data}; }
+
+    /** @brief add elementwise */
+    Mat3x3& operator+=(const Mat3x3& other) {
+        _data += other._data;
+        return *this;
+    }
+    /** @brief subtract elementwise */
+    Mat3x3& operator-=(const Mat3x3& other) {
+        _data -= other._data;
+        return *this;
+    }
+    /** @brief matrix multiplication */
+    Mat3x3& operator*=(const Mat3x3& other) {
+        _data *= other._data;
+        return *this;
+    }
+    /** @brief matrix multiplication */
+    Mat3x3& operator*=(const Scalar other) {
+        _data *= other;
+        return *this;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Mat3x3 mat);
+    friend Mat3x3 operator+(const Mat3x3&, const Mat3x3&);
+    friend Mat3x3 operator-(const Mat3x3&, const Mat3x3&);
+    friend Mat3x3 operator*(const Mat3x3&, const Mat3x3&);
+    friend Vec3 operator*(const Mat3x3&, const Vec3&);
+    friend Vec3 operator*(const Vec3&, const Mat3x3&);
+    friend Mat3x3 operator*(const Scalar, const Mat3x3&);
+    friend Mat3x3 operator*(const Mat3x3&, const Scalar);
+
+  private:
+    using data_type = glm::mat<3, 3, Scalar>;
+    constexpr Mat3x3(const data_type& data) : _data(data) {}
+    constexpr Mat3x3(data_type&& data) : _data(std::move(data)) {}
+
+    data_type _data;
+};
+
+/** @brief write matrix as space separated components */
+inline std::ostream& operator<<(std::ostream& os, const Mat3x3 mat) {
+    os << "Mat3x3(" << '\n'
+       << mat._data[0][0] << ", " << mat._data[0][1] << ", " << mat._data[0][2]
+       << "," << '\n'
+       << mat._data[1][0] << ", " << mat._data[1][1] << ", " << mat._data[1][2]
+       << "," << '\n'
+       << mat._data[2][0] << ", " << mat._data[2][1] << ", " << mat._data[2][2]
+       << '\n'
+       << ")";
+    return os;
+}
+
+/** @brief add elementwise */
+inline Mat3x3 operator+(const Mat3x3& mat1, const Mat3x3& mat2) {
+    return Mat3x3(mat1._data + mat2._data);
+}
+
+/** @brief subtract elementwise */
+inline Mat3x3 operator-(const Mat3x3& mat1, const Mat3x3& mat2) {
+    return Mat3x3(mat1._data - mat2._data);
+}
+
+/** @brief matrix multiplication */
+inline Mat3x3 operator*(const Mat3x3& mat1, const Mat3x3& mat2) {
+    return Mat3x3(mat1._data * mat2._data);
+}
+/** @brief matrix multiplication  */
+inline Vec3 operator*(const Mat3x3& mat1, const Vec3& vec2) {
+    return Vec3(mat1._data * vec2._data);
+}
+/** @brief matrix multiplication  */
+inline Vec3 operator*(const Vec3& vec1, const Mat3x3& mat2) {
+    return Vec3(vec1._data * mat2._data);
+}
+
+/** @brief scalar multiplication  */
+inline Mat3x3 operator*(const Scalar f1, const Mat3x3& mat2) {
+    return Mat3x3(f1 * mat2._data);
+}
+/** @brief scalar multiplication  */
+inline Mat3x3 operator*(const Mat3x3& mat1, const Scalar f2) {
+    return Mat3x3(f2 * mat1._data);
+}
+
+/**
+ * @brief returns rotational matrix for given axis and amplitude
+ * @note Rotations are performed around each axis separately in the order:
+ *       `R_x`, `R_y`, `R_z` (roll, pitch, yaw, Trait-Bryan angles).
+ * @see inverse_rotation_mat
+ */
+Mat3x3 rotation_mat(const Vec3& axis) {
+    const Scalar cx = std::cos(axis.x());
+    const Scalar sx = std::sin(axis.x());
+    const Scalar cy = std::cos(axis.y());
+    const Scalar sy = std::sin(axis.y());
+    const Scalar cz = std::cos(axis.z());
+    const Scalar sz = std::sin(axis.z());
+
+    return Mat3x3{
+        {cy * cz, sx * sy * cz - cx * sz, cx * sy * cz + sx * sz},
+        {cy * sz, sx * sy * sz + cx * cz, cx * sy * sz - sx * cz},
+        {-sy, sx * cy, cx * cy},
+    };
+}
+
+/**
+ * @brief returns inverse rotational matrix for given axis and amplitude
+ * @note Rotations are performed around each inverted axis separately in the
+ *       order: `R_(-z)`, `R_(-y)`, `R_(-x)` (yaw, pitch, roll, Trait-Bryan
+ * angles).
+ * @see rotation_mat
+ */
+Mat3x3 inverse_rotation_mat(const Vec3& axis) {
+    const Scalar cx = std::cos(axis.x());
+    const Scalar sx = std::sin(axis.x());
+    const Scalar cy = std::cos(axis.y());
+    const Scalar sy = std::sin(axis.y());
+    const Scalar cz = std::cos(axis.z());
+    const Scalar sz = std::sin(axis.z());
+
+    return Mat3x3{
+        {cy * cz, cy * sz, -sy},
+        {sx * sy * cz - cx * sz, cx * cz + sx * sy * sz, sx * cy},
+        {cx * sy * cz + sx * sz, -cz * sx + cx * sy * sz, cx * cy},
+    };
+}
+
+/**
+ * @brief returns scaling matrix for given scale coefficients
+ * @see inverse_scaling_mat
+ */
+Mat3x3 scaling_mat(const Vec3& vec) {
+    return Mat3x3{
+        {vec.x(), 0.0, 0.0},
+        {0.0, vec.y(), 0.0},
+        {0.0, 0.0, vec.z()},
+    };
+}
+
+/**
+ * @brief returns inverse scaling matrix for given scale coefficients
+ * @see scaling_mat
+ */
+Mat3x3 inverse_scaling_mat(const Vec3& vec) {
+    return Mat3x3{
+        {1.0 / vec.x(), 0.0, 0.0},
+        {0.0, 1.0 / vec.y(), 0.0},
+        {0.0, 0.0, 1.0 / vec.z()},
+    };
 }
 
 } // namespace cpp_raytracing

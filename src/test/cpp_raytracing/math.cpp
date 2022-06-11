@@ -10,14 +10,14 @@ namespace cpp_raytracing { namespace test {
 
 constexpr Scalar epsilon = 1.e-12;
 
-void test_default_constructor() {
+void test_vec3_default_constructor() {
     Vec3 vec{};
     TEST_ASSERT_EQUAL(vec.x(), 0.0);
     TEST_ASSERT_EQUAL(vec.y(), 0.0);
     TEST_ASSERT_EQUAL(vec.z(), 0.0);
 }
 
-void test_random_constructor() {
+void test_vec3_random_constructor() {
     constexpr auto min = -1.1;
     constexpr auto max = 2.2;
     for (long i = 0; i < 1000; ++i) {
@@ -28,14 +28,14 @@ void test_random_constructor() {
     }
 }
 
-void test_axes() {
+void test_vec3_axes() {
     Vec3 vec{1.1, 2.2, 3.3};
     TEST_ASSERT_EQUAL(vec.x(), 1.1);
     TEST_ASSERT_EQUAL(vec.y(), 2.2);
     TEST_ASSERT_EQUAL(vec.z(), 3.3);
 }
 
-void test_iterator() {
+void test_vec3_iterator() {
     // non-const (read)
     {
         Vec3 vec{1.1, 2.2, 3.3};
@@ -59,7 +59,7 @@ void test_iterator() {
     }
 }
 
-void test_comparison() {
+void test_vec3_comparison() {
     constexpr Vec3 vec1{1.1, 2.2, 3.3};
     constexpr Vec3 vec2{1.1, 2.2, 3.3};
     constexpr Vec3 vec3{7.7, 2.2, 3.3};
@@ -82,7 +82,7 @@ void test_comparison() {
     }
 }
 
-void test_arithmetic() {
+void test_vec3_arithmetic() {
     constexpr Vec3 x1{1.1, 2.2, 3.3};
     constexpr Vec3 x2{4.4, 5.5, 6.6};
     constexpr Scalar f = 7.7;
@@ -175,14 +175,14 @@ void test_arithmetic() {
     }
 }
 
-void test_near_zero() {
+void test_vec3_near_zero() {
     TEST_ASSERT_TRUE(Vec3(1.0e-15, 1.0e-16, 1.0e-17).near_zero(epsilon));
     TEST_ASSERT_FALSE(Vec3(1.0e-04, 1.0e-16, 1.0e-17).near_zero(epsilon));
     TEST_ASSERT_FALSE(Vec3(1.0e-15, 1.0e-04, 1.0e-17).near_zero(epsilon));
     TEST_ASSERT_FALSE(Vec3(1.0e-15, 1.0e-16, 1.0e-04).near_zero(epsilon));
 }
 
-void test_random_in_unit_disk() {
+void test_vec3_random_in_unit_disk() {
     constexpr auto reps = 1000;
     Vec3 avg{};
     for (long i = 0; i < reps; ++i) {
@@ -196,7 +196,7 @@ void test_random_in_unit_disk() {
     TEST_ASSERT_IN_RANGE(avg.length(), 0.0, 0.05);
 }
 
-void test_random_vector_in_unit_sphere() {
+void test_vec3_random_vector_in_unit_sphere() {
     constexpr auto reps = 1000;
     Vec3 avg{};
     for (long i = 0; i < reps; ++i) {
@@ -209,7 +209,7 @@ void test_random_vector_in_unit_sphere() {
     TEST_ASSERT_IN_RANGE(avg.length(), 0.0, 0.05);
 }
 
-void test_random_unit_vector() {
+void test_vec3_random_unit_vector() {
     constexpr auto reps = 1000;
     Vec3 avg{};
     for (long i = 0; i < reps; ++i) {
@@ -222,17 +222,228 @@ void test_random_unit_vector() {
     TEST_ASSERT_IN_RANGE(avg.length(), 0.0, 0.05);
 }
 
+void test_mat3x3_default_constructor() {
+    const Mat3x3 mat{};
+    TEST_ASSERT_EQUAL(mat.x(), (Vec3{1.0, 0.0, 0.0}));
+    TEST_ASSERT_EQUAL(mat.y(), (Vec3{0.0, 1.0, 0.0}));
+    TEST_ASSERT_EQUAL(mat.z(), (Vec3{0.0, 0.0, 1.0}));
+}
+
+void test_mat3x3_convention() {
+    // row first
+    constexpr Mat3x3 mat{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    constexpr Vec3 x{1.0, 0.0, 0.0};
+    constexpr Vec3 y{0.0, 1.0, 0.0};
+    constexpr Vec3 z{0.0, 0.0, 1.0};
+
+    {
+        // multiplication right
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(mat * x, (Vec3{1.1, 4.4, 7.7}),
+                                          epsilon);
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(mat * y, (Vec3{2.2, 5.5, 8.8}),
+                                          epsilon);
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(mat * z, (Vec3{3.3, 6.6, 9.9}),
+                                          epsilon);
+    }
+    {
+        // multiplication left
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(x * mat, (Vec3{1.1, 2.2, 3.3}),
+                                          epsilon);
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(y * mat, (Vec3{4.4, 5.5, 6.6}),
+                                          epsilon);
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(z * mat, (Vec3{7.7, 8.8, 9.9}),
+                                          epsilon);
+    }
+}
+
+void test_mat3x3_comparison() {
+    constexpr Mat3x3 mat1{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    constexpr Mat3x3 mat2{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    constexpr Mat3x3 mat3{{1.1, 12.34, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    constexpr Mat3x3 mat4{{1.1, 2.2, 3.3}, {12.34, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    constexpr Mat3x3 mat5{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 12.34}};
+
+    {
+        TEST_ASSERT_TRUE(mat1 == mat1);
+        TEST_ASSERT_TRUE(mat1 == mat2);
+        TEST_ASSERT_FALSE(mat1 == mat3);
+        TEST_ASSERT_FALSE(mat1 == mat4);
+        TEST_ASSERT_FALSE(mat1 == mat5);
+    }
+    {
+        TEST_ASSERT_FALSE(mat1 != mat1);
+        TEST_ASSERT_FALSE(mat1 != mat2);
+        TEST_ASSERT_TRUE(mat1 != mat3);
+        TEST_ASSERT_TRUE(mat1 != mat4);
+        TEST_ASSERT_TRUE(mat1 != mat5);
+    }
+}
+
+void mat3x3_arithmetic() {
+    constexpr Mat3x3 mat1{{1.9, 2.8, 3.7}, {4.6, 5.5, 6.4}, {3.7, 2.8, 1.9}};
+    constexpr Mat3x3 mat2{{9.1, 8.2, 7.3}, {6.4, 5.5, 4.6}, {3.7, 2.8, 1.9}};
+    constexpr Vec3 vec1{10.10, 11.11, 12.12};
+    constexpr Scalar f = 1 / 11.0;
+
+    {
+        const auto res = mat1 + mat2;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 11.0, epsilon);
+            }
+        }
+    }
+    {
+        auto res = mat1;
+        res += mat2;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 11.0, epsilon);
+            }
+        }
+    }
+    {
+        const auto res = mat1 - mat1;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 0.0, epsilon);
+            }
+        }
+    }
+    {
+        auto res = mat1;
+        res -= mat1;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 0.0, epsilon);
+            }
+        }
+    }
+    {
+        const auto res = (mat1 + mat2) * f;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 1.0, epsilon);
+            }
+        }
+    }
+    {
+        const auto res = f * (mat1 + mat2);
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 1.0, epsilon);
+            }
+        }
+    }
+    {
+        auto res = (mat1 + mat2);
+        res *= f;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], 1.0, epsilon);
+            }
+        }
+    }
+}
+
+void test_mat3x3_rotation_mat() {
+    constexpr Vec3 axis{1.1, 2.2, 3.3};
+    constexpr Mat3x3 identity = Mat3x3{
+        {1.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0},
+        {0.0, 0.0, 1.0},
+    };
+
+    const Mat3x3 mat = rotation_mat(axis);
+    const Mat3x3 inv_mat = inverse_rotation_mat(axis);
+
+    {
+        // values
+        constexpr Mat3x3 expected{
+            {0.5811329478584188, -0.6399638097631108, -0.5027234021873948},
+            {0.09283351724552164, -0.5615787520127085, 0.8221990290456893},
+            {-0.8084964038195901, -0.524476527102342, -0.26694182424164375}};
+        constexpr Scalar epsilon = 1e-14;
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(mat, expected, epsilon);
+    }
+    {
+        // values of inverse
+        constexpr Mat3x3 expected{
+            {0.5811329478584188, 0.09283351724552164, -0.8084964038195901},
+            {-0.6399638097631108, -0.5615787520127085, -0.524476527102342},
+            {-0.5027234021873948, 0.8221990290456893, -0.26694182424164375}};
+        constexpr Scalar epsilon = 1e-14;
+        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(inv_mat, expected, epsilon);
+    }
+
+    {
+        // R * R^-1
+        const Mat3x3 res = mat * inv_mat;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], identity[i][j], epsilon);
+            }
+        }
+    }
+    {
+        // R^-1 * R
+        const Mat3x3 res = inv_mat * mat;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], identity[i][j], epsilon);
+            }
+        }
+    }
+}
+
+void test_mat3x3_scaling_mat() {
+    constexpr Vec3 axis{1.1, 2.2, 3.3};
+    constexpr Mat3x3 identity = Mat3x3{
+        {1.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0},
+        {0.0, 0.0, 1.0},
+    };
+
+    const Mat3x3 mat = scaling_mat(axis);
+    const Mat3x3 inv_mat = inverse_scaling_mat(axis);
+
+    {
+        const Mat3x3 res = mat * inv_mat;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], identity[i][j], epsilon);
+            }
+        }
+    }
+    {
+        const Mat3x3 res = inv_mat * mat;
+        for (auto i = 0; i < 3; ++i) {
+            for (auto j = 0; i < 3; ++i) {
+                TEST_ASSERT_ALMOST_EQUAL(res[i][j], identity[i][j], epsilon);
+            }
+        }
+    }
+}
+
 void run_test_suite() {
-    run(test_default_constructor);
-    run(test_random_constructor);
-    run(test_axes);
-    run(test_iterator);
-    run(test_comparison);
-    run(test_arithmetic);
-    run(test_near_zero);
-    run(test_random_in_unit_disk);
-    run(test_random_vector_in_unit_sphere);
-    run(test_random_unit_vector);
+    // vector
+    run(test_vec3_default_constructor);
+    run(test_vec3_random_constructor);
+    run(test_vec3_axes);
+    run(test_vec3_iterator);
+    run(test_vec3_comparison);
+    run(test_vec3_arithmetic);
+    run(test_vec3_near_zero);
+    run(test_vec3_random_in_unit_disk);
+    run(test_vec3_random_vector_in_unit_sphere);
+    run(test_vec3_random_unit_vector);
+
+    // matrix
+    run(test_mat3x3_default_constructor);
+    run(test_mat3x3_convention);
+    run(test_mat3x3_comparison);
+    run(test_mat3x3_rotation_mat);
+    run(test_mat3x3_scaling_mat);
 }
 
 }} // namespace cpp_raytracing::test
