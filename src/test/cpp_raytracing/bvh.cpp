@@ -43,8 +43,9 @@ void test_all() {
             static constexpr Vec3 min{-0.5, -0.5, -0.5};
             static constexpr Vec3 max{1.5, 1.5, 1.5};
             const auto bounds = bvh_tree.bounding_box();
-            TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds.min(), min, epsilon);
-            TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds.max(), max, epsilon);
+            TEST_ASSERT_TRUE(bounds.has_value());
+            TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->min(), min, epsilon);
+            TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->max(), max, epsilon);
         }
 
         // hits

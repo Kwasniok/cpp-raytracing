@@ -135,7 +135,7 @@ class BVHTree {
             if (e->is_bounded()) {
                 bounded_entities.push_back(e.get());
             } else {
-                _unbounded_entitites.push_back(e.get());
+                _unbounded_entities.push_back(e.get());
             }
         }
 
@@ -152,17 +152,28 @@ class BVHTree {
                          const Scalar t_max = infinity) const {
         HitRecord closest_record = {.t = infinity};
         _root.hit_record(ray, t_min, t_max, closest_record);
+        for (auto& unbounded_entity : _unbounded_entities) {
+            HitRecord record = unbounded_entity->hit_record(ray, t_min, t_max);
+            if (record.t < closest_record.t) {
+                closest_record = record;
+            }
+        }
         return closest_record;
     }
 
     /** @brief returns a boundaring box off all entities */
-    AxisAlignedBoundingBox bounding_box() const { return _root.bounds; }
+    std::optional<AxisAlignedBoundingBox> bounding_box() const {
+        if (_unbounded_entities.size() > 0) {
+            return std::nullopt;
+        }
+        return _root.bounds;
+    }
 
     /** @brief returns number of bounded entities managed by this tree */
     std::size_t size_bounded() const { return _root.size(); }
 
     /** @brief returns number of unbounded entities managed by this tree */
-    std::size_t size_unbounded() const { return _unbounded_entitites.size(); }
+    std::size_t size_unbounded() const { return _unbounded_entities.size(); }
 
     /** @brief returns number of entities managed by this tree */
     std::size_t size() const { return size_bounded() + size_unbounded(); }
@@ -201,7 +212,7 @@ class BVHTree {
         pseudo_comparator_x, pseudo_comparator_y, pseudo_comparator_z};
 
   private:
-    std::vector<const Entity*> _unbounded_entitites;
+    std::vector<const Entity*> _unbounded_entities;
     Node _root;
 };
 
