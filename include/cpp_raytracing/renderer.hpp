@@ -90,16 +90,30 @@ class Renderer {
     /** @brief time the exposure of the frame starts */
     Scalar time = 0.0;
 
+    /**
+     * @brief minimal ray length
+     * @note Must be strictly larger than zero.
+     * @see maximal_ray_length
+     */
+    Scalar minimal_ray_length = 1e-5;
+    /**
+     * @brief minimal ray length
+     * @note Must be strictly larger than minimal_ray_length.
+     * @see minimal_ray_length
+     */
+    Scalar maximal_ray_length = infinity;
+
     /** @brief render Scene as RawImage */
     virtual RawImage render(Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
-    static Color ray_color(const Scene::FreezeGuard& frozen_scene,
-                           const Ray& ray, const unsigned long depth) {
+    Color ray_color(const Scene::FreezeGuard& frozen_scene, const Ray& ray,
+                    const unsigned long depth) const {
         if (depth == 0) {
             return Colors::BLACK;
         }
-        HitRecord record = frozen_scene.hit_record(ray, 0.00001);
+        HitRecord record = frozen_scene.hit_record(ray, minimal_ray_length,
+                                                   maximal_ray_length);
         if (!(record.t < infinity)) {
             return ray_back_ground_color(ray);
         }
@@ -117,7 +131,7 @@ class Renderer {
     }
 
     /** @brief calculates color of light ray hitting the background */
-    constexpr static Color ray_back_ground_color(const Ray& ray) {
+    Color ray_back_ground_color(const Ray& ray) const {
         Vec3 direction = ray.direction();
         direction = unit_vector(direction);
         auto t = 0.5 * (std::abs(direction.y()) + 1.0);
