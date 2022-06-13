@@ -46,6 +46,8 @@ class Instance : public Entity {
 
     virtual ~Instance() = default;
 
+    virtual void set_time(const Scalar time) override;
+
     virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
 
@@ -63,6 +65,20 @@ class Instance : public Entity {
         other.entity = entity;
         return other;
     }
+
+  private:
+    /**
+     * @brief cached scaling and roation
+     * @note Updated by set_time if an entity is present.
+     * @see set_time
+     */
+    Mat3x3 _transformation = Mat3x3::identity();
+    /**
+     * @brief cached inverse rotation and scaling
+     * @note Updated by set_time if an entity is present.
+     * @see set_time
+     */
+    Mat3x3 _inv_transformation = Mat3x3::identity();
 };
 
 /** @brief default identifier for instances */
@@ -72,30 +88,37 @@ struct default_identifier<Instance> {
     static constexpr const char* value = "instance";
 };
 
+void Instance::set_time(const Scalar time) {
+    // super call
+    this->Entity::set_time(time);
+
+    // cache transformation if nedded
+    if (entity) {
+        entity->set_time(time);
+        _transformation = rotation_mat(rotation) * scaling_mat(scale);
+        _inv_transformation =
+            inverse_scaling_mat(scale) * inverse_rotation_mat(rotation);
+    }
+}
+
 HitRecord Instance::hit_record(const Ray& ray, const Scalar t_min,
                                const Scalar t_max) const {
     if (entity) {
         // inverse transform ray to instance space, calculate hit record and
         // transform hit record
 
-        const Mat3x3 inv_transformation =
-            inverse_scaling_mat(scale) * inverse_rotation_mat(rotation);
-
         // affine
-        const Vec3 start = inv_transformation * (ray.start() - position);
+        const Vec3 start = _inv_transformation * (ray.start() - position);
         // linear
-        const Vec3 direction = inv_transformation * ray.direction();
+        const Vec3 direction = _inv_transformation * ray.direction();
 
         HitRecord record =
             entity->hit_record(Ray{start, direction}, t_min, t_max);
 
         if (record.t < infinity) {
 
-            const Mat3x3 transformation =
-                rotation_mat(rotation) * scaling_mat(scale);
-
-            record.point = transformation * record.point + position;
-            record.normal = unit_vector(transformation * record.normal);
+            record.point = _transformation * record.point + position;
+            record.normal = unit_vector(_transformation * record.normal);
         }
         return record;
     } else {
