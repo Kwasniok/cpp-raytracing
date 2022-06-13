@@ -55,7 +55,7 @@ class BVHCollection : public Entity {
      * @note Invalidates cache.
      * @note Not thread-safe.
      */
-    void set_time(const Scalar time);
+    virtual void set_time(const Scalar time) override;
 
     /**
      * @note Requires valid cache.
