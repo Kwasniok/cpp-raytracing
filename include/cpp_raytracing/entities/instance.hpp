@@ -75,19 +75,27 @@ struct default_identifier<Instance> {
 HitRecord Instance::hit_record(const Ray& ray, const Scalar t_min,
                                const Scalar t_max) const {
     if (entity) {
+        // inverse transform ray to instance space, calculate hit record and
+        // transform hit record
+
         const Mat3x3 inv_transformation =
             inverse_scaling_mat(scale) * inverse_rotation_mat(rotation);
+
         // affine
         const Vec3 start = inv_transformation * (ray.start() - position);
         // linear
         const Vec3 direction = inv_transformation * ray.direction();
+
         HitRecord record =
             entity->hit_record(Ray{start, direction}, t_min, t_max);
+
         if (record.t < infinity) {
+
             const Mat3x3 transformation =
                 rotation_mat(rotation) * scaling_mat(scale);
+
             record.point = transformation * record.point + position;
-            record.normal = transformation * record.normal;
+            record.normal = unit_vector(transformation * record.normal);
         }
         return record;
     } else {
