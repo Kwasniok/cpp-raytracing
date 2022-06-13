@@ -74,13 +74,13 @@ class Camera : public Entity {
         const auto w = unit_vector(look_at - look_from);
         const auto u = unit_vector(cross(w, look_up));
         const auto v = cross(u, w);
-        const Scalar focal_length = (look_at - look_from).length();
+        const Scalar focus_distance = (look_at - look_from).length();
 
         Camera camera;
         camera.position = look_from;
-        camera.direction_x = (viewport_width / 2.0) * u;
-        camera.direction_y = (viewport_height / 2.0) * v;
-        camera.direction_z = focal_length * w;
+        camera.direction_x = focus_distance * (viewport_width / 2.0) * u;
+        camera.direction_y = focus_distance * (viewport_height / 2.0) * v;
+        camera.direction_z = focus_distance * w;
         camera.lens_radius = aperature / 2.0;
 
         return camera;

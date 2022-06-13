@@ -36,7 +36,10 @@ Scene make_scene() {
 
     Scene scene;
     scene.active_camera = std::make_unique<Camera>(
-        Camera::from({0.0, 1.0, 0.0}, {0.0, 0.0, -5.0}, {0.0, 1.0, 0.0}, 90,
+        Camera::from({0.0, 1.0, 0.0}, {0.0, 0.0, -5.0}, {0.0, 1.0, 0.0},
+                     // note: The field of view had a bug originally and this
+                     //       number is for backwards-compatibility.
+                     22.61986495, // = artan(tan(90 / 2) / 5) * 2
                      16.0 / 9.0, 0.02));
 
     const int num_material_variations = 250;

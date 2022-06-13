@@ -115,7 +115,10 @@ Scene make_scene(const SceneConfig& config) {
 
     Scene scene;
     scene.active_camera = std::make_unique<Camera>(
-        Camera::from({0.0, 1.5, 0.0}, {0.0, 1.5, -2.0}, {0.0, 1.0, 0.0}, 100,
+        Camera::from({0.0, 1.5, 0.0}, {0.0, 1.5, -2.0}, {0.0, 1.0, 0.0},
+                     // note: The field of view had a bug originally and this
+                     //       number is for backwards-compatibility.
+                     61.579466, // = artan(tan(100 / 2) / 2) * 2
                      16.0 / 9.0, 0.02));
 
     // rotor
