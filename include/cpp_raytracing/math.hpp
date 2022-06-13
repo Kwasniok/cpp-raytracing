@@ -301,6 +301,9 @@ class Mat3x3 {
         return *this;
     }
 
+    /** @brief identity matix */
+    static constexpr Mat3x3 identity() { return Mat3x3{}; }
+
     friend std::ostream& operator<<(std::ostream& os, const Mat3x3 mat);
     friend Mat3x3 operator+(const Mat3x3&, const Mat3x3&);
     friend Mat3x3 operator-(const Mat3x3&, const Mat3x3&);
