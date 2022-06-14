@@ -46,27 +46,27 @@ Scene make_scene(const unsigned int num_material_variations,
     std::vector<std::shared_ptr<Material>> materials;
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
-        mat->id.change("diffuse");
+        // mat->id.change("diffuse"); // too slow
         mat->color = Color::random(0.0, 1.0);
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Metal>();
-        mat->id.change("metal");
+        // mat->id.change("metal"); // too slow
         mat->color = Color::random(0.6, 1.0);
         mat->roughness = random_scalar(0.0, 1.0);
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Dielectric>();
-        mat->id.change("glass");
+        // mat->id.change("glass"); // too slow
         mat->color = Color::random(0.7, 1.0);
         mat->index_of_refraction = random_scalar(1.0, 2.5);
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Emitter>();
-        mat->id.change("light");
+        // mat->id.change("light"); // too slow
         mat->color = Color::random(0.7, 1.0);
         materials.emplace_back(std::move(mat));
     }
@@ -78,7 +78,7 @@ Scene make_scene(const unsigned int num_material_variations,
         const auto z = random_scalar(-100.0, -1.0);
         auto sphere =
             make_sphere(std::abs(y), materials[rand() % materials.size()]);
-        sphere->id.change("sphere");
+        // sphere->id.change("sphere"); // too slow
         sphere->position = Vec3(x, y, z);
         scene.add(std::move(sphere));
     }
@@ -86,6 +86,7 @@ Scene make_scene(const unsigned int num_material_variations,
     {
         auto sphere =
             make_sphere(100000.0, materials[rand() % materials.size()]);
+        // sphere->id.change("floor"); // too slow
         sphere->position = Vec3(0.0, -100000.0, 0.0);
         scene.add(std::move(sphere));
     }
