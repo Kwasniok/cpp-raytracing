@@ -3,8 +3,8 @@
  * @brief hittable spherical object
  */
 
-#ifndef CPP_RAYTRACING_ENTITIES_SHPERE_HPP
-#define CPP_RAYTRACING_ENTITIES_SHPERE_HPP
+#ifndef CPP_RAYTRACING_ENTITIES_SPHERE_HPP
+#define CPP_RAYTRACING_ENTITIES_SPHERE_HPP
 
 #include "entity.hpp"
 
