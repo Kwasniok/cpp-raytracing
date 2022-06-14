@@ -154,6 +154,8 @@ class Identifier {
      */
     Identifier() : _value() {
         std::string str = default_identifier<T>::value;
+        str += '_';
+        str += std::to_string(++_counter);
         _register.set_to_next_free_and_claim(str);
         _value = std::move(str);
     }
@@ -303,12 +305,21 @@ class Identifier {
   private:
     /** @brief register for used strings */
     static internal::UniqueRegister _register;
+    /**
+     * @brief counts default constructed identifiers
+     * @note This counter speeds up identifier generation significantly in the
+     *       case where the exact value of the identifer does not matter.
+     */
+    static unsigned long _counter;
     /** @brief identifer value */
     std::string _value; // NOTE: do not make const, must be movable
 };
 
 template <typename T>
 internal::UniqueRegister Identifier<T>::_register;
+
+template <typename T>
+unsigned long Identifier<T>::_counter = 0;
 
 /** @brief write Identifier to ostream */
 template <typename T>
