@@ -1,6 +1,6 @@
 # Ray Tracing
 
-- based on: https://raytracing.github.io/
+This project is based on https://raytracing.github.io/ and includes some additional twists.
 
 ## Features
 
