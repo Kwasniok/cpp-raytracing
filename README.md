@@ -12,6 +12,8 @@
 ![rolling shutter: rotor in motion](https://user-images.githubusercontent.com/7516208/172665270-88ba7a69-5337-4cf6-bba5-7247ee334ffb.png)
 
 - Multi-Threaded
+    - Rendering
+    - BVH Tree Generation (Partially)
 
 - Bounding Volume Hierachy (BVH)
 
