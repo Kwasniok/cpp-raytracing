@@ -42,9 +42,72 @@ class UniqueRegister {
      */
     void release(const std::string& str) { _storage.erase(hash(str)); }
 
+    /**
+     * @biref update string in place to next possible free identifer and claim
+     *        it
+     * @param str must be Identifier::valid()
+     * @note The end of @a str will be modified to avoid identifier collissions.
+     * @note The new value will have no identifer collision.
+     */
+    void set_to_next_free_and_claim(std::string& str) {
+        while (!claim(str)) {
+            set_to_next(str);
+        }
+    }
+
   private:
     hash_t hash(const std::string& str) {
         return std::hash<std::string>{}(str);
+    }
+
+    /** @brief add counter suffix for number 2 */
+    static void add_suffix(std::string& str) {
+        constexpr static std::string_view suffix = "_2";
+        str += suffix;
+    }
+
+    /**
+     * @biref increment suffix in place (or add one if none present)
+     * @param str must be Identifier::valid()
+     * @note The end of @a str will be modified by one incremental step, e.g. to
+     *       avoid an identifier collission.
+     * @note The new value will be valid, differ from the original and but might
+     *       have a collision.
+     * @note Multiple consecutive applications will generate identifiers not
+     *       generated before (= iteration).
+     */
+    static void set_to_next(std::string& str) {
+        // find begin of suffix
+        std::size_t pos = str.length() - 1;
+        while (pos > 0 && str[pos] != '_') {
+            --pos;
+        }
+
+        if (pos == 0) {
+            // not a proper clone suffix -> add a new suffix
+            add_suffix(str);
+            return;
+        }
+
+        // start of expected number
+        pos += 1;
+
+        // check if suffix is a number
+        for (std::size_t i = pos; i < str.length(); ++i) {
+            if (!std::isdigit(str[i])) {
+                // not a proper clone suffix -> add a new suffix
+                add_suffix(str);
+                return;
+            }
+        }
+
+        // obtain and increment number
+        unsigned long number = atoi(str.c_str() + pos);
+        number += 1;
+
+        // replace number
+        str.resize(pos);
+        str += std::to_string(number);
     }
 
   private:
@@ -91,7 +154,7 @@ class Identifier {
      */
     Identifier() : _value() {
         std::string str = default_identifier<T>::value;
-        set_to_next_free(str);
+        _register.set_to_next_free_and_claim(str);
         _value = std::move(str);
     }
 
@@ -134,7 +197,7 @@ class Identifier {
      * @see make_if_available, make_always
      */
     explicit Identifier(std::string&& str) : _value() {
-        set_to_next_free(str);
+        _register.set_to_next_free_and_claim(str);
         _value = std::move(str);
     }
 
@@ -165,7 +228,7 @@ class Identifier {
         if (!valid(str)) {
             str = default_identifier<T>::value;
         }
-        set_to_next_free(str);
+        _register.set_to_next_free_and_claim(str);
         return {std::move(str), InternalOnly()};
     }
 
@@ -199,7 +262,7 @@ class Identifier {
      */
     Identifier clone() const {
         std::string str = _value;
-        set_to_next_free(str);
+        _register.set_to_next_free_and_claim(str);
         return {std::move(str), InternalOnly()};
     }
 
@@ -210,7 +273,7 @@ class Identifier {
      * @note If an exact value is desired, use make_if_available.
      */
     void change(std::string&& str) {
-        set_to_next_free(str);
+        _register.set_to_next_free_and_claim(str);
         _value = std::move(str);
     }
 
@@ -236,65 +299,6 @@ class Identifier {
 
     /** @brief true if object has a value (which is then also registered) */
     bool has_value() const { return _value.size() > 0; }
-
-    static void add_suffix(std::string& str) {
-        constexpr static std::string_view suffix = "_2";
-        str += suffix;
-    }
-    /**
-     * @biref increment suffix in place (or add one if none present)
-     * @param str must be Identifier::valid()
-     * @note The end of @a str will be modified by one incremental step, e.g. to
-     *       avoid an identifier collission.
-     * @note The new value will be valid, differ from the original and but might
-     *       have a collision.
-     * @note Multiple consecutive applications will generate identifiers not
-     *       generated before (= iteration).
-     */
-    static void set_to_next(std::string& str) {
-        // find begin of suffix
-        std::size_t pos = str.length() - 1;
-        while (pos > 0 && str[pos] != '_') {
-            --pos;
-        }
-
-        if (pos == 0) {
-            // not a proper clone suffix -> add a new suffix
-            add_suffix(str);
-            return;
-        }
-
-        // start of expected number
-        pos += 1;
-
-        // check if suffix is a number
-        for (std::size_t i = pos; i < str.length(); ++i) {
-            if (!std::isdigit(str[i])) {
-                // not a proper clone suffix -> add a new suffix
-                add_suffix(str);
-                return;
-            }
-        }
-
-        // obtain and increment number
-        unsigned long number = atoi(str.c_str() + pos);
-        number += 1;
-
-        // replace number
-        str.resize(pos);
-        str += std::to_string(number);
-    }
-    /**
-     * @biref update string in place to next possible free identifer
-     * @param str must be Identifier::valid()
-     * @note The end of @a str will be modified to avoid identifier collissions.
-     * @note The new value will have no identifer collision.
-     */
-    static void set_to_next_free(std::string& str) {
-        while (!_register.claim(str)) {
-            set_to_next(str);
-        }
-    }
 
   private:
     /** @brief register for used strings */
