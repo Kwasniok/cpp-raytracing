@@ -27,6 +27,18 @@ make_plane(const std::shared_ptr<Material>& material) {
 
     return instance;
 }
+/** @brief generate a sphere instance */
+std::unique_ptr<Instance>
+make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
+    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    sphere->radius = radius;
+    sphere->material = material;
+
+    auto instance = std::make_unique_for_overwrite<Instance>();
+    instance->entity = sphere;
+
+    return instance;
+}
 
 /**
  * @brief generate an example scene
@@ -64,15 +76,29 @@ Scene make_scene() {
     {
         auto mat = std::make_shared_for_overwrite<Emitter>();
         mat->id.change("light");
-        mat->color = {15, 15, 15};
+        mat->color = {6, 6, 6};
         light = std::move(mat);
+    }
+    std::shared_ptr<Material> isotropic_white;
+    {
+        auto mat = std::make_shared_for_overwrite<Isotropic>();
+        mat->id.change("isotropic white");
+        mat->color = {1.0, 1.0, 1.0};
+        isotropic_white = std::move(mat);
+    }
+    std::shared_ptr<Material> isotropic_black;
+    {
+        auto mat = std::make_shared_for_overwrite<Isotropic>();
+        mat->id.change("isotropic black");
+        mat->color = {0.0, 0.0, 0.0};
+        isotropic_black = std::move(mat);
     }
 
     // planes
     constexpr Scalar L = 5.55;
     constexpr Scalar H = L / 2.0;
     constexpr Scalar D = L / 555;
-    constexpr Scalar S = H * (65.0 / 278.0);
+    constexpr Scalar S = H / 2.0;
     {
         auto plane = make_plane(green);
         plane->id.change("plane left");
@@ -120,6 +146,35 @@ Scene make_scene() {
         plane->rotation = Vec3(0.0, 0.0, 0.0);
         plane->position = Vec3(H, H, L);
         scene.add(std::move(plane));
+    }
+
+    // white mist
+    {
+        auto sphere = make_sphere(H / 2.0, nullptr);
+        sphere->id.change("sphere mist white");
+        sphere->position = Vec3(L / 4.0, H, H);
+
+        auto mist = std::make_unique_for_overwrite<Mist>();
+        mist->id.change("mist white");
+        mist->boundary = std::move(sphere);
+        mist->material = isotropic_white;
+        mist->density = 1.0;
+
+        scene.add(std::move(mist));
+    }
+    // black mist
+    {
+        auto sphere = make_sphere(H / 2.0, nullptr);
+        sphere->id.change("sphere mist white");
+        sphere->position = Vec3(3.0 * L / 4.0, H, H);
+
+        auto mist = std::make_unique_for_overwrite<Mist>();
+        mist->id.change("mist black");
+        mist->boundary = std::move(sphere);
+        mist->material = isotropic_black;
+        mist->density = 1.0;
+
+        scene.add(std::move(mist));
     }
 
     return scene;
