@@ -57,13 +57,19 @@ class BVHTree {
                 const auto comp = pseudo_comparators[axis];
                 std::sort(first, last, comp);
 
+                // note: Since the list is separated into two disjoint segments
+                // parallelization is save.
+                // note: Dispatch subtree generation as tasks and wait for them.
                 const auto mid = std::next(first, span / 2);
                 if (first != mid) {
-                    left = std::make_unique<Node>(first, mid);
+#pragma omp task shared(left)
+                    { left = std::make_unique<Node>(first, mid); }
                 }
                 if (last != mid) {
-                    right = std::make_unique<Node>(mid, last);
+#pragma omp task shared(right)
+                    { right = std::make_unique<Node>(mid, last); }
                 }
+#pragma omp taskwait
 
                 if (left && right) {
                     bounds = surrounding_box(left->bounds, right->bounds);
@@ -139,7 +145,11 @@ class BVHTree {
             }
         }
 
-        _root = Node(bounded_entities.begin(), bounded_entities.end());
+        // begin omp section with thread pool and dispatch tasks later inside
+        // Node::Node
+
+#pragma omp parallel sections shared(bounded_entities)
+        { _root = Node(bounded_entities.begin(), bounded_entities.end()); }
     }
 
     /**
