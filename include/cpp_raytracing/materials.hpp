@@ -10,6 +10,7 @@
 #include "materials/dielectric.hpp"
 #include "materials/diffuse.hpp"
 #include "materials/emitter.hpp"
+#include "materials/isotropic.hpp"
 #include "materials/metal.hpp"
 
 #endif

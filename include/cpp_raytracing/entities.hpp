@@ -11,6 +11,7 @@
 #include "entities/camera.hpp"
 #include "entities/entity.hpp"
 #include "entities/instance.hpp"
+#include "entities/mist.hpp"
 #include "entities/plane.hpp"
 #include "entities/sphere.hpp"
 
