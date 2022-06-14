@@ -10,7 +10,9 @@ namespace cpp_raytracing { namespace test {
 
 void test_default() {
     Identifier<void> identifier{};
-    TEST_ASSERT_EQUAL(identifier.str(), default_identifier<void>::value);
+    std::string expected = default_identifier<void>::value;
+    expected += "_1";
+    TEST_ASSERT_EQUAL(identifier.str(), expected);
 }
 
 void test_make_if_available() {
