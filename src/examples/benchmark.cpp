@@ -32,7 +32,8 @@ make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
 /**
  * @brief generate an example scene
  */
-Scene make_scene() {
+Scene make_scene(const unsigned int num_material_variations,
+                 const unsigned int num_spheres) {
 
     Scene scene;
     scene.active_camera = std::make_unique<Camera>(
@@ -42,31 +43,28 @@ Scene make_scene() {
                      22.61986495, // = artan(tan(90 / 2) / 5) * 2
                      16.0 / 9.0, 0.02));
 
-    const int num_material_variations = 250;
-    const int num_spheres = 2000;
-
     std::vector<std::shared_ptr<Material>> materials;
-    for (int i = 0; i < num_material_variations; ++i) {
+    for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
         mat->id.change("diffuse");
         mat->color = Color::random(0.0, 1.0);
         materials.emplace_back(std::move(mat));
     }
-    for (int i = 0; i < num_material_variations; ++i) {
+    for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Metal>();
         mat->id.change("metal");
         mat->color = Color::random(0.6, 1.0);
         mat->roughness = random_scalar(0.0, 1.0);
         materials.emplace_back(std::move(mat));
     }
-    for (int i = 0; i < num_material_variations; ++i) {
+    for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Dielectric>();
         mat->id.change("glass");
         mat->color = Color::random(0.7, 1.0);
         mat->index_of_refraction = random_scalar(1.0, 2.5);
         materials.emplace_back(std::move(mat));
     }
-    for (int i = 0; i < num_material_variations; ++i) {
+    for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Emitter>();
         mat->id.change("light");
         mat->color = Color::random(0.7, 1.0);
@@ -74,7 +72,7 @@ Scene make_scene() {
     }
 
     // spheres
-    for (int i = 0; i < num_spheres; ++i) {
+    for (unsigned int i = 0; i < num_spheres; ++i) {
         const auto x = random_scalar(-5.0, +5.0);
         const auto y = 0.1;
         const auto z = random_scalar(-100.0, -1.0);
@@ -130,6 +128,10 @@ struct RenderConfig {
     unsigned long ray_depth;
     /** @brief time of the frame */
     Scalar time;
+    /** @brief amount of variations per material type */
+    unsigned int num_material_variations;
+    /** @brief amount of spheres in scene */
+    unsigned int num_spheres;
 };
 
 /**
@@ -143,7 +145,8 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    Scene scene = make_scene();
+    Scene scene =
+        make_scene(config.num_material_variations, config.num_spheres);
 
     GlobalShutterRenderer renderer;
     renderer.canvas = canvas;
@@ -186,6 +189,14 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(0.0)
         .help("time of the frame")
         .scan<'f', Scalar>();
+    parser.add_argument("--num_material_variations")
+        .default_value<unsigned int>(250)
+        .help("amount of material variations per material type")
+        .scan<'d', unsigned int>();
+    parser.add_argument("--num_spheres")
+        .default_value<unsigned int>(2000)
+        .help("amount of spheres in scene")
+        .scan<'d', unsigned int>();
 
     try {
         parser.parse_args(argc, argv);
@@ -202,6 +213,9 @@ int main(int argc, char** argv) {
     config.samples = parser.get<unsigned long>("--samples");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
     config.time = parser.get<Scalar>("--time");
+    config.num_material_variations =
+        parser.get<unsigned int>("--num_material_variations");
+    config.num_spheres = parser.get<unsigned int>("--num_spheres");
 
     render_ppm(config);
 }
