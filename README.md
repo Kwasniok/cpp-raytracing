@@ -11,6 +11,10 @@ This project is based on https://raytracing.github.io/ and includes some additio
 ![rolling shutter: rotor at rest](https://user-images.githubusercontent.com/7516208/172665290-341e4786-5dcd-45e0-b850-2956b121007c.png)
 ![rolling shutter: rotor in motion](https://user-images.githubusercontent.com/7516208/172665270-88ba7a69-5337-4cf6-bba5-7247ee334ffb.png)
 
+- Volumes
+    - Constant Density & Convex Boundary
+     ![constant density mist](https://user-images.githubusercontent.com/7516208/173927126-295bf76b-6b50-4f72-a997-fbb6b0a3b902.png)
+
 - Multi-Threaded
     - Rendering
     - BVH Tree Generation (Partially)
