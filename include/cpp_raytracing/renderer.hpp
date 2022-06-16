@@ -115,7 +115,7 @@ class Renderer {
         HitRecord record = frozen_scene.hit_record(ray, minimal_ray_length,
                                                    maximal_ray_length);
         if (!(record.t < infinity)) {
-            return ray_back_ground_color(ray);
+            return ray_back_ground_color(frozen_scene, ray);
         }
         if (!record.material) {
             return RAY_COLOR_NO_MATERIAL;
@@ -131,12 +131,12 @@ class Renderer {
     }
 
     /** @brief calculates color of light ray hitting the background */
-    Color ray_back_ground_color(const Ray& ray) const {
-        Vec3 direction = ray.direction();
-        direction = unit_vector(direction);
-        auto t = 0.5 * (std::abs(direction.y()) + 1.0);
-        Color color = (1.0 - t) * Colors::WHITE + t * Color(0.5, 0.7, 1.0);
-        return color;
+    Color ray_back_ground_color(const Scene::FreezeGuard& frozen_scene,
+                                const Ray& ray) const {
+        if (!frozen_scene.active_background) {
+            return Background::value_for_default_background(ray.direction());
+        }
+        return frozen_scene.active_background->value(ray.direction());
     }
 };
 

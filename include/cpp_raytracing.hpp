@@ -7,6 +7,7 @@
 #define CPP_RAYTRACING_HPP
 
 #include "cpp_raytracing/animators.hpp"
+#include "cpp_raytracing/backgrounds.hpp"
 #include "cpp_raytracing/color.hpp"
 #include "cpp_raytracing/entities.hpp"
 #include "cpp_raytracing/image.hpp"
