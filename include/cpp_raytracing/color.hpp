@@ -6,7 +6,6 @@
 #ifndef CPP_RAYTRACING_COLOR_HPP
 #define CPP_RAYTRACING_COLOR_HPP
 
-#include <array>
 #include <iostream>
 
 #include <glm/detail/qualifier.hpp>
