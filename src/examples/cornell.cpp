@@ -49,6 +49,9 @@ Scene make_scene() {
     scene.active_camera = std::make_unique<Camera>(
         Camera::from({2.78, 2.78, -8.00}, {2.78, 2.78, 0.0}, {0.0, 1.0, 0.0},
                      40.0, 1.0, 0.02));
+    auto sky = std::make_shared<ConstantSky>();
+    sky->color = {0.0, 0.0, 0.0};
+    scene.active_background = std::move(sky);
 
     // materials
     std::shared_ptr<Material> green;
