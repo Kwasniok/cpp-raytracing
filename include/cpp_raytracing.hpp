@@ -16,6 +16,7 @@
 #include "cpp_raytracing/ray.hpp"
 #include "cpp_raytracing/renderer.hpp"
 #include "cpp_raytracing/scene.hpp"
+#include "cpp_raytracing/textures.hpp"
 #include "cpp_raytracing/util.hpp"
 
 #endif
