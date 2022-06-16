@@ -6,6 +6,8 @@
 #ifndef CPP_RAYTRACING_ENTITIES_SPHERE_HPP
 #define CPP_RAYTRACING_ENTITIES_SPHERE_HPP
 
+#include <cmath>
+
 #include "entity.hpp"
 
 namespace cpp_raytracing {
@@ -30,6 +32,21 @@ class Sphere : public Entity {
                                  const Scalar t_max = infinity) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+
+  private:
+    /**
+     * @brief transforms normal vector of a sphere to uv coordinates
+     * @note `u = phi / (2 * pi)`, `v = theta / pi`, y = -cos(theta)`, `x =
+     *       -sin(theta) * cos(phi)` and `z = sin(theta) * sin(phi)`.
+     * @note This uv mapping is similar but not identical to the canonical
+     *       mappings in maths and physics.
+     */
+    static Vec2 uv_coordinates(const Vec3& normal) {
+        const auto theta = std::acos(-normal.y());
+        const auto phi = std::atan2(-normal.z(), normal.x()) + pi;
+
+        return {phi / (2.0 * pi), theta / pi};
+    }
 };
 
 HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
@@ -75,6 +92,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     record.t = t;
     record.point = point;
     record.set_face_normal(ray, normal);
+    record.uv_coordinates = uv_coordinates(normal);
     record.material = material;
     return record;
 }

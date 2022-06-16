@@ -27,6 +27,8 @@ struct HitRecord {
     Vec3 point;
     /** @brief surface normal (**points outwards**) */
     Vec3 normal;
+    /** @brief texture coordinates */
+    Vec2 uv_coordinates;
     /** @brief material of the object */
     std::shared_ptr<Material> material;
     /** @brief Ray parameter of #point */
