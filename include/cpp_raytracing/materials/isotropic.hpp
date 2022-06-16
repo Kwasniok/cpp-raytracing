@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_MATERIALS_ISOTROPIC_HPP
 #define CPP_RAYTRACING_MATERIALS_ISOTROPIC_HPP
 
+#include "../textures/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -17,13 +18,19 @@ namespace cpp_raytracing {
 class Isotropic : public Material {
   public:
     /** @brief color of the isotropic 'surface' */
-    Color color = Colors::WHITE;
+    std::shared_ptr<Texture> color;
 
     virtual ~Isotropic() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
-        return {Ray(record.point, random_vector_in_unit_sphere()), color};
+
+        const Color color_value =
+            color ? color->value(record.uv_coordinates, record.point)
+                  : Texture::value_for_missing_texture(record.uv_coordinates,
+                                                       record.point);
+
+        return {Ray(record.point, random_vector_in_unit_sphere()), color_value};
     }
 };
 

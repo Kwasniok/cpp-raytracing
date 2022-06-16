@@ -126,12 +126,18 @@ Scene make_scene(const SceneConfig& config) {
 
         auto mat = std::make_shared_for_overwrite<Diffuse>();
         mat->id.change("metal");
-        mat->color = color_from_hsv(
+        const Color color = color_from_hsv(
             ColorScalar(i) / ColorScalar(config.num_blades) * 2.0 * pi, 0.8,
             0.8);
+
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = color;
+        mat->color = std::move(texture);
+
         auto sphere = make_sphere(0.5, std::move(mat));
         sphere->id.change("sphere");
         sphere->position = center;
+
         auto anim = make_unique<CircularMotionInstanceAnimator>();
         {
             anim->center = center;

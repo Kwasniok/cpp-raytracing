@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <cpp_raytracing/materials/diffuse.hpp>
+#include <cpp_raytracing/textures/constant_color.hpp>
 
 #include "../test.hpp"
 
@@ -28,7 +29,9 @@ void test_diffuse() {
     std::shared_ptr<Material> mat;
     {
         auto diffuse = std::make_unique_for_overwrite<Diffuse>();
-        diffuse->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        diffuse->color = std::move(texture);
         mat = std::move(diffuse);
     }
     const HitRecord record{

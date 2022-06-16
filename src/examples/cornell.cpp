@@ -55,42 +55,54 @@ Scene make_scene() {
     {
         auto mat = std::make_shared_for_overwrite<Diffuse>();
         mat->id.change("green");
-        mat->color = {.12, .45, .15};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {.12, .45, .15};
+        mat->color = std::move(texture);
         green = std::move(mat);
     }
     std::shared_ptr<Material> red;
     {
         auto mat = std::make_shared_for_overwrite<Diffuse>();
         mat->id.change("red");
-        mat->color = {.65, .05, .05};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {.65, .05, .05};
+        mat->color = std::move(texture);
         red = std::move(mat);
     }
     std::shared_ptr<Material> white;
     {
         auto mat = std::make_shared_for_overwrite<Diffuse>();
         mat->id.change("white");
-        mat->color = {.73, .73, .73};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {.73, .73, .73};
+        mat->color = std::move(texture);
         white = std::move(mat);
     }
     std::shared_ptr<Material> light;
     {
         auto mat = std::make_shared_for_overwrite<Emitter>();
         mat->id.change("light");
-        mat->color = {6, 6, 6};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {6.0, 6.0, 6.0};
+        mat->color = std::move(texture);
         light = std::move(mat);
     }
     std::shared_ptr<Material> isotropic_white;
     {
         auto mat = std::make_shared_for_overwrite<Isotropic>();
         mat->id.change("isotropic white");
-        mat->color = {1.0, 1.0, 1.0};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {1.0, 1.0, 1.0};
+        mat->color = std::move(texture);
         isotropic_white = std::move(mat);
     }
     std::shared_ptr<Material> isotropic_black;
     {
         auto mat = std::make_shared_for_overwrite<Isotropic>();
         mat->id.change("isotropic black");
-        mat->color = {0.0, 0.0, 0.0};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {0.0, 0.0, 0.0};
+        mat->color = std::move(texture);
         isotropic_black = std::move(mat);
     }
 

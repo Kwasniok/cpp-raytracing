@@ -8,6 +8,7 @@
 
 #include <cmath>
 
+#include "../textures/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -19,7 +20,7 @@ class Dielectric : public Material {
 
   public:
     /** @brief color of the dielectric */
-    Color color = Colors::WHITE;
+    std::shared_ptr<Texture> color;
     /**
      * @brief index of refraction
      * @note 1.0=air, >1.0=typical, <1.0=atypical
@@ -55,7 +56,13 @@ class Dielectric : public Material {
         } else {
             direction = refract(ortho, record.normal, refraction_ratio);
         }
-        return {Ray(record.point, direction), color};
+
+        const Color color_value =
+            color ? color->value(record.uv_coordinates, record.point)
+                  : Texture::value_for_missing_texture(record.uv_coordinates,
+                                                       record.point);
+
+        return {Ray(record.point, direction), color_value};
     }
 
   private:

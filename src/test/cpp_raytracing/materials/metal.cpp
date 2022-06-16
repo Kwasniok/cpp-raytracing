@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <cpp_raytracing/materials.hpp>
+#include <cpp_raytracing/textures/constant_color.hpp>
 
 #include "../test.hpp"
 
@@ -29,7 +30,9 @@ void test_metal_no_roughness() {
     std::shared_ptr<Material> mat;
     {
         auto metal = std::make_unique_for_overwrite<Metal>();
-        metal->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        metal->color = std::move(texture);
         metal->roughness = mat_rough;
         mat = std::move(metal);
     }
@@ -81,7 +84,9 @@ void test_metal_with_roughness() {
     std::shared_ptr<Material> mat;
     {
         auto metal = std::make_unique_for_overwrite<Metal>();
-        metal->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        metal->color = std::move(texture);
         metal->roughness = mat_rough;
         mat = std::move(metal);
     }

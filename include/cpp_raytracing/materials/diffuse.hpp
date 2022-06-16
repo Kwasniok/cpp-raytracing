@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_MATERIALS_DIFFUSE_HPP
 #define CPP_RAYTRACING_MATERIALS_DIFFUSE_HPP
 
+#include "../textures/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -19,7 +20,7 @@ class Diffuse : public Material {
     constexpr static Scalar epsilon = 1.0e-12;
 
     /** @brief color of the diffuse surface */
-    Color color = Colors::WHITE;
+    std::shared_ptr<Texture> color;
 
     virtual ~Diffuse() = default;
 
@@ -31,7 +32,13 @@ class Diffuse : public Material {
             // use normal instead
             direction = record.normal;
         }
-        return {Ray(record.point, direction), color};
+
+        const Color color_value =
+            color ? color->value(record.uv_coordinates, record.point)
+                  : Texture::value_for_missing_texture(record.uv_coordinates,
+                                                       record.point);
+
+        return {Ray(record.point, direction), color_value};
     }
 };
 

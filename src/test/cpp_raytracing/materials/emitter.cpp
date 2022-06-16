@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <cpp_raytracing/materials/emitter.hpp>
+#include <cpp_raytracing/textures/constant_color.hpp>
 
 #include "../test.hpp"
 
@@ -26,7 +27,9 @@ void test_emitter() {
     std::shared_ptr<Material> mat;
     {
         auto emitter = std::make_unique_for_overwrite<Emitter>();
-        emitter->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        emitter->color = std::move(texture);
         mat = std::move(emitter);
     }
     const HitRecord record{

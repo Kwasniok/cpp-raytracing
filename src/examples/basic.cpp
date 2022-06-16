@@ -63,7 +63,9 @@ Scene make_scene() {
     {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
         mat->id.change("diffuse gray");
-        mat->color = {0.5, 0.5, 0.5};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {0.5, 0.5, 0.5};
+        mat->color = std::move(texture);
         diffuse_gray = std::move(mat);
     }
     // diffuse (red)
@@ -71,7 +73,9 @@ Scene make_scene() {
     {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
         mat->id.change("diffuse red");
-        mat->color = {0.75, 0.5, 0.5};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {0.75, 0.5, 0.5};
+        mat->color = std::move(texture);
         diffuse_red = std::move(mat);
     }
     // metal
@@ -79,7 +83,9 @@ Scene make_scene() {
     {
         auto mat = std::make_unique_for_overwrite<Metal>();
         mat->id.change("metal");
-        mat->color = {0.8, 0.7, 0.6};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {0.8, 0.7, 0.6};
+        mat->color = std::move(texture);
         mat->roughness = 0.2;
         metal = std::move(mat);
     }
@@ -88,7 +94,9 @@ Scene make_scene() {
     {
         auto mat = std::make_unique_for_overwrite<Dielectric>();
         mat->id.change("glass");
-        mat->color = {1.0, 1.0, 1.0};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {1.0, 1.0, 1.0};
+        mat->color = std::move(texture);
         mat->index_of_refraction = 1.5;
         glass = std::move(mat);
     }
@@ -97,7 +105,9 @@ Scene make_scene() {
     {
         auto mat = std::make_unique_for_overwrite<Emitter>();
         mat->id.change("light");
-        mat->color = {0.95, 0.9, 0.85};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {0.95, 0.9, 0.85};
+        mat->color = std::move(texture);
         light = std::move(mat);
     }
 

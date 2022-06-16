@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <cpp_raytracing/materials/dielectric.hpp>
+#include <cpp_raytracing/textures/constant_color.hpp>
 
 #include "../test.hpp"
 
@@ -34,7 +35,9 @@ void test_dielectric_air() {
     std::shared_ptr<Material> mat;
     {
         auto dielectric = std::make_unique_for_overwrite<Dielectric>();
-        dielectric->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
@@ -86,7 +89,9 @@ void test_dielectric_into_glass() {
     std::shared_ptr<Material> mat;
     {
         auto dielectric = std::make_unique_for_overwrite<Dielectric>();
-        dielectric->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
@@ -167,7 +172,9 @@ void test_dielectric_total_reflection() {
     std::shared_ptr<Material> mat;
     {
         auto dielectric = std::make_unique_for_overwrite<Dielectric>();
-        dielectric->color = mat_col;
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = mat_col;
+        dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }

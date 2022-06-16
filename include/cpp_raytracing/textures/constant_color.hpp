@@ -18,10 +18,6 @@ class ConstantColor : public Texture {
     /** @brief color of the surface */
     Color color = Colors::WHITE;
 
-    ConstantColor() = default;
-    ConstantColor(const Color& color) : color(color){};
-    ConstantColor(Color&& color) : color(std::move(color)){};
-
     virtual ~ConstantColor() = default;
 
     virtual Color value(const Vec2& coordinates,

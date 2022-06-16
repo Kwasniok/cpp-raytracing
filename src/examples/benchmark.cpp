@@ -47,27 +47,35 @@ Scene make_scene(const unsigned int num_material_variations,
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
         // mat->id.change("diffuse"); // too slow
-        mat->color = Color::random(0.0, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.0, 1.0);
+        mat->color = std::move(texture);
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Metal>();
         // mat->id.change("metal"); // too slow
-        mat->color = Color::random(0.6, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.6, 1.0);
+        mat->color = std::move(texture);
         mat->roughness = random_scalar(0.0, 1.0);
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Dielectric>();
         // mat->id.change("glass"); // too slow
-        mat->color = Color::random(0.7, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.7, 1.0);
+        mat->color = std::move(texture);
         mat->index_of_refraction = random_scalar(1.0, 2.5);
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Emitter>();
         // mat->id.change("light"); // too slow
-        mat->color = Color::random(0.7, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.7, 1.0);
+        mat->color = std::move(texture);
         materials.emplace_back(std::move(mat));
     }
 

@@ -126,27 +126,35 @@ Scene make_scene() {
     for (int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Diffuse>();
         mat->id.change("diffuse");
-        mat->color = Color::random(0.0, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.0, 1.0);
+        mat->color = std::move(texture);
         materials.emplace_back(std::move(mat));
     }
     for (int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Metal>();
         mat->id.change("metal");
-        mat->color = Color::random(0.6, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.6, 1.0);
+        mat->color = std::move(texture);
         mat->roughness = random_scalar(0.0, 1.0);
         materials.emplace_back(std::move(mat));
     }
     for (int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Dielectric>();
         mat->id.change("glass");
-        mat->color = Color::random(0.7, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.7, 1.0);
+        mat->color = std::move(texture);
         mat->index_of_refraction = random_scalar(1.0, 2.5);
         materials.emplace_back(std::move(mat));
     }
     for (int i = 0; i < num_material_variations; ++i) {
         auto mat = std::make_unique_for_overwrite<Emitter>();
         mat->id.change("light");
-        mat->color = Color::random(0.7, 1.0);
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = Color::random(0.7, 1.0);
+        mat->color = std::move(texture);
         materials.emplace_back(std::move(mat));
     }
 
@@ -187,7 +195,9 @@ Scene make_scene() {
     {
         auto mat = std::make_unique_for_overwrite<Metal>();
         mat->id.change("floor");
-        mat->color = {0.7, 0.8, 0.9};
+        auto texture = std::make_shared<ConstantColor>();
+        texture->color = {0.7, 0.8, 0.9};
+        mat->color = std::move(texture);
         mat->roughness = 0.3;
         auto plane = make_plane(std::move(mat), false);
         plane->id.change("floor");

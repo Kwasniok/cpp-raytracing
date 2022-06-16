@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_MATERIALS_METAL_HPP
 #define CPP_RAYTRACING_MATERIALS_METAL_HPP
 
+#include "../textures/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -17,7 +18,7 @@ class Metal : public Material {
 
   public:
     /** @brief color of the metal surface */
-    Color color = Colors::WHITE;
+    std::shared_ptr<Texture> color;
     /**
      * @brief roughness of the diffuse surface
      * note: `roughness=0.0...1.0`
@@ -31,7 +32,13 @@ class Metal : public Material {
         const Vec3 para = dot(record.normal, ray.direction()) * record.normal;
         const Vec3 ortho = ray.direction() - para;
         const Vec3 direction = reflect(ortho, para, roughness);
-        return {Ray(record.point, direction), color};
+
+        const Color color_value =
+            color ? color->value(record.uv_coordinates, record.point)
+                  : Texture::value_for_missing_texture(record.uv_coordinates,
+                                                       record.point);
+
+        return {Ray(record.point, direction), color_value};
     }
 
   private:

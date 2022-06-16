@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_MATERIALS_EMITTER_HPP
 #define CPP_RAYTRACING_MATERIALS_EMITTER_HPP
 
+#include "../textures/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -16,14 +17,20 @@ namespace cpp_raytracing {
 class Emitter : public Material {
   public:
     /** @brief color of the emitting surface */
-    Color color = Colors::WHITE;
+    std::shared_ptr<Texture> color;
 
     virtual ~Emitter() = default;
 
     virtual std::pair<Ray, Color> scatter(const HitRecord& record,
                                           const Ray& ray) const override {
         const Vec3 direction{0.0, 0.0, 0.0}; // emissive
-        return {Ray(record.point, direction), color};
+
+        const Color color_value =
+            color ? color->value(record.uv_coordinates, record.point)
+                  : Texture::value_for_missing_texture(record.uv_coordinates,
+                                                       record.point);
+
+        return {Ray(record.point, direction), color_value};
     }
 };
 
