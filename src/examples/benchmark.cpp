@@ -5,16 +5,14 @@
  */
 
 #include <argparse/argparse.hpp>
-#include <fstream>
 #include <iostream>
 #include <memory>
-#include <omp.h>
-#include <string>
 
-#include <cpp_raytracing.hpp>
+#include "common.hpp"
 
 using namespace std;
 using namespace cpp_raytracing;
+using namespace cpp_raytracing::examples;
 
 /** @brief generate a sphere instance */
 std::shared_ptr<Instance>
@@ -100,25 +98,6 @@ Scene make_scene(const unsigned int num_material_variations,
     }
 
     return scene;
-}
-
-/**
- * @brief write image to ppm file
- * @param path path to ppm file (without extension)
- * @param image raw image to be written
- * @param scale factor to multiply each channel's value with
- * @param gamma gamma correction
- */
-void write_ppm(const string& path, const RawImage& image,
-               const ColorScalar scale, const ColorScalar gamma) {
-    ofstream file;
-    file.open(path + ".ppm");
-    if (file) {
-        write_image_ppm(file, image, scale, gamma);
-    } else {
-        cerr << "Could not open file " << path << endl;
-    }
-    file.close();
 }
 
 /** @brief configuration for render_ppm */
