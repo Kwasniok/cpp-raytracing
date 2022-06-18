@@ -51,7 +51,7 @@ std::shared_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
 Scene make_scene() {
 
     Scene scene;
-    scene.active_camera = std::make_unique<Camera>(
+    scene.active_camera = std::make_shared<Camera>(
         Camera::from({0.0, 0.0, 0.0}, {0.0, 0.0, -0.8}, {0.0, 1.0, 0.0},
                      // note: The field of view had a bug originally and this
                      //       number is for backwards-compatibility.
@@ -61,7 +61,7 @@ Scene make_scene() {
     // diffuse (gray)
     std::shared_ptr<Material> diffuse_gray;
     {
-        auto mat = std::make_unique<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("diffuse gray");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {0.5, 0.5, 0.5};
@@ -71,7 +71,7 @@ Scene make_scene() {
     // diffuse (red)
     std::shared_ptr<Material> diffuse_red;
     {
-        auto mat = std::make_unique<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("diffuse red");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {0.75, 0.5, 0.5};
@@ -81,7 +81,7 @@ Scene make_scene() {
     // metal
     std::shared_ptr<Material> metal;
     {
-        auto mat = std::make_unique<Metal>();
+        auto mat = std::make_shared<Metal>();
         mat->id.change("metal");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {0.8, 0.7, 0.6};
@@ -92,7 +92,7 @@ Scene make_scene() {
     // glass
     std::shared_ptr<Material> glass;
     {
-        auto mat = std::make_unique<Dielectric>();
+        auto mat = std::make_shared<Dielectric>();
         mat->id.change("glass");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {1.0, 1.0, 1.0};
@@ -103,7 +103,7 @@ Scene make_scene() {
     // light
     std::shared_ptr<Material> light;
     {
-        auto mat = std::make_unique<Emitter>();
+        auto mat = std::make_shared<Emitter>();
         mat->id.change("light");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {0.95, 0.9, 0.85};

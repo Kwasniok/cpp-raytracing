@@ -52,7 +52,7 @@ Scene make_scene() {
     constexpr Scalar D = L / 555;
 
     Scene scene;
-    scene.active_camera = std::make_unique<Camera>(
+    scene.active_camera = std::make_shared<Camera>(
         Camera::from({2.78, 2.78, -8.00}, {2.78, 2.78, 0.0}, {0.0, 1.0, 0.0},
                      40.0, 1.0, 0.02));
     auto sky = std::make_shared<SimpleSky>();
@@ -181,7 +181,7 @@ Scene make_scene() {
         sphere->id.change("sphere mist white");
         sphere->position = Vec3(1.0 * Q, H, H);
 
-        auto mist = std::make_unique<Mist>();
+        auto mist = std::make_shared<Mist>();
         mist->id.change("mist white");
         mist->boundary = std::move(sphere);
         mist->material = isotropic_white;
@@ -195,7 +195,7 @@ Scene make_scene() {
         sphere->id.change("sphere mist white");
         sphere->position = Vec3(3.0 * Q, H, H);
 
-        auto mist = std::make_unique<Mist>();
+        auto mist = std::make_shared<Mist>();
         mist->id.change("mist black");
         mist->boundary = std::move(sphere);
         mist->material = isotropic_black;

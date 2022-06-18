@@ -46,7 +46,7 @@ make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
 Scene make_scene() {
 
     Scene scene;
-    scene.active_camera = std::make_unique<Camera>(
+    scene.active_camera = std::make_shared<Camera>(
         Camera::from({2.78, 2.78, -8.00}, {2.78, 2.78, 0.0}, {0.0, 1.0, 0.0},
                      40.0, 1.0, 0.02));
     auto sky = std::make_shared<ConstantSky>();
@@ -169,7 +169,7 @@ Scene make_scene() {
         sphere->id.change("sphere mist white");
         sphere->position = Vec3(L / 4.0, H, H);
 
-        auto mist = std::make_unique<Mist>();
+        auto mist = std::make_shared<Mist>();
         mist->id.change("mist white");
         mist->boundary = std::move(sphere);
         mist->material = isotropic_white;
@@ -183,7 +183,7 @@ Scene make_scene() {
         sphere->id.change("sphere mist white");
         sphere->position = Vec3(3.0 * L / 4.0, H, H);
 
-        auto mist = std::make_unique<Mist>();
+        auto mist = std::make_shared<Mist>();
         mist->id.change("mist black");
         mist->boundary = std::move(sphere);
         mist->material = isotropic_black;

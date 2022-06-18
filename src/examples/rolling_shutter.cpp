@@ -114,7 +114,7 @@ Scene make_scene(const SceneConfig& config) {
     const Vec3 center = {0.0, 1.5, -3.0};
 
     Scene scene;
-    scene.active_camera = std::make_unique<Camera>(
+    scene.active_camera = std::make_shared<Camera>(
         Camera::from({0.0, 1.5, 0.0}, {0.0, 1.5, -2.0}, {0.0, 1.0, 0.0},
                      // note: The field of view had a bug originally and this
                      //       number is for backwards-compatibility.

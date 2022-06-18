@@ -36,7 +36,7 @@ Scene make_scene(const unsigned int num_material_variations,
                  const unsigned int num_spheres) {
 
     Scene scene;
-    scene.active_camera = std::make_unique<Camera>(
+    scene.active_camera = std::make_shared<Camera>(
         Camera::from({0.0, 1.0, 0.0}, {0.0, 0.0, -5.0}, {0.0, 1.0, 0.0},
                      // note: The field of view had a bug originally and this
                      //       number is for backwards-compatibility.
@@ -45,7 +45,7 @@ Scene make_scene(const unsigned int num_material_variations,
 
     std::vector<std::shared_ptr<Material>> materials;
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         // mat->id.change("diffuse"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.0, 1.0);
@@ -53,7 +53,7 @@ Scene make_scene(const unsigned int num_material_variations,
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Metal>();
+        auto mat = std::make_shared<Metal>();
         // mat->id.change("metal"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.6, 1.0);
@@ -62,7 +62,7 @@ Scene make_scene(const unsigned int num_material_variations,
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Dielectric>();
+        auto mat = std::make_shared<Dielectric>();
         // mat->id.change("glass"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.7, 1.0);
@@ -71,7 +71,7 @@ Scene make_scene(const unsigned int num_material_variations,
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Emitter>();
+        auto mat = std::make_shared<Emitter>();
         // mat->id.change("light"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.7, 1.0);

@@ -111,7 +111,7 @@ std::shared_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
 Scene make_scene() {
 
     Scene scene;
-    scene.active_camera = std::make_unique<Camera>(
+    scene.active_camera = std::make_shared<Camera>(
         Camera::from({0.0, 1.0, 0.0}, {0.0, 0.0, -5.0}, {0.0, 1.0, 0.0},
                      // note: The field of view had a bug originally and this
                      //       number is for backwards-compatibility.
@@ -124,7 +124,7 @@ Scene make_scene() {
     // list of random materials
     std::vector<std::shared_ptr<Material>> materials;
     for (int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("diffuse");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.0, 1.0);
@@ -132,7 +132,7 @@ Scene make_scene() {
         materials.emplace_back(std::move(mat));
     }
     for (int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Metal>();
+        auto mat = std::make_shared<Metal>();
         mat->id.change("metal");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.6, 1.0);
@@ -141,7 +141,7 @@ Scene make_scene() {
         materials.emplace_back(std::move(mat));
     }
     for (int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Dielectric>();
+        auto mat = std::make_shared<Dielectric>();
         mat->id.change("glass");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.7, 1.0);
@@ -150,7 +150,7 @@ Scene make_scene() {
         materials.emplace_back(std::move(mat));
     }
     for (int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique<Emitter>();
+        auto mat = std::make_shared<Emitter>();
         mat->id.change("light");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.7, 1.0);
@@ -193,7 +193,7 @@ Scene make_scene() {
 
     // floor
     {
-        auto mat = std::make_unique<Metal>();
+        auto mat = std::make_shared<Metal>();
         mat->id.change("floor");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {0.7, 0.8, 0.9};
