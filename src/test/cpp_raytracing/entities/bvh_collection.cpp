@@ -12,12 +12,12 @@ namespace cpp_raytracing { namespace test {
 
 constexpr Scalar epsilon = 1e-16;
 
-std::unique_ptr<Instance> make_sphere(const Vec3 position,
+std::shared_ptr<Instance> make_sphere(const Vec3 position,
                                       const Scalar radius) {
     auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
 
-    auto instance = std::make_unique<Instance>();
+    auto instance = std::make_shared<Instance>();
     instance->entity = sphere;
     instance->position = position;
 

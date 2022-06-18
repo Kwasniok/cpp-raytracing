@@ -86,13 +86,13 @@ Color color_from_hsv(const ColorScalar hue, const ColorScalar saturation,
 }
 
 /** @brief generate a sphere instance */
-std::unique_ptr<Instance>
+std::shared_ptr<Instance>
 make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
     auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
     sphere->material = material;
 
-    auto instance = std::make_unique<Instance>();
+    auto instance = std::make_shared<Instance>();
     instance->entity = sphere;
 
     return instance;

@@ -17,20 +17,20 @@ using namespace std;
 using namespace cpp_raytracing;
 
 /** @brief generate a sphere instance */
-std::unique_ptr<Instance>
+std::shared_ptr<Instance>
 make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
     auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
     sphere->material = material;
 
-    auto instance = std::make_unique<Instance>();
+    auto instance = std::make_shared<Instance>();
     instance->entity = sphere;
 
     return instance;
 }
 
 /** @brief generate a plane instance */
-std::unique_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
+std::shared_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
                                      const bool finite = true) {
     auto plane = std::make_shared<Plane>();
     plane->material = material;
@@ -39,7 +39,7 @@ std::unique_ptr<Instance> make_plane(const std::shared_ptr<Material>& material,
     plane->finite_neg_y = finite;
     plane->finite_pos_y = finite;
 
-    auto instance = std::make_unique<Instance>();
+    auto instance = std::make_shared<Instance>();
     instance->entity = plane;
 
     return instance;

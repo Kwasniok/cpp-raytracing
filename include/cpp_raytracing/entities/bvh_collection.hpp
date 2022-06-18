@@ -43,7 +43,7 @@ class BVHCollection : public Entity {
      * @note Not thread-safe.
      * @note Nested collections are not permitted.
      */
-    inline void add(std::unique_ptr<Entity>&& entity) {
+    inline void add(std::shared_ptr<Entity>&& entity) {
         if (is_instanceof<BVHCollection>(entity.get())) {
             throw std::runtime_error("Nested collections are not supported.");
         }
@@ -102,7 +102,7 @@ class BVHCollection : public Entity {
     }
 
   private:
-    std::vector<std::unique_ptr<Entity>> _entities;
+    std::vector<std::shared_ptr<Entity>> _entities;
     std::optional<BVHTree> _bvh_tree{std::nullopt};
 
   private:

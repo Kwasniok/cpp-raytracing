@@ -100,7 +100,7 @@ class Scene {
      * @note Not thread-safe.
      * @note Nested scenes are not permitted.
      */
-    inline void add(std::unique_ptr<Entity>&& entity) {
+    inline void add(std::shared_ptr<Entity>&& entity) {
         if (is_frozen()) {
             throw std::runtime_error(
                 "Cannot add entity to scene while frozen.");
