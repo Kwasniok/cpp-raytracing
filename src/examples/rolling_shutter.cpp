@@ -155,14 +155,14 @@ Scene make_scene(const SceneConfig& config) {
 
 /**
  * @brief write image to ppm file
- * @param path path to ppm file
+ * @param path path to ppm file (without extension)
  * @param image raw image to be written
  * @param scale (optinal) factor to multiply each channel's value with
  */
 void write_ppm(const string& path, const RawImage& image,
                const Scalar scale = 1.0) {
     ofstream file;
-    file.open(path);
+    file.open(path + ".ppm");
     if (file) {
         write_image_ppm(file, image, scale, 2.0);
     } else {
@@ -175,7 +175,7 @@ void write_ppm(const string& path, const RawImage& image,
 struct RenderConfig {
     /** @brief wheather to log detailed information during the render process */
     bool verbose;
-    /** @brief path to ppm output file */
+    /** @brief path to output file (excluding extensions) */
     string path;
     /**
      * @brief factor to upscale the resolution
@@ -228,7 +228,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.infrequent_render_callback =
         [&config](const Renderer::State& current_state) {
             cerr << "save current ..." << endl;
-            write_ppm(config.path + ".ppm", current_state.image,
+            write_ppm(config.path + ".current", current_state.image,
                       1.0 / Scalar(current_state.samples));
         };
 
@@ -245,8 +245,10 @@ void render_ppm(const RenderConfig& config) {
  * @brief program entry point
  */
 int main(int argc, char** argv) {
-    parser.add_argument("-o", "--out").required().help("file output path");
     argparse::ArgumentParser parser("rolling_shutter");
+    parser.add_argument("-o", "--out")
+        .required()
+        .help("file output path (excluding extensions)");
     parser.add_argument("-v", "--verbose")
         .default_value<bool>(false) // store_true
         .implicit_value(true)

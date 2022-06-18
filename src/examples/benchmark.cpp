@@ -104,14 +104,14 @@ Scene make_scene(const unsigned int num_material_variations,
 
 /**
  * @brief write image to ppm file
- * @param path path to ppm file
+ * @param path path to ppm file (without extension)
  * @param image raw image to be written
  * @param scale (optinal) factor to multiply each channel's value with
  */
 void write_ppm(const string& path, const RawImage& image,
                const Scalar scale = 1.0) {
     ofstream file;
-    file.open(path);
+    file.open(path + ".ppm");
     if (file) {
         write_image_ppm(file, image, scale, 2.0);
     } else {
@@ -124,7 +124,7 @@ void write_ppm(const string& path, const RawImage& image,
 struct RenderConfig {
     /** @brief wheather to log detailed information during the render process */
     bool verbose;
-    /** @brief path to ppm output file */
+    /** @brief path to output file (excluding extensions) */
     string path;
     /**
      * @brief factor to upscale the resolution
@@ -177,7 +177,9 @@ void render_ppm(const RenderConfig& config) {
  */
 int main(int argc, char** argv) {
     argparse::ArgumentParser parser("benchmark");
-    parser.add_argument("-o", "--out").required().help("file output path");
+    parser.add_argument("-o", "--out")
+        .required()
+        .help("file output path (excluding extensions)");
     parser.add_argument("-v", "--verbose")
         .default_value<bool>(false) // store_true
         .implicit_value(true)
