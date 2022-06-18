@@ -7,6 +7,7 @@
 #define CPP_RAYTRACING_RENDER_HPP
 
 #include <cmath>
+#include <functional>
 #include <omp.h>
 
 #include "canvas.hpp"
@@ -39,7 +40,7 @@ class Renderer {
         unsigned long samples;
     };
     /** @brief callback type used by Renderer::render() */
-    using RenderCallbackFunc = void (*)(const State& current_state);
+    using RenderCallbackFunc = std::function<void(const State&)>;
 
     /** @brief color indicator for missing material */
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};

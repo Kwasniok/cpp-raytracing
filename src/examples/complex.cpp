@@ -227,22 +227,6 @@ void write_ppm(const string& path, const RawImage& image,
     file.close();
 }
 
-/**
- * @brief called after each sample for the entire image
- */
-void frequent_render_callback(const Renderer::State& current_state) {
-    cout << "samples: " << current_state.samples << endl;
-}
-
-/**
- * @brief called regularly to save the progress
- */
-void infrequent_render_callback(const Renderer::State& current_state) {
-    cerr << "save current ..." << endl;
-    write_ppm("out/current.ppm", current_state.image,
-              1.0 / Scalar(current_state.samples));
-}
-
 /** @brief configuration for render_ppm */
 struct RenderConfig {
     /** @brief wheather to log detailed information during the render process */
@@ -283,10 +267,20 @@ void render_ppm(const RenderConfig& config) {
     renderer.ray_depth = config.ray_depth;
     renderer.exposure_time = 0.5;
     renderer.motion_blur = 0.01;
-    renderer.frequent_render_callback = frequent_render_callback;
-    renderer.infrequent_render_callback = infrequent_render_callback;
     renderer.infrequent_callback_frequency = config.save_frequency;
     renderer.time = config.time;
+
+    renderer.frequent_render_callback =
+        [](const Renderer::State& current_state) {
+            cout << "samples: " << current_state.samples << endl;
+        };
+
+    renderer.infrequent_render_callback =
+        [&config](const Renderer::State& current_state) {
+            cerr << "save current ..." << endl;
+            write_ppm(config.path + ".ppm", current_state.image,
+                      1.0 / Scalar(current_state.samples));
+        };
 
     if (config.verbose) {
         cerr << "resolution factor = " << config.resolution_factor << endl;
