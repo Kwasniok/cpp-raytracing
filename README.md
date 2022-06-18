@@ -35,6 +35,28 @@ See `./out` directory for the output.
 Where `<executable>` is any of the provided executables.
 Use `--help` to see the respective usage.
 
+## Image File Formats & Processing
+The current image formats focus on ease on implementation and depend on [netpbm][netpbm].
+- PPM (Protable PixelMap also known as PNM) dircrete netpbm format (similar to PNG, JPEG etc.)
+- PFM (Protable FloatMap) floating point netpbm format (similar to HDR, RAW etc.)
+
+To convert to the desired formats via the netpbm package.
+E.g.
+```bash
+pnmtopng $file.pnm > $file.png
+pfmtopam $file.pfm > $file.pam
+pamtopng $file.pam > $file.PNG
+# ...
+```
+
+Or use imagemagick. E.g.
+```bash
+magick $file.pfm --gamma 1.0 -set gamma 1.0 $file.png
+magick $file.pfm --gamma 1.0 -set gamma 1.0 $file.tiff
+```
+
+Proper exposure and color grading can be archived the same way as for images taken by real cameras. E.g. with [darktable][darktable].
+
 ## Build Documentation
 ```bash
 make doc
@@ -64,6 +86,13 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 - C++20
 - gcc v12.1+
 - make v4.3+
-- doxygen v1.9+ (optional)
-- valgrind v3.18+ (optional)
-- kcachegrind v22.04+ (optional)
+- doxygen v1.9+ (optional, documentation)
+- netpbm v10.73+ (optional, image processing)
+- imagemagick v7.1+ (optional, image processing)
+- darktable v3.8+ (optional, image processing)
+- valgrind v3.18+ (optional, debug & profiling)
+- kcachegrind v22.04+ (optional. debug & profiling)
+
+
+[netpbm]: https://en.wikipedia.org/wiki/Netpbm
+[darktable]: https://www.darktable.org/
