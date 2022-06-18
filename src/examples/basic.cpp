@@ -159,13 +159,13 @@ Scene make_scene() {
 }
 
 /**
- * @brief write raw image to ppm file
+ * @brief write image to ppm file
  * @param path path to ppm file
  * @param image raw image to be written
  * @param scale (optinal) factor to multiply each channel's value with
  */
-void write_raw_image(const string& path, const RawImage& image,
-                     const Scalar scale = 1.0) {
+void write_ppm(const string& path, const RawImage& image,
+               const Scalar scale = 1.0) {
     ofstream file;
     file.open(path);
     if (file) {
@@ -188,8 +188,8 @@ void frequent_render_callback(const Renderer::State& current_state) {
  */
 void infrequent_render_callback(const Renderer::State& current_state) {
     cerr << "save current ..." << endl;
-    write_raw_image("out/current.ppm", current_state.image,
-                    1.0 / Scalar(current_state.samples));
+    write_ppm("out/current.ppm", current_state.image,
+              1.0 / Scalar(current_state.samples));
 }
 
 /** @brief configuration for render_ppm */
@@ -241,7 +241,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(scene);
-    write_raw_image(config.path, image);
+    write_ppm(config.path, image);
 }
 
 /**

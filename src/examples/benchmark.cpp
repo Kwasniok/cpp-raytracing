@@ -103,13 +103,13 @@ Scene make_scene(const unsigned int num_material_variations,
 }
 
 /**
- * @brief write raw image to ppm file
+ * @brief write image to ppm file
  * @param path path to ppm file
  * @param image raw image to be written
  * @param scale (optinal) factor to multiply each channel's value with
  */
-void write_raw_image(const string& path, const RawImage& image,
-                     const Scalar scale = 1.0) {
+void write_ppm(const string& path, const RawImage& image,
+               const Scalar scale = 1.0) {
     ofstream file;
     file.open(path);
     if (file) {
@@ -169,7 +169,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(scene);
-    write_raw_image(config.path, image);
+    write_ppm(config.path, image);
 }
 
 /**
