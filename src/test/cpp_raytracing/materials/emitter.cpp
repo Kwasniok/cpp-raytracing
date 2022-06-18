@@ -35,7 +35,7 @@ void test_emitter() {
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
-        .material = mat,
+        .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };

@@ -65,7 +65,7 @@ HitRecord Plane::hit_record(const Ray& ray, const Scalar t_min,
     record.point = point;
     record.uv_coordinates = Vec2{point.x(), point.y()};
     record.set_face_normal(ray, Vec3{0.0, 0.0, 1.0});
-    record.material = material;
+    record.material = material.get();
     return record;
 }
 

@@ -82,7 +82,7 @@ HitRecord Mist::hit_record(const Ray& ray, const Scalar t_min,
     record.point = ray.at(record.t);
     record.normal = Vec3{1.0, 0.0, 0.0}; // arbitrary
     record.front_face = true;            // arbitrary
-    record.material = material;
+    record.material = material.get();
 
     return record;
 }

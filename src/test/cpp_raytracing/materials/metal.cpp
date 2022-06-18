@@ -40,7 +40,7 @@ void test_metal_no_roughness() {
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = normal,
-        .material = mat,
+        .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
@@ -94,7 +94,7 @@ void test_metal_with_roughness() {
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = normal,
-        .material = mat,
+        .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };

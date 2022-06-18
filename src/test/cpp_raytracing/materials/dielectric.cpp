@@ -44,7 +44,7 @@ void test_dielectric_air() {
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
-        .material = mat,
+        .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
@@ -98,7 +98,7 @@ void test_dielectric_into_glass() {
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
-        .material = mat,
+        .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
@@ -181,7 +181,7 @@ void test_dielectric_total_reflection() {
     const HitRecord record{
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
-        .material = mat,
+        .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };

@@ -93,7 +93,7 @@ HitRecord Sphere::hit_record(const Ray& ray, const Scalar t_min,
     record.point = point;
     record.set_face_normal(ray, normal);
     record.uv_coordinates = uv_coordinates(normal);
-    record.material = material;
+    record.material = material.get();
     return record;
 }
 
