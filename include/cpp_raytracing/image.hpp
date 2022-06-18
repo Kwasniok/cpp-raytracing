@@ -142,6 +142,66 @@ std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
     return os;
 }
 
+/**
+ * @brief write color as space separated binary 32-bit little-endian float RGB
+ *        channels
+ * @note No gamma correction.
+ * @param os output stream
+ * @param color color to be written
+ * @param scale (optinal) factor to multiply each channel's value with
+ */
+std::ostream& write_color_as_float32_triple(std::ostream& os,
+                                            const Color& color) {
+    // convert to float32
+    const float fr = color.r();
+    const float fg = color.g();
+    const float fb = color.b();
+    // no gamma correction
+
+    // convert to bytes (asserts IEEE 754 32-bit little endian)
+    static_assert(std::numeric_limits<float>::is_iec559,
+                  "float is not IEEE 754 conform");
+    static_assert(std::numeric_limits<float>::digits == 24,
+                  "float is not single (32-bit) IEEE 754 conform");
+    static_assert(std::endian::native == std::endian::little,
+                  "float is not little-endian");
+    const char* const sr = reinterpret_cast<const char* const>(&fr);
+    const char* const sg = reinterpret_cast<const char* const>(&fg);
+    const char* const sb = reinterpret_cast<const char* const>(&fb);
+
+    // write bytes
+    os.write(sr, sizeof(fr));
+    os.write(sg, sizeof(fg));
+    os.write(sb, sizeof(fb));
+    return os;
+}
+
+/**
+ * @brief write raw image in
+ * [Portable FloatMap file format](https://en.wikipedia.org/wiki/Netpbm)
+ * (PF: binary 32-bit little-endian float RGB)
+ * @note No gamma correction.
+ * @note Typically `scale = 1 / samples` for raw images.
+ * @param os output stream
+ * @param image image to be written
+ * @param scale (optional) factor to multiply each channel's value with
+ */
+std::ostream& write_raw_image_pfm(std::ostream& os, const RawImage& image,
+                                  const ColorScalar scale = 1.0) {
+
+    // header
+    os << "PF\n"; // binary 32-bit float RGB
+    os << image.width() << " " << image.height() << '\n'; // # width x height"
+    os << "-" << std::abs(scale) << "\n"; // # negative <-> little endian"
+
+    for (unsigned long y = 0; y < image.height(); ++y) {
+        for (unsigned long x = 0; x < image.width(); ++x) {
+            write_color_as_float32_triple(os, image[{x, y}]);
+        }
+    }
+    return os;
+}
+
 } // namespace cpp_raytracing
 
 #endif
