@@ -29,7 +29,7 @@ void test_metal_no_roughness() {
     const Scalar mat_rough = 0.0;
     std::shared_ptr<Material> mat;
     {
-        auto metal = std::make_unique_for_overwrite<Metal>();
+        auto metal = std::make_unique<Metal>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         metal->color = std::move(texture);
@@ -83,7 +83,7 @@ void test_metal_with_roughness() {
     const Scalar mat_rough = 0.25;
     std::shared_ptr<Material> mat;
     {
-        auto metal = std::make_unique_for_overwrite<Metal>();
+        auto metal = std::make_unique<Metal>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         metal->color = std::move(texture);

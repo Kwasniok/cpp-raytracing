@@ -88,11 +88,11 @@ Color color_from_hsv(const ColorScalar hue, const ColorScalar saturation,
 /** @brief generate a sphere instance */
 std::unique_ptr<Instance>
 make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
-    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
     sphere->material = material;
 
-    auto instance = std::make_unique_for_overwrite<Instance>();
+    auto instance = std::make_unique<Instance>();
     instance->entity = sphere;
 
     return instance;
@@ -124,7 +124,7 @@ Scene make_scene(const SceneConfig& config) {
     // rotor
     for (unsigned int i = 0; i < config.num_blades; ++i) {
 
-        auto mat = std::make_shared_for_overwrite<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("metal");
         const Color color = color_from_hsv(
             ColorScalar(i) / ColorScalar(config.num_blades) * 2.0 * pi, 0.8,

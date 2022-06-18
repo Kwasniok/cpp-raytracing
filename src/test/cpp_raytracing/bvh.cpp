@@ -14,10 +14,10 @@ constexpr Scalar epsilon = 1e-16;
 
 std::unique_ptr<Instance> make_sphere(const Vec3 position,
                                       const Scalar radius) {
-    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
 
-    auto instance = std::make_unique_for_overwrite<Instance>();
+    auto instance = std::make_unique<Instance>();
     instance->entity = sphere;
     instance->position = position;
 

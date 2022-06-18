@@ -34,7 +34,7 @@ void test_dielectric_air() {
     const Scalar ior = 1.0;
     std::shared_ptr<Material> mat;
     {
-        auto dielectric = std::make_unique_for_overwrite<Dielectric>();
+        auto dielectric = std::make_unique<Dielectric>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
@@ -88,7 +88,7 @@ void test_dielectric_into_glass() {
     const Scalar ior = 1.5;
     std::shared_ptr<Material> mat;
     {
-        auto dielectric = std::make_unique_for_overwrite<Dielectric>();
+        auto dielectric = std::make_unique<Dielectric>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
@@ -171,7 +171,7 @@ void test_dielectric_total_reflection() {
     const Scalar ior = 1 / 1.5;
     std::shared_ptr<Material> mat;
     {
-        auto dielectric = std::make_unique_for_overwrite<Dielectric>();
+        auto dielectric = std::make_unique<Dielectric>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);

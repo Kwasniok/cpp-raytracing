@@ -19,11 +19,11 @@ using namespace cpp_raytracing;
 /** @brief generate a sphere instance */
 std::unique_ptr<Instance>
 make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
-    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
     sphere->material = material;
 
-    auto instance = std::make_unique_for_overwrite<Instance>();
+    auto instance = std::make_unique<Instance>();
     instance->entity = sphere;
 
     return instance;
@@ -45,7 +45,7 @@ Scene make_scene(const unsigned int num_material_variations,
 
     std::vector<std::shared_ptr<Material>> materials;
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique_for_overwrite<Diffuse>();
+        auto mat = std::make_unique<Diffuse>();
         // mat->id.change("diffuse"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.0, 1.0);
@@ -53,7 +53,7 @@ Scene make_scene(const unsigned int num_material_variations,
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique_for_overwrite<Metal>();
+        auto mat = std::make_unique<Metal>();
         // mat->id.change("metal"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.6, 1.0);
@@ -62,7 +62,7 @@ Scene make_scene(const unsigned int num_material_variations,
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique_for_overwrite<Dielectric>();
+        auto mat = std::make_unique<Dielectric>();
         // mat->id.change("glass"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.7, 1.0);
@@ -71,7 +71,7 @@ Scene make_scene(const unsigned int num_material_variations,
         materials.emplace_back(std::move(mat));
     }
     for (unsigned int i = 0; i < num_material_variations; ++i) {
-        auto mat = std::make_unique_for_overwrite<Emitter>();
+        auto mat = std::make_unique<Emitter>();
         // mat->id.change("light"); // too slow
         auto texture = std::make_shared<ConstantColor>();
         texture->color = Color::random(0.7, 1.0);

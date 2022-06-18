@@ -19,10 +19,10 @@ using namespace cpp_raytracing;
 /** @brief generate a plane instance */
 std::unique_ptr<Instance>
 make_plane(const std::shared_ptr<Material>& material) {
-    auto plane = std::make_shared_for_overwrite<Plane>();
+    auto plane = std::make_shared<Plane>();
     plane->material = material;
 
-    auto instance = std::make_unique_for_overwrite<Instance>();
+    auto instance = std::make_unique<Instance>();
     instance->entity = plane;
 
     return instance;
@@ -30,11 +30,11 @@ make_plane(const std::shared_ptr<Material>& material) {
 /** @brief generate a sphere instance */
 std::unique_ptr<Instance>
 make_sphere(const Scalar radius, const std::shared_ptr<Material>& material) {
-    auto sphere = std::make_shared_for_overwrite<Sphere>();
+    auto sphere = std::make_shared<Sphere>();
     sphere->radius = radius;
     sphere->material = material;
 
-    auto instance = std::make_unique_for_overwrite<Instance>();
+    auto instance = std::make_unique<Instance>();
     instance->entity = sphere;
 
     return instance;
@@ -56,7 +56,7 @@ Scene make_scene() {
     // materials
     std::shared_ptr<Material> green;
     {
-        auto mat = std::make_shared_for_overwrite<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("green");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {.12, .45, .15};
@@ -65,7 +65,7 @@ Scene make_scene() {
     }
     std::shared_ptr<Material> red;
     {
-        auto mat = std::make_shared_for_overwrite<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("red");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {.65, .05, .05};
@@ -74,7 +74,7 @@ Scene make_scene() {
     }
     std::shared_ptr<Material> white;
     {
-        auto mat = std::make_shared_for_overwrite<Diffuse>();
+        auto mat = std::make_shared<Diffuse>();
         mat->id.change("white");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {.73, .73, .73};
@@ -83,7 +83,7 @@ Scene make_scene() {
     }
     std::shared_ptr<Material> light;
     {
-        auto mat = std::make_shared_for_overwrite<Emitter>();
+        auto mat = std::make_shared<Emitter>();
         mat->id.change("light");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {6.0, 6.0, 6.0};
@@ -92,7 +92,7 @@ Scene make_scene() {
     }
     std::shared_ptr<Material> isotropic_white;
     {
-        auto mat = std::make_shared_for_overwrite<Isotropic>();
+        auto mat = std::make_shared<Isotropic>();
         mat->id.change("isotropic white");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {1.0, 1.0, 1.0};
@@ -101,7 +101,7 @@ Scene make_scene() {
     }
     std::shared_ptr<Material> isotropic_black;
     {
-        auto mat = std::make_shared_for_overwrite<Isotropic>();
+        auto mat = std::make_shared<Isotropic>();
         mat->id.change("isotropic black");
         auto texture = std::make_shared<ConstantColor>();
         texture->color = {0.0, 0.0, 0.0};
@@ -169,7 +169,7 @@ Scene make_scene() {
         sphere->id.change("sphere mist white");
         sphere->position = Vec3(L / 4.0, H, H);
 
-        auto mist = std::make_unique_for_overwrite<Mist>();
+        auto mist = std::make_unique<Mist>();
         mist->id.change("mist white");
         mist->boundary = std::move(sphere);
         mist->material = isotropic_white;
@@ -183,7 +183,7 @@ Scene make_scene() {
         sphere->id.change("sphere mist white");
         sphere->position = Vec3(3.0 * L / 4.0, H, H);
 
-        auto mist = std::make_unique_for_overwrite<Mist>();
+        auto mist = std::make_unique<Mist>();
         mist->id.change("mist black");
         mist->boundary = std::move(sphere);
         mist->material = isotropic_black;

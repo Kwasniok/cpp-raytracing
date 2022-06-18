@@ -26,7 +26,7 @@ void test_emitter() {
     const Color mat_col{0.0, 0.5, 1.0};
     std::shared_ptr<Material> mat;
     {
-        auto emitter = std::make_unique_for_overwrite<Emitter>();
+        auto emitter = std::make_unique<Emitter>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         emitter->color = std::move(texture);

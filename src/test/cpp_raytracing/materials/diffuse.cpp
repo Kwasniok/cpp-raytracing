@@ -28,7 +28,7 @@ void test_diffuse() {
     const Color mat_col{0.0, 0.5, 1.0};
     std::shared_ptr<Material> mat;
     {
-        auto diffuse = std::make_unique_for_overwrite<Diffuse>();
+        auto diffuse = std::make_unique<Diffuse>();
         auto texture = std::make_shared<ConstantColor>();
         texture->color = mat_col;
         diffuse->color = std::move(texture);
