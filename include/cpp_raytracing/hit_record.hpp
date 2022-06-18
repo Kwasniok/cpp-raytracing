@@ -30,7 +30,7 @@ struct HitRecord {
     /** @brief texture coordinates */
     Vec2 uv_coordinates;
     /** @brief material of the object */
-    Material* material;
+    const Material* material;
     /** @brief Ray parameter of #point */
     Scalar t;
     /** @brief ray his surface from the outside */
