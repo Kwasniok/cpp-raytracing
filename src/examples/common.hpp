@@ -36,7 +36,9 @@ void write_ppm(const std::string& path, const RawImage& image,
 
 /**
  * @brief write raw image to pfm file
- * @note The pfm file format is lossless.
+ * @note The pfm file format might be lossy, but is less lossy then e.g. ppm.
+ * @note The pfm format supports 32-bit floats only, which might not be enough
+ *       to represent a ColorScalar accurately.
  * @param path path to ppm file (without extension)
  * @param image raw image to be written
  * @param scale factor to multiply each channel's value with
