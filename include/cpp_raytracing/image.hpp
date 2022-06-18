@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -85,9 +86,11 @@ class RawImage {
  * @param os output stream
  * @param color color to be written
  * @param scale (optinal) factor to multiply each channel's value with
+ * @param inv_gamma  `inv_gamma = 1.0 / gamma` for gamma correction
  */
-std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
-                                        const ColorScalar scale = 1.0) {
+std::ostream& write_color_as_uint8_triple(std::ostream& os, const Color& color,
+                                          const ColorScalar scale = 1.0,
+                                          const ColorScalar inv_gamma = 1.0) {
     ColorScalar r = color.r();
     ColorScalar g = color.g();
     ColorScalar b = color.b();
@@ -95,10 +98,10 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
     r *= scale;
     g *= scale;
     b *= scale;
-    // gamma correction (raise to the power of 1/gamma)
-    r = std::sqrt(r);
-    g = std::sqrt(g);
-    b = std::sqrt(b);
+    // gamma correction
+    r = std::pow(r, inv_gamma);
+    g = std::pow(g, inv_gamma);
+    b = std::pow(b, inv_gamma);
     // convert to integers
     const ColorIntegral ir = int_from_color_scalar(r);
     const ColorIntegral ig = int_from_color_scalar(g);
@@ -108,27 +111,30 @@ std::ostream& write_color_as_int_triple(std::ostream& os, const Color& color,
 }
 
 /**
- * @brief write raw image in
+ * @brief write image in
  * [Portable PixMap file format](https://en.wikipedia.org/wiki/Netpbm)
  * (P3: ASCII 8-bit RGB)
+ * @note Includes gamma correction of `gamma = 0.5`.
  * @param os output stream
  * @param image image to be written
  * @param scale (optional) factor to multiply each channel's value with
+ * @param gamma gamma correction
  */
-std::ostream& write_raw_image_ppm(std::ostream& os, const RawImage& image,
-                                  const ColorScalar scale = 1.0) {
+std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
+                              const ColorScalar scale = 1.0,
+                              const ColorScalar gamma = 1.0) {
 
     const ColorIntegral max_color = 255;
 
     // header
-    os << "P3 # ASCII RGB" << std::endl;
+    os << "P3 # ASCII 8-bit RGB" << std::endl;
     os << image.width() << " " << image.height() << " # width x height"
        << std::endl;
     os << max_color << " # max color value per channel" << std::endl;
 
     for (long y = image.height() - 1; y >= 0; --y) {
         for (unsigned long x = 0; x < image.width(); ++x) {
-            write_color_as_int_triple(os, image[{x, y}], scale);
+            write_color_as_uint8_triple(os, image[{x, y}], scale, 1.0 / gamma);
             os << "   ";
         }
         os << std::endl;

@@ -169,7 +169,7 @@ void write_raw_image(const string& path, const RawImage& image,
     ofstream file;
     file.open(path);
     if (file) {
-        write_raw_image_ppm(file, image, scale);
+        write_image_ppm(file, image, scale);
     } else {
         cerr << "Could not open file " << path << endl;
     }
