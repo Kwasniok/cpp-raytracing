@@ -148,7 +148,6 @@ std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
  * @note No gamma correction.
  * @param os output stream
  * @param color color to be written
- * @param scale (optinal) factor to multiply each channel's value with
  */
 std::ostream& write_color_as_float32_triple(std::ostream& os,
                                             const Color& color) {
