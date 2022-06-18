@@ -151,7 +151,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(scene);
-    write_ppm(config.path, image, 1.0, config.gamma);
+    write_image(config.path, image, 1.0, config.gamma);
 }
 
 /**

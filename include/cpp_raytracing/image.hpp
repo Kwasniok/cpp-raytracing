@@ -185,8 +185,8 @@ std::ostream& write_color_as_float32_triple(std::ostream& os,
  * @param image image to be written
  * @param scale (optional) factor to multiply each channel's value with
  */
-std::ostream& write_raw_image_pfm(std::ostream& os, const RawImage& image,
-                                  const ColorScalar scale = 1.0) {
+std::ostream& write_image_pfm(std::ostream& os, const RawImage& image,
+                              const ColorScalar scale = 1.0) {
 
     // header
     os << "PF\n"; // binary 32-bit float RGB

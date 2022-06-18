@@ -260,8 +260,8 @@ void render_ppm(const RenderConfig& config) {
     renderer.infrequent_render_callback =
         [&config](const Renderer::State& current_state) {
             cerr << "save current ..." << endl;
-            write_ppm(config.path + ".current", current_state.image,
-                      1.0 / ColorScalar(current_state.samples), config.gamma);
+            write_image(config.path + ".current", current_state.image,
+                        1.0 / ColorScalar(current_state.samples), config.gamma);
         };
 
     if (config.verbose) {
@@ -270,7 +270,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(scene);
-    write_ppm(config.path, image, 1.0, config.gamma);
+    write_image(config.path, image, 1.0, config.gamma);
 }
 
 /**
