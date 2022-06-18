@@ -199,14 +199,15 @@ Scene make_scene() {
  * @brief write image to ppm file
  * @param path path to ppm file (without extension)
  * @param image raw image to be written
- * @param scale (optinal) factor to multiply each channel's value with
+ * @param scale factor to multiply each channel's value with
+ * @param gamma gamma correction
  */
 void write_ppm(const string& path, const RawImage& image,
-               const Scalar scale = 1.0) {
+               const ColorScalar scale, const ColorScalar gamma) {
     ofstream file;
     file.open(path + ".ppm");
     if (file) {
-        write_image_ppm(file, image, scale, 2.0);
+        write_image_ppm(file, image, scale, gamma);
     } else {
         cerr << "Could not open file " << path << endl;
     }
@@ -232,6 +233,8 @@ struct RenderConfig {
     unsigned long ray_depth;
     /** @brief time of the frame */
     Scalar time;
+    /** @brief gamma correction for non-raw images */
+    ColorScalar gamma;
 };
 
 /**
@@ -263,7 +266,7 @@ void render_ppm(const RenderConfig& config) {
         [&config](const Renderer::State& current_state) {
             cerr << "save current ..." << endl;
             write_ppm(config.path + ".current", current_state.image,
-                      1.0 / Scalar(current_state.samples));
+                      1.0 / ColorScalar(current_state.samples), config.gamma);
         };
 
     if (config.verbose) {
@@ -272,7 +275,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "rendering image ... " << endl;
     }
     RawImage image = renderer.render(scene);
-    write_ppm(config.path, image);
+    write_ppm(config.path, image, 1.0, config.gamma);
 }
 
 /**
@@ -307,6 +310,10 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(0.0)
         .help("time of the frame")
         .scan<'f', Scalar>();
+    parser.add_argument("--gamma")
+        .default_value<ColorScalar>(2.0)
+        .help("gamma correction for non-raw image formats")
+        .scan<'f', ColorScalar>();
 
     try {
         parser.parse_args(argc, argv);
@@ -324,6 +331,7 @@ int main(int argc, char** argv) {
     config.save_frequency = parser.get<unsigned long>("--save_frequency");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
     config.time = parser.get<Scalar>("--time");
+    config.gamma = parser.get<ColorScalar>("--gamma");
 
     render_ppm(config);
 }
