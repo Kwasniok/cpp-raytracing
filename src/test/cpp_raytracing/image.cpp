@@ -1,3 +1,4 @@
+#include <array>
 #include <sstream>
 
 #include <cpp_raytracing/image.hpp>
@@ -89,12 +90,44 @@ void test_write_image_ppm() {
     }
 }
 
+void test_write_image_pfm() {
+    constexpr unsigned long N = 2;
+    constexpr unsigned long M = 3;
+    // note: Enforcing output correctness on character by character basis is in
+    //       general not correct (disrespects the PFM grammar) but is most
+    //       simple to implement.
+    const std::array<std::uint8_t, 82> output{
+        0x50, 0x46, 0x0a, 0x32, 0x20, 0x33, 0x0a, 0x2d, 0x31, 0x0a, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x80, 0x3f, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x80, 0x3f, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00};
+    RawImage img{N, M};
+    for (unsigned long i = 0; i < N; ++i) {
+        for (unsigned long j = 0; j < M; ++j) {
+            img[{i, j}] = Color(i, j, 0.0);
+        }
+    }
+    {
+        std::stringstream ss;
+        write_image_pfm(ss, img);
+        const auto s = ss.str();
+        TEST_ASSERT_EQUAL(s.size(), output.size());
+        for (std::size_t i = 0; i < output.size(); ++i) {
+            TEST_ASSERT_EQUAL(static_cast<std::uint8_t>(s[i]), output[i]);
+        }
+    }
+}
+
 void run_test_suite() {
     run(test_constructor);
     run(test_properties);
     run(test_operator_bracket);
     run(test_arithmetic);
     run(test_write_image_ppm);
+    run(test_write_image_pfm);
 }
 
 }} // namespace cpp_raytracing::test
