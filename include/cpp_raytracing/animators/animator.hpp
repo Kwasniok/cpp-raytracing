@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief animator
+ * @brief animators of entities
  */
 
 #ifndef CPP_RAYTRACING_ANIMATORS_ANIMATOR_HPP
