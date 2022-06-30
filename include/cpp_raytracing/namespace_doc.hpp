@@ -25,4 +25,10 @@ namespace grammar {
 namespace test {
 }
 
+/**
+ * @brief namespace for examples
+ */
+namespace examples {
+}
+
 } // namespace cpp_raytracing
