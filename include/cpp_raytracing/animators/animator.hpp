@@ -16,7 +16,7 @@ namespace cpp_raytracing {
 class Entity;
 
 /**
- * @brief animaotrs update the current state of an entity based on a given time
+ * @brief animators update the current state of an entity based on a given time
  */
 class Animator {
   public:
