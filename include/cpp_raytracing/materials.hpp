@@ -12,5 +12,6 @@
 #include "materials/emitter.hpp"
 #include "materials/isotropic.hpp"
 #include "materials/metal.hpp"
+#include "materials/portal.hpp"
 
 #endif
