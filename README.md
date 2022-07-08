@@ -5,7 +5,10 @@ This project is based on https://raytracing.github.io/ and includes some additio
 ## Features
 
 - Materials
-![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
+    - Diffuse, Dielectric, Metal & Emission
+    ![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
+    - Portals
+    ![portals](https://user-images.githubusercontent.com/7516208/178082226-a769fcf9-4bfa-4214-afc5-87626f016925.png)
 
 - Rolling Shutter & Motion Blur
 ![rolling shutter: rotor at rest](https://user-images.githubusercontent.com/7516208/172665290-341e4786-5dcd-45e0-b850-2956b121007c.png)
