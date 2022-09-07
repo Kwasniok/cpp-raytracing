@@ -31,6 +31,13 @@ make
 ```
 See `./out` directory for the output.
 
+## Documentation
+```bash
+make doc
+```
+See `./doc` directory for the documentation.
+
+
 ## Run
 ```bash
 ./build/<executable>
