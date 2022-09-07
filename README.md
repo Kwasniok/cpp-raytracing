@@ -40,7 +40,7 @@ See `./doc` directory for the documentation.
 
 ## Run
 ```bash
-./build/<executable>
+./build/examples/<executable>
 ```
 Where `<executable>` is any of the provided executables.
 Use `--help` to see the respective usage.
