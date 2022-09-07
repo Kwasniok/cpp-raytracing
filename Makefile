@@ -24,10 +24,14 @@ else
     CPP_FLAGS += -Ofast
 endif
 
-### ALL (DEFAULT) ###
+### DEFAULT ###
+.PHONY: default
+.DEFAULT_GOAL=default
+default: test example_previews
+
+### ALL ###
 .PHONY: all
-.DEFAULT_GOAL=all
-all: test example_previews
+all: test doc example_previews
 
 ### CLEAN ##
 .PHONY:clean
