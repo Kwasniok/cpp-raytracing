@@ -1,9 +1,9 @@
 #include <array>
 #include <sstream>
 
-#include <cpp_raytracing/image.hpp>
+#include <cpp_raytracing/render/image.hpp>
 
-#include "test.hpp"
+#include "../test.hpp"
 
 namespace cpp_raytracing { namespace test {
 

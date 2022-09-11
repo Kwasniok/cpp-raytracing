@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "values/color.hpp"
+#include "../values/color.hpp"
 
 namespace cpp_raytracing {
 

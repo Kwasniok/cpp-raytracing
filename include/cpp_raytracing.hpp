@@ -6,8 +6,8 @@
 #ifndef CPP_RAYTRACING_HPP
 #define CPP_RAYTRACING_HPP
 
-#include "cpp_raytracing/image.hpp"
-#include "cpp_raytracing/renderer.hpp"
+#include "cpp_raytracing/render/image.hpp"
+#include "cpp_raytracing/render/renderer.hpp"
 #include "cpp_raytracing/util.hpp"
 #include "cpp_raytracing/values/color.hpp"
 #include "cpp_raytracing/values/math.hpp"

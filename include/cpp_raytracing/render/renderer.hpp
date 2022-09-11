@@ -10,14 +10,14 @@
 #include <functional>
 #include <omp.h>
 
+#include "../util.hpp"
+#include "../values/color.hpp"
+#include "../world/entities/entity.hpp"
+#include "../world/materials/base.hpp"
+#include "../world/ray.hpp"
+#include "../world/scene.hpp"
 #include "canvas.hpp"
 #include "image.hpp"
-#include "util.hpp"
-#include "values/color.hpp"
-#include "world/entities/entity.hpp"
-#include "world/materials/base.hpp"
-#include "world/ray.hpp"
-#include "world/scene.hpp"
 
 namespace cpp_raytracing {
 
