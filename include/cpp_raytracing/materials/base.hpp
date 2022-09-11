@@ -8,11 +8,11 @@
 
 #include <utility>
 
-#include "../color.hpp"
 #include "../hit_record.hpp"
 #include "../identifier.hpp"
 #include "../ray.hpp"
-#include "../scalar.hpp"
+#include "../values/color.hpp"
+#include "../values/scalar.hpp"
 
 namespace cpp_raytracing {
 

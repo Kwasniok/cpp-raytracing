@@ -1,9 +1,9 @@
 #include <array>
 #include <limits>
 
-#include <cpp_raytracing/color.hpp>
+#include <cpp_raytracing/values/color.hpp>
 
-#include "test.hpp"
+#include "../test.hpp"
 
 namespace cpp_raytracing { namespace test {
 

@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <cmath>
 
-#include "math.hpp"
 #include "ray.hpp"
 #include "util.hpp"
+#include "values/math.hpp"
 
 namespace cpp_raytracing {
 

@@ -6,9 +6,9 @@
 #ifndef CPP_RAYTRACING_TEXTURES_BASE_HPP
 #define CPP_RAYTRACING_TEXTURES_BASE_HPP
 
-#include "../color.hpp"
 #include "../identifier.hpp"
-#include "../math.hpp"
+#include "../values/color.hpp"
+#include "../values/math.hpp"
 
 namespace cpp_raytracing {
 

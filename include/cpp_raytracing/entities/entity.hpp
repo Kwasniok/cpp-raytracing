@@ -13,7 +13,7 @@
 #include "../bounding_volume.hpp"
 #include "../hit_record.hpp"
 #include "../identifier.hpp"
-#include "../scalar.hpp"
+#include "../values/scalar.hpp"
 
 namespace cpp_raytracing {
 

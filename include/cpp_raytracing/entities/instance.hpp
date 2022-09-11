@@ -9,7 +9,7 @@
 #include <cmath>
 #include <memory>
 
-#include "../math.hpp"
+#include "../values/math.hpp"
 #include "entity.hpp"
 
 namespace cpp_raytracing {

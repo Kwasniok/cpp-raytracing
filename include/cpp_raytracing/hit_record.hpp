@@ -10,9 +10,9 @@
 
 #include <memory>
 
-#include "math.hpp"
 #include "ray.hpp"
-#include "scalar.hpp"
+#include "values/math.hpp"
+#include "values/scalar.hpp"
 
 namespace cpp_raytracing {
 

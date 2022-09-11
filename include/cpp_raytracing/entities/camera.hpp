@@ -6,9 +6,8 @@
 #ifndef CPP_RAYTRACING_CAMERA_HPP
 #define CPP_RAYTRACING_CAMERA_HPP
 
-#include "../math.hpp"
 #include "../ray.hpp"
-#include "../scalar.hpp"
+#include "../values/math.hpp"
 #include "entity.hpp"
 
 namespace cpp_raytracing {

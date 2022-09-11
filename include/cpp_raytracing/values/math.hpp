@@ -15,7 +15,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "random.hpp"
+#include "../random.hpp"
 #include "scalar.hpp"
 
 namespace cpp_raytracing {

@@ -9,7 +9,7 @@
 #include <sstream>
 
 #include "../identifier.hpp"
-#include "../scalar.hpp"
+#include "../values/scalar.hpp"
 
 namespace cpp_raytracing {
 

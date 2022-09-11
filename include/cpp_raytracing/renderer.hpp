@@ -11,13 +11,13 @@
 #include <omp.h>
 
 #include "canvas.hpp"
-#include "color.hpp"
 #include "entities/entity.hpp"
 #include "image.hpp"
 #include "materials/base.hpp"
 #include "ray.hpp"
 #include "scene.hpp"
 #include "util.hpp"
+#include "values/color.hpp"
 
 namespace cpp_raytracing {
 
