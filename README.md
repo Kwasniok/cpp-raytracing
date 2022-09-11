@@ -103,6 +103,11 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 - valgrind v3.18+ (optional, debug & profiling)
 - kcachegrind v22.04+ (optional. debug & profiling)
 
+## General Remarks
+
+- The heavy usage of headers is intended for future use of c++ modules.
+  Unfortunately, c++ modules are currently (Sep 2022) not widespread enough to
+  be considered supported by all compilers.
 
 [netpbm]: https://en.wikipedia.org/wiki/Netpbm
 [darktable]: https://www.darktable.org/
