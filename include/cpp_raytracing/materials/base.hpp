@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "../hit_record.hpp"
-#include "../identifier.hpp"
 #include "../ray.hpp"
 #include "../values/color.hpp"
+#include "../values/identifier.hpp"
 #include "../values/scalar.hpp"
 
 namespace cpp_raytracing {

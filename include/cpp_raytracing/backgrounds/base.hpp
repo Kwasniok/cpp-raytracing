@@ -6,8 +6,8 @@
 #ifndef CPP_RAYTRACING_BACKGROUNDS_BASE_HPP
 #define CPP_RAYTRACING_BACKGROUNDS_BASE_HPP
 
-#include "../identifier.hpp"
 #include "../values/color.hpp"
+#include "../values/identifier.hpp"
 
 namespace cpp_raytracing {
 

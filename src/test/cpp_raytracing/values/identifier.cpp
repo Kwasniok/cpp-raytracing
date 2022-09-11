@@ -2,9 +2,9 @@
 #include <utility>
 #include <vector>
 
-#include <cpp_raytracing/identifier.hpp>
+#include <cpp_raytracing/values/identifier.hpp>
 
-#include "test.hpp"
+#include "../test.hpp"
 
 namespace cpp_raytracing { namespace test {
 
