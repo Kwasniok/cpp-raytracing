@@ -11,8 +11,8 @@
 #include <glm/detail/qualifier.hpp>
 #include <glm/geometric.hpp>
 
-#include "../random.hpp"
 #include "../util.hpp"
+#include "../values/random.hpp"
 
 namespace cpp_raytracing {
 

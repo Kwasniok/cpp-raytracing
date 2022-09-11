@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-#include "../../random.hpp"
+#include "../../values/random.hpp"
 #include "entity.hpp"
 
 namespace cpp_raytracing {

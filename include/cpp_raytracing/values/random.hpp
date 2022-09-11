@@ -9,7 +9,7 @@
 #include <omp.h>
 #include <random>
 
-#include "values/scalar.hpp"
+#include "scalar.hpp"
 
 namespace cpp_raytracing {
 

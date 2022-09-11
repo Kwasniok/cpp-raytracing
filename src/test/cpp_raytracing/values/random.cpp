@@ -1,7 +1,7 @@
-#include <cpp_raytracing/random.hpp>
+#include <cpp_raytracing/values/random.hpp>
 #include <omp.h>
 
-#include "test.hpp"
+#include "../test.hpp"
 
 namespace cpp_raytracing { namespace test {
 
