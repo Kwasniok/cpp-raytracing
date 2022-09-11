@@ -1,6 +1,6 @@
 #include <cpp_raytracing/world/materials/base.hpp>
 
-#include "../../test.hpp"
+#include <cpp_raytracing_test.hpp>
 
 namespace cpp_raytracing { namespace test {
 

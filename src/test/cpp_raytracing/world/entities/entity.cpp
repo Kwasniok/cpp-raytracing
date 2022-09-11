@@ -1,6 +1,6 @@
 #include <cpp_raytracing/world/entities/entity.hpp>
 
-#include "../../test.hpp"
+#include <cpp_raytracing_test.hpp>
 
 namespace cpp_raytracing { namespace test {
 

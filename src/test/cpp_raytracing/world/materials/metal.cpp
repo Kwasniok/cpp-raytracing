@@ -3,7 +3,7 @@
 #include <cpp_raytracing/world/materials.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-#include "../../test.hpp"
+#include <cpp_raytracing_test.hpp>
 
 namespace cpp_raytracing { namespace test {
 

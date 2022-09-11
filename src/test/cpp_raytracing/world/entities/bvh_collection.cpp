@@ -6,7 +6,7 @@
 #include <cpp_raytracing/world/entities/sphere.hpp>
 #include <cpp_raytracing/world/ray.hpp>
 
-#include "../../test.hpp"
+#include <cpp_raytracing_test.hpp>
 
 namespace cpp_raytracing { namespace test {
 

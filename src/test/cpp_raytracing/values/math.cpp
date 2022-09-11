@@ -4,7 +4,7 @@
 #include <cpp_raytracing/util.hpp>
 #include <cpp_raytracing/values/math.hpp>
 
-#include "../test.hpp"
+#include <cpp_raytracing_test.hpp>
 
 namespace cpp_raytracing { namespace test {
 
