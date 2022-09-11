@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "../../values/math.hpp"
+#include "../../values/tensor.hpp"
 #include "../entities/instance.hpp"
 #include "animator.hpp"
 

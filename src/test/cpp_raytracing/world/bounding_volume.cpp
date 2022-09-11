@@ -1,6 +1,6 @@
 #include <limits>
 
-#include <cpp_raytracing/values/math.hpp>
+#include <cpp_raytracing/values/tensor.hpp>
 #include <cpp_raytracing/world/bounding_volume.hpp>
 
 #include <cpp_raytracing_test.hpp>

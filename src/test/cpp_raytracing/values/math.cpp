@@ -2,7 +2,7 @@
 #include <limits>
 
 #include <cpp_raytracing/util.hpp>
-#include <cpp_raytracing/values/math.hpp>
+#include <cpp_raytracing/values/tensor.hpp>
 
 #include <cpp_raytracing_test.hpp>
 

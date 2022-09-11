@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief affine math
+ * @brief tensors (linear math)
  */
 
 #ifndef CPP_RAYTRACING_MATH_HPP

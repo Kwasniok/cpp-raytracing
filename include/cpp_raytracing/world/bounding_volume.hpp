@@ -10,7 +10,7 @@
 #include <cmath>
 
 #include "../util.hpp"
-#include "../values/math.hpp"
+#include "../values/tensor.hpp"
 #include "ray.hpp"
 
 namespace cpp_raytracing {

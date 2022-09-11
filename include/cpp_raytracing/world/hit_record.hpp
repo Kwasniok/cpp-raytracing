@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "../values/math.hpp"
+#include "../values/tensor.hpp"
 #include "../values/scalar.hpp"
 #include "ray.hpp"
 

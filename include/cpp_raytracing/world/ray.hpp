@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_RAY_HPP
 #define CPP_RAYTRACING_RAY_HPP
 
-#include "../values/math.hpp"
+#include "../values/tensor.hpp"
 
 namespace cpp_raytracing {
 

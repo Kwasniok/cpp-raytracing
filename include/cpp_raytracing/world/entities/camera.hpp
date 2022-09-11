@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_CAMERA_HPP
 #define CPP_RAYTRACING_CAMERA_HPP
 
-#include "../../values/math.hpp"
+#include "../../values/tensor.hpp"
 #include "../ray.hpp"
 #include "entity.hpp"
 

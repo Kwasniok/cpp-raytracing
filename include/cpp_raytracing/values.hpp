@@ -7,7 +7,7 @@
 #define CPP_RAYTRACING_VALUES_HPP
 
 #include "values/color.hpp"
-#include "values/math.hpp"
+#include "values/tensor.hpp"
 #include "values/random.hpp"
 
 #endif

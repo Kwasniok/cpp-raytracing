@@ -8,7 +8,7 @@
 
 #include "../../values/color.hpp"
 #include "../../values/identifier.hpp"
-#include "../../values/math.hpp"
+#include "../../values/tensor.hpp"
 
 namespace cpp_raytracing {
 
