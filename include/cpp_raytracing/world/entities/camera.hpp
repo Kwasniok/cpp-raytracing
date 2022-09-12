@@ -90,9 +90,9 @@ class Camera : public Entity {
         Vec3 random_vec = lens_radius * random_in_unit_disk();
         Vec3 defocus_offset =
             direction_x * random_vec.x() + direction_y * random_vec.y();
-        return RaySegment(position + defocus_offset, direction_z + x * direction_x +
-                                                  y * direction_y +
-                                                  -defocus_offset);
+        return RaySegment(position + defocus_offset,
+                          unit_vector(direction_z + x * direction_x +
+                                      y * direction_y + -defocus_offset));
     }
 };
 

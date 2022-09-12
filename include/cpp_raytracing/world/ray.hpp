@@ -15,7 +15,11 @@ namespace cpp_raytracing {
  */
 class RaySegment {
   public:
-    /** @brief initialize with parameters */
+    /**
+        @brief initialize with parameters
+        @param start starting point of ray segment
+        @param direction direction vector must be either zero or unit vector
+    */
     constexpr RaySegment(const Vec3& start, const Vec3& direction)
         : _start(start), _direction(direction) {}
 

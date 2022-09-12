@@ -111,14 +111,24 @@ class Renderer {
     Color ray_color(const Scene::FreezeGuard& frozen_scene,
                     const RaySegment& ray, const unsigned long depth) const {
         if (depth == 0) {
-            return Colors::BLACK;
-        }
-        HitRecord record = frozen_scene.hit_record(ray, minimal_ray_length,
-                                                   maximal_ray_length);
-        if (!(record.t < infinity)) {
             return ray_back_ground_color(frozen_scene, ray);
         }
+
+        constexpr Scalar scale = 1.0;
+
+        HitRecord record = frozen_scene.hit_record(ray, minimal_ray_length,
+                                                   maximal_ray_length);
+        if (!(record.t < scale)) {
+            // no hit within current segment
+
+            // TODO: proper propagation function
+            RaySegment next_ray = {ray.start() + scale * ray.direction(),
+                                   ray.direction()};
+
+            return ray_color(frozen_scene, next_ray, depth - 1);
+        }
         if (!record.material) {
+            // hit but no material
             return RAY_COLOR_NO_MATERIAL;
         }
         const auto [scattered_ray, color] =
