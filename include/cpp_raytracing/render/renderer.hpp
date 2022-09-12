@@ -108,8 +108,8 @@ class Renderer {
     virtual RawImage render(Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
-    Color ray_color(const Scene::FreezeGuard& frozen_scene, const Ray& ray,
-                    const unsigned long depth) const {
+    Color ray_color(const Scene::FreezeGuard& frozen_scene,
+                    const RaySegment& ray, const unsigned long depth) const {
         if (depth == 0) {
             return Colors::BLACK;
         }
@@ -133,7 +133,7 @@ class Renderer {
 
     /** @brief calculates color of light ray hitting the background */
     Color ray_back_ground_color(const Scene::FreezeGuard& frozen_scene,
-                                const Ray& ray) const {
+                                const RaySegment& ray) const {
         if (!frozen_scene.active_background) {
             return Background::value_for_default_background(ray.direction());
         }
@@ -218,7 +218,7 @@ class GlobalShutterRenderer : public Renderer {
         x = (2.0 * x / canvas.width - 1.0);
         y = (2.0 * y / canvas.height - 1.0);
 
-        const Ray ray = frozen_scene.active_camera.ray_for_coords(x, y);
+        const RaySegment ray = frozen_scene.active_camera.ray_for_coords(x, y);
         const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
         buffer[{i, j}] += pixel_color;
     }
@@ -310,7 +310,7 @@ class RollingShutterRenderer : public Renderer {
         x = (2.0 * x / canvas.width - 1.0);
         y = (2.0 * y / canvas.height - 1.0);
 
-        const Ray ray = frozen_scene.active_camera.ray_for_coords(x, y);
+        const RaySegment ray = frozen_scene.active_camera.ray_for_coords(x, y);
         const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
         buffer[{i, j}] += pixel_color;
     }

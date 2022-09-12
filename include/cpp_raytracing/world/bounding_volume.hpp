@@ -37,7 +37,7 @@ class AxisAlignedBoundingBox {
     constexpr Vec3 max() const { return _max; }
 
     /** @brief tests if ray hits any section of the volume within the box */
-    constexpr bool hit(const Ray ray, Scalar t_min, Scalar t_max) const {
+    constexpr bool hit(const RaySegment ray, Scalar t_min, Scalar t_max) const {
 
         // note: mind branch prediction and reduce
         for (int i = 0; i < 3; ++i) {

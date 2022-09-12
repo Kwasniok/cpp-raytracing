@@ -22,15 +22,15 @@ class Isotropic : public Material {
 
     virtual ~Isotropic() = default;
 
-    virtual std::pair<Ray, Color> scatter(const HitRecord& record,
-                                          const Ray& ray) const override {
+    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
+                                          const RaySegment& ray) const override {
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
                   : Texture::value_for_missing_texture(record.uv_coordinates,
                                                        record.point);
 
-        return {Ray(record.point, random_vector_in_unit_sphere()), color_value};
+        return {RaySegment(record.point, random_vector_in_unit_sphere()), color_value};
     }
 };
 

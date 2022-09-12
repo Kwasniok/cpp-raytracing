@@ -39,7 +39,7 @@ void test_emitter() {
         .t = 1.0,
         .front_face = true,
     };
-    const Ray ray_in{
+    const RaySegment ray_in{
         Vec3{0.0, 0.0, 0.0},
         Vec3{1.0, 0.0, 0.0},
     };

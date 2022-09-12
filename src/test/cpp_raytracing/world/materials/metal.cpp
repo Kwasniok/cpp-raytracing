@@ -45,7 +45,7 @@ void test_metal_no_roughness() {
         .front_face = true,
     };
     const Vec3 in_direction = unit_vector(Vec3{1.0, 1.0, 0.0});
-    const Ray ray_in{
+    const RaySegment ray_in{
         Vec3{0.0, 0.0, 0.0},
         in_direction,
     };
@@ -99,7 +99,7 @@ void test_metal_with_roughness() {
         .front_face = true,
     };
     const Vec3 in_direction = unit_vector(Vec3{1.0, 1.0, 0.0});
-    const Ray ray_in{
+    const RaySegment ray_in{
         Vec3{0.0, 0.0, 0.0},
         in_direction,
     };

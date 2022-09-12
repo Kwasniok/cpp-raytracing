@@ -31,7 +31,7 @@ struct HitRecord {
     Vec2 uv_coordinates;
     /** @brief material of the object */
     const Material* material;
-    /** @brief Ray parameter of #point */
+    /** @brief RaySegment parameter of #point */
     Scalar t;
     /** @brief ray his surface from the outside */
     bool front_face;
@@ -39,7 +39,7 @@ struct HitRecord {
     /**
      * @brief sets normal and front_face
      */
-    void set_face_normal(const Ray& ray, const Vec3& face_normal) {
+    void set_face_normal(const RaySegment& ray, const Vec3& face_normal) {
         front_face = dot(face_normal, ray.direction()) < 0.0;
         normal = front_face ? face_normal : -face_normal;
     }

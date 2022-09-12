@@ -59,7 +59,7 @@ class Entity {
      * @returns eihter a defned HitRecord or sets HitRecord::t to
      * ::infinity
      */
-    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const {
         return {.t = infinity};
     }

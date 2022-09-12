@@ -86,11 +86,11 @@ class Camera : public Entity {
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
-    Ray ray_for_coords(const Scalar x, const Scalar y) const {
+    RaySegment ray_for_coords(const Scalar x, const Scalar y) const {
         Vec3 random_vec = lens_radius * random_in_unit_disk();
         Vec3 defocus_offset =
             direction_x * random_vec.x() + direction_y * random_vec.y();
-        return Ray(position + defocus_offset, direction_z + x * direction_x +
+        return RaySegment(position + defocus_offset, direction_z + x * direction_x +
                                                   y * direction_y +
                                                   -defocus_offset);
     }

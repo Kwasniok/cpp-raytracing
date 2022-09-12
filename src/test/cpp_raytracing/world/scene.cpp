@@ -48,33 +48,33 @@ void test_freeze() {
 
         // hits
         {
-            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
             auto record = guard.hit_record(ray, 0.0, infinity);
             TEST_ASSERT_TRUE(record.hits());
         }
         {
-            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
             auto record = guard.hit_record(ray, 0.0, infinity);
             TEST_ASSERT_TRUE(record.hits());
         }
         {
-            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
             auto record = guard.hit_record(ray, 0.0, infinity);
             TEST_ASSERT_TRUE(record.hits());
         }
         // misses
         {
-            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
             auto record = guard.hit_record(ray, 0.0, infinity);
             TEST_ASSERT_FALSE(record.hits());
         }
         {
-            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
             auto record = guard.hit_record(ray, 0.0, infinity);
             TEST_ASSERT_FALSE(record.hits());
         }
         {
-            static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
             auto record = guard.hit_record(ray, 0.0, infinity);
             TEST_ASSERT_FALSE(record.hits());
         }

@@ -49,7 +49,7 @@ void test_dielectric_air() {
         .front_face = true,
     };
     const Vec3 direction = unit_vector({1.0, 1.0, 0.0});
-    const Ray ray_in{
+    const RaySegment ray_in{
         Vec3{0.0, 0.0, 0.0},
         direction,
     };
@@ -111,7 +111,7 @@ void test_dielectric_into_glass() {
         std::sin(refraction_angle),
         0.0,
     };
-    const Ray ray_in{
+    const RaySegment ray_in{
         Vec3{0.0, 0.0, 0.0},
         direction_in,
     };
@@ -187,7 +187,7 @@ void test_dielectric_total_reflection() {
     };
     const Vec3 direction_in = unit_vector({1.0, 1.0, 0.0});
     const Vec3 direction_reflection = unit_vector({-1.0, 1.0, 0.0});
-    const Ray ray_in{
+    const RaySegment ray_in{
         Vec3{0.0, 0.0, 0.0},
         direction_in,
     };

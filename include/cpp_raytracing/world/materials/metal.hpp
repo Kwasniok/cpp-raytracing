@@ -27,8 +27,8 @@ class Metal : public Material {
 
     virtual ~Metal() = default;
 
-    virtual std::pair<Ray, Color> scatter(const HitRecord& record,
-                                          const Ray& ray) const override {
+    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
+                                          const RaySegment& ray) const override {
         const Vec3 para = dot(record.normal, ray.direction()) * record.normal;
         const Vec3 ortho = ray.direction() - para;
         const Vec3 direction = reflect(ortho, para, roughness);
@@ -38,7 +38,7 @@ class Metal : public Material {
                   : Texture::value_for_missing_texture(record.uv_coordinates,
                                                        record.point);
 
-        return {Ray(record.point, direction), color_value};
+        return {RaySegment(record.point, direction), color_value};
     }
 
   private:

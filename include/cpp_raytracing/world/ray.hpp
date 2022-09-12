@@ -11,12 +11,12 @@
 namespace cpp_raytracing {
 
 /**
- * @brief representation of a light ray
+ * @brief representation of a light ray segment
  */
-class Ray {
+class RaySegment {
   public:
     /** @brief initialize with parameters */
-    constexpr Ray(const Vec3& start, const Vec3& direction)
+    constexpr RaySegment(const Vec3& start, const Vec3& direction)
         : _start(start), _direction(direction) {}
 
     /** @brief starting point of the ray */

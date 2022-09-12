@@ -53,7 +53,7 @@ void test_hit_record() {
 
     // cache
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
         TEST_ASSERT_THROWS(collection.hit_record(ray, 0.0, infinity),
                            std::runtime_error);
     }
@@ -61,33 +61,33 @@ void test_hit_record() {
 
     // hits
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
         auto record = collection.hit_record(ray, 0.0, infinity);
         TEST_ASSERT_TRUE(record.hits());
     }
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
         auto record = collection.hit_record(ray, 0.0, infinity);
         TEST_ASSERT_TRUE(record.hits());
     }
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
         auto record = collection.hit_record(ray, 0.0, infinity);
         TEST_ASSERT_TRUE(record.hits());
     }
     // misses
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
         auto record = collection.hit_record(ray, 0.0, infinity);
         TEST_ASSERT_FALSE(record.hits());
     }
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
         auto record = collection.hit_record(ray, 0.0, infinity);
         TEST_ASSERT_FALSE(record.hits());
     }
     {
-        static constexpr Ray ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
+        static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
         auto record = collection.hit_record(ray, 0.0, infinity);
         TEST_ASSERT_FALSE(record.hits());
     }

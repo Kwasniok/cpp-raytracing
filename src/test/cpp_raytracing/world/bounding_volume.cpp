@@ -35,7 +35,7 @@ void test_hit() {
 
     // start inside
     {
-        static constexpr Ray ray{mid, {7.0, 0.0, 0.0}};
+        static constexpr RaySegment ray{mid, {7.0, 0.0, 0.0}};
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -43,7 +43,7 @@ void test_hit() {
         TEST_ASSERT_TRUE(box.hit(ray, -infinity, 0.0));
     }
     {
-        static constexpr Ray ray{mid, {0.0, 7.0, 0.0}};
+        static constexpr RaySegment ray{mid, {0.0, 7.0, 0.0}};
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -51,7 +51,7 @@ void test_hit() {
         TEST_ASSERT_TRUE(box.hit(ray, -infinity, 0.0));
     }
     {
-        static constexpr Ray ray{mid, {0.0, 0.0, 7.0}};
+        static constexpr RaySegment ray{mid, {0.0, 0.0, 7.0}};
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -61,7 +61,7 @@ void test_hit() {
 
     // start outside 'left'
     {
-        static constexpr Ray ray{Vec3{0.5, 3.5, 4.5}, {7.0, 0.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{0.5, 3.5, 4.5}, {7.0, 0.0, 0.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -69,7 +69,7 @@ void test_hit() {
         TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
-        static constexpr Ray ray{Vec3{2.5, 1.5, 4.5}, {0.0, 7.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{2.5, 1.5, 4.5}, {0.0, 7.0, 0.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -77,7 +77,7 @@ void test_hit() {
         TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
-        static constexpr Ray ray{Vec3{2.5, 3.5, 2.5}, {0.0, 0.0, 7.0}};
+        static constexpr RaySegment ray{Vec3{2.5, 3.5, 2.5}, {0.0, 0.0, 7.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -87,7 +87,7 @@ void test_hit() {
 
     // start outside 'right'
     {
-        static constexpr Ray ray{Vec3{4.5, 3.5, 4.5}, {-7.0, 0.0, 0.0}};
+        static constexpr RaySegment ray{Vec3{4.5, 3.5, 4.5}, {-7.0, 0.0, 0.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -95,7 +95,7 @@ void test_hit() {
         TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
-        static constexpr Ray ray{Vec3{2.5, 5.5, 4.5}, {0.0, -0.7, 0.0}};
+        static constexpr RaySegment ray{Vec3{2.5, 5.5, 4.5}, {0.0, -0.7, 0.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -103,7 +103,7 @@ void test_hit() {
         TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
-        static constexpr Ray ray{Vec3{2.5, 3.5, 6.5}, {0.0, 0.0, -7.0}};
+        static constexpr RaySegment ray{Vec3{2.5, 3.5, 6.5}, {0.0, 0.0, -7.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
@@ -119,14 +119,14 @@ void test_hit_corner_cases() {
     static constexpr AxisAlignedBoundingBox box{min, max};
 
     {
-        const Ray ray{Vec3{infinity, 3.5, 4.5}, {0.7, 0.0, 0.0}};
+        const RaySegment ray{Vec3{infinity, 3.5, 4.5}, {0.7, 0.0, 0.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, infinity));
         TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
         TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
-        const Ray ray{Vec3{2.5, infinity, 4.5}, {0.7, 0.0, 0.0}};
+        const RaySegment ray{Vec3{2.5, infinity, 4.5}, {0.7, 0.0, 0.0}};
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, 100.0));
         TEST_ASSERT_FALSE(box.hit(ray, 0.0, infinity));
         TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));

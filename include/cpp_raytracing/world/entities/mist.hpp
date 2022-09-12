@@ -28,13 +28,13 @@ class Mist : public Entity {
 
     virtual ~Mist() = default;
 
-    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 };
 
-HitRecord Mist::hit_record(const Ray& ray, const Scalar t_min,
+HitRecord Mist::hit_record(const RaySegment& ray, const Scalar t_min,
                            const Scalar t_max) const {
 
     if (!boundary) {

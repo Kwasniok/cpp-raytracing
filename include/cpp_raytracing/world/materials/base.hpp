@@ -36,10 +36,10 @@ class Material {
      *        object
      * @note If the returned ray has a direction which is perfectly zero, the
      *       material is emissive at the scattering point.
-     * @see Ray::direction_exactly_zero()
+     * @see RaySegment::direction_exactly_zero()
      */
-    virtual std::pair<Ray, Color> scatter(const HitRecord& record,
-                                          const Ray& ray) const = 0;
+    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
+                                          const RaySegment& ray) const = 0;
 };
 
 /** @brief default identifier for materials */

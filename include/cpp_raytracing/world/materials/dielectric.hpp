@@ -29,8 +29,8 @@ class Dielectric : public Material {
 
     virtual ~Dielectric() = default;
 
-    virtual std::pair<Ray, Color> scatter(const HitRecord& record,
-                                          const Ray& ray) const override {
+    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
+                                          const RaySegment& ray) const override {
         // note: This algorithm assumes vacuum to medium transitions and
         // vice versa
         //       only.
@@ -62,7 +62,7 @@ class Dielectric : public Material {
                   : Texture::value_for_missing_texture(record.uv_coordinates,
                                                        record.point);
 
-        return {Ray(record.point, direction), color_value};
+        return {RaySegment(record.point, direction), color_value};
     }
 
   private:

@@ -61,7 +61,7 @@ class BVHCollection : public Entity {
      * @note Requires valid cache.
      * @note Thread-safe.
      */
-    virtual HitRecord hit_record(const Ray& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
 
     /**
@@ -124,7 +124,7 @@ void BVHCollection::set_time(const Scalar time) {
     }
 }
 
-HitRecord BVHCollection::hit_record(const Ray& ray, const Scalar t_min,
+HitRecord BVHCollection::hit_record(const RaySegment& ray, const Scalar t_min,
                                     const Scalar t_max) const {
     if (_bvh_tree) {
         return _bvh_tree->hit_record(ray, t_min, t_max);
