@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "../util.hpp"
-#include "backgrounds/base.hpp"
 #include "bvh.hpp"
 #include "entities/bvh_collection.hpp"
 #include "entities/camera.hpp"
@@ -54,14 +53,13 @@ class Scene {
          *        of the scene
          * @see Entity::hit_record
          */
-        inline HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
+        inline HitRecord hit_record(const RaySegment& ray,
+                                    const Scalar t_min = 0.0,
                                     const Scalar t_max = infinity) const;
 
       public:
         /** @brief active camera of the frozen scene */
         const Camera& active_camera;
-        /** @brief active background */
-        const Background* active_background = nullptr;
 
       private:
         /** @brief frozen scene */
@@ -74,11 +72,6 @@ class Scene {
      * @note An active camera is required for rendering a scene.
      */
     std::shared_ptr<Camera> active_camera;
-    /**
-     * @brief active background of the scene used for rendering
-     * @note An active background may not be required for rendering a scene.
-     */
-    std::shared_ptr<Background> active_background;
 
     /** @brief initialize with an active camera */
     Scene() { active_camera = std::make_unique<Camera>(); };
@@ -138,9 +131,7 @@ class Scene {
 inline Scene::FreezeGuard::FreezeGuard(Scene& scene,
                                        const Camera& active_camera,
                                        const Scalar time)
-    : active_camera(active_camera),
-      active_background(scene.active_background.get()),
-      _scene(scene) {
+    : active_camera(active_camera), _scene(scene) {
     scene.active_camera->set_time(time);
     scene._collection.set_time(time);
     scene._collection.ensure_cache();

@@ -7,7 +7,6 @@
 #define CPP_RAYTRACING_WORLD_HPP
 
 #include "world/animators.hpp"
-#include "world/backgrounds.hpp"
 #include "world/entities.hpp"
 #include "world/materials.hpp"
 #include "world/ray.hpp"

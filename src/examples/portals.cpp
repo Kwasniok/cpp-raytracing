@@ -54,11 +54,6 @@ Scene make_scene() {
                      10.0, // major zoom-in for orthographic-like perspective
                      16.0 / 9.0, 0.02));
 
-    auto sky = std::make_shared<SimpleSky>();
-    sky->color1 = 0.25 * Color{1.0, 1.0, 1.0};
-    sky->color2 = 0.25 * Color{0.5, 0.7, 1.0};
-    scene.active_background = std::move(sky);
-
     // diffuse (gray)
     std::shared_ptr<Material> diffuse_gray;
     {

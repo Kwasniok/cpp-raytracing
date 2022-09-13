@@ -165,15 +165,6 @@ class Renderer {
         }
     }
 
-    /** @brief calculates color of light ray hitting the background */
-    Color ray_back_ground_color(const Scene::FreezeGuard& frozen_scene,
-                                const RaySegment& ray) const {
-        if (!frozen_scene.active_background) {
-            return Background::value_for_default_background(ray.direction());
-        }
-        return frozen_scene.active_background->value(ray.direction());
-    }
-
   protected:
     /** @brief render a single sample for a single pixel */
     inline void render_pixel_sample(const unsigned long i,
