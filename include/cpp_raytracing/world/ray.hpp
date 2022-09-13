@@ -101,6 +101,32 @@ class Ray {
     virtual std::optional<RaySegment> next_ray_segment() = 0;
 };
 
+/**
+ * @brief euclidean geometry ray
+ * @note Has only one infinitely long segment.
+ */
+class EuclideanRay : public Ray {
+  public:
+    /** @brief constructs a new infinitely long straight ray  */
+    EuclideanRay(const Vec3& start, const Vec3& direction)
+        : _start(start), _direction(direction){};
+
+    virtual ~EuclideanRay() = default;
+
+    virtual std::optional<RaySegment> next_ray_segment() override {
+        if (_has_next) {
+            _has_next = false;
+            return RaySegment{_start, _direction};
+        }
+        return std::nullopt;
+    };
+
+  private:
+    Vec3 _start;
+    Vec3 _direction;
+    bool _has_next = true;
+};
+
 } // namespace cpp_raytracing
 
 #endif
