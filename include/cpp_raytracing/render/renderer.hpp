@@ -43,11 +43,6 @@ class Renderer {
     /** @brief callback type used by Renderer::render() */
     using RenderCallbackFunc = std::function<void(const State&)>;
 
-    /** @brief color indicator for ray ended before hitting anything */
-    constexpr static Color RAY_COLOR_RAY_ENDED{0.0, 1.0, 0.0};
-    /** @brief color indicator for missing material */
-    constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
-
     /** @brief canvas for the image to be rendered */
     Canvas canvas;
 
@@ -69,6 +64,15 @@ class Renderer {
      *      There is no distinction between different types of ray segments.
      */
     unsigned long ray_depth = 1;
+
+    /**
+    * @brief color indicator for ray ended before hitting anything
+    * @note May be used for global illumination or debugging.
+
+     */
+    Color ray_color_if_ray_ended{0.0, 1.0, 0.0};
+    /** @brief color indicator for missing material */
+    Color ray_color_if_no_material{1.0, 0.0, 1.0};
 
     /**
      * @brief callback function to be called frequently during rendering e.g.
@@ -116,7 +120,7 @@ class Renderer {
 
         // check depth limit
         if (depth == 0) {
-            return RAY_COLOR_RAY_ENDED;
+            return ray_color_if_ray_ended;
         }
 
         // propagate ray
@@ -126,7 +130,7 @@ class Renderer {
         // extract next segment
         if (!current_opt_segment.has_value()) {
             // ray ended (e.g. boundary of space or technical limit)
-            return RAY_COLOR_RAY_ENDED;
+            return ray_color_if_ray_ended;
         }
         // has next segment
         const RaySegment& current_segment = current_opt_segment.value();
@@ -145,7 +149,7 @@ class Renderer {
         // check for material
         if (!record.material) {
             // no material
-            return RAY_COLOR_NO_MATERIAL;
+            return ray_color_if_no_material;
         }
         // has material
 

@@ -143,6 +143,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.canvas = canvas;
     renderer.samples = config.samples;
     renderer.ray_depth = config.ray_depth;
+    renderer.ray_color_if_ray_ended = Colors::WHITE; // global illumination
     renderer.time = config.time;
 
     if (config.verbose) {
