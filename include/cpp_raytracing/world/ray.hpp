@@ -6,6 +6,8 @@
 #ifndef CPP_RAYTRACING_RAY_HPP
 #define CPP_RAYTRACING_RAY_HPP
 
+#include <optional>
+
 #include "../values/tensor.hpp"
 
 namespace cpp_raytracing {
@@ -16,17 +18,37 @@ namespace cpp_raytracing {
 class RaySegment {
   public:
     /**
-        @brief initialize with parameters
-        @param start starting point of ray segment
-        @param direction direction vector must be either zero or unit vector
-    */
-    constexpr RaySegment(const Vec3& start, const Vec3& direction)
-        : _start(start), _direction(direction) {}
+     * @brief initialize with parameters
+     * @param start starting point of ray segment
+     * @param direction direction vector must be either zero or finite vector
+     * @param proper_length_factor ratio of proper length of direction in curved
+     *        space vector to length of direction()
+     */
+    constexpr RaySegment(const Vec3& start, const Vec3& direction,
+                         const Scalar proper_length_factor = 1.0)
+        : _start(start),
+          _direction(direction),
+          _proper_length_factor(proper_length_factor) {}
 
     /** @brief starting point of the ray */
     constexpr Vec3 start() const { return _start; }
     /** @brief direction of the ray */
     constexpr Vec3 direction() const { return _direction; }
+    /**
+     * @brief ratio of proper length of direction in curved space vector to
+     *        length of direction()
+     */
+    constexpr Scalar proper_length_factor() const {
+        return _proper_length_factor;
+    }
+    /** @brief proper length of direction() */
+    constexpr Scalar proper_length() const {
+        return _proper_length_factor * _direction.length();
+    }
+    /** @brief proper length of ray segmment until given position */
+    constexpr Scalar proper_length_until(const Scalar t) const {
+        return t * _proper_length_factor * _direction.length();
+    }
 
     /**
      * @brief point on the ray for given parameter
@@ -48,6 +70,22 @@ class RaySegment {
   private:
     Vec3 _start;
     Vec3 _direction;
+    Scalar _proper_length_factor;
+};
+
+/**
+ * @brief ray interface
+ * @note A ray is approximated by straight ray segments.
+ */
+class Ray {
+  public:
+    virtual ~Ray() = default;
+
+    /**
+     * @brief returns next ray segment or nothing
+     * @note A ray may end prematurely due to technical limitations.
+     */
+    virtual std::optional<RaySegment> next_ray_segment() = 0;
 };
 
 } // namespace cpp_raytracing
