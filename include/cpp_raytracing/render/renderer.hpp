@@ -173,6 +173,25 @@ class Renderer {
         }
         return frozen_scene.active_background->value(ray.direction());
     }
+
+  protected:
+    /** @brief render a single sample for a single pixel */
+    inline void render_pixel_sample(const unsigned long i,
+                                    const unsigned long j,
+                                    const Scene::FreezeGuard& frozen_scene,
+                                    RawImage& buffer) const {
+        // random sub-pixel offset for antialiasing
+        Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
+        Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
+        // transform to camera coordinates
+        x = (2.0 * x / canvas.width - 1.0);
+        y = (2.0 * y / canvas.height - 1.0);
+
+        std::unique_ptr<Ray> ray =
+            frozen_scene.active_camera.ray_for_coords(x, y);
+        const Color pixel_color = ray_color(frozen_scene, ray.get(), ray_depth);
+        buffer[{i, j}] += pixel_color;
+    }
 };
 
 /** @brief renderer with global shutter and motion blur */
@@ -238,24 +257,6 @@ class GlobalShutterRenderer : public Renderer {
             (sample % infrequent_callback_frequency == 0)) {
             infrequent_render_callback(State{buffer, sample});
         }
-    }
-
-    /** @brief render a single sample for a single pixel */
-    inline void render_pixel_sample(const unsigned long i,
-                                    const unsigned long j,
-                                    const Scene::FreezeGuard& frozen_scene,
-                                    RawImage& buffer) {
-        // random sub-pixel offset for antialiasing
-        Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
-        Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
-        // transform to camera coordinates
-        x = (2.0 * x / canvas.width - 1.0);
-        y = (2.0 * y / canvas.height - 1.0);
-
-        std::unique_ptr<Ray> ray =
-            frozen_scene.active_camera.ray_for_coords(x, y);
-        const Color pixel_color = ray_color(frozen_scene, ray.get(), ray_depth);
-        buffer[{i, j}] += pixel_color;
     }
 };
 
@@ -331,24 +332,6 @@ class RollingShutterRenderer : public Renderer {
         // random shift for motion blur
         res += random_scalar(0.0, motion_blur);
         return res;
-    }
-
-    /** @brief render a single sample for a single pixel */
-    inline void render_pixel_sample(const unsigned long i,
-                                    const unsigned long j,
-                                    const Scene::FreezeGuard& frozen_scene,
-                                    RawImage& buffer) const {
-        // random sub-pixel offset for antialiasing
-        Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
-        Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
-        // transform to camera coordinates
-        x = (2.0 * x / canvas.width - 1.0);
-        y = (2.0 * y / canvas.height - 1.0);
-
-        std::unique_ptr<Ray> ray =
-            frozen_scene.active_camera.ray_for_coords(x, y);
-        const Color pixel_color = ray_color(frozen_scene, ray.get(), ray_depth);
-        buffer[{i, j}] += pixel_color;
     }
 };
 
