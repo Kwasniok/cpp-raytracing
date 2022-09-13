@@ -23,17 +23,23 @@ class RaySegment {
      * @param direction direction vector must be either zero or finite vector
      * @param proper_length_factor ratio of proper length of direction in curved
      *        space vector to length of direction()
+     * @param t_max end of segment (must be strctly positive and may be
+     *        infinity)
      */
     constexpr RaySegment(const Vec3& start, const Vec3& direction,
+                         const Scalar t_max = infinity,
                          const Scalar proper_length_factor = 1.0)
         : _start(start),
           _direction(direction),
+          _t_max(t_max),
           _proper_length_factor(proper_length_factor) {}
 
     /** @brief starting point of the ray */
     constexpr Vec3 start() const { return _start; }
     /** @brief direction of the ray */
     constexpr Vec3 direction() const { return _direction; }
+    /** @brief maximal value for parameter t */
+    constexpr Scalar t_max() const { return _t_max; }
     /**
      * @brief ratio of proper length of direction in curved space vector to
      *        length of direction()
@@ -49,6 +55,12 @@ class RaySegment {
     constexpr Scalar proper_length_until(const Scalar t) const {
         return t * _proper_length_factor * _direction.length();
     }
+
+    /**
+     * @brief returns true iff parameter denotes a point within this current
+     *        segment
+     */
+    constexpr bool contains(const Scalar t) const { return t < _t_max; }
 
     /**
      * @brief point on the ray for given parameter
@@ -70,6 +82,7 @@ class RaySegment {
   private:
     Vec3 _start;
     Vec3 _direction;
+    Scalar _t_max;
     Scalar _proper_length_factor;
 };
 
