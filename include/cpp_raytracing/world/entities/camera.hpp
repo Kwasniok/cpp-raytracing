@@ -6,6 +6,8 @@
 #ifndef CPP_RAYTRACING_CAMERA_HPP
 #define CPP_RAYTRACING_CAMERA_HPP
 
+#include <memory>
+
 #include "../../values/tensor.hpp"
 #include "../ray.hpp"
 #include "entity.hpp"
@@ -86,13 +88,14 @@ class Camera : public Entity {
     }
 
     /** @brief calculates ray for pixel coordinates of canvas */
-    RaySegment ray_for_coords(const Scalar x, const Scalar y) const {
-        Vec3 random_vec = lens_radius * random_in_unit_disk();
-        Vec3 defocus_offset =
+    std::unique_ptr<Ray> ray_for_coords(const Scalar x, const Scalar y) const {
+        const Vec3 random_vec = lens_radius * random_in_unit_disk();
+        const Vec3 defocus_offset =
             direction_x * random_vec.x() + direction_y * random_vec.y();
-        return RaySegment(position + defocus_offset,
-                          unit_vector(direction_z + x * direction_x +
-                                      y * direction_y + -defocus_offset));
+        const Vec3 start = position + defocus_offset;
+        const Vec3 direction = unit_vector(direction_z + x * direction_x +
+                                           y * direction_y + -defocus_offset);
+        return std::make_unique<EuclideanRay>(start, direction);
     }
 };
 

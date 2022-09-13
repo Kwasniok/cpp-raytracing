@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <functional>
+#include <memory>
 #include <omp.h>
 
 #include "../util.hpp"
@@ -42,6 +43,8 @@ class Renderer {
     /** @brief callback type used by Renderer::render() */
     using RenderCallbackFunc = std::function<void(const State&)>;
 
+    /** @brief color indicator for ray ended before hitting anything */
+    constexpr static Color RAY_COLOR_RAY_ENDED{0.0, 1.0, 0.0};
     /** @brief color indicator for missing material */
     constexpr static Color RAY_COLOR_NO_MATERIAL{1.0, 0.0, 1.0};
 
@@ -108,36 +111,57 @@ class Renderer {
     virtual RawImage render(Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
-    Color ray_color(const Scene::FreezeGuard& frozen_scene,
-                    const RaySegment& ray, const unsigned long depth) const {
+    Color ray_color(const Scene::FreezeGuard& frozen_scene, Ray* ray,
+                    const unsigned long depth) const {
+
+        // check depth limit
         if (depth == 0) {
-            return ray_back_ground_color(frozen_scene, ray);
+            return RAY_COLOR_RAY_ENDED;
         }
 
-        constexpr Scalar scale = 1.0;
+        // propagate ray
+        const std::optional<RaySegment> current_opt_segment =
+            ray->next_ray_segment();
 
-        HitRecord record = frozen_scene.hit_record(ray, minimal_ray_length,
-                                                   maximal_ray_length);
-        if (!(record.t < scale)) {
+        // extract next segment
+        if (!current_opt_segment.has_value()) {
+            // ray ended (e.g. boundary of space or technical limit)
+            return RAY_COLOR_RAY_ENDED;
+        }
+        // has next segment
+        const RaySegment& current_segment = current_opt_segment.value();
+
+        // collect hit record
+        HitRecord record = frozen_scene.hit_record(
+            current_segment, minimal_ray_length, maximal_ray_length);
+
+        // check for hit with entity within current segment
+        if (!current_segment.contains(record.t)) {
             // no hit within current segment
-
-            // TODO: proper propagation function
-            RaySegment next_ray = {ray.start() + scale * ray.direction(),
-                                   ray.direction()};
-
-            return ray_color(frozen_scene, next_ray, depth - 1);
+            return ray_color(frozen_scene, ray, depth - 1);
         }
+        // detected hit with entity within cuurent segment
+
+        // check for material
         if (!record.material) {
-            // hit but no material
+            // no material
             return RAY_COLOR_NO_MATERIAL;
         }
-        const auto [scattered_ray, color] =
-            record.material->scatter(record, ray);
-        if (scattered_ray.direction_exactly_zero()) {
-            // emissive material
+        // has material
+
+        // cast secondary ray or emitter
+        // TODO: geometry-dependent scattering
+        const auto [scattered_ray_segment, color] =
+            record.material->scatter(record, current_segment);
+        if (scattered_ray_segment.direction_exactly_zero()) {
+            // is emitter
             return color;
         } else {
-            return color * ray_color(frozen_scene, scattered_ray, depth - 1);
+            // cast secondary ray
+            // TODO: remove hack
+            EuclideanRay scattered_ray{scattered_ray_segment.start(),
+                                       scattered_ray_segment.direction()};
+            return color * ray_color(frozen_scene, &scattered_ray, depth - 1);
         }
     }
 
@@ -228,8 +252,9 @@ class GlobalShutterRenderer : public Renderer {
         x = (2.0 * x / canvas.width - 1.0);
         y = (2.0 * y / canvas.height - 1.0);
 
-        const RaySegment ray = frozen_scene.active_camera.ray_for_coords(x, y);
-        const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
+        std::unique_ptr<Ray> ray =
+            frozen_scene.active_camera.ray_for_coords(x, y);
+        const Color pixel_color = ray_color(frozen_scene, ray.get(), ray_depth);
         buffer[{i, j}] += pixel_color;
     }
 };
@@ -320,8 +345,9 @@ class RollingShutterRenderer : public Renderer {
         x = (2.0 * x / canvas.width - 1.0);
         y = (2.0 * y / canvas.height - 1.0);
 
-        const RaySegment ray = frozen_scene.active_camera.ray_for_coords(x, y);
-        const Color pixel_color = ray_color(frozen_scene, ray, ray_depth);
+        std::unique_ptr<Ray> ray =
+            frozen_scene.active_camera.ray_for_coords(x, y);
+        const Color pixel_color = ray_color(frozen_scene, ray.get(), ray_depth);
         buffer[{i, j}] += pixel_color;
     }
 };
