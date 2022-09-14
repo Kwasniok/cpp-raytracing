@@ -67,9 +67,8 @@ class Renderer {
     unsigned long ray_depth = 1;
 
     /**
-    * @brief color indicator for ray ended before hitting anything
-    * @note May be used for global illumination or debugging.
-
+     * @brief color indicator for ray ended before hitting anything
+     * @note May be used for global illumination or debugging.
      */
     Color ray_color_if_ray_ended{0.0, 1.0, 0.0};
     /** @brief color indicator for missing material */
