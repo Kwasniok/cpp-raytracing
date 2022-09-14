@@ -21,11 +21,11 @@ class Geometry {
     virtual ~Geometry() = default;
 
     /** @brief returns a ray with given starting point and target */
-    virtual std::unique_ptr<Ray> ray_passing_through(const Vec3 start,
-                                                     const Vec3 target) = 0;
+    virtual std::unique_ptr<Ray>
+    ray_passing_through(const Vec3 start, const Vec3 target) const = 0;
 
     /** @brief returns the local metric */
-    virtual Mat3x3 metric(const Vec3 position) = 0;
+    virtual Mat3x3 metric(const Vec3 position) const = 0;
 };
 
 } // namespace cpp_raytracing

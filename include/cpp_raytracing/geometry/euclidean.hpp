@@ -19,12 +19,12 @@ class EuclideanGeometry : public Geometry {
     virtual ~EuclideanGeometry() = default;
 
     virtual std::unique_ptr<Ray>
-    ray_passing_through(const Vec3 start, const Vec3 target) override {
+    ray_passing_through(const Vec3 start, const Vec3 target) const override {
         return std::make_unique<EuclideanRay>(start,
                                               unit_vector(target - start));
     }
 
-    virtual Mat3x3 metric(const Vec3 position) override {
+    virtual Mat3x3 metric(const Vec3 position) const override {
         return Mat3x3::identity();
     }
 };
