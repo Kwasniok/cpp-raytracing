@@ -41,6 +41,11 @@ std::shared_ptr<Triangle> make_triangle(const Scalar side, const Scalar half,
         p = perms[axis % 3](p);
     }
 
+    // ensure outward facing surface normals
+    if (half < 0.0) {
+        std::swap(tri->points[0], tri->points[1]);
+    }
+
     return tri;
 }
 
@@ -119,6 +124,7 @@ Scene make_scene() {
         auto tri = std::make_shared<Triangle>();
         tri->id.change("floor");
         tri->points = {
+            // note: upward surface normal
             Vec3{-L, -1.0, -L},
             Vec3{-L, -1.0, +L},
             Vec3{+L, -1.0, +L},
@@ -132,8 +138,9 @@ Scene make_scene() {
         auto tri = std::make_shared<Triangle>();
         tri->id.change("floor");
         tri->points = {
-            Vec3{-L, -1.0, -L},
+            // note: upward surface normal
             Vec3{+L, -1.0, -L},
+            Vec3{-L, -1.0, -L},
             Vec3{+L, -1.0, +L},
         };
         tri->material = diffuse_gray;
