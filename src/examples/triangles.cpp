@@ -164,6 +164,8 @@ struct RenderConfig {
     Scalar time;
     /** @brief gamma correction for non-raw images */
     ColorScalar gamma;
+    /** @brief debug normals */
+    bool debug_normals;
 };
 
 /**
@@ -187,6 +189,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.ray_color_if_ray_ended = Colors::WHITE; // global illumination
     renderer.infrequent_callback_frequency = config.save_frequency;
     renderer.time = config.time;
+    renderer.debug_normals = config.debug_normals;
 
     renderer.frequent_render_callback =
         [](const Renderer::State& current_state) {
@@ -245,6 +248,10 @@ int main(int argc, char** argv) {
         .default_value<ColorScalar>(2.0)
         .help("gamma correction for non-raw image formats")
         .scan<'f', ColorScalar>();
+    parser.add_argument("--debug_normals")
+        .default_value<bool>(false) // store_true
+        .implicit_value(true)
+        .help("enable render mode to debug surface normals");
 
     try {
         parser.parse_args(argc, argv);
@@ -263,6 +270,7 @@ int main(int argc, char** argv) {
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
     config.time = parser.get<Scalar>("--time");
     config.gamma = parser.get<ColorScalar>("--gamma");
+    config.debug_normals = parser.get<bool>("--debug_normals");
 
     render_ppm(config);
 }
