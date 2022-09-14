@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "../../geometry/base.hpp"
 #include "../../values/identifier.hpp"
 #include "../../values/scalar.hpp"
 #include "../animators/animator.hpp"
@@ -59,7 +60,9 @@ class Entity {
      * @returns eihter a defned HitRecord or sets HitRecord::t to
      * ::infinity
      */
-    virtual HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const Geometry& geometry,
+                                 const RaySegment& ray,
+                                 const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const {
         return {.t = infinity};
     }

@@ -1,6 +1,7 @@
 #include <memory>
 #include <vector>
 
+#include <cpp_raytracing/geometry/euclidean.hpp>
 #include <cpp_raytracing/world/entities/instance.hpp>
 #include <cpp_raytracing/world/entities/sphere.hpp>
 #include <cpp_raytracing/world/ray.hpp>
@@ -34,6 +35,7 @@ Scene make_scene() {
 
 void test_freeze() {
 
+    const EuclideanGeometry geometry;
     Scene scene = make_scene();
     TEST_ASSERT_FALSE(scene.is_frozen());
 
@@ -48,34 +50,40 @@ void test_freeze() {
 
         // hits
         {
-            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{1.0, 0.0, 0.0}};
-            auto record = guard.hit_record(ray, 0.0, infinity);
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{1.0, 0.0, 0.0}};
+            auto record = guard.hit_record(geometry, ray, 0.0, infinity);
             TEST_ASSERT_TRUE(record.hits());
         }
         {
-            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 1.0, 0.0}};
-            auto record = guard.hit_record(ray, 0.0, infinity);
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, 1.0, 0.0}};
+            auto record = guard.hit_record(geometry, ray, 0.0, infinity);
             TEST_ASSERT_TRUE(record.hits());
         }
         {
-            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, 1.0}};
-            auto record = guard.hit_record(ray, 0.0, infinity);
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, 0.0, 1.0}};
+            auto record = guard.hit_record(geometry, ray, 0.0, infinity);
             TEST_ASSERT_TRUE(record.hits());
         }
         // misses
         {
-            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{-1.0, 0.0, 0.0}};
-            auto record = guard.hit_record(ray, 0.0, infinity);
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{-1.0, 0.0, 0.0}};
+            auto record = guard.hit_record(geometry, ray, 0.0, infinity);
             TEST_ASSERT_FALSE(record.hits());
         }
         {
-            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, -1.0, 0.0}};
-            auto record = guard.hit_record(ray, 0.0, infinity);
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, -1.0, 0.0}};
+            auto record = guard.hit_record(geometry, ray, 0.0, infinity);
             TEST_ASSERT_FALSE(record.hits());
         }
         {
-            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 0.0, -1.0}};
-            auto record = guard.hit_record(ray, 0.0, infinity);
+            static constexpr RaySegment ray{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, 0.0, -1.0}};
+            auto record = guard.hit_record(geometry, ray, 0.0, infinity);
             TEST_ASSERT_FALSE(record.hits());
         }
     }

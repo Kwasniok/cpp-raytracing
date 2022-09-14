@@ -28,7 +28,9 @@ class Sphere : public Entity {
 
     virtual ~Sphere() = default;
 
-    virtual HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const Geometry& geometry,
+                                 const RaySegment& ray,
+                                 const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
@@ -49,8 +51,8 @@ class Sphere : public Entity {
     }
 };
 
-HitRecord Sphere::hit_record(const RaySegment& ray, const Scalar t_min,
-                             const Scalar t_max) const {
+HitRecord Sphere::hit_record(const Geometry& geometry, const RaySegment& ray,
+                             const Scalar t_min, const Scalar t_max) const {
 
     // analytical geometry: line hits sphere
     // ray: s + t*d

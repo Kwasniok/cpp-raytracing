@@ -190,6 +190,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
+    EuclideanGeometry geometry;
     Scene scene = make_scene(config.scene);
 
     RollingShutterRenderer renderer;
@@ -219,7 +220,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "cores detected = " << omp_get_num_procs() << endl;
         cerr << "rendering image ... " << endl;
     }
-    RawImage image = renderer.render(scene);
+    RawImage image = renderer.render(geometry, scene);
     write_image(config.path, image, 1.0, config.gamma);
 }
 

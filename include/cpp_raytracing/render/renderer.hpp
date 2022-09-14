@@ -11,6 +11,7 @@
 #include <memory>
 #include <omp.h>
 
+#include "../geometry/base.hpp"
 #include "../util.hpp"
 #include "../values/color.hpp"
 #include "../world/entities/entity.hpp"
@@ -112,10 +113,11 @@ class Renderer {
     Scalar maximal_ray_length = infinity;
 
     /** @brief render Scene as RawImage */
-    virtual RawImage render(Scene& scene) = 0;
+    virtual RawImage render(const Geometry& geometry, Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
-    Color ray_color(const Scene::FreezeGuard& frozen_scene, Ray* ray,
+    Color ray_color(const Geometry& geometry,
+                    const Scene::FreezeGuard& frozen_scene, Ray* ray,
                     const unsigned long depth) const {
 
         // check depth limit
@@ -137,12 +139,12 @@ class Renderer {
 
         // collect hit record
         HitRecord record = frozen_scene.hit_record(
-            current_segment, minimal_ray_length, maximal_ray_length);
+            geometry, current_segment, minimal_ray_length, maximal_ray_length);
 
         // check for hit with entity within current segment
         if (!current_segment.contains(record.t)) {
             // no hit within current segment
-            return ray_color(frozen_scene, ray, depth - 1);
+            return ray_color(geometry, frozen_scene, ray, depth - 1);
         }
         // detected hit with entity within cuurent segment
 
@@ -165,7 +167,8 @@ class Renderer {
             // TODO: remove hack
             EuclideanRay scattered_ray{scattered_ray_segment.start(),
                                        scattered_ray_segment.direction()};
-            return color * ray_color(frozen_scene, &scattered_ray, depth - 1);
+            return color *
+                   ray_color(geometry, frozen_scene, &scattered_ray, depth - 1);
         }
     }
 
@@ -173,6 +176,7 @@ class Renderer {
     /** @brief render a single sample for a single pixel */
     inline void render_pixel_sample(const unsigned long i,
                                     const unsigned long j,
+                                    const Geometry& geometry,
                                     const Scene::FreezeGuard& frozen_scene,
                                     RawImage& buffer) const {
         // random sub-pixel offset for antialiasing
@@ -184,7 +188,8 @@ class Renderer {
 
         std::unique_ptr<Ray> ray =
             frozen_scene.active_camera.ray_for_coords(x, y);
-        const Color pixel_color = ray_color(frozen_scene, ray.get(), ray_depth);
+        const Color pixel_color =
+            ray_color(geometry, frozen_scene, ray.get(), ray_depth);
         buffer[{i, j}] += pixel_color;
     }
 };
@@ -200,7 +205,7 @@ class GlobalShutterRenderer : public Renderer {
      */
     Scalar exposure_time = 0.0;
 
-    virtual RawImage render(Scene& scene) override {
+    virtual RawImage render(const Geometry& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
@@ -212,7 +217,7 @@ class GlobalShutterRenderer : public Renderer {
                 random_scalar(time, time + exposure_time));
 
             for (unsigned long s = 1; s < samples + 1; ++s) {
-                render_sample(s, buffer, frozen_scene);
+                render_sample(s, buffer, geometry, frozen_scene);
             }
 
         } else {
@@ -223,7 +228,7 @@ class GlobalShutterRenderer : public Renderer {
                 const Scene::FreezeGuard& frozen_scene = scene.freeze_for_time(
                     random_scalar(time, time + exposure_time));
 
-                render_sample(s, buffer, frozen_scene);
+                render_sample(s, buffer, geometry, frozen_scene);
             }
         }
 
@@ -234,6 +239,7 @@ class GlobalShutterRenderer : public Renderer {
   private:
     /** @brief render with global shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
+                              const Geometry& geometry,
                               const Scene::FreezeGuard& frozen_scene) {
 
 // note: Mind the memory layout of image buffer and data acces!
@@ -241,7 +247,7 @@ class GlobalShutterRenderer : public Renderer {
 #pragma omp parallel for shared(buffer) schedule(static, 1)
         for (unsigned long j = 0; j < canvas.height; ++j) {
             for (unsigned long i = 0; i < canvas.width; ++i) {
-                render_pixel_sample(i, j, frozen_scene, buffer);
+                render_pixel_sample(i, j, geometry, frozen_scene, buffer);
             }
         }
 
@@ -275,12 +281,12 @@ class RollingShutterRenderer : public Renderer {
      */
     Scalar motion_blur = 0.0;
 
-    virtual RawImage render(Scene& scene) override {
+    virtual RawImage render(const Geometry& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
         for (unsigned long s = 1; s < samples + 1; ++s) {
-            render_sample(s, buffer, scene);
+            render_sample(s, buffer, geometry, scene);
         }
 
         buffer *= 1 / (Scalar(samples));
@@ -290,7 +296,7 @@ class RollingShutterRenderer : public Renderer {
   private:
     /** @brief render with rolling shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              Scene& scene) const {
+                              const Geometry& geometry, Scene& scene) const {
 
         for (unsigned long j = 0; j < canvas.height; ++j) {
 
@@ -303,7 +309,7 @@ class RollingShutterRenderer : public Renderer {
 //       optimal.
 #pragma omp parallel for shared(buffer) schedule(static, 1)
             for (unsigned long i = 0; i < canvas.width; ++i) {
-                render_pixel_sample(i, j, frozen_scene, buffer);
+                render_pixel_sample(i, j, geometry, frozen_scene, buffer);
             }
         }
 

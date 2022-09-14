@@ -29,7 +29,9 @@ class Plane : public Entity {
 
     virtual ~Plane() = default;
 
-    virtual HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
+    virtual HitRecord hit_record(const Geometry& geometry,
+                                 const RaySegment& ray,
+                                 const Scalar t_min = 0.0,
                                  const Scalar t_max = infinity) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
@@ -41,8 +43,8 @@ class Plane : public Entity {
     static constexpr Scalar finite_y_max = +1.0;
 };
 
-HitRecord Plane::hit_record(const RaySegment& ray, const Scalar t_min,
-                            const Scalar t_max) const {
+HitRecord Plane::hit_record(const Geometry& geometry, const RaySegment& ray,
+                            const Scalar t_min, const Scalar t_max) const {
 
     if (ray.direction().z() == 0.0) {
         return {.t = infinity};

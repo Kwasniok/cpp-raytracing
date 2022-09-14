@@ -90,20 +90,24 @@ class BVHTree {
          * @note The interface is changed in comparison to Entity::hit_record in
          *       order to optimize throughput.
          */
-        void hit_record(const RaySegment& ray, const Scalar t_min, const Scalar t_max,
+        void hit_record(const Geometry& geometry, const RaySegment& ray,
+                        const Scalar t_min, const Scalar t_max,
                         HitRecord& closest_record) const {
             if (bounds.hit(ray, t_min, t_max)) {
                 if (value) {
-                    HitRecord record = value->hit_record(ray, t_min, t_max);
+                    HitRecord record =
+                        value->hit_record(geometry, ray, t_min, t_max);
                     if (record.t < closest_record.t) {
                         closest_record = record;
                     }
                 }
                 if (left) {
-                    left->hit_record(ray, t_min, t_max, closest_record);
+                    left->hit_record(geometry, ray, t_min, t_max,
+                                     closest_record);
                 }
                 if (right) {
-                    right->hit_record(ray, t_min, t_max, closest_record);
+                    right->hit_record(geometry, ray, t_min, t_max,
+                                      closest_record);
                 }
             }
         }
@@ -158,12 +162,14 @@ class BVHTree {
      * @returns eihter a defned HitRecord or sets HitRecord::t to
      * @see Entity::hit_record
      */
-    HitRecord hit_record(const RaySegment& ray, const Scalar t_min = 0.0,
+    HitRecord hit_record(const Geometry& geometry, const RaySegment& ray,
+                         const Scalar t_min = 0.0,
                          const Scalar t_max = infinity) const {
         HitRecord closest_record = {.t = infinity};
-        _root.hit_record(ray, t_min, t_max, closest_record);
+        _root.hit_record(geometry, ray, t_min, t_max, closest_record);
         for (auto& unbounded_entity : _unbounded_entities) {
-            HitRecord record = unbounded_entity->hit_record(ray, t_min, t_max);
+            HitRecord record =
+                unbounded_entity->hit_record(geometry, ray, t_min, t_max);
             if (record.t < closest_record.t) {
                 closest_record = record;
             }
