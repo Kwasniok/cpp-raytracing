@@ -20,6 +20,7 @@ namespace cpp_raytracing { namespace test {
  *       performed in order: scaling, rotation, translation. All parameters
  *       (position, rotation, scale) describe these transformations in this
  *       direction.
+ * @note Asserts Euclidean Geometry and ignores geometry parameter.
  */
 class Instance : public Entity {
   public:

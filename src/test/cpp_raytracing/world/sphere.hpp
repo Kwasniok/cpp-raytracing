@@ -14,6 +14,7 @@ namespace cpp_raytracing { namespace test {
 
 /**
  * @brief spherical object
+ * @note Asserts Euclidean Geometry and ignores geometry parameter.
  */
 class Sphere : public Entity {
   public:
@@ -93,7 +94,8 @@ HitRecord Sphere::hit_record(const Geometry& geometry, const RaySegment& ray,
     HitRecord record;
     record.t = t;
     record.point = point;
-    record.set_face_normal(ray, normal);
+    record.metric = Mat3x3::identity();
+    record.set_face_normal(record.metric, ray.direction(), normal);
     record.uv_coordinates = uv_coordinates(normal);
     record.material = material.get();
     return record;
