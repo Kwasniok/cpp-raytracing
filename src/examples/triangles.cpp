@@ -66,8 +66,9 @@ Scene make_scene() {
     {
         auto mat = std::make_shared<Diffuse>();
         mat->id.change("diffuse gray");
-        auto texture = std::make_shared<ConstantColor>();
-        texture->color = {0.5, 0.5, 0.5};
+        auto texture = std::make_shared<Checker3D>();
+        texture->color1 = {0.45, 0.45, 0.45};
+        texture->color2 = {0.55, 0.55, 0.55};
         mat->color = std::move(texture);
         materials.push_back(mat);
         diffuse_gray = std::move(mat);
@@ -83,25 +84,13 @@ Scene make_scene() {
         materials.push_back(mat);
         diffuse_red = std::move(mat);
     }
-    // metal
-    std::shared_ptr<Material> metal;
-    {
-        auto mat = std::make_shared<Metal>();
-        mat->id.change("metal");
-        auto texture = std::make_shared<ConstantColor>();
-        texture->color = {0.8, 0.7, 0.6};
-        mat->color = std::move(texture);
-        mat->roughness = 0.2;
-        materials.push_back(mat);
-        metal = std::move(mat);
-    }
     // light
     std::shared_ptr<Material> light;
     {
         auto mat = std::make_shared<Emitter>();
         mat->id.change("light");
         auto texture = std::make_shared<ConstantColor>();
-        texture->color = {0.95, 0.9, 0.85};
+        texture->color = 20.0 * Color{0.95, 0.9, 0.85};
         mat->color = std::move(texture);
         materials.push_back(mat);
         light = std::move(mat);
@@ -112,7 +101,7 @@ Scene make_scene() {
         for (auto half : halfs) {
             for (auto axis : axes) {
                 auto tri = make_triangle(side, half, axis);
-                tri->material = materials[rand() % materials.size()];
+                tri->material = diffuse_red;
                 scene.add(std::move(tri));
             }
         }
@@ -144,6 +133,21 @@ Scene make_scene() {
             Vec3{+L, -1.0, +L},
         };
         tri->material = diffuse_gray;
+        scene.add(std::move(tri));
+    }
+
+    // top light
+    {
+        constexpr Scalar L = 1.0;
+        constexpr Scalar H = 3.0;
+        auto tri = std::make_shared<Triangle>();
+        tri->id.change("light");
+        tri->points = {
+            Vec3{+L, H, -L},
+            Vec3{-L, H, -L},
+            Vec3{+L, H, +L},
+        };
+        tri->material = light;
         scene.add(std::move(tri));
     }
 
@@ -193,7 +197,7 @@ void render_ppm(const RenderConfig& config) {
     renderer.canvas = canvas;
     renderer.samples = config.samples;
     renderer.ray_depth = config.ray_depth;
-    renderer.ray_color_if_ray_ended = Colors::WHITE; // global illumination
+    renderer.ray_color_if_ray_ended = {0.5, 0.7, 1.0}; // global illumination
     renderer.infrequent_callback_frequency = config.save_frequency;
     renderer.time = config.time;
     renderer.debug_normals = config.debug_normals;
