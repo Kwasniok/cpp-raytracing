@@ -111,6 +111,24 @@ class Renderer {
      */
     Scalar maximal_ray_length = infinity;
 
+    /**
+     * @brief if true color entitites based on normals instead of thier
+     * materials
+     * @see ray_color_if_exterior_normal, ray_color_if_interior_normal
+     */
+    bool debug_normals = false;
+
+    /**
+     * @brief color if ray hits a surface from the 'outside'
+     * @see debug_normals
+     */
+    Color ray_color_if_exterior_normal = {0.0, 0.0, 1.0};
+    /**
+     * @brief color if ray hits a surface from the 'inside'
+     * @see debug_normals
+     */
+    Color ray_color_if_interior_normal = {1.0, 0.0, 0.0};
+
     /** @brief render Scene as RawImage */
     virtual RawImage render(const Geometry& geometry, Scene& scene) = 0;
 
@@ -146,6 +164,13 @@ class Renderer {
             return ray_color(geometry, frozen_scene, ray, depth - 1);
         }
         // detected hit with entity within cuurent segment
+
+        // debug mode for surface normals
+        // note: no scattering for this mode
+        if (debug_normals) {
+            return record.front_face ? ray_color_if_exterior_normal
+                                     : ray_color_if_interior_normal;
+        }
 
         // check for material
         if (!record.material) {
