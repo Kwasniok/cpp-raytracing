@@ -42,6 +42,7 @@ void test_dielectric_air() {
         mat = std::move(dielectric);
     }
     const HitRecord record{
+        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
@@ -96,6 +97,7 @@ void test_dielectric_into_glass() {
         mat = std::move(dielectric);
     }
     const HitRecord record{
+        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
@@ -179,6 +181,7 @@ void test_dielectric_total_reflection() {
         mat = std::move(dielectric);
     }
     const HitRecord record{
+        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),

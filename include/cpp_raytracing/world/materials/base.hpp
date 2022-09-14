@@ -38,8 +38,8 @@ class Material {
      *       material is emissive at the scattering point.
      * @see RaySegment::direction_exactly_zero()
      */
-    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
-                                          const RaySegment& ray) const = 0;
+    virtual std::pair<RaySegment, Color>
+    scatter(const HitRecord& record, const RaySegment& ray) const = 0;
 };
 
 /** @brief default identifier for materials */

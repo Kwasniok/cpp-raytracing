@@ -33,6 +33,7 @@ void test_emitter() {
         mat = std::move(emitter);
     }
     const HitRecord record{
+        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),

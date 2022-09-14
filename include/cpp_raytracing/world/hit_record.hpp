@@ -10,8 +10,8 @@
 
 #include <memory>
 
-#include "../values/tensor.hpp"
 #include "../values/scalar.hpp"
+#include "../values/tensor.hpp"
 #include "ray.hpp"
 
 namespace cpp_raytracing {
@@ -23,6 +23,8 @@ class Material;
  * @note mediates between hittables and materials
  */
 struct HitRecord {
+    /** @brief local metric for #point */
+    Mat3x3 metric;
     /** @brief intersection point of ray and object */
     Vec3 point;
     /** @brief surface normal (**points outwards**) */

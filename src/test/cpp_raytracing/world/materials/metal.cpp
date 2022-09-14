@@ -38,6 +38,7 @@ void test_metal_no_roughness() {
     }
     const Vec3 normal{-1.0, 0.0, 0.0};
     const HitRecord record{
+        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
@@ -92,6 +93,7 @@ void test_metal_with_roughness() {
     }
     const Vec3 normal{-1.0, 0.0, 0.0};
     const HitRecord record{
+        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
