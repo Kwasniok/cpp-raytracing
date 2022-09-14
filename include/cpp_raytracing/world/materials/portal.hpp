@@ -31,8 +31,8 @@ class Portal : public Material {
 
     virtual ~Portal() = default;
 
-    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
-                                          const RaySegment& ray) const override {
+    virtual std::pair<RaySegment, Color>
+    scatter(const HitRecord& record, const RaySegment& ray) const override {
 
         const auto transformation = rotation_mat(rotation) * scaling_mat(scale);
 
@@ -40,7 +40,8 @@ class Portal : public Material {
         const Vec3 direction = transformation * ray.direction();
 
         // position outgoing ray slightly outside
-        return {RaySegment(point + epsilon * direction, direction), Colors::WHITE};
+        return {RaySegment(point + epsilon * direction, direction),
+                Colors::WHITE};
     }
 };
 

@@ -24,8 +24,8 @@ class Diffuse : public Material {
 
     virtual ~Diffuse() = default;
 
-    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
-                                          const RaySegment& ray) const override {
+    virtual std::pair<RaySegment, Color>
+    scatter(const HitRecord& record, const RaySegment& ray) const override {
         Vec3 direction = record.normal + random_unit_vector();
         if (direction.near_zero(epsilon)) {
             // in case of normal and random vector beeing antiparallel

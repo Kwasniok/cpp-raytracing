@@ -5,8 +5,8 @@
 namespace cpp_raytracing { namespace test {
 
 class Dummy : public Material {
-    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
-                                          const RaySegment& ray) const override {
+    virtual std::pair<RaySegment, Color>
+    scatter(const HitRecord& record, const RaySegment& ray) const override {
         return {ray, Color{}};
     }
 };

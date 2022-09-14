@@ -29,8 +29,8 @@ class Dielectric : public Material {
 
     virtual ~Dielectric() = default;
 
-    virtual std::pair<RaySegment, Color> scatter(const HitRecord& record,
-                                          const RaySegment& ray) const override {
+    virtual std::pair<RaySegment, Color>
+    scatter(const HitRecord& record, const RaySegment& ray) const override {
         // note: This algorithm assumes vacuum to medium transitions and
         // vice versa
         //       only.
