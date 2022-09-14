@@ -3,14 +3,14 @@
  * @brief hittable spherical object
  */
 
-#ifndef CPP_RAYTRACING_ENTITIES_SPHERE_HPP
-#define CPP_RAYTRACING_ENTITIES_SPHERE_HPP
+#ifndef CPP_RAYTRACING_TEST_ENTITIES_SPHERE_HPP
+#define CPP_RAYTRACING_TEST_ENTITIES_SPHERE_HPP
 
 #include <cmath>
 
-#include "entity.hpp"
+#include <cpp_raytracing/world/entities/entity.hpp>
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace test {
 
 /**
  * @brief spherical object
@@ -104,6 +104,6 @@ std::optional<AxisAlignedBoundingBox> Sphere::bounding_box() const {
                                   Vec3{radius, radius, radius}};
 }
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::test
 
 #endif

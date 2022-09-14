@@ -3,11 +3,12 @@
 
 #include <cpp_raytracing/geometry/euclidean.hpp>
 #include <cpp_raytracing/world/entities/bvh_collection.hpp>
-#include <cpp_raytracing/world/entities/instance.hpp>
-#include <cpp_raytracing/world/entities/sphere.hpp>
 #include <cpp_raytracing/world/ray.hpp>
 
 #include <cpp_raytracing_test.hpp>
+
+#include "../instance.hpp"
+#include "../sphere.hpp"
 
 namespace cpp_raytracing { namespace test {
 

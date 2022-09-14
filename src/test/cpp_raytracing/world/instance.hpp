@@ -3,16 +3,16 @@
  * @brief instance
  */
 
-#ifndef CPP_RAYTRACING_ENTITIES_INSTANCE_HPP
-#define CPP_RAYTRACING_ENTITIES_INSTANCE_HPP
+#ifndef CPP_RAYTRACING_TEST_ENTITIES_INSTANCE_HPP
+#define CPP_RAYTRACING_TEST_ENTITIES_INSTANCE_HPP
 
 #include <cmath>
 #include <memory>
 
-#include "../../values/tensor.hpp"
-#include "entity.hpp"
+#include <cpp_raytracing/values/tensor.hpp>
+#include <cpp_raytracing/world/entities/entity.hpp>
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace test {
 
 /**
  * @brief represents an instance
@@ -81,13 +81,6 @@ class Instance : public Entity {
      * @see set_time
      */
     Mat3x3 _inv_transformation = Mat3x3::identity();
-};
-
-/** @brief default identifier for instances */
-template <>
-struct default_identifier<Instance> {
-    /** @brief default identifier for instances */
-    static constexpr const char* value = "instance";
 };
 
 void Instance::set_time(const Scalar time) {
@@ -169,6 +162,6 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
     return std::nullopt;
 }
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::test
 
 #endif
