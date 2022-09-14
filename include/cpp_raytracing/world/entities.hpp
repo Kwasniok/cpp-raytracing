@@ -10,5 +10,6 @@
 
 #include "entities/camera.hpp"
 #include "entities/entity.hpp"
+#include "entities/triangle.hpp"
 
 #endif
