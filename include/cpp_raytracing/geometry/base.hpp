@@ -14,6 +14,21 @@
 namespace cpp_raytracing {
 
 /**
+ * @brief ray interface
+ * @note A ray is approximated by straight ray segments.
+ */
+class Ray {
+  public:
+    virtual ~Ray() = default;
+
+    /**
+     * @brief returns next ray segment or nothing
+     * @note A ray may end prematurely due to technical limitations.
+     */
+    virtual std::optional<RaySegment> next_ray_segment() = 0;
+};
+
+/**
  * @brief geometry interface
  */
 class Geometry {

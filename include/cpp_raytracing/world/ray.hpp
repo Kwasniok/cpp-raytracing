@@ -86,47 +86,6 @@ class RaySegment {
     Scalar _proper_length_factor;
 };
 
-/**
- * @brief ray interface
- * @note A ray is approximated by straight ray segments.
- */
-class Ray {
-  public:
-    virtual ~Ray() = default;
-
-    /**
-     * @brief returns next ray segment or nothing
-     * @note A ray may end prematurely due to technical limitations.
-     */
-    virtual std::optional<RaySegment> next_ray_segment() = 0;
-};
-
-/**
- * @brief euclidean geometry ray
- * @note Has only one infinitely long segment.
- */
-class EuclideanRay : public Ray {
-  public:
-    /** @brief constructs a new infinitely long straight ray  */
-    EuclideanRay(const Vec3& start, const Vec3& direction)
-        : _start(start), _direction(direction){};
-
-    virtual ~EuclideanRay() = default;
-
-    virtual std::optional<RaySegment> next_ray_segment() override {
-        if (_has_next) {
-            _has_next = false;
-            return RaySegment{_start, _direction};
-        }
-        return std::nullopt;
-    };
-
-  private:
-    Vec3 _start;
-    Vec3 _direction;
-    bool _has_next = true;
-};
-
 } // namespace cpp_raytracing
 
 #endif
