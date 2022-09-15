@@ -30,9 +30,8 @@ class Sphere : public Entity {
     virtual ~Sphere() = default;
 
     virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray,
-                                 const Scalar t_min = 0.0,
-                                 const Scalar t_max = infinity) const override;
+                                 const RaySegment& ray_segment,
+                                 const Scalar t_min = 0.0) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
@@ -52,8 +51,9 @@ class Sphere : public Entity {
     }
 };
 
-HitRecord Sphere::hit_record(const Geometry& geometry, const RaySegment& ray,
-                             const Scalar t_min, const Scalar t_max) const {
+HitRecord Sphere::hit_record(const Geometry& geometry,
+                             const RaySegment& ray_segment,
+                             const Scalar t_min) const {
 
     // analytical geometry: line hits sphere
     // ray: s + t*d
@@ -61,9 +61,9 @@ HitRecord Sphere::hit_record(const Geometry& geometry, const RaySegment& ray,
     // solve: a*t^2 + b*t + c = 0
     // where a = d^2 >= 0, b = 2*d*(s-o), c = (s-o)^2 - R^2
     // solution: t = (-b +/- sqrt(b^2 - 4ac))/(2a)
-    const auto delta = ray.start();
-    const auto a = dot(ray.direction(), ray.direction());
-    const auto b_half = dot(ray.direction(), delta);
+    const auto delta = ray_segment.start();
+    const auto a = dot(ray_segment.direction(), ray_segment.direction());
+    const auto b_half = dot(ray_segment.direction(), delta);
     const auto c = dot(delta, delta) - radius * radius;
     const auto discriminant = b_half * b_half - a * c;
     if (discriminant < 0.0) {
@@ -80,22 +80,22 @@ HitRecord Sphere::hit_record(const Geometry& geometry, const RaySegment& ray,
     auto t = (-b_half - sqrt(discriminant)) / a;
 
     // select minimal positive sloution (if it exists)
-    if (t < t_min || t > t_max) {
+    if (t < t_min || t > ray_segment.t_max()) {
         t = (-b_half + sqrt(discriminant)) / a;
-        if (t < t_min || t > t_max) {
+        if (t < t_min || t > ray_segment.t_max()) {
             // no soltion in range
             return HitRecord{.t = infinity};
         }
     }
 
     // found solution in range
-    const Vec3 point = ray.at(t);
+    const Vec3 point = ray_segment.at(t);
     const Vec3 normal = point / radius;
     HitRecord record;
     record.t = t;
     record.point = point;
     record.set_face_normal(Mat3x3::identity(), Mat3x3::identity(),
-                           ray.direction(), normal);
+                           ray_segment.direction(), normal);
     record.uv_coordinates = uv_coordinates(normal);
     record.material = material.get();
     return record;

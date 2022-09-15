@@ -27,9 +27,8 @@ class Triangle : public Entity {
     virtual ~Triangle() = default;
 
     virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray,
-                                 const Scalar t_min = 0.0,
-                                 const Scalar t_max = infinity) const override;
+                                 const RaySegment& ray_segment,
+                                 const Scalar t_min = 0.0) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
@@ -54,8 +53,9 @@ class Triangle : public Entity {
     }
 };
 
-HitRecord Triangle::hit_record(const Geometry& geometry, const RaySegment& ray,
-                               const Scalar t_min, const Scalar t_max) const {
+HitRecord Triangle::hit_record(const Geometry& geometry,
+                               const RaySegment& ray_segment,
+                               const Scalar t_min) const {
 
     // basis for span
     const Vec3 b1 = points[1] - points[0];
@@ -66,8 +66,8 @@ HitRecord Triangle::hit_record(const Geometry& geometry, const RaySegment& ray,
     const Scalar l = dot(n, points[0]);
 
     // ray
-    const Vec3 s = ray.start();
-    const Vec3 d = ray.direction();
+    const Vec3 s = ray_segment.start();
+    const Vec3 d = ray_segment.direction();
 
     // intersection parameters
     const Scalar a = l - dot(s, n);
@@ -80,7 +80,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry, const RaySegment& ray,
 
     const Scalar t = a / b;
 
-    if (t < 0.0 || t >= t_max) {
+    if (t < t_min || t >= ray_segment.t_max()) {
         // outside of ray segment
         return {.t = infinity};
     }
@@ -93,7 +93,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry, const RaySegment& ray,
     }
 
     // construct hit record
-    const Vec3 point = ray.at(t);
+    const Vec3 point = ray_segment.at(t);
     const Mat3x3 metric = geometry.metric(point);
     const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(point);
 
@@ -105,7 +105,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry, const RaySegment& ray,
     Vec3 normal = cross(metric * b1, metric * b2);
     // normalize
     normal = normal / (dot(normal, metric * normal));
-    record.set_face_normal(to_onb_jacobian, metric, ray.direction(), normal);
+    record.set_face_normal(to_onb_jacobian, metric, d, normal);
     record.material = material.get();
     return record;
 }

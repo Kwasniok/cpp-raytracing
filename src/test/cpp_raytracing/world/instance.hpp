@@ -50,9 +50,8 @@ class Instance : public Entity {
     virtual void set_time(const Scalar time) override;
 
     virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray,
-                                 const Scalar t_min = 0.0,
-                                 const Scalar t_max = infinity) const override;
+                                 const RaySegment& ray_segment,
+                                 const Scalar t_min = 0.0) const override;
 
     virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
@@ -97,19 +96,21 @@ void Instance::set_time(const Scalar time) {
     }
 }
 
-HitRecord Instance::hit_record(const Geometry& geometry, const RaySegment& ray,
-                               const Scalar t_min, const Scalar t_max) const {
+HitRecord Instance::hit_record(const Geometry& geometry,
+                               const RaySegment& ray_segment,
+                               const Scalar t_min) const {
     if (entity) {
         // inverse transform ray to instance space, calculate hit record and
         // transform hit record
 
         // affine
-        const Vec3 start = _inv_transformation * (ray.start() - position);
+        const Vec3 start =
+            _inv_transformation * (ray_segment.start() - position);
         // linear
-        const Vec3 direction = _inv_transformation * ray.direction();
+        const Vec3 direction = _inv_transformation * ray_segment.direction();
 
         HitRecord record = entity->hit_record(
-            geometry, RaySegment{start, direction}, t_min, t_max);
+            geometry, RaySegment{start, direction, ray_segment.t_max()}, t_min);
 
         if (record.t < infinity) {
 

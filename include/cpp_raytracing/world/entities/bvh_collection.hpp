@@ -62,9 +62,8 @@ class BVHCollection : public Entity {
      * @note Thread-safe.
      */
     virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray,
-                                 const Scalar t_min = 0.0,
-                                 const Scalar t_max = infinity) const override;
+                                 const RaySegment& ray_segment,
+                                 const Scalar t_min = 0.0) const override;
 
     /**
      * @note Requires valid cache.
@@ -127,10 +126,10 @@ void BVHCollection::set_time(const Scalar time) {
 }
 
 HitRecord BVHCollection::hit_record(const Geometry& geometry,
-                                    const RaySegment& ray, const Scalar t_min,
-                                    const Scalar t_max) const {
+                                    const RaySegment& ray_segment,
+                                    const Scalar t_min) const {
     if (_bvh_tree) {
-        return _bvh_tree->hit_record(geometry, ray, t_min, t_max);
+        return _bvh_tree->hit_record(geometry, ray_segment, t_min);
     } else {
         throw std::runtime_error(
             "Missing BVH cache. Call generate_cache() first.");

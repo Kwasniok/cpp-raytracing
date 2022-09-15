@@ -61,9 +61,8 @@ class Entity {
      * ::infinity
      */
     virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray,
-                                 const Scalar t_min = 0.0,
-                                 const Scalar t_max = infinity) const {
+                                 const RaySegment& ray_segment,
+                                 const Scalar t_min = 0.0) const {
         return {.t = infinity};
     }
 

@@ -104,12 +104,6 @@ class Renderer {
      * @see maximal_ray_length
      */
     Scalar minimal_ray_length = 1e-5;
-    /**
-     * @brief minimal ray length
-     * @note Must be strictly larger than minimal_ray_length.
-     * @see minimal_ray_length
-     */
-    Scalar maximal_ray_length = infinity;
 
     /**
      * @brief if true color entitites based on normals instead of thier
@@ -155,11 +149,11 @@ class Renderer {
         const RaySegment& current_segment = current_opt_segment.value();
 
         // collect hit record
-        HitRecord record = frozen_scene.hit_record(
-            geometry, current_segment, minimal_ray_length, maximal_ray_length);
+        HitRecord record = frozen_scene.hit_record(geometry, current_segment,
+                                                   minimal_ray_length);
 
         // check for hit with entity within current segment
-        if (!current_segment.contains(record.t)) {
+        if (!record.hits()) {
             // no hit within current segment
             return ray_color(geometry, frozen_scene, ray, depth - 1);
         }
