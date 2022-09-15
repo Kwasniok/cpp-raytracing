@@ -8,5 +8,6 @@
 
 #include "geometry/base.hpp"
 #include "geometry/euclidean.hpp"
+#include "geometry/swirl_cartesian.hpp"
 
 #endif
