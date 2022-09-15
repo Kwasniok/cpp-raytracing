@@ -11,8 +11,8 @@
 #include "../../values/color.hpp"
 #include "../../values/identifier.hpp"
 #include "../../values/scalar.hpp"
+#include "../../values/tensor.hpp"
 #include "../hit_record.hpp"
-#include "../ray.hpp"
 
 namespace cpp_raytracing {
 
@@ -32,14 +32,16 @@ class Material {
     virtual ~Material() = default;
 
     /**
-     * @brief calculates scattered ray and coloring based on the ray hitting the
-     *        object
-     * @note If the returned ray has a direction which is perfectly zero, the
-     *       material is emissive at the scattering point.
-     * @see RaySegment::direction_exactly_zero()
+     * @brief calculates direction of scattered ray and coloring based on the
+     *        ray hitting the surface
+     * @note If the returned direction is perfectly zero, the material is
+     *       emissive.
+     * @note All vectors are asserted to be relative to an othronormal basis!
+     *       (The tangential space of a surface is flat.)
+     * @see Vec3::zero()
      */
-    virtual std::pair<RaySegment, Color>
-    scatter(const HitRecord& record, const RaySegment& ray) const = 0;
+    virtual std::pair<Vec3, Color> scatter(const HitRecord& record,
+                                           const Vec3& ray_direction) const = 0;
 };
 
 /** @brief default identifier for materials */

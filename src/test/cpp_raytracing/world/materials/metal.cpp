@@ -38,29 +38,22 @@ void test_metal_no_roughness() {
     }
     const Vec3 normal{-1.0, 0.0, 0.0};
     const HitRecord record{
-        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 in_direction = unit_vector(Vec3{1.0, 1.0, 0.0});
-    const RaySegment ray_in{
-        Vec3{0.0, 0.0, 0.0},
-        in_direction,
-    };
+    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     {
-        auto [ray_out, ray_col] = mat->scatter(record, ray_in);
-        const Vec3 out_direction = ray_out.direction();
+        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_EQUAL(ray_out.start(), Vec3(1.0, 0.0, 0.0));
         // parallel to normal
-        TEST_ASSERT_EQUAL(dot(normal, out_direction),
-                          -dot(normal, in_direction));
+        TEST_ASSERT_EQUAL(dot(normal, direction_out),
+                          -dot(normal, direction_in));
         // orthogonal to normal
-        TEST_ASSERT_EQUAL(out_direction - normal * dot(normal, out_direction),
-                          in_direction - normal * dot(normal, in_direction));
+        TEST_ASSERT_EQUAL(direction_out - normal * dot(normal, direction_out),
+                          direction_in - normal * dot(normal, direction_in));
     }
 }
 
@@ -93,27 +86,20 @@ void test_metal_with_roughness() {
     }
     const Vec3 normal{-1.0, 0.0, 0.0};
     const HitRecord record{
-        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 in_direction = unit_vector(Vec3{1.0, 1.0, 0.0});
-    const RaySegment ray_in{
-        Vec3{0.0, 0.0, 0.0},
-        in_direction,
-    };
+    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
-        auto [ray_out, ray_col] = mat->scatter(record, ray_in);
-        const Vec3 out_direction = ray_out.direction();
+        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_EQUAL(ray_out.start(), Vec3(1.0, 0.0, 0.0));
-        const Vec3 in_para = normal * dot(normal, in_direction);
-        const Vec3 in_ortho = in_direction - in_para;
+        const Vec3 in_para = normal * dot(normal, direction_in);
+        const Vec3 in_ortho = direction_in - in_para;
         // test if rand_vec in sphere of radius roughness
-        const Vec3 rand_vec = out_direction + in_para - in_ortho;
+        const Vec3 rand_vec = direction_out + in_para - in_ortho;
         TEST_ASSERT_IN_RANGE(rand_vec.length(), 0.0, mat_rough);
     }
 }

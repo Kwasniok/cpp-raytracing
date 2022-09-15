@@ -24,8 +24,8 @@ class Diffuse : public Material {
 
     virtual ~Diffuse() = default;
 
-    virtual std::pair<RaySegment, Color>
-    scatter(const HitRecord& record, const RaySegment& ray) const override {
+    virtual std::pair<Vec3, Color>
+    scatter(const HitRecord& record, const Vec3& ray_direction) const override {
         Vec3 direction = record.normal + random_unit_vector();
         if (direction.near_zero(epsilon)) {
             // in case of normal and random vector beeing antiparallel
@@ -38,7 +38,7 @@ class Diffuse : public Material {
                   : Texture::value_for_missing_texture(record.uv_coordinates,
                                                        record.point);
 
-        return {RaySegment(record.point, direction), color_value};
+        return {direction, color_value};
     }
 };
 

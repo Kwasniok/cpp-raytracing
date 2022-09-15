@@ -92,17 +92,20 @@ HitRecord Triangle::hit_record(const Geometry& geometry, const RaySegment& ray,
         return {.t = infinity};
     }
 
-    // TODO:
+    // construct hit record
+    const Vec3 point = ray.at(t);
+    const Mat3x3 metric = geometry.metric(point);
+    const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(point);
+
     HitRecord record;
     record.t = t;
-    record.point = ray.at(t);
-    record.metric = geometry.metric(record.point);
+    record.point = point;
     record.uv_coordinates = {u, v};
     // note: The normal is position dependent since the tri might be curved.
-    Vec3 normal = cross(record.metric * b1, record.metric * b2);
+    Vec3 normal = cross(metric * b1, metric * b2);
     // normalize
-    normal = normal / (dot(normal, record.metric * normal));
-    record.set_face_normal(record.metric, ray.direction(), normal);
+    normal = normal / (dot(normal, metric * normal));
+    record.set_face_normal(to_onb_jacobian, metric, ray.direction(), normal);
     record.material = material.get();
     return record;
 }

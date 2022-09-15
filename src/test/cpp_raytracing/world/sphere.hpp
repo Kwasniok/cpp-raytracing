@@ -94,8 +94,8 @@ HitRecord Sphere::hit_record(const Geometry& geometry, const RaySegment& ray,
     HitRecord record;
     record.t = t;
     record.point = point;
-    record.metric = Mat3x3::identity();
-    record.set_face_normal(record.metric, ray.direction(), normal);
+    record.set_face_normal(Mat3x3::identity(), Mat3x3::identity(),
+                           ray.direction(), normal);
     record.uv_coordinates = uv_coordinates(normal);
     record.material = material.get();
     return record;

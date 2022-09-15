@@ -33,22 +33,17 @@ void test_emitter() {
         mat = std::move(emitter);
     }
     const HitRecord record{
-        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const RaySegment ray_in{
-        Vec3{0.0, 0.0, 0.0},
-        Vec3{1.0, 0.0, 0.0},
-    };
+    const Vec3 direction_in = {1.0, 0.0, 0.0};
     {
-        auto [ray_out, ray_col] = mat->scatter(record, ray_in);
+        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_EQUAL(ray_out.start(), Vec3(1.0, 0.0, 0.0));
-        TEST_ASSERT_EQUAL(ray_out.direction(), Vec3(0.0, 0.0, 0.0));
+        TEST_ASSERT_EQUAL(direction_out, Vec3(0.0, 0.0, 0.0));
     }
 }
 

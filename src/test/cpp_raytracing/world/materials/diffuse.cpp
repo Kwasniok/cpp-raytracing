@@ -35,23 +35,18 @@ void test_diffuse() {
         mat = std::move(diffuse);
     }
     const HitRecord record{
-        .metric = Mat3x3::identity(),
         .point = Vec3{1.0, 0.0, 0.0},
         .normal = Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const RaySegment ray_in{
-        Vec3{0.0, 0.0, 0.0},
-        Vec3{1.0, 0.0, 0.0},
-    };
+    const Vec3 direction_in = {1.0, 0.0, 0.0};
     for (int counter = 0; counter < 10; ++counter) {
-        auto [ray_out, ray_col] = mat->scatter(record, ray_in);
+        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_EQUAL(ray_out.start(), Vec3(1.0, 0.0, 0.0));
-        TEST_ASSERT_FALSE(ray_out.direction().near_zero(Diffuse::epsilon));
-        const Vec3 vec = ray_out.direction() - record.normal;
+        TEST_ASSERT_FALSE(direction_out.near_zero(Diffuse::epsilon));
+        const Vec3 vec = direction_out - record.normal;
         TEST_ASSERT_IN_RANGE(vec.length(), 0.0, 1.0);
     }
 }

@@ -23,11 +23,14 @@ class Material;
  * @note mediates between hittables and materials
  */
 struct HitRecord {
-    /** @brief local metric for #point */
-    Mat3x3 metric;
     /** @brief intersection point of ray and object */
     Vec3 point;
-    /** @brief surface normal (**points outwards**) */
+    /**
+     * @brief surface normal pointing towards 'exterior' relative to
+     *        othronormal basis
+     * @note For independence of the specific geometry all directions must be
+     *       converted to a flat space via the local Jacobian at #point.
+     */
     Vec3 normal;
     /** @brief texture coordinates */
     Vec2 uv_coordinates;
@@ -41,10 +44,11 @@ struct HitRecord {
     /**
      * @brief sets normal and front_face
      */
-    void set_face_normal(const Mat3x3& metric, const Vec3& ray_direction,
-                         const Vec3& face_normal) {
+    void set_face_normal(const Mat3x3 to_onb_jacobian, const Mat3x3& metric,
+                         const Vec3& ray_direction, const Vec3& face_normal) {
         front_face = dot(face_normal, metric * ray_direction) < 0.0;
         normal = front_face ? face_normal : -face_normal;
+        normal = to_onb_jacobian * normal;
     }
 
     /**

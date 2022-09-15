@@ -29,15 +29,15 @@ class Dielectric : public Material {
 
     virtual ~Dielectric() = default;
 
-    virtual std::pair<RaySegment, Color>
-    scatter(const HitRecord& record, const RaySegment& ray) const override {
+    virtual std::pair<Vec3, Color>
+    scatter(const HitRecord& record, const Vec3& ray_direction) const override {
         // note: This algorithm assumes vacuum to medium transitions and
         // vice versa
         //       only.
         const Scalar refraction_ratio = record.front_face
                                             ? (1.0 / index_of_refraction)
                                             : index_of_refraction;
-        const Vec3 unit_direction = unit_vector(ray.direction());
+        const Vec3 unit_direction = unit_vector(ray_direction);
         const auto cos_theta = -dot(record.normal, unit_direction);
         const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
         Vec3 para = -cos_theta * record.normal;
@@ -62,7 +62,7 @@ class Dielectric : public Material {
                   : Texture::value_for_missing_texture(record.uv_coordinates,
                                                        record.point);
 
-        return {RaySegment(record.point, direction), color_value};
+        return {direction, color_value};
     }
 
   private:

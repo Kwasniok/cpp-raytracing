@@ -180,19 +180,26 @@ class Renderer {
         // has material
 
         // cast secondary ray or emitter
-        // TODO: geometry-dependent scattering
-        const auto [scattered_ray_segment, color] =
-            record.material->scatter(record, current_segment);
-        if (scattered_ray_segment.direction_exactly_zero()) {
+        const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(record.point);
+
+        const Vec3 onb_ray_direction =
+            to_onb_jacobian * current_segment.direction();
+        const auto [onb_scatter_direction, color] =
+            record.material->scatter(record, onb_ray_direction);
+        if (onb_scatter_direction == Vec3::zero()) {
             // is emitter
             return color;
         } else {
             // cast secondary ray
-            // TODO: remove hack
-            EuclideanRay scattered_ray{scattered_ray_segment.start(),
-                                       scattered_ray_segment.direction()};
-            return color *
-                   ray_color(geometry, frozen_scene, &scattered_ray, depth - 1);
+            const Mat3x3 from_onb_jacobian =
+                geometry.from_onb_jacobian(record.point);
+            const Vec3 scattered_direction =
+                from_onb_jacobian * onb_scatter_direction;
+            std::unique_ptr<Ray> scattered_ray =
+                geometry.ray_from(record.point, scattered_direction);
+
+            return color * ray_color(geometry, frozen_scene,
+                                     scattered_ray.get(), depth - 1);
         }
     }
 
