@@ -66,10 +66,9 @@ std::shared_ptr<Triangle> make_triangle(const Scalar side, const Scalar half,
  */
 Scene make_scene() {
 
-    Scene scene;
-    scene.active_camera = std::make_shared<Camera>(
-        Camera::from({1.0, 1.5, 2.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, 90.0,
-                     16.0 / 9.0, 0.0));
+    auto camera = std::make_shared<PinholeCamera>(cartesian_pinhole_camera(
+        {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
+    Scene scene(camera);
 
     std::vector<std::shared_ptr<Material>> materials;
 
