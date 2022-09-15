@@ -12,7 +12,7 @@
 #include "../../geometry/base.hpp"
 #include "../../values/identifier.hpp"
 #include "../../values/scalar.hpp"
-#include "../animators/animator.hpp"
+#include "../animators/base.hpp"
 #include "../bounding_volume.hpp"
 #include "../hit_record.hpp"
 
