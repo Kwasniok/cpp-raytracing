@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief euclidean geometry
+ * @brief standard Euclidean geometry with Cartesian coordinates
  */
 
 #ifndef CPP_RAYTRACING_GEOMETRY_EUCLIDEAN_HPP
@@ -12,7 +12,7 @@
 namespace cpp_raytracing {
 
 /**
- * @brief euclidean geometry ray
+ * @brief Euclidean geometry ray
  * @note Has only one infinitely long segment.
  */
 class EuclideanRay : public Ray {
@@ -38,7 +38,7 @@ class EuclideanRay : public Ray {
 };
 
 /**
- * @brief geometry interface
+ * @brief Euclidean geometry with Cartesian coordinates
  */
 class EuclideanGeometry : public Geometry {
   public:
