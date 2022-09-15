@@ -218,7 +218,7 @@ class Renderer {
         y = (2.0 * y / canvas.height - 1.0);
 
         std::unique_ptr<Ray> ray =
-            frozen_scene.active_camera.ray_for_coords(x, y);
+            frozen_scene.active_camera.ray_for_coords(geometry, x, y);
         const Color pixel_color =
             ray_color(geometry, frozen_scene, ray.get(), ray_depth);
         buffer[{i, j}] += pixel_color;

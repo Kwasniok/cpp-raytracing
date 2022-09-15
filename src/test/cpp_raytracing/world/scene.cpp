@@ -27,7 +27,13 @@ std::shared_ptr<Instance> make_sphere(const Vec3 position,
 }
 
 Scene make_scene() {
-    Scene scene;
+
+    auto dummy_camera = std::make_shared<PinholeCamera>(
+        Vec3::zero(), [](const Scalar x, const Scalar y) {
+            return Vec3{x, y, 0.0};
+        });
+
+    Scene scene(dummy_camera);
     scene.add(make_sphere(Vec3{1.0, 0.0, 0.0}, 0.5));
     scene.add(make_sphere(Vec3{0.0, 1.0, 0.0}, 0.5));
     scene.add(make_sphere(Vec3{0.0, 0.0, 1.0}, 0.5));

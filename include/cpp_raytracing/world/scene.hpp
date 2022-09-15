@@ -75,7 +75,8 @@ class Scene {
     std::shared_ptr<Camera> active_camera;
 
     /** @brief initialize with an active camera */
-    Scene() { active_camera = std::make_unique<Camera>(); };
+    Scene(std::shared_ptr<Camera> active_camera)
+        : active_camera(active_camera){};
     /** @brief move constructor */
     Scene(Scene&&) = default;
 
