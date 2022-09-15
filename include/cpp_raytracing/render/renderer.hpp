@@ -16,7 +16,7 @@
 #include "../values/color.hpp"
 #include "../world/entities/entity.hpp"
 #include "../world/materials/base.hpp"
-#include "../world/ray.hpp"
+#include "../world/ray_segment.hpp"
 #include "../world/scene.hpp"
 #include "canvas.hpp"
 #include "image.hpp"

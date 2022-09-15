@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "../values/tensor.hpp"
-#include "../world/ray.hpp"
+#include "../world/ray_segment.hpp"
 
 namespace cpp_raytracing {
 

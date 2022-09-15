@@ -2,7 +2,7 @@
 #include <vector>
 
 #include <cpp_raytracing/geometry/euclidean.hpp>
-#include <cpp_raytracing/world/ray.hpp>
+#include <cpp_raytracing/world/ray_segment.hpp>
 #include <cpp_raytracing/world/scene.hpp>
 
 #include <cpp_raytracing_test.hpp>

@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_GEOMETRY_EUCLIDEAN_HPP
 #define CPP_RAYTRACING_GEOMETRY_EUCLIDEAN_HPP
 
-#include "../world/ray.hpp"
+#include "../world/ray_segment.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {

@@ -3,7 +3,7 @@
 
 #include <cpp_raytracing/geometry/euclidean.hpp>
 #include <cpp_raytracing/world/entities/bvh_collection.hpp>
-#include <cpp_raytracing/world/ray.hpp>
+#include <cpp_raytracing/world/ray_segment.hpp>
 
 #include <cpp_raytracing_test.hpp>
 
