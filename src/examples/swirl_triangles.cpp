@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief basic example executable using triangles in Euclidean space
+ * @brief basic example executable using triangles in curved space
  */
 
 #include <argparse/argparse.hpp>
@@ -188,6 +188,8 @@ struct RenderConfig {
     ColorScalar gamma;
     /** @brief debug normals */
     bool debug_normals;
+    /** @brief strength of geometric swirl effect */
+    Scalar swirl_strength;
 };
 
 /**
@@ -201,7 +203,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    EuclideanGeometry geometry;
+    SwirlCartesianGeometry geometry{config.swirl_strength};
     Scene scene = make_scene();
 
     GlobalShutterRenderer renderer;
@@ -274,6 +276,10 @@ int main(int argc, char** argv) {
         .default_value<bool>(false) // store_true
         .implicit_value(true)
         .help("enable render mode to debug surface normals");
+    parser.add_argument("--swirl_strength")
+        .default_value<Scalar>(0.1)
+        .help("strength of geometric swirl effect (0.0 is flat space)")
+        .scan<'f', Scalar>();
 
     try {
         parser.parse_args(argc, argv);
@@ -293,6 +299,7 @@ int main(int argc, char** argv) {
     config.time = parser.get<Scalar>("--time");
     config.gamma = parser.get<ColorScalar>("--gamma");
     config.debug_normals = parser.get<bool>("--debug_normals");
+    config.swirl_strength = parser.get<Scalar>("--swirl_strength");
 
     render_ppm(config);
 }
