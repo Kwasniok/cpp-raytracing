@@ -22,6 +22,7 @@ namespace cpp_raytracing {
 
 class Vec2;
 class Vec3;
+class Vec6;
 class Mat3x3;
 
 /**
@@ -368,6 +369,161 @@ inline Vec3 random_vector_in_unit_sphere() {
 /** @brief random vector in 2D surface of unit sphere */
 inline Vec3 random_unit_vector() {
     return unit_vector(random_vector_in_unit_sphere());
+}
+
+/**
+ * @brief 6D floating-point Vector
+ */
+class Vec6 {
+  public:
+    /** @brief initialize as zero vector */
+    constexpr Vec6() : _data0{0, 0, 0}, _data1{0, 0, 0} {}
+    /** @brief initialize with coefficients */
+    constexpr Vec6(const Scalar x, const Scalar y, const Scalar z,
+                   const Scalar u, const Scalar v, const Scalar w)
+        : _data0{x, y, z}, _data1{u, v, w} {}
+    /** @brief initialize with coefficients */
+    constexpr Vec6(const Vec3& xyz, const Vec3& uvw)
+        : _data0{xyz.x(), xyz.y(), xyz.z()},
+          _data1{uvw.x(), uvw.y(), uvw.z()} {}
+
+    /** @brief get x coefficient */
+    constexpr Scalar x() const { return _data0.x; }
+    /** @brief get y coefficient */
+    constexpr Scalar y() const { return _data0.y; }
+    /** @brief get z coefficient */
+    constexpr Scalar z() const { return _data0.z; }
+    /** @brief get u coefficient */
+    constexpr Scalar u() const { return _data1.x; }
+    /** @brief get v coefficient */
+    constexpr Scalar v() const { return _data1.y; }
+    /** @brief get w coefficient */
+    constexpr Scalar w() const { return _data1.z; }
+
+    /** @brief first three elements as a vector */
+    constexpr Vec3 first_half() const {
+        return Vec3(_data0.x, _data0.y, _data0.z);
+    }
+    /** @brief last three elements as a vector */
+    constexpr Vec3 second_half() const {
+        return Vec3(_data1.x, _data1.y, _data1.z);
+    }
+
+    /** @brief tests equivalence */
+    constexpr bool operator==(const Vec6& other) const {
+        return _data0 == other._data0 && _data1 == other._data1;
+    }
+
+    /** @brief tests inequivalence */
+    constexpr bool operator!=(const Vec6& other) const {
+        return _data0 != other._data0 || _data1 != other._data1;
+    }
+
+    /** @brief negate elementwise */
+    constexpr Vec6 operator-() const { return Vec6{-_data0, -_data1}; }
+
+    /**
+     * @brief enumerated accces to coefficients
+     * @note: `0=x, 1=y, 2=z, 3=u, 4=v, 5=w`
+     */
+    constexpr Scalar operator[](unsigned long i) const {
+        if (i < 3) {
+            return _data0[i];
+        }
+        return _data1[i - 3];
+    }
+    /**
+     * @brief enumerated accces to coefficients
+     * @note: `0=x, 1=y, 2=z, 3=u, 4=v, 5=w`
+     */
+    constexpr Scalar& operator[](unsigned long i) {
+        if (i < 3) {
+            return _data0[i];
+        }
+        return _data1[i - 3];
+    }
+
+    /** @brief add elementwise */
+    constexpr Vec6& operator+=(const Vec6& other) {
+        _data0 += other._data0;
+        _data1 += other._data1;
+        return *this;
+    }
+    /** @brief subtract elementwise */
+    constexpr Vec6& operator-=(const Vec6& other) {
+        _data0 -= other._data0;
+        _data1 -= other._data1;
+        return *this;
+    }
+    /** @brief multiply elementwise */
+    constexpr Vec6& operator*=(const Scalar fac) {
+        _data0 *= fac;
+        _data1 *= fac;
+        return *this;
+    }
+    /** @brief divide elementwise */
+    constexpr Vec6& operator/=(const Scalar fac) {
+        _data0 /= fac;
+        _data1 /= fac;
+        return *this;
+    }
+
+    /** @brief tests if vector is zero vector */
+    constexpr bool near_zero(const Scalar epsilon) const {
+        return std::abs(_data0.x) < epsilon && std::abs(_data0.y) < epsilon &&
+               std::abs(_data0.z) < epsilon && std::abs(_data1.x) < epsilon &&
+               std::abs(_data1.y) < epsilon && std::abs(_data1.z) < epsilon;
+    }
+
+    /** @brief zero vector */
+    static constexpr Vec6 zero() { return Vec6{}; }
+
+    friend constexpr Vec6 operator+(const Vec6&, const Vec6&);
+    friend constexpr Vec6 operator-(const Vec6&, const Vec6&);
+    friend constexpr Vec6 operator*(const Vec6&, const Scalar);
+    friend constexpr Vec6 operator*(const Scalar, const Vec6&);
+    friend constexpr Vec6 operator/(const Vec6&, const Scalar);
+
+  private:
+    using data_type = glm::vec<3, Scalar>;
+    constexpr Vec6(const data_type& data0, const data_type& data1)
+        : _data0(data0), _data1(data1) {}
+    constexpr Vec6(data_type&& data0, data_type&& data1)
+        : _data0(std::move(data0)), _data1(std::move(data1)) {}
+
+    data_type _data0, _data1;
+};
+
+/** @brief write vector as space separated components */
+inline std::ostream& operator<<(std::ostream& os, const Vec6 v) {
+    os << "Vec6(" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
+       << ", " << v[4] << ", " << v[5] << ")";
+    return os;
+}
+
+/** @brief add elementwise */
+inline constexpr Vec6 operator+(const Vec6& v1, const Vec6& v2) {
+    return Vec6(v1._data0 + v2._data0, v1._data1 + v2._data1);
+}
+
+/** @brief subtract elementwise */
+inline constexpr Vec6 operator-(const Vec6& v1, const Vec6& v2) {
+    return Vec6(v1._data0 - v2._data0, v1._data1 - v2._data1);
+}
+
+/** @brief multiply elementwise */
+inline constexpr Vec6 operator*(const Vec6& v, const Scalar f) {
+    return Vec6(v._data0 * f, v._data1 * f);
+}
+
+/** @brief multiply elementwise */
+inline constexpr Vec6 operator*(const Scalar f, const Vec6& v) {
+    return v * f;
+}
+
+/** @brief divide elementwise */
+inline constexpr Vec6 operator/(const Vec6& v, const Scalar f) {
+    return Vec6(v._data0 / f, v._data1 / f);
 }
 
 // note: Some of the functions are laking constexpr because this was not

@@ -222,6 +222,167 @@ void test_vec3_random_unit_vector() {
     TEST_ASSERT_IN_RANGE(avg.length(), 0.0, 0.05);
 }
 
+void test_vec6_default_constructor() {
+    Vec6 vec{};
+    TEST_ASSERT_EQUAL(vec.x(), 0.0);
+    TEST_ASSERT_EQUAL(vec.y(), 0.0);
+    TEST_ASSERT_EQUAL(vec.z(), 0.0);
+    TEST_ASSERT_EQUAL(vec.u(), 0.0);
+    TEST_ASSERT_EQUAL(vec.v(), 0.0);
+    TEST_ASSERT_EQUAL(vec.w(), 0.0);
+}
+
+void test_vec6_axes() {
+    Vec6 vec{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+    TEST_ASSERT_EQUAL(vec.x(), 1.1);
+    TEST_ASSERT_EQUAL(vec.y(), 2.2);
+    TEST_ASSERT_EQUAL(vec.z(), 3.3);
+    TEST_ASSERT_EQUAL(vec.u(), 4.4);
+    TEST_ASSERT_EQUAL(vec.v(), 5.5);
+    TEST_ASSERT_EQUAL(vec.w(), 6.6);
+}
+
+void test_vec6_comparison() {
+    constexpr Vec6 vec1{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+    constexpr Vec6 vec2{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+    constexpr Vec6 vec3{7.7, 2.2, 3.3, 4.4, 5.5, 6.6};
+    constexpr Vec6 vec4{1.1, 7.7, 3.3, 4.4, 5.5, 6.6};
+    constexpr Vec6 vec5{1.1, 2.2, 7.7, 4.4, 5.5, 6.6};
+    constexpr Vec6 vec6{1.1, 2.2, 3.3, 7.7, 5.5, 6.6};
+    constexpr Vec6 vec7{1.1, 2.2, 3.3, 4.4, 7.7, 6.6};
+    constexpr Vec6 vec8{1.1, 2.2, 3.3, 4.4, 5.5, 7.7};
+
+    {
+        TEST_ASSERT_TRUE(vec1 == vec1);
+        TEST_ASSERT_TRUE(vec1 == vec2);
+        TEST_ASSERT_FALSE(vec1 == vec3);
+        TEST_ASSERT_FALSE(vec1 == vec4);
+        TEST_ASSERT_FALSE(vec1 == vec5);
+        TEST_ASSERT_FALSE(vec1 == vec6);
+        TEST_ASSERT_FALSE(vec1 == vec7);
+        TEST_ASSERT_FALSE(vec1 == vec8);
+    }
+    {
+        TEST_ASSERT_FALSE(vec1 != vec1);
+        TEST_ASSERT_FALSE(vec1 != vec2);
+        TEST_ASSERT_TRUE(vec1 != vec3);
+        TEST_ASSERT_TRUE(vec1 != vec4);
+        TEST_ASSERT_TRUE(vec1 != vec5);
+        TEST_ASSERT_TRUE(vec1 != vec6);
+        TEST_ASSERT_TRUE(vec1 != vec7);
+        TEST_ASSERT_TRUE(vec1 != vec8);
+    }
+}
+
+void test_vec6_arithmetic() {
+    constexpr Vec6 x1{1, 2, 3, 4, 5, 6};
+    constexpr Vec6 x2{7, 8, 9, 10, 11, 12};
+    constexpr Scalar f = 13;
+
+    {
+        const auto res = x1 + x2;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 8, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 10, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 12, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 14, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 16, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 18, epsilon);
+    }
+    {
+        auto res = x1;
+        res += x2;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 8, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 10, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 12, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 14, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 16, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 18, epsilon);
+    }
+    {
+        const auto res = x2 - x1;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 6, epsilon);
+    }
+    {
+        auto res = x2;
+        res -= x1;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 6, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 6, epsilon);
+    }
+    {
+        const auto res = x1 * f;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 13, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 26, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 39, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 52, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 65, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 78, epsilon);
+    }
+    {
+        const auto res = f * x1;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 13, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 26, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 39, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 52, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 65, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 78, epsilon);
+    }
+    {
+        auto res = x1;
+        res *= f;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 13, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 26, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 39, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 52, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 65, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 78, epsilon);
+    }
+    {
+        const auto res = x1 / f;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 1.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 2.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 3.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 4.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 5.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 6.0 / 13.0, epsilon);
+    }
+    {
+        auto res = x1;
+        res /= f;
+        TEST_ASSERT_ALMOST_EQUAL(res[0], 1.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[1], 2.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[2], 3.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[3], 4.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[4], 5.0 / 13.0, epsilon);
+        TEST_ASSERT_ALMOST_EQUAL(res[5], 6.0 / 13.0, epsilon);
+    }
+}
+
+void test_vec6_near_zero() {
+    TEST_ASSERT_TRUE(Vec6(1.0e-15, 1.0e-16, 1.0e-17, 1.0e-18, 1.0e-19, 1.0e-20)
+                         .near_zero(epsilon));
+    TEST_ASSERT_FALSE(Vec6(1.0e-4, 1.0e-16, 1.0e-17, 1.0e-18, 1.0e-19, 1.0e-20)
+                          .near_zero(epsilon));
+    TEST_ASSERT_FALSE(Vec6(1.0e-15, 1.0e-4, 1.0e-17, 1.0e-18, 1.0e-19, 1.0e-20)
+                          .near_zero(epsilon));
+    TEST_ASSERT_FALSE(Vec6(1.0e-15, 1.0e-16, 1.0e-4, 1.0e-18, 1.0e-19, 1.0e-20)
+                          .near_zero(epsilon));
+    TEST_ASSERT_FALSE(Vec6(1.0e-15, 1.0e-16, 1.0e-17, 1.0e-4, 1.0e-19, 1.0e-20)
+                          .near_zero(epsilon));
+    TEST_ASSERT_FALSE(Vec6(1.0e-15, 1.0e-16, 1.0e-17, 1.0e-18, 1.0e-4, 1.0e-20)
+                          .near_zero(epsilon));
+    TEST_ASSERT_FALSE(Vec6(1.0e-15, 1.0e-16, 1.0e-17, 1.0e-18, 1.0e-19, 1.0e-4)
+                          .near_zero(epsilon));
+}
+
 void test_mat3x3_default_constructor() {
     const Mat3x3 mat{};
     TEST_ASSERT_EQUAL(mat.x(), (Vec3{1.0, 0.0, 0.0}));
@@ -437,6 +598,11 @@ void run_test_suite() {
     run(test_vec3_random_in_unit_disk);
     run(test_vec3_random_vector_in_unit_sphere);
     run(test_vec3_random_unit_vector);
+    run(test_vec6_default_constructor);
+    run(test_vec6_axes);
+    run(test_vec6_comparison);
+    run(test_vec6_arithmetic);
+    run(test_vec6_near_zero);
 
     // matrix
     run(test_mat3x3_default_constructor);
