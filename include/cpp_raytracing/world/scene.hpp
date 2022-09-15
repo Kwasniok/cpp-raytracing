@@ -13,9 +13,9 @@
 
 #include "../util.hpp"
 #include "bvh.hpp"
+#include "entities/base.hpp"
 #include "entities/bvh_collection.hpp"
 #include "entities/camera.hpp"
-#include "entities/entity.hpp"
 
 namespace cpp_raytracing {
 

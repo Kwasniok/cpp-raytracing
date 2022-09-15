@@ -8,8 +8,8 @@
 
 #include <memory>
 
+#include "entities/base.hpp"
 #include "entities/camera.hpp"
-#include "entities/entity.hpp"
 #include "entities/triangle.hpp"
 
 #endif

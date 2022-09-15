@@ -11,7 +11,7 @@
 #include "../../geometry/base.hpp"
 #include "../../values/tensor.hpp"
 #include "../ray_segment.hpp"
-#include "entity.hpp"
+#include "base.hpp"
 
 namespace cpp_raytracing {
 

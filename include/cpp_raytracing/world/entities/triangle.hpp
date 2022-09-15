@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "../../values/tensor.hpp"
-#include "entity.hpp"
+#include "base.hpp"
 
 namespace cpp_raytracing {
 

@@ -1,4 +1,4 @@
-#include <cpp_raytracing/world/entities/entity.hpp>
+#include <cpp_raytracing/world/entities/base.hpp>
 
 #include <cpp_raytracing_test.hpp>
 

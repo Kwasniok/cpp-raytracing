@@ -13,8 +13,8 @@
 
 #include "../../util.hpp"
 #include "../bvh.hpp"
+#include "base.hpp"
 #include "camera.hpp"
-#include "entity.hpp"
 
 namespace cpp_raytracing {
 
