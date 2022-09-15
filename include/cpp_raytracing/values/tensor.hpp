@@ -115,6 +115,9 @@ class Vec2 {
         return std::abs(_data.x) < epsilon && std::abs(_data.y) < epsilon;
     }
 
+    /** @brief zero vector */
+    static constexpr Vec2 zero() { return Vec2{}; }
+
     friend constexpr Vec2 operator+(const Vec2&, const Vec2&);
     friend constexpr Vec2 operator-(const Vec2&, const Vec2&);
     friend constexpr Vec2 operator*(const Vec2&, const Scalar);
@@ -267,6 +270,9 @@ class Vec3 {
         return std::abs(_data.x) < epsilon && std::abs(_data.y) < epsilon &&
                std::abs(_data.z) < epsilon;
     }
+
+    /** @brief zero vector */
+    static constexpr Vec3 zero() { return Vec3{}; }
 
     friend constexpr Vec3 operator+(const Vec3&, const Vec3&);
     friend constexpr Vec3 operator-(const Vec3&, const Vec3&);
