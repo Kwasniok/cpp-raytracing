@@ -20,6 +20,10 @@ class Geometry {
   public:
     virtual ~Geometry() = default;
 
+    /** @brief returns a ray with given starting point and direction */
+    virtual std::unique_ptr<Ray> ray_from(const Vec3 start,
+                                          const Vec3 direction) const = 0;
+
     /** @brief returns a ray with given starting point and target */
     virtual std::unique_ptr<Ray>
     ray_passing_through(const Vec3 start, const Vec3 target) const = 0;

@@ -18,6 +18,11 @@ class EuclideanGeometry : public Geometry {
   public:
     virtual ~EuclideanGeometry() = default;
 
+    virtual std::unique_ptr<Ray> ray_from(const Vec3 start,
+                                          const Vec3 direction) const override {
+        return std::make_unique<EuclideanRay>(start, direction);
+    }
+
     virtual std::unique_ptr<Ray>
     ray_passing_through(const Vec3 start, const Vec3 target) const override {
         return std::make_unique<EuclideanRay>(start,
