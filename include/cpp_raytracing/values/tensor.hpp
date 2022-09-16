@@ -549,6 +549,14 @@ class Mat3x3 {
               x._data[0], y._data[0], z._data[0], x._data[1], y._data[1],
               z._data[1], x._data[2], y._data[2], z._data[2],
           } {}
+    /** @brief copy constructor */
+    constexpr Mat3x3(const Mat3x3& other) = default;
+    /** @brief move constructor */
+    constexpr Mat3x3(Mat3x3&& other) = default;
+    /** @brief copy assignment */
+    constexpr Mat3x3& operator=(const Mat3x3& other) = default;
+    /** @brief move assignment */
+    constexpr Mat3x3& operator=(Mat3x3&& other) = default;
 
     /** @brief get x coefficient */
     constexpr Vec3 x() const {
