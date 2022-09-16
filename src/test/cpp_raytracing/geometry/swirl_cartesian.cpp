@@ -7,6 +7,7 @@
 namespace cpp_raytracing { namespace test {
 
 constexpr Scalar epsilon = 1e-12;
+constexpr Scalar ray_step_size = 1.0;
 
 void test_ray_passing_through() {
 
@@ -47,7 +48,9 @@ void test_ray_passing_through() {
      * {-21.7314, -3.64678, 8}
      */
 
-    SwirlCartesianGeometry geometry{a};
+    SwirlCartesianGeometry geometry{a, ray_step_size};
+
+    const Vec3 normalized_direction = geometry.normalize(start, direction);
 
     auto ray = geometry.ray_passing_through(start, target);
     TEST_ASSERT_TRUE(ray);
@@ -55,7 +58,8 @@ void test_ray_passing_through() {
     TEST_ASSERT_TRUE(segment);
 
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(segment->start(), start, epsilon);
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(segment->direction(), direction, epsilon);
+    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(segment->direction(),
+                                      normalized_direction, epsilon);
 }
 
 void test_to_onb_jacobian() {
@@ -102,7 +106,7 @@ void test_to_onb_jacobian() {
      * }
      */
 
-    SwirlCartesianGeometry geometry{a};
+    SwirlCartesianGeometry geometry{a, ray_step_size};
 
     // to_onb_jacobiand
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.to_onb_jacobian(point),
@@ -155,7 +159,7 @@ void test_from_onb_jacobian() {
      * }
      */
 
-    SwirlCartesianGeometry geometry{a};
+    SwirlCartesianGeometry geometry{a, ray_step_size};
 
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.from_onb_jacobian(point),
                                       from_onb_jacobian, epsilon);
@@ -209,7 +213,7 @@ void test_metric() {
             },
         };
 
-    SwirlCartesianGeometry geometry{a};
+    SwirlCartesianGeometry geometry{a, ray_step_size};
 
     for (const auto& [point, metric] : points_and_metrics) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.metric(point), metric,

@@ -190,6 +190,8 @@ struct RenderConfig {
     bool debug_normals;
     /** @brief strength of geometric swirl effect */
     Scalar swirl_strength;
+    /** @brief size parameter for ray segments */
+    Scalar ray_step_size;
 };
 
 /**
@@ -203,7 +205,8 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    SwirlCartesianGeometry geometry{config.swirl_strength};
+    SwirlCartesianGeometry geometry{config.swirl_strength,
+                                    config.ray_step_size};
     Scene scene = make_scene();
 
     GlobalShutterRenderer renderer;
@@ -262,7 +265,7 @@ int main(int argc, char** argv) {
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
         .required()
-        .help("depth per ray")
+        .help("depth per ray (amount of ray segments and scatterings)")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")
         .default_value<Scalar>(0.0)
@@ -279,6 +282,10 @@ int main(int argc, char** argv) {
     parser.add_argument("--swirl_strength")
         .default_value<Scalar>(0.1)
         .help("strength of geometric swirl effect (0.0 is flat space)")
+        .scan<'f', Scalar>();
+    parser.add_argument("--ray_step_size")
+        .default_value<Scalar>(1.0)
+        .help("influences length of ray segments")
         .scan<'f', Scalar>();
 
     try {
@@ -300,6 +307,7 @@ int main(int argc, char** argv) {
     config.gamma = parser.get<ColorScalar>("--gamma");
     config.debug_normals = parser.get<bool>("--debug_normals");
     config.swirl_strength = parser.get<Scalar>("--swirl_strength");
+    config.ray_step_size = parser.get<Scalar>("--ray_step_size");
 
     render_ppm(config);
 }
