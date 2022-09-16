@@ -61,8 +61,8 @@ pamtopng $file.pam > $file.PNG
 
 Or use imagemagick. E.g.
 ```bash
-magick $file.pfm --gamma 1.0 -set gamma 1.0 $file.png
-magick $file.pfm --gamma 1.0 -set gamma 1.0 $file.tiff
+magick $file.pfm -gamma 1.0 -set gamma 1.0 $file.png
+magick $file.pfm -gamma 1.0 -set gamma 1.0 $file.tiff
 ```
 
 Proper exposure and color grading can be archived the same way as for images taken by real cameras. E.g. with [darktable][darktable].
