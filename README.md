@@ -1,27 +1,36 @@
 # Ray Tracing
 
-This project is based on https://raytracing.github.io/ and includes some additional twists.
+This project is based on https://raytracing.github.io/ and includes some
+additional twists like curved space.
 
 ## Features
 
-- Materials
-    - Diffuse, Dielectric, Metal & Emission
-    ![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
-    - Portals
-    ![portals](https://user-images.githubusercontent.com/7516208/178082226-a769fcf9-4bfa-4214-afc5-87626f016925.png)
+### Non-Linear Ray Propagation
 
-- Rolling Shutter & Motion Blur
+| | curved space | flat space | flat space |
+|-|-|-|-|
+| version f706fcf | `examples/swirl_triangles` | `examples/swirl_triangles` | `examples/triangles` |
+| | ![non-linear: swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190710403-8e48caee-bbc7-451e-9fdd-7639b1a749be.png) | ![non-linear: reference swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190714403-650472f9-7f9a-4eaf-8182-0ca079bbcb3d.png) | ![linear: reference flat geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190715517-52e6dd32-8ede-45fb-98d6-1c9abb5c8fbc.png) |
+| size (`resolution_factor`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) |
+| `samples` | `2400` | `2400` | `2400` |
+| `ray_depth` | `1000` | `50` | `50` |
+| `ray_step_size` | `0.1` | `1000` | - |
+| `swirl_strength` | `0.01` | `0.0` | - |
+| user time (intel i5-4590) | **833min47sec** | **41min31sec** | **1min49sec** |
+| max. total ray segments | 77,760,000,000 | 3,888,000,000 | 3,888,000,000 |
+
+### Materials
+- Diffuse, Dielectric, Metal & Emission
+    ![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
+
+### Rolling Shutter & Motion Blur
 ![rolling shutter: rotor at rest](https://user-images.githubusercontent.com/7516208/172665290-341e4786-5dcd-45e0-b850-2956b121007c.png)
 ![rolling shutter: rotor in motion](https://user-images.githubusercontent.com/7516208/172665270-88ba7a69-5337-4cf6-bba5-7247ee334ffb.png)
 
-- Volumes
-    - Constant Density & Convex Boundary
-     ![constant density mist](https://user-images.githubusercontent.com/7516208/173927126-295bf76b-6b50-4f72-a997-fbb6b0a3b902.png)
-
+### Optimizations
 - Multi-Threaded
-    - Rendering
-    - BVH Tree Generation (Partially)
-
+    - Rendering (fully)
+    - BVH Tree Generation (partially)
 - Bounding Volume Hierachy (BVH)
 
 
@@ -65,7 +74,8 @@ magick $file.pfm -gamma 1.0 -set gamma 1.0 $file.png
 magick $file.pfm -gamma 1.0 -set gamma 1.0 $file.tiff
 ```
 
-Proper exposure and color grading can be archived the same way as for images taken by real cameras. E.g. with [darktable][darktable].
+Proper exposure and color grading can be archived the same way as for images
+taken by real cameras. E.g. with [darktable][darktable].
 
 ## Build Documentation
 ```bash
