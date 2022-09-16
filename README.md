@@ -7,10 +7,12 @@ additional twists like curved space.
 
 ### Non-Linear Ray Propagation
 
-| | curved space | flat space | flat space |
-|-|-|-|-|
-| version f706fcf | `examples/swirl_triangles` | `examples/swirl_triangles` | `examples/triangles` |
+
 | | ![non-linear: swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190710403-8e48caee-bbc7-451e-9fdd-7639b1a749be.png) | ![non-linear: reference swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190714403-650472f9-7f9a-4eaf-8182-0ca079bbcb3d.png) | ![linear: reference flat geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190715517-52e6dd32-8ede-45fb-98d6-1c9abb5c8fbc.png) |
+|-|-|-|-|
+| geometry | curved | flat | flat |
+| method | non-linear propagation | non-linear propagation | linear/conventional propagation |
+file (commit f706fcf) | `examples/swirl_triangles` | `examples/swirl_triangles` | `examples/triangles` |
 | size (`resolution_factor`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) |
 | `samples` | `2400` | `2400` | `2400` |
 | `ray_depth` | `1000` | `50` | `50` |
