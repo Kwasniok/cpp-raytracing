@@ -136,7 +136,7 @@ class Vec2 {
 };
 
 /** @brief write vector as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Vec2 v) {
+inline std::ostream& operator<<(std::ostream& os, const Vec2& v) {
     os << "Vec2(" << v[0] << ", " << v[1] << ")";
     return os;
 }
@@ -297,7 +297,7 @@ class Vec3 {
 };
 
 /** @brief write vector as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Vec3 v) {
+inline std::ostream& operator<<(std::ostream& os, const Vec3& v) {
     os << "Vec3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
     return os;
 }
@@ -495,7 +495,7 @@ class Vec6 {
 };
 
 /** @brief write vector as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Vec6 v) {
+inline std::ostream& operator<<(std::ostream& os, const Vec6& v) {
     os << "Vec6(" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
        << ", " << v[4] << ", " << v[5] << ")";
     return os;
@@ -616,7 +616,7 @@ class Mat3x3 {
     /** @brief identity matix */
     static constexpr Mat3x3 identity() { return Mat3x3{}; }
 
-    friend std::ostream& operator<<(std::ostream& os, const Mat3x3 mat);
+    friend std::ostream& operator<<(std::ostream& os, const Mat3x3& mat);
     friend Mat3x3 operator+(const Mat3x3&, const Mat3x3&);
     friend Mat3x3 operator-(const Mat3x3&, const Mat3x3&);
     friend Mat3x3 operator*(const Mat3x3&, const Mat3x3&);
@@ -634,7 +634,7 @@ class Mat3x3 {
 };
 
 /** @brief write matrix as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Mat3x3 mat) {
+inline std::ostream& operator<<(std::ostream& os, const Mat3x3& mat) {
     os << "Mat3x3(" << '\n'
        << mat._data[0][0] << ", " << mat._data[0][1] << ", " << mat._data[0][2]
        << "," << '\n'
