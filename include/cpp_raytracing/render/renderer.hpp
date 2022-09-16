@@ -60,9 +60,11 @@ class Renderer {
     unsigned long samples = 1;
     /**
      * @brief max amount of ray segments to be simulated
-     * @note Each interaction with an object creates a new segment even if not
-     *      apparent in the final image.
-     *      There is no distinction between different types of ray segments.
+     * @note A ray might be divieded into segments to simulate curved space.
+     *       Each scattering creates a new, secondary ray.
+     * @note There is no distinction between different types of ray segments.
+     * @note The ray depth influences the maximal ray length in curved space.
+     *       Therefore not all entities may be visible if it is too small.
      */
     unsigned long ray_depth = 1;
 
