@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_MATH_HPP
 #define CPP_RAYTRACING_MATH_HPP
 
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -24,6 +25,7 @@ class Vec2;
 class Vec3;
 class Vec6;
 class Mat3x3;
+class Ten3x3x3;
 
 /**
  * @brief 2D floating-point Vector
@@ -751,6 +753,131 @@ Mat3x3 inverse_scaling_mat(const Vec3& vec) {
         {0.0, 1.0 / vec.y(), 0.0},
         {0.0, 0.0, 1.0 / vec.z()},
     };
+}
+
+/**
+ * @brief 3Dx3Dx3D floating-point tensor
+ */
+class Ten3x3x3 {
+  public:
+    /**
+     * @brief initialize as identity tensor
+     * @note Coefficients are listed row first.
+     */
+    constexpr Ten3x3x3()
+        : _data{Mat3x3::identity(), Mat3x3::identity(), Mat3x3::identity()} {}
+    /**
+     *  @brief initialize with vectors
+     * @note Each vector is a row.
+     */
+    constexpr Ten3x3x3(const Mat3x3& x, const Mat3x3& y, const Mat3x3& z)
+        : _data{x, y, z} {}
+
+    /** @brief get x matrix */
+    constexpr Mat3x3& x() { return _data[0]; }
+    /** @brief get y matrix */
+    constexpr Mat3x3& y() { return _data[1]; }
+    /** @brief get z matrix */
+    constexpr Mat3x3& z() { return _data[2]; }
+
+    /** @brief tests equivalence */
+    constexpr bool operator==(const Ten3x3x3& other) const {
+        return _data == other._data;
+    }
+
+    /** @brief tests inequivalence */
+    constexpr bool operator!=(const Ten3x3x3& other) const {
+        return _data != other._data;
+    }
+
+    /**
+     * @brief enumerated accces to coefficients
+     * @note: `0=x, 1=y, 2=z`
+     */
+    constexpr Mat3x3& operator[](unsigned long i) { return _data[i]; }
+    /**
+     * @brief enumerated accces to coefficients
+     * @note: `0=x, 1=y, 2=z`
+     */
+    constexpr const Mat3x3& operator[](unsigned long i) const {
+        return _data[i];
+    }
+
+    /** @brief negate elementwise */
+    Ten3x3x3 operator-() const {
+        return Ten3x3x3{-_data[0], -_data[1], -_data[2]};
+    }
+
+    /** @brief add elementwise */
+    Ten3x3x3& operator+=(const Ten3x3x3& other) {
+        _data[0] += other._data[0];
+        _data[1] += other._data[1];
+        _data[2] += other._data[2];
+        return *this;
+    }
+    /** @brief subtract elementwise */
+    Ten3x3x3& operator-=(const Ten3x3x3& other) {
+        _data[0] -= other._data[0];
+        _data[1] -= other._data[1];
+        _data[2] -= other._data[2];
+        return *this;
+    }
+    /** @brief multiply elementwise */
+    Ten3x3x3& operator*=(const Mat3x3& other) {
+        _data[0] *= other;
+        _data[1] *= other;
+        _data[2] *= other;
+        return *this;
+    }
+
+    /** @brief identity matix */
+    static constexpr Ten3x3x3 identity() { return Ten3x3x3{}; }
+
+    friend Ten3x3x3 operator+(const Ten3x3x3&, const Ten3x3x3&);
+    friend Ten3x3x3 operator-(const Ten3x3x3&, const Ten3x3x3&);
+    friend Ten3x3x3 operator*(const Ten3x3x3&, const Mat3x3&);
+    friend Ten3x3x3 operator*(const Mat3x3&, const Ten3x3x3&);
+
+  private:
+    using data_type = std::array<Mat3x3, 3>;
+    constexpr Ten3x3x3(const data_type& data) : _data(data) {}
+    constexpr Ten3x3x3(data_type&& data) : _data(std::move(data)) {}
+
+    data_type _data;
+};
+
+/** @brief write tensor as space separated components */
+inline std::ostream& operator<<(std::ostream& os, const Ten3x3x3& ten) {
+    os << "Ten3x3x3(" << '\n'
+       << ten[0] << "," << '\n'
+       << ten[1] << "," << '\n'
+       << ten[2] << '\n'
+       << ")";
+    return os;
+}
+
+/** @brief add elementwise */
+inline Ten3x3x3 operator+(const Ten3x3x3& ten1, const Ten3x3x3& ten2) {
+    Ten3x3x3 res = ten1;
+    res += ten2;
+    return res;
+}
+
+/** @brief subtract elementwise */
+inline Ten3x3x3 operator-(const Ten3x3x3& ten1, const Ten3x3x3& ten2) {
+    Ten3x3x3 res = ten1;
+    res -= ten2;
+    return res;
+}
+
+/** @brief multiply elementwise from right hand side*/
+inline Ten3x3x3 operator*(const Ten3x3x3& ten, const Mat3x3& mat) {
+    return Ten3x3x3{ten[0] * mat, ten[1] * mat, ten[2] * mat};
+}
+
+/** @brief multiply elementwise from left hand side*/
+inline Ten3x3x3 operator*(const Mat3x3& mat, const Ten3x3x3& ten) {
+    return Ten3x3x3{mat * ten[0], mat * ten[1], mat * ten[2]};
 }
 
 } // namespace cpp_raytracing
