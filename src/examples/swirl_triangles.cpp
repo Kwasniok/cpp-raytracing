@@ -317,11 +317,11 @@ int main(int argc, char** argv) {
         .implicit_value(true)
         .help("enable render mode to debug surface normals");
     parser.add_argument("--swirl_strength")
-        .default_value<Scalar>(0.1)
+        .default_value<Scalar>(0.01)
         .help("strength of geometric swirl effect (0.0 is flat space)")
         .scan<'f', Scalar>();
     parser.add_argument("--ray_step_size")
-        .default_value<Scalar>(1.0)
+        .default_value<Scalar>(0.5)
         .help("influences length of ray segments")
         .scan<'f', Scalar>();
 
