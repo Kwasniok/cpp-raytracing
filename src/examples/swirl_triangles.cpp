@@ -184,6 +184,12 @@ struct RenderConfig {
     unsigned long ray_depth;
     /** @brief time of the frame */
     Scalar time;
+    /** @brief shutter mode */
+    std::string shutter_mode;
+    /** @brief exposure frame */
+    Scalar exposure_time;
+    /** @brief exposure line */
+    Scalar total_line_exposure_time;
     /** @brief gamma correction for non-raw images */
     ColorScalar gamma;
     /** @brief debug normals */
@@ -209,21 +215,34 @@ void render_ppm(const RenderConfig& config) {
                                     config.ray_step_size};
     Scene scene = make_scene();
 
-    GlobalShutterRenderer renderer;
-    renderer.canvas = canvas;
-    renderer.samples = config.samples;
-    renderer.ray_depth = config.ray_depth;
-    renderer.ray_color_if_ray_ended = {0.5, 0.7, 1.0}; // global illumination
-    renderer.infrequent_callback_frequency = config.save_frequency;
-    renderer.time = config.time;
-    renderer.debug_normals = config.debug_normals;
+    std::unique_ptr<Renderer> renderer;
 
-    renderer.frequent_render_callback =
+    if (config.shutter_mode == SHUTTER_MODE_GLOBAL_SHUTTER) {
+        auto rendr = std::make_unique<GlobalShutterRenderer>();
+        rendr->exposure_time = config.exposure_time;
+        renderer = std::move(rendr);
+    }
+    if (config.shutter_mode == SHUTTER_MODE_ROLLING_SHUTTER) {
+        auto rendr = std::make_unique<RollingShutterRenderer>();
+        rendr->frame_exposure_time = config.exposure_time;
+        rendr->total_line_exposure_time = config.total_line_exposure_time;
+        renderer = std::move(rendr);
+    }
+
+    renderer->canvas = canvas;
+    renderer->samples = config.samples;
+    renderer->ray_depth = config.ray_depth;
+    renderer->ray_color_if_ray_ended = {0.5, 0.7, 1.0}; // global illumination
+    renderer->infrequent_callback_frequency = config.save_frequency;
+    renderer->time = config.time;
+    renderer->debug_normals = config.debug_normals;
+
+    renderer->frequent_render_callback =
         [](const Renderer::State& current_state) {
             cout << "samples: " << current_state.samples << endl;
         };
 
-    renderer.infrequent_render_callback =
+    renderer->infrequent_render_callback =
         [&config](const Renderer::State& current_state) {
             cerr << "save current ..." << endl;
             write_image(config.path + ".current", current_state.image,
@@ -235,7 +254,7 @@ void render_ppm(const RenderConfig& config) {
         cerr << "cores detected = " << omp_get_num_procs() << endl;
         cerr << "rendering image ... " << endl;
     }
-    RawImage image = renderer.render(geometry, scene);
+    RawImage image = renderer->render(geometry, scene);
     write_image(config.path, image, 1.0, config.gamma);
 }
 
@@ -271,6 +290,24 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(0.0)
         .help("time of the frame")
         .scan<'f', Scalar>();
+    parser.add_argument("--shutter_mode")
+        .default_value(SHUTTER_MODE_GLOBAL_SHUTTER)
+        .action([](const std::string& value) {
+            if (std::find(SHUTTER_MODES.begin(), SHUTTER_MODES.end(), value) !=
+                SHUTTER_MODES.end()) {
+                return value;
+            }
+            throw std::runtime_error("Unknown shutter mode.");
+        })
+        .help("shutter mode for image exposure");
+    parser.add_argument("--exposure_time")
+        .default_value<Scalar>(0.0)
+        .help("total exposure time per frame")
+        .scan<'f', Scalar>();
+    parser.add_argument("--total_line_exposure_time")
+        .default_value<Scalar>(0.0)
+        .help("exposure time per line (rolling shutter mode only)")
+        .scan<'f', Scalar>();
     parser.add_argument("--gamma")
         .default_value<ColorScalar>(2.0)
         .help("gamma correction for non-raw image formats")
@@ -304,6 +341,10 @@ int main(int argc, char** argv) {
     config.save_frequency = parser.get<unsigned long>("--save_frequency");
     config.ray_depth = parser.get<unsigned long>("--ray_depth");
     config.time = parser.get<Scalar>("--time");
+    config.shutter_mode = parser.get("--shutter_mode");
+    config.exposure_time = parser.get<Scalar>("--exposure_time");
+    config.total_line_exposure_time =
+        parser.get<Scalar>("--total_line_exposure_time");
     config.gamma = parser.get<ColorScalar>("--gamma");
     config.debug_normals = parser.get<bool>("--debug_normals");
     config.swirl_strength = parser.get<Scalar>("--swirl_strength");

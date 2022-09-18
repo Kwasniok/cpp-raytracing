@@ -14,6 +14,16 @@
 
 namespace cpp_raytracing::examples {
 
+/** @brief global shutter mode constant */
+constexpr std::string SHUTTER_MODE_GLOBAL_SHUTTER = "global";
+/** @brief rolling shutter mode constant */
+constexpr std::string SHUTTER_MODE_ROLLING_SHUTTER = "rolling";
+
+/** @brief all shutter modes supported */
+constexpr std::array<const std::string, 2> SHUTTER_MODES = {
+    SHUTTER_MODE_GLOBAL_SHUTTER,
+    SHUTTER_MODE_ROLLING_SHUTTER,
+};
 /**
  * @brief write image to ppm file
  * @note The ppm file format is lossy.
