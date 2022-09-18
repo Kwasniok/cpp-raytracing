@@ -1,0 +1,85 @@
+#!/usr/bin/bash
+
+set -e
+
+EXEC="./build/examples/swirl_triangles"
+# executable specific args
+EXEC_ARGS="--swirl_strength 0.01 --ray_step_size 0.1"
+OUT_DIR="./out/movie"
+
+FPS=30 # frames per second
+EXPOSURE_TIME=$(echo "0.8/${FPS}" | bc -l)
+TOTAL_LINE_EXPOSURE_TIME=$(echo "${EXPOSURE_TIME} / 5.0" | bc -l)
+SAMPLES=10
+SAVE_FREQUENCY=$(echo "${SAMPLES} + 1" | bc -l)
+RAY_DEPTH=100
+RESOLUTION_FACTOR=2 # >= 2 (for ffmpeg to work)
+
+# time/frame independent parameters
+FIXED_ARGS="--exposure_time ${EXPOSURE_TIME} --total_line_exposure_time ${TOTAL_LINE_EXPOSURE_TIME} --samples ${SAMPLES} --save_frequency ${SAVE_FREQUENCY} --ray_depth ${RAY_DEPTH} --resolution_factor ${RESOLUTION_FACTOR} ${EXEC_ARGS}"
+
+FRAME_START=0
+FRAME_STOP=60
+
+function timestamp {
+    echo "        $(date +%H:%M:%S)"
+}
+
+function out {
+    FRAME=$1
+    echo "${OUT_DIR}/${FRAME}"
+}
+
+function ppm {
+    FRAME=$1
+    echo "${OUT_DIR}/${FRAME}.ppm"
+}
+
+
+function png {
+    FRAME=$1
+    echo "${OUT_DIR}/${FRAME}.png"
+}
+
+function convert2png {
+    FRAME=$1
+    pnm2png $(ppm ${FRAME}) $(png ${FRAME}) \
+    && rm $(ppm ${FRAME})
+}
+
+function render_frame {
+    FRAME=$1
+    TIME=$(echo "${FRAME}/${FPS}" | bc -l)
+    echo "frame = ${FRAME}, time = ${TIME}"
+    ${EXEC} \
+    --out $(out ${FRAME}) \
+    --time ${TIME} \
+    ${FIXED_ARGS} \
+    > /dev/null
+
+}
+
+function make_frames {
+    timestamp
+    for FRAME in $(seq -f "%05g" ${FRAME_START} ${FRAME_STOP})
+    do
+        render_frame ${FRAME}
+        convert2png ${FRAME}
+        timestamp
+    done
+
+}
+
+function make_mp4 {
+    ffmpeg -r 60 -i $(png "%05d") -vcodec libx264 -pix_fmt yuv420p "${OUT_DIR}/mov.mp4"
+}
+
+
+# ENTRY POINT
+
+make "${EXEC}"
+mkdir -p "${OUT_DIR}"
+
+echo "make movie for ${EXEC}:"
+make_frames
+make_mp4
