@@ -21,6 +21,8 @@ file (commit f706fcf) | `examples/swirl_triangles` | `examples/swirl_triangles` 
 | user time (intel i5-4590) | **833min47sec** | **41min31sec** | **1min49sec** |
 | max. total ray segments | 77,760,000,000 | 3,888,000,000 | 3,888,000,000 |
 
+note: The image in the middle and right are identical due to the strong similarity of the renderers and usage of pseudo-random number generators with fixed seeds.
+
 ### Materials
 - Diffuse, Dielectric, Metal & Emission
     ![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
