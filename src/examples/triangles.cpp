@@ -276,7 +276,7 @@ int main(int argc, char** argv) {
         .help("resolution factor")
         .scan<'d', unsigned long>();
     parser.add_argument("--samples")
-        .required()
+        .default_value<unsigned long>(5)
         .help("samples per pixel")
         .scan<'d', unsigned long>();
     parser.add_argument("--save_frequency")
@@ -284,7 +284,7 @@ int main(int argc, char** argv) {
         .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
-        .required()
+        .default_value<unsigned long>(50)
         .help("depth per ray")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")

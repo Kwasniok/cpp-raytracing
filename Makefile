@@ -96,8 +96,5 @@ example_previews: $(EXAMPLES);
 		echo "rendering preview for $$E"; \
 		$$E \
 		--out $(OUT)/example_$${E##*/}.preview \
-		--resolution_factor 1 \
-		--samples 5 \
-		--ray_depth 20 \
 		#--verbose \
 	done
