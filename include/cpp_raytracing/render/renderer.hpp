@@ -298,7 +298,7 @@ class RollingShutterRenderer : public Renderer {
      * @note should be smaller than the distance of two frames
      *       to be realistic
      */
-    Scalar exposure_time = 0.0;
+    Scalar frame_exposure_time = 0.0;
 
     /**
      * @brief exposure time per line scanned times total number of lines
@@ -306,7 +306,7 @@ class RollingShutterRenderer : public Renderer {
      * @note should be (much) smaller than the distance of two frames
      *       to be realistic
      */
-    Scalar motion_blur = 0.0;
+    Scalar total_line_exposure_time = 0.0;
 
     virtual RawImage render(const Geometry& geometry, Scene& scene) override {
 
@@ -356,9 +356,10 @@ class RollingShutterRenderer : public Renderer {
     inline Scalar mid_frame_time(const unsigned horizonal_line) const {
         auto res = time;
         // time shift linear with line position
-        res += exposure_time * (Scalar(horizonal_line) / Scalar(canvas.height));
+        res += frame_exposure_time *
+               (Scalar(horizonal_line) / Scalar(canvas.height));
         // random shift for motion blur
-        res += random_scalar(0.0, motion_blur);
+        res += random_scalar(0.0, total_line_exposure_time);
         return res;
     }
 };
