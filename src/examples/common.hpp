@@ -54,6 +54,37 @@ void LinearMotionTriangleAnimator::update_for_time_hook(const Scalar time,
 }
 
 /**
+ * @brief sinusoidal motion based triangle entity animator
+ */
+class SinusoidalMotionTriangleAnimator : public TriangleAnimator {
+  public:
+    /** @brief start position for `time = time_offset` of all points */
+    std::array<Vec3, 3> start_points;
+    /** @brief oscillator amplitude */
+    Vec3 amplitude;
+    /** @brief frequency of motion in radians */
+    Scalar frequency = 0.0;
+    /** @brief time for which `position = start` */
+    Scalar time_offset = 0.0;
+
+    virtual ~SinusoidalMotionTriangleAnimator() = default;
+
+  protected:
+    virtual void update_for_time_hook(const Scalar time,
+                                      Triangle* tri) override;
+};
+
+void SinusoidalMotionTriangleAnimator::update_for_time_hook(const Scalar time,
+                                                            Triangle* tri) {
+    if (tri == nullptr)
+        return;
+    for (int i = 0; i < 3; ++i) {
+        tri->points[i] = start_points[i] +
+                         std::sin(frequency * (time - time_offset)) * amplitude;
+    }
+}
+
+/**
  * @brief write image to ppm file
  * @note The ppm file format is lossy.
  * @param path path to ppm file (without extension)

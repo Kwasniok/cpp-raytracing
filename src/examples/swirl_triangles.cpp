@@ -59,9 +59,10 @@ std::shared_ptr<Triangle> make_triangle(const Scalar side, const Scalar half,
     }
 
     // animate
-    auto anim = std::make_unique<LinearMotionTriangleAnimator>();
+    auto anim = std::make_unique<SinusoidalMotionTriangleAnimator>();
     anim->start_points = {tri->points[0], tri->points[1], tri->points[2]};
-    anim->velocity = {1.0, 0.0, 0.5};
+    anim->amplitude = {5.0, 0.0, 2.0};
+    anim->frequency = pi;
     tri->set_animator(std::move(anim));
 
     return tri;
