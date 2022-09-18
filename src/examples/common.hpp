@@ -24,6 +24,35 @@ constexpr std::array<const std::string, 2> SHUTTER_MODES = {
     SHUTTER_MODE_GLOBAL_SHUTTER,
     SHUTTER_MODE_ROLLING_SHUTTER,
 };
+
+/**
+ * @brief linear motion based triangle entity animator
+ */
+class LinearMotionTriangleAnimator : public TriangleAnimator {
+  public:
+    /** @brief start position for `time = time_offset` of all points */
+    std::array<Vec3, 3> start_points;
+    /** @brief constant velocity */
+    Vec3 velocity;
+    /** @brief time for which `position = start` */
+    Scalar time_offset = 0.0;
+
+    virtual ~LinearMotionTriangleAnimator() = default;
+
+  protected:
+    virtual void update_for_time_hook(const Scalar time,
+                                      Triangle* tri) override;
+};
+
+void LinearMotionTriangleAnimator::update_for_time_hook(const Scalar time,
+                                                        Triangle* tri) {
+    if (tri == nullptr)
+        return;
+    for (int i = 0; i < 3; ++i) {
+        tri->points[i] = start_points[i] + (time - time_offset) * velocity;
+    }
+}
+
 /**
  * @brief write image to ppm file
  * @note The ppm file format is lossy.

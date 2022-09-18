@@ -58,6 +58,12 @@ std::shared_ptr<Triangle> make_triangle(const Scalar side, const Scalar half,
         std::swap(tri->points[0], tri->points[1]);
     }
 
+    // animate
+    auto anim = std::make_unique<LinearMotionTriangleAnimator>();
+    anim->start_points = {tri->points[0], tri->points[1], tri->points[2]};
+    anim->velocity = {0.0, 1.0, 0.0};
+    tri->set_animator(std::move(anim));
+
     return tri;
 }
 
