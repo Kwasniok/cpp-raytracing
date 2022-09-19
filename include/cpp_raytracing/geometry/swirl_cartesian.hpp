@@ -26,7 +26,7 @@ class SwirlCartesianRay : public Ray {
      * @brief construct new ray
      * @param geometry linked geometry
      * @param start origin of ray
-     * @param direction normalized direction vector
+     * @param direction normalized direction  tangential vector
      */
     SwirlCartesianRay(const SwirlCartesianGeometry& geometry, const Vec3& start,
                       const Vec3& direction)

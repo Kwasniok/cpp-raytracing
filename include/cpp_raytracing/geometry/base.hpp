@@ -35,7 +35,11 @@ class Geometry {
   public:
     virtual ~Geometry() = default;
 
-    /** @brief returns a ray with given starting point and direction */
+    /**
+     * @brief returns a ray with given starting point and direction
+     * @param start origin of ray
+     * @param direction normalized direction tangential vector
+     */
     virtual std::unique_ptr<Ray> ray_from(const Vec3& start,
                                           const Vec3& direction) const = 0;
 
