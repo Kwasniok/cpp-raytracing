@@ -114,27 +114,19 @@ std::optional<AxisAlignedBoundingBox> Triangle::bounding_box() const {
 
     constexpr Scalar epsilon = 1e-8;
 
-    Scalar x_min = std::min(points[0][0], std::min(points[1][0], points[2][0]));
-    Scalar y_min = std::min(points[0][1], std::min(points[1][1], points[2][1]));
-    Scalar z_min = std::min(points[0][2], std::min(points[1][2], points[2][2]));
+    Vec3 low = {+infinity, +infinity, +infinity};
+    Vec3 high = {-infinity, -infinity, -infinity};
 
-    Scalar x_max = std::max(points[0][0], std::max(points[1][0], points[2][0]));
-    Scalar y_max = std::max(points[0][1], std::max(points[1][1], points[2][1]));
-    Scalar z_max = std::max(points[0][2], std::max(points[1][2], points[2][2]));
+    for (int i = 0; i < 3; ++i) {
+        low = elementwise<min>(low, points[i]);
+        high = elementwise<max>(high, points[i]);
+    }
 
     // padding to guarantee non-zero volume
-    x_min -= std::abs(x_min) * epsilon;
-    y_min -= std::abs(y_min) * epsilon;
-    z_min -= std::abs(z_min) * epsilon;
+    low -= elementwise<abs>(low) * epsilon;
+    high += elementwise<abs>(high) * epsilon;
 
-    x_max += std::abs(x_max) * epsilon;
-    y_max += std::abs(y_max) * epsilon;
-    z_max += std::abs(z_max) * epsilon;
-
-    return AxisAlignedBoundingBox{
-        Vec3{x_min, y_min, z_min},
-        Vec3{x_max, y_max, z_max},
-    };
+    return AxisAlignedBoundingBox{low, high};
 }
 
 } // namespace cpp_raytracing
