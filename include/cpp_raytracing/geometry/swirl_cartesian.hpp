@@ -86,126 +86,13 @@ class SwirlCartesianGeometry : public Geometry {
      * @brief returns inverse metric
      * @see metric()
      */
-    Mat3x3 inverse_metric(const Vec3& position) const {
-        const Scalar a = _swirl_strength;
-        const Scalar u = position.x();
-        const Scalar v = position.y();
-        const Scalar z = position.z();
-        const Scalar r = std::sqrt(u * u + v * v);
-        const Scalar s = u * u - v * v;
-        const Scalar u2v2z2 = u * u + v * v + z * z;
-
-        return {
-            Vec3{
-                1 + a * v * ((2 * u * z) / r + a * v * (r * r + z * z)),
-                a * ((-s * z) / r - a * u * v * u2v2z2),
-                a * v * r,
-            },
-            Vec3{
-                a * ((-s * z) / r - a * u * v * u2v2z2),
-                1 + a * u * ((-2 * v * z) / r + a * u * u2v2z2),
-                -a * u * r,
-            },
-            Vec3{a * v * r, -a * u * r, 1},
-        };
-    }
+    Mat3x3 inverse_metric(const Vec3& position) const;
 
     /** @brief returns Chirstoffel symbols of first kind */
-    Ten3x3x3 christoffel_1(const Vec3& position) const {
-
-        const Scalar a = _swirl_strength;
-        const Scalar u = position.x();
-        const Scalar v = position.y();
-        const Scalar z = position.z();
-        const Scalar r = std::sqrt(u * u + v * v);
-
-        const Scalar arz = a * r * z;
-        const Scalar a2r2 = a * a * r * r;
-        const Scalar a2r3 = a * a * r * r * r;
-
-        const Scalar alpha = std::atan2(v, u);
-
-        // trigonometric
-        const Scalar cos_alpha = std::cos(alpha);
-        const Scalar sin_alpha = std::sin(alpha);
-        const Scalar cos_2alpha = std::cos(2 * alpha);
-        const Scalar sin_2alpha = std::sin(2 * alpha);
-        const Scalar cos_3alpha = std::cos(3 * alpha);
-        const Scalar sin_3alpha = std::sin(3 * alpha);
-
-        // trigonometric powers
-        const Scalar cos3_alpha = std::pow(cos_alpha, 3);
-        const Scalar sin3_alpha = std::pow(sin_alpha, 3);
-
-        return {
-            Mat3x3{
-                Vec3{
-                    a * z * (arz * cos_alpha - sin3_alpha),
-                    -a * z * cos3_alpha,
-                    a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
-                },
-                Vec3{
-                    -a * z * cos3_alpha,
-                    -0.25 * a * z *
-                        (-4 * arz * cos_alpha + 9 * sin_alpha + sin_3alpha),
-                    0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
-                },
-                Vec3{a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
-                     0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
-                     -a2r3 * cos_alpha},
-            },
-            Mat3x3{
-                Vec3{
-                    0.25 * a * z *
-                        (9 * cos_alpha - cos_3alpha + 4 * arz * sin_alpha),
-                    a * z * sin3_alpha,
-                    0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
-                },
-                Vec3{
-                    a * z * sin3_alpha,
-                    a * z * (cos3_alpha + arz * sin_alpha),
-                    a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
-                },
-                Vec3{
-                    0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
-                    a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
-                    -a2r3 * sin_alpha,
-                },
-            },
-            Mat3x3{
-                Vec3{
-                    0.5 * a2r2 * z * (3 + cos_2alpha),
-                    a2r2 * z * cos_alpha * sin_alpha,
-                    2 * a2r3 * cos_alpha,
-                },
-                Vec3{
-                    a2r2 * z * cos_alpha * sin_alpha,
-                    -(0.5) * a2r2 * z * (-3 + cos_2alpha),
-                    2 * a2r3 * sin_alpha,
-                },
-                Vec3{
-                    2 * a2r3 * cos_alpha,
-                    2 * a2r3 * sin_alpha,
-                    0,
-                },
-            },
-        };
-    }
+    Ten3x3x3 christoffel_1(const Vec3& position) const;
 
     /** @brief returns Chirstoffel symbols of second kind */
-    Ten3x3x3 christoffel_2(const Vec3& position) const {
-        const Mat3x3 inv_metric = inverse_metric(position);
-        const Ten3x3x3 chris_1 = christoffel_1(position);
-
-        return {
-            chris_1[0] * inv_metric[0][0] + chris_1[1] * inv_metric[0][1] +
-                chris_1[2] * inv_metric[0][2],
-            chris_1[0] * inv_metric[1][0] + chris_1[1] * inv_metric[1][1] +
-                chris_1[2] * inv_metric[1][2],
-            chris_1[0] * inv_metric[2][0] + chris_1[1] * inv_metric[2][1] +
-                chris_1[2] * inv_metric[2][2],
-        };
-    }
+    Ten3x3x3 christoffel_2(const Vec3& position) const;
 
   private:
     /** @brief strength of the swirl effect */
@@ -377,10 +264,128 @@ Mat3x3 SwirlCartesianGeometry::metric(const Vec3& position) const {
     };
 }
 
-/** @brief returns normalized vector */
 Vec3 SwirlCartesianGeometry::normalize(const Vec3& position,
                                        const Vec3& vec) const {
     return vec / std::sqrt(dot(vec, metric(position) * vec));
+}
+
+Mat3x3 SwirlCartesianGeometry::inverse_metric(const Vec3& position) const {
+    const Scalar a = _swirl_strength;
+    const Scalar u = position.x();
+    const Scalar v = position.y();
+    const Scalar z = position.z();
+    const Scalar r = std::sqrt(u * u + v * v);
+    const Scalar s = u * u - v * v;
+    const Scalar u2v2z2 = u * u + v * v + z * z;
+
+    return {
+        Vec3{
+            1 + a * v * ((2 * u * z) / r + a * v * (r * r + z * z)),
+            a * ((-s * z) / r - a * u * v * u2v2z2),
+            a * v * r,
+        },
+        Vec3{
+            a * ((-s * z) / r - a * u * v * u2v2z2),
+            1 + a * u * ((-2 * v * z) / r + a * u * u2v2z2),
+            -a * u * r,
+        },
+        Vec3{a * v * r, -a * u * r, 1},
+    };
+}
+
+Ten3x3x3 SwirlCartesianGeometry::christoffel_1(const Vec3& position) const {
+
+    const Scalar a = _swirl_strength;
+    const Scalar u = position.x();
+    const Scalar v = position.y();
+    const Scalar z = position.z();
+    const Scalar r = std::sqrt(u * u + v * v);
+
+    const Scalar arz = a * r * z;
+    const Scalar a2r2 = a * a * r * r;
+    const Scalar a2r3 = a * a * r * r * r;
+
+    const Scalar alpha = std::atan2(v, u);
+
+    // trigonometric
+    const Scalar cos_alpha = std::cos(alpha);
+    const Scalar sin_alpha = std::sin(alpha);
+    const Scalar cos_2alpha = std::cos(2 * alpha);
+    const Scalar sin_2alpha = std::sin(2 * alpha);
+    const Scalar cos_3alpha = std::cos(3 * alpha);
+    const Scalar sin_3alpha = std::sin(3 * alpha);
+
+    // trigonometric powers
+    const Scalar cos3_alpha = std::pow(cos_alpha, 3);
+    const Scalar sin3_alpha = std::pow(sin_alpha, 3);
+
+    return {
+        Mat3x3{
+            Vec3{
+                a * z * (arz * cos_alpha - sin3_alpha),
+                -a * z * cos3_alpha,
+                a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
+            },
+            Vec3{
+                -a * z * cos3_alpha,
+                -0.25 * a * z *
+                    (-4 * arz * cos_alpha + 9 * sin_alpha + sin_3alpha),
+                0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
+            },
+            Vec3{a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
+                 0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
+                 -a2r3 * cos_alpha},
+        },
+        Mat3x3{
+            Vec3{
+                0.25 * a * z *
+                    (9 * cos_alpha - cos_3alpha + 4 * arz * sin_alpha),
+                a * z * sin3_alpha,
+                0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
+            },
+            Vec3{
+                a * z * sin3_alpha,
+                a * z * (cos3_alpha + arz * sin_alpha),
+                a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
+            },
+            Vec3{
+                0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
+                a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
+                -a2r3 * sin_alpha,
+            },
+        },
+        Mat3x3{
+            Vec3{
+                0.5 * a2r2 * z * (3 + cos_2alpha),
+                a2r2 * z * cos_alpha * sin_alpha,
+                2 * a2r3 * cos_alpha,
+            },
+            Vec3{
+                a2r2 * z * cos_alpha * sin_alpha,
+                -(0.5) * a2r2 * z * (-3 + cos_2alpha),
+                2 * a2r3 * sin_alpha,
+            },
+            Vec3{
+                2 * a2r3 * cos_alpha,
+                2 * a2r3 * sin_alpha,
+                0,
+            },
+        },
+    };
+}
+
+Ten3x3x3 SwirlCartesianGeometry::christoffel_2(const Vec3& position) const {
+    const Mat3x3 inv_metric = inverse_metric(position);
+    const Ten3x3x3 chris_1 = christoffel_1(position);
+
+    return {
+        chris_1[0] * inv_metric[0][0] + chris_1[1] * inv_metric[0][1] +
+            chris_1[2] * inv_metric[0][2],
+        chris_1[0] * inv_metric[1][0] + chris_1[1] * inv_metric[1][1] +
+            chris_1[2] * inv_metric[1][2],
+        chris_1[0] * inv_metric[2][0] + chris_1[1] * inv_metric[2][1] +
+            chris_1[2] * inv_metric[2][2],
+    };
 }
 
 } // namespace cpp_raytracing
