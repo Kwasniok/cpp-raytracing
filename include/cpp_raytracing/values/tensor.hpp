@@ -528,6 +528,30 @@ inline constexpr Vec6 operator/(const Vec6& v, const Scalar f) {
     return Vec6(v._data0 / f, v._data1 / f);
 }
 
+/**
+ * @brief returns new Vec3 based on elementwise application
+ */
+template <ScalarCombinator1* func>
+inline constexpr Vec3 elementwise(const Vec3& x) {
+    return Vec3{
+        func(x[0]),
+        func(x[1]),
+        func(x[2]),
+    };
+}
+
+/**
+ * @brief returns new Vec3 based on elementwise combination
+ */
+template <ScalarCombinator2* func>
+inline constexpr Vec3 elementwise(const Vec3& x, const Vec3& y) {
+    return Vec3{
+        func(x[0], y[0]),
+        func(x[1], y[1]),
+        func(x[2], y[2]),
+    };
+}
+
 // note: Some of the functions are laking constexpr because this was not
 //      supported by GLM v0.9.9 at the time of writing.
 
