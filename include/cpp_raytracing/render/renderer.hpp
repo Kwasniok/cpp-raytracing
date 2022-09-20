@@ -73,6 +73,11 @@ class Renderer {
      * @note May be used for global illumination or debugging.
      */
     Color ray_color_if_ray_ended{0.0, 1.0, 0.0};
+    /**
+     * @brief fallback color for missing background
+     * @note May be used for global illumination.
+     */
+    Color ray_color_if_no_background{1.0, 1.0, 1.0};
     /** @brief color indicator for missing material */
     Color ray_color_if_no_material{1.0, 0.0, 1.0};
 
@@ -133,11 +138,6 @@ class Renderer {
                     const Scene::FreezeGuard& frozen_scene, Ray* ray,
                     const unsigned long depth) const {
 
-        // check depth limit
-        if (depth == 0) {
-            return ray_color_if_ray_ended;
-        }
-
         // propagate ray
         const std::optional<RaySegment> current_opt_segment =
             ray->next_ray_segment();
@@ -150,13 +150,25 @@ class Renderer {
         // has next segment
         const RaySegment& current_segment = current_opt_segment.value();
 
+        // check depth limit
+        if (depth == 0) {
+            return background_color(geometry, frozen_scene, current_segment);
+        }
+
         // collect hit record
         HitRecord record = frozen_scene.hit_record(geometry, current_segment,
                                                    minimal_ray_length);
 
         // check for hit with entity within current segment
         if (!record.hits()) {
-            // no hit within current segment
+            if (current_segment.is_infinite()) {
+                // no hit within entire ray
+                // no further segments expected
+                return background_color(geometry, frozen_scene,
+                                        current_segment);
+            }
+            // no hit within current (finite) segment
+            // further segments expected
             return ray_color(geometry, frozen_scene, ray, depth - 1);
         }
         // detected hit with entity within cuurent segment
@@ -200,6 +212,15 @@ class Renderer {
     }
 
   protected:
+    inline Color background_color(const Geometry& geometry,
+                                  const Scene::FreezeGuard& frozen_scene,
+                                  const RaySegment& ray_segment) const {
+        if (frozen_scene.active_background == nullptr) {
+            return ray_color_if_no_background;
+        }
+        return frozen_scene.active_background->value(geometry, ray_segment);
+    }
+
     /** @brief render a single sample for a single pixel */
     inline void render_pixel_sample(const unsigned long i,
                                     const unsigned long j,
