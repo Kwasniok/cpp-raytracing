@@ -141,6 +141,8 @@ struct RenderConfig {
     ColorScalar gamma;
     /** @brief debug normals */
     bool debug_normals;
+    /** @brief debug premature ray termination */
+    bool debug_ray_terminations;
     /** @brief strength of geometric swirl effect */
     Scalar swirl_strength;
     /** @brief size parameter for ray segments */
@@ -182,6 +184,9 @@ void render_ppm(const RenderConfig& config) {
     renderer->infrequent_callback_frequency = config.save_frequency;
     renderer->time = config.time;
     renderer->debug_normals = config.debug_normals;
+    renderer->ray_color_if_ray_ended = config.debug_ray_terminations
+                                           ? Color{0.0, 100.0, 0.0}
+                                           : Color{0.0, 0.0, 0.0};
 
     renderer->frequent_render_callback =
         [](const Renderer::State& current_state) {
@@ -262,6 +267,10 @@ int main(int argc, char** argv) {
         .default_value<bool>(false) // store_true
         .implicit_value(true)
         .help("enable render mode to debug surface normals");
+    parser.add_argument("--debug_ray_terminations")
+        .default_value<bool>(false) // store_true
+        .implicit_value(true)
+        .help("enable to highlight pixels of prematurely ended rays");
     parser.add_argument("--swirl_strength")
         .default_value<Scalar>(0.01)
         .help("strength of geometric swirl effect (0.0 is flat space)")
@@ -293,6 +302,8 @@ int main(int argc, char** argv) {
         parser.get<Scalar>("--total_line_exposure_time");
     config.gamma = parser.get<ColorScalar>("--gamma");
     config.debug_normals = parser.get<bool>("--debug_normals");
+    config.debug_ray_terminations =
+        parser.get<bool>("--debug_ray_terminations");
     config.swirl_strength = parser.get<Scalar>("--swirl_strength");
     config.ray_step_size = parser.get<Scalar>("--ray_step_size");
 
