@@ -37,6 +37,12 @@ Scene make_scene() {
     auto camera = std::make_shared<PinholeCamera>(cartesian_pinhole_camera(
         {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
     Scene scene(camera);
+    // background (global illumination)
+    {
+        auto background = std::make_shared<ConstantBackground>();
+        background->color = Color{0.5, 0.7, 1.0};
+        scene.active_background = std::move(background);
+    }
 
     std::vector<std::shared_ptr<Material>> materials;
 
@@ -173,7 +179,6 @@ void render_ppm(const RenderConfig& config) {
     renderer->canvas = canvas;
     renderer->samples = config.samples;
     renderer->ray_depth = config.ray_depth;
-    renderer->ray_color_if_ray_ended = {0.5, 0.7, 1.0}; // global illumination
     renderer->infrequent_callback_frequency = config.save_frequency;
     renderer->time = config.time;
     renderer->debug_normals = config.debug_normals;
