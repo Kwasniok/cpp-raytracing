@@ -7,6 +7,7 @@
 #define CPP_RAYTRACING_ANIMATORS_HPP
 
 #include "animators/base.hpp"
+#include "animators/mesh_animator.hpp"
 #include "animators/triangle_animator.hpp"
 
 #endif
