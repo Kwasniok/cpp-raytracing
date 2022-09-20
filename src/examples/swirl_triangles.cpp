@@ -29,45 +29,6 @@ constexpr std::array<Scalar, 2> halfs = {-1.0, +1.0};
  */
 constexpr std::array<unsigned int, 3> axes = {0, 1, 2};
 
-/** returns one triangle of the standard cube */
-std::shared_ptr<Triangle> make_triangle(const Scalar side, const Scalar half,
-                                        const unsigned int axis) {
-    auto tri = std::make_shared<Triangle>();
-    tri->id.change("triangle");
-    tri->points = {
-        Vec3{-1.0, -1.0, side},
-        Vec3{half, -half, side},
-        Vec3{+1.0, +1.0, side},
-    };
-
-    const auto perm0 = [](const Vec3 v) { return Vec3{v[0], v[1], v[2]}; };
-    const auto perm1 = [](const Vec3 v) { return Vec3{v[1], v[2], v[0]}; };
-    const auto perm2 = [](const Vec3 v) { return Vec3{v[2], v[0], v[1]}; };
-    const std::array<std::function<Vec3(const Vec3)>, 3> perms = {
-        perm0,
-        perm1,
-        perm2,
-    };
-
-    for (auto& p : tri->points) {
-        p = perms[axis % 3](p);
-    }
-
-    // ensure outward facing surface normals
-    if (half < 0.0) {
-        std::swap(tri->points[0], tri->points[1]);
-    }
-
-    // animate
-    auto anim = std::make_unique<SinusoidalMotionTriangleAnimator>();
-    anim->start_points = {tri->points[0], tri->points[1], tri->points[2]};
-    anim->amplitude = {5.0, 0.0, 2.0};
-    anim->frequency = pi;
-    tri->set_animator(std::move(anim));
-
-    return tri;
-}
-
 /**
  * @brief generate an example scene
  */
@@ -115,60 +76,33 @@ Scene make_scene() {
     }
 
     // cube
-    for (auto side : sides) {
-        for (auto half : halfs) {
-            for (auto axis : axes) {
-                auto tri = make_triangle(side, half, axis);
-                tri->material = diffuse_red;
-                scene.add(std::move(tri));
-            }
-        }
+    {
+        auto cube = make_cube(1.0, Vec3{0.0, 0.0, 0.0});
+        cube->material = diffuse_red;
+        // animation
+        auto anim = std::make_unique<SinusoidalMotionMeshAnimator>();
+        anim->start_points = cube->points;
+        anim->amplitude = {5.0, 0.0, 2.0};
+        anim->frequency = pi;
+        cube->set_animator(std::move(anim));
+        scene.add(std::move(cube));
     }
 
-    // floor (this)
+    // floor
     {
-        constexpr Scalar L = 1e4;
-        auto tri = std::make_shared<Triangle>();
-        tri->id.change("floor");
-        tri->points = {
-            // note: upward surface normal
-            Vec3{-L, -1.0, -L},
-            Vec3{-L, -1.0, +L},
-            Vec3{+L, -1.0, +L},
-        };
-        tri->material = diffuse_gray;
-        scene.add(std::move(tri));
-    }
-    // floor (that)
-    {
-        constexpr Scalar L = 1e4;
-        auto tri = std::make_shared<Triangle>();
-        tri->id.change("floor");
-        tri->points = {
-            // note: upward surface normal
-            Vec3{+L, -1.0, -L},
-            Vec3{-L, -1.0, -L},
-            Vec3{+L, -1.0, +L},
-        };
-        tri->material = diffuse_gray;
-        scene.add(std::move(tri));
+        auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0, 0.0});
+        plane->id.change("floor");
+        plane->material = diffuse_gray;
+        scene.add(std::move(plane));
     }
 
     // top light
     {
-        constexpr Scalar L = 1.0;
-        constexpr Scalar H = 3.0;
-        auto tri = std::make_shared<Triangle>();
-        tri->id.change("light");
-        tri->points = {
-            Vec3{+L, H, -L},
-            Vec3{-L, H, -L},
-            Vec3{+L, H, +L},
-        };
-        tri->material = light;
-        scene.add(std::move(tri));
+        auto plane = make_xz_plane(1.0, Vec3{0.0, 3.0, 0.0});
+        plane->id.change("light");
+        plane->material = light;
+        scene.add(std::move(plane));
     }
-
     return scene;
 }
 

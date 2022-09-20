@@ -26,40 +26,40 @@ constexpr std::array<const std::string, 2> SHUTTER_MODES = {
 };
 
 /**
- * @brief linear motion based triangle entity animator
+ * @brief linear motion based mesh entity animator
  */
-class LinearMotionTriangleAnimator : public TriangleAnimator {
+class LinearMotionMeshAnimator : public MeshAnimator {
   public:
     /** @brief start position for `time = time_offset` of all points */
-    std::array<Vec3, 3> start_points;
+    std::vector<Vec3> start_points;
     /** @brief constant velocity */
     Vec3 velocity;
     /** @brief time for which `position = start` */
     Scalar time_offset = 0.0;
 
-    virtual ~LinearMotionTriangleAnimator() = default;
+    virtual ~LinearMotionMeshAnimator() = default;
 
   protected:
-    virtual void update_for_time_hook(const Scalar time,
-                                      Triangle* tri) override;
+    virtual void update_for_time_hook(const Scalar time, Mesh* mesh) override;
 };
 
-void LinearMotionTriangleAnimator::update_for_time_hook(const Scalar time,
-                                                        Triangle* tri) {
-    if (tri == nullptr)
+void LinearMotionMeshAnimator::update_for_time_hook(const Scalar time,
+                                                    Mesh* mesh) {
+    if (mesh == nullptr)
         return;
-    for (int i = 0; i < 3; ++i) {
-        tri->points[i] = start_points[i] + (time - time_offset) * velocity;
+    mesh->points = start_points;
+    for (auto& point : mesh->points) {
+        point = point + velocity * (time - time_offset);
     }
 }
 
 /**
- * @brief sinusoidal motion based triangle entity animator
+ * @brief sinusoidal motion based mesh entity animator
  */
-class SinusoidalMotionTriangleAnimator : public TriangleAnimator {
+class SinusoidalMotionMeshAnimator : public MeshAnimator {
   public:
     /** @brief start position for `time = time_offset` of all points */
-    std::array<Vec3, 3> start_points;
+    std::vector<Vec3> start_points;
     /** @brief oscillator amplitude */
     Vec3 amplitude;
     /** @brief frequency of motion in radians */
@@ -67,21 +67,68 @@ class SinusoidalMotionTriangleAnimator : public TriangleAnimator {
     /** @brief time for which `position = start` */
     Scalar time_offset = 0.0;
 
-    virtual ~SinusoidalMotionTriangleAnimator() = default;
+    virtual ~SinusoidalMotionMeshAnimator() = default;
 
   protected:
-    virtual void update_for_time_hook(const Scalar time,
-                                      Triangle* tri) override;
+    virtual void update_for_time_hook(const Scalar time, Mesh* mesh) override;
 };
 
-void SinusoidalMotionTriangleAnimator::update_for_time_hook(const Scalar time,
-                                                            Triangle* tri) {
-    if (tri == nullptr)
+void SinusoidalMotionMeshAnimator::update_for_time_hook(const Scalar time,
+                                                        Mesh* mesh) {
+    if (mesh == nullptr)
         return;
-    for (int i = 0; i < 3; ++i) {
-        tri->points[i] = start_points[i] +
-                         std::sin(frequency * (time - time_offset)) * amplitude;
+
+    mesh->points = start_points;
+    for (auto& point : mesh->points) {
+        point = point + std::sin(frequency * (time - time_offset)) * amplitude;
     }
+}
+
+/**
+ * @brief returns a cube as mesh entity
+ * @note Uses Cartesian coordinates.
+ */
+std::shared_ptr<Mesh> make_cube(const Scalar scale, const Vec3& position) {
+    auto mesh = std::make_shared<Mesh>();
+    mesh->id.change("cube");
+    mesh->points = {
+        scale * Vec3{-1.0, -1.0, -1.0} + position, // 0
+        scale * Vec3{-1.0, -1.0, +1.0} + position, // 1
+        scale * Vec3{-1.0, +1.0, -1.0} + position, // 2
+        scale * Vec3{-1.0, +1.0, +1.0} + position, // 3
+        scale * Vec3{+1.0, -1.0, -1.0} + position, // 4
+        scale * Vec3{+1.0, -1.0, +1.0} + position, // 5
+        scale * Vec3{+1.0, +1.0, -1.0} + position, // 6
+        scale * Vec3{+1.0, +1.0, +1.0} + position, // 7
+    };
+    mesh->faces = {
+        Face{0, 1, 3}, Face{3, 2, 0}, // -x
+        Face{5, 4, 6}, Face{6, 7, 5}, // +x
+        Face{1, 0, 4}, Face{4, 5, 1}, // -y
+        Face{2, 3, 7}, Face{7, 6, 2}, // +y
+        Face{4, 0, 2}, Face{2, 6, 4}, // -z
+        Face{1, 5, 7}, Face{7, 3, 1}, // +z
+    };
+
+    return mesh;
+}
+
+/**
+ * @brief returns a bounded x-z plane as mesh entity
+ * @note Uses Cartesian coordinates.
+ */
+std::shared_ptr<Mesh> make_xz_plane(const Scalar scale, const Vec3& position) {
+    auto mesh = std::make_shared<Mesh>();
+    mesh->id.change("cube");
+    mesh->points = {
+        scale * Vec3{-1.0, 0.0, -1.0} + position, // 0
+        scale * Vec3{-1.0, 0.0, +1.0} + position, // 1
+        scale * Vec3{+1.0, 0.0, -1.0} + position, // 2
+        scale * Vec3{+1.0, 0.0, +1.0} + position, // 3
+    };
+    mesh->faces = {Face{0, 1, 3}, Face{3, 2, 0}};
+
+    return mesh;
 }
 
 /**
