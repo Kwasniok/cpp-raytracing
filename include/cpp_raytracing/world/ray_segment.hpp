@@ -42,6 +42,12 @@ class RaySegment {
     constexpr bool contains(const Scalar t) const { return t < _t_max; }
 
     /**
+     * @brief returns true iff ray segment is infinite (i.e. `t_max = infinity`)
+     * @note Useful for rays consisting of single segment only.
+     */
+    constexpr bool is_infinite() const { return _t_max == infinity; }
+
+    /**
      * @brief point on the ray for given parameter
      * @return `start() + t * direction()`
      */
