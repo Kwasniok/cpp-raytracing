@@ -103,6 +103,20 @@ class SwirlCartesianGeometry : public Geometry {
 
 std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
 
+    // check for numerical issues
+    if (auto x = _phase.first_half().length(),
+        y = _phase.second_half().length();
+        !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
+        // encountered a numerical issue -> abort ray
+        return std::nullopt;
+    }
+
+    // create next segment
+    // note: direction is approximately constant for small segments
+    const Scalar t_max = _geometry._ray_step_size;
+    const RaySegment segment = {_phase.first_half(), _phase.second_half(),
+                                t_max};
+
     // propagate ray by calculating change of phase
     const std::function<Vec6(const Vec6&)> f = [&geo =
                                                     _geometry](const Vec6& p) {
@@ -120,12 +134,6 @@ std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
     };
     const Vec6 delta_phase =
         runge_kutta_4_delta(f, _phase, _geometry._ray_step_size);
-
-    // create next segment
-    // note: direction is approximately constant for small segments
-    const Scalar t_max = _geometry._ray_step_size;
-    const RaySegment segment = {_phase.first_half(), _phase.second_half(),
-                                t_max};
 
     // update state
     _phase += delta_phase;
