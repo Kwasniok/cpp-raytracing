@@ -72,14 +72,14 @@ class Renderer {
      * @brief color indicator for ray ended before hitting anything
      * @note May be used for global illumination or debugging.
      */
-    Color ray_color_if_ray_ended{0.0, 1.0, 0.0};
+    Color ray_color_if_ray_ended = {0.0, 100.0, 0.0};
     /**
      * @brief fallback color for missing background
      * @note May be used for global illumination.
      */
-    Color ray_color_if_no_background{1.0, 1.0, 1.0};
+    Color ray_color_if_no_background = {1.0, 1.0, 1.0};
     /** @brief color indicator for missing material */
-    Color ray_color_if_no_material{1.0, 0.0, 1.0};
+    Color ray_color_if_no_material = {1.0, 0.0, 1.0};
 
     /**
      * @brief callback function to be called frequently during rendering e.g.
