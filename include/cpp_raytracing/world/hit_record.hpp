@@ -43,6 +43,12 @@ struct HitRecord {
 
     /**
      * @brief sets normal and front_face
+     * @param to_onb_jacobian transforms to local ortho-normal base
+     * @param metric local metric
+     * @param ray_direction ray direction in local tangential space
+     * @param face_normal face normal in local tangential space
+     * @note face_normal will be converted to the local ortho-normal space
+     *        when stored as #normal.
      */
     void set_face_normal(const Mat3x3& to_onb_jacobian, const Mat3x3& metric,
                          const Vec3& ray_direction, const Vec3& face_normal) {
