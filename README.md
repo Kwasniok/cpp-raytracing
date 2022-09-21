@@ -123,5 +123,26 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
   Unfortunately, c++ modules are currently (Sep 2022) not widespread enough to
   be considered supported by all compilers.
 
+## Movies
+
+### Curved
+https://user-images.githubusercontent.com/7516208/191520786-c169b980-c4e6-4899-bd09-c5c95d53e7d6.mp4
+
+### Flat
+https://user-images.githubusercontent.com/7516208/191520742-2c9fdb1e-5f0b-4696-b266-64c635c4e64b.mp4
+
+| geometry | curved | flat |
+|-|-|-|
+| method | non-linear propagation | linear/conventional propagation |
+file (commit ed4358e) | `examples/swirl_triangles` | `examples/triangles` |
+| size (`resolution_factor`) | 480x270 pixel (`2`) | 480x270 pixel (`2`) |
+| frames | `60` | `60` |
+| `samples` | `1000` | `1000` |
+| `ray_depth` | `500` | `500` |
+| `ray_step_size` | `0.1` | - |
+| `swirl_strength` | `0.01` | - |
+| wall time (AMD Ryzen 5 5600X) | **2.5days** | **7min** |
+| max. total ray segments | 3,888,000,000,000 | 3,888,000,000,000 |
+
 [netpbm]: https://en.wikipedia.org/wiki/Netpbm
 [darktable]: https://www.darktable.org/
