@@ -14,22 +14,6 @@ using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
 
 /**
- *  @brief enumeration of sides variables (front, back)
- * @see make_triangle
- */
-constexpr std::array<Scalar, 2> sides = {-1.0, +1.0};
-/**
- *  @brief enumeration of halfs variables (top left, bottom right)
- * @see make_triangle
- */
-constexpr std::array<Scalar, 2> halfs = {-1.0, +1.0};
-/**
- *  @brief enumeration of axes (x, y, z)
- * @see make_triangle
- */
-constexpr std::array<unsigned int, 3> axes = {0, 1, 2};
-
-/**
  * @brief generate an example scene
  */
 Scene make_scene() {
