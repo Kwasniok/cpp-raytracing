@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief basic example executable using triangles in Euclidean space
+ * @brief basic example executable in curved space ('swirl' geometry)
  */
 
 #include <argparse/argparse.hpp>
@@ -90,6 +90,12 @@ struct RenderConfig {
     ColorScalar gamma;
     /** @brief debug normals */
     bool debug_normals;
+    /** @brief debug premature ray termination */
+    bool debug_ray_terminations;
+    /** @brief strength of geometric swirl effect */
+    Scalar swirl_strength;
+    /** @brief size parameter for ray segments */
+    Scalar ray_step_size;
 };
 
 /**
@@ -103,7 +109,8 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    EuclideanGeometry geometry;
+    SwirlCartesianGeometry geometry{config.swirl_strength,
+                                    config.ray_step_size};
     Scene scene = make_scene();
 
     std::unique_ptr<Renderer> renderer;
@@ -126,6 +133,9 @@ void render_ppm(const RenderConfig& config) {
     renderer->infrequent_callback_frequency = config.save_frequency;
     renderer->time = config.time;
     renderer->debug_normals = config.debug_normals;
+    renderer->ray_color_if_ray_ended = config.debug_ray_terminations
+                                           ? Color{0.0, 100.0, 0.0}
+                                           : Color{0.0, 0.0, 0.0};
 
     renderer->frequent_render_callback =
         [](const Renderer::State& current_state) {
@@ -173,8 +183,8 @@ int main(int argc, char** argv) {
         .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
-        .default_value<unsigned long>(50)
-        .help("depth per ray")
+        .default_value<unsigned long>(100)
+        .help("depth per ray (amount of ray segments and scatterings)")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")
         .default_value<Scalar>(0.0)
@@ -206,6 +216,18 @@ int main(int argc, char** argv) {
         .default_value<bool>(false) // store_true
         .implicit_value(true)
         .help("enable render mode to debug surface normals");
+    parser.add_argument("--debug_ray_terminations")
+        .default_value<bool>(false) // store_true
+        .implicit_value(true)
+        .help("enable to highlight pixels of prematurely ended rays");
+    parser.add_argument("--swirl_strength")
+        .default_value<Scalar>(0.01)
+        .help("strength of geometric swirl effect (0.0 is flat space)")
+        .scan<'f', Scalar>();
+    parser.add_argument("--ray_step_size")
+        .default_value<Scalar>(0.5)
+        .help("influences length of ray segments")
+        .scan<'f', Scalar>();
 
     try {
         parser.parse_args(argc, argv);
@@ -229,6 +251,10 @@ int main(int argc, char** argv) {
         parser.get<Scalar>("--total_line_exposure_time");
     config.gamma = parser.get<ColorScalar>("--gamma");
     config.debug_normals = parser.get<bool>("--debug_normals");
+    config.debug_ray_terminations =
+        parser.get<bool>("--debug_ray_terminations");
+    config.swirl_strength = parser.get<Scalar>("--swirl_strength");
+    config.ray_step_size = parser.get<Scalar>("--ray_step_size");
 
     render_ppm(config);
 }
