@@ -3,6 +3,8 @@
 This project is based on https://raytracing.github.io/ and includes some
 additional twists like curved space.
 
+Note: For a conventional linear ray tracer see commit b6bbcfe.
+
 ## Features
 
 ### Non-Linear Ray Propagation
