@@ -131,12 +131,31 @@ std::shared_ptr<Mesh> make_xz_plane(const Scalar scale, const Vec3& position) {
     return mesh;
 }
 
+/** @brief returns constant color texture */
+std::shared_ptr<Texture> make_color_texture(const Color& color) {
+    auto texture = std::make_shared<ConstantColor>();
+    texture->color = color;
+    return texture;
+}
+
+/** @brief returns texture with 3D checker board pattern */
+std::shared_ptr<Texture>
+make_checker_3d_texture(const Color& color1, const Color& color2,
+                        const Scalar scale = 1.0,
+                        const Vec3& offset = {0.0, 0.0, 0.0}) {
+    auto texture = std::make_shared<Checker3D>();
+    texture->color1 = color1;
+    texture->color2 = color2;
+    texture->scale = scale;
+    texture->offset = offset;
+    return texture;
+}
+
 /** @brief returns diffuse material */
 std::shared_ptr<Material> make_diffuse_material(const Color& color) {
     auto mat = std::make_shared<Diffuse>();
     auto texture = std::make_shared<ConstantColor>();
-    texture->color = color;
-    mat->color = std::move(texture);
+    mat->color = make_color_texture(color);
     return mat;
 }
 
@@ -146,12 +165,7 @@ make_diffuse_3d_checker_material(const Color& color1, const Color& color2,
                                  const Scalar scale = 1.0,
                                  const Vec3& offset = {0.0, 0.0, 0.0}) {
     auto mat = std::make_shared<Diffuse>();
-    auto texture = std::make_shared<Checker3D>();
-    texture->color1 = color1;
-    texture->color2 = color2;
-    texture->scale = scale;
-    texture->offset = offset;
-    mat->color = std::move(texture);
+    mat->color = make_checker_3d_texture(color1, color2, scale, offset);
     return mat;
 }
 
@@ -159,9 +173,7 @@ make_diffuse_3d_checker_material(const Color& color1, const Color& color2,
 std::shared_ptr<Material>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
     auto mat = std::make_shared<Emitter>();
-    auto texture = std::make_shared<ConstantColor>();
-    texture->color = strength * color;
-    mat->color = std::move(texture);
+    mat->color = make_color_texture(color);
     return mat;
 }
 
