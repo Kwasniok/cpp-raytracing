@@ -119,7 +119,7 @@ std::shared_ptr<Mesh> make_cube(const Scalar scale, const Vec3& position) {
  */
 std::shared_ptr<Mesh> make_xz_plane(const Scalar scale, const Vec3& position) {
     auto mesh = std::make_shared<Mesh>();
-    mesh->id.change("cube");
+    mesh->id.change("plane");
     mesh->points = {
         scale * Vec3{-1.0, 0.0, -1.0} + position, // 0
         scale * Vec3{-1.0, 0.0, +1.0} + position, // 1
