@@ -104,7 +104,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry,
     // note: The normal is position dependent since the tri might be curved.
     Vec3 normal = cross(metric * b1, metric * b2);
     // normalize
-    normal = normal / (dot(normal, metric * normal));
+    normal = normal / std::sqrt(dot(normal, metric * normal));
     record.set_face_normal(to_onb_jacobian, metric, d, normal);
     record.material = material.get();
     return record;
