@@ -169,6 +169,15 @@ make_diffuse_3d_checker_material(const Color& color1, const Color& color2,
     return mat;
 }
 
+/** @brief returns metal material */
+std::shared_ptr<Material>
+make_metal_material(const Color& color, const ColorScalar roughness = 0.0) {
+    auto mat = std::make_shared<Metal>();
+    mat->color = make_color_texture(color);
+    mat->roughness = roughness;
+    return mat;
+}
+
 /** @brief returns light emitting material */
 std::shared_ptr<Material>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
