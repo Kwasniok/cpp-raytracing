@@ -29,6 +29,7 @@ class Background {
 
     /**
      * @brief color value for background from ray_segment
+     * @param geometry linked geometry
      * @param ray_segment last segment of ray which was simulated
      */
     virtual Color value(const Geometry& geometry,
