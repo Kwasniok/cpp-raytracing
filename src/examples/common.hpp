@@ -131,6 +131,40 @@ std::shared_ptr<Mesh> make_xz_plane(const Scalar scale, const Vec3& position) {
     return mesh;
 }
 
+/** @brief returns diffuse material */
+std::shared_ptr<Material> make_diffuse_material(const Color& color) {
+    auto mat = std::make_shared<Diffuse>();
+    auto texture = std::make_shared<ConstantColor>();
+    texture->color = color;
+    mat->color = std::move(texture);
+    return mat;
+}
+
+/** @brief returns diffuse 3D checker board material */
+std::shared_ptr<Material>
+make_diffuse_3d_checker_material(const Color& color1, const Color& color2,
+                                 const Scalar scale = 1.0,
+                                 const Vec3& offset = {0.0, 0.0, 0.0}) {
+    auto mat = std::make_shared<Diffuse>();
+    auto texture = std::make_shared<Checker3D>();
+    texture->color1 = color1;
+    texture->color2 = color2;
+    texture->scale = scale;
+    texture->offset = offset;
+    mat->color = std::move(texture);
+    return mat;
+}
+
+/** @brief returns light emitting material */
+std::shared_ptr<Material>
+make_light_material(const Color& color, const ColorScalar strength = 1.0) {
+    auto mat = std::make_shared<Emitter>();
+    auto texture = std::make_shared<ConstantColor>();
+    texture->color = strength * color;
+    mat->color = std::move(texture);
+    return mat;
+}
+
 /**
  * @brief write image to ppm file
  * @note The ppm file format is lossy.

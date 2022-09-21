@@ -45,42 +45,16 @@ Scene make_scene() {
         scene.active_background = std::move(background);
     }
 
-    std::vector<std::shared_ptr<Material>> materials;
+    // materials
+    auto diffuse_gray = make_diffuse_3d_checker_material(
+        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
+    diffuse_gray->id.change("diffuse gray");
 
-    // diffuse (gray)
-    std::shared_ptr<Material> diffuse_gray;
-    {
-        auto mat = std::make_shared<Diffuse>();
-        mat->id.change("diffuse gray");
-        auto texture = std::make_shared<Checker3D>();
-        texture->color1 = {0.45, 0.45, 0.45};
-        texture->color2 = {0.55, 0.55, 0.55};
-        mat->color = std::move(texture);
-        materials.push_back(mat);
-        diffuse_gray = std::move(mat);
-    }
-    // diffuse (red)
-    std::shared_ptr<Material> diffuse_red;
-    {
-        auto mat = std::make_shared<Diffuse>();
-        mat->id.change("diffuse red");
-        auto texture = std::make_shared<ConstantColor>();
-        texture->color = {0.75, 0.5, 0.5};
-        mat->color = std::move(texture);
-        materials.push_back(mat);
-        diffuse_red = std::move(mat);
-    }
-    // light
-    std::shared_ptr<Material> light;
-    {
-        auto mat = std::make_shared<Emitter>();
-        mat->id.change("light");
-        auto texture = std::make_shared<ConstantColor>();
-        texture->color = Color{0.95, 0.9, 0.85};
-        mat->color = std::move(texture);
-        materials.push_back(mat);
-        light = std::move(mat);
-    }
+    auto diffuse_red = make_diffuse_material(Color{0.75, 0.5, 0.5});
+    diffuse_red->id.change("diffuse red");
+
+    auto light = make_light_material(Color{0.95, 0.9, 0.85});
+    light->id.change("light");
 
     // cube
     {
