@@ -25,7 +25,7 @@ Scene make_scene() {
     // background (global illumination)
     {
         auto background = std::make_shared<ConstantBackground>();
-        background->color = 0.25 * Color{0.85, 0.9, 0.95};
+        background->color = Color{0.5, 0.7, 1.0};
         scene.active_background = std::move(background);
     }
 
@@ -36,9 +36,6 @@ Scene make_scene() {
 
     auto diffuse_red = make_diffuse_material(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
-
-    auto light = make_light_material(Color{0.95, 0.9, 0.85});
-    light->id.change("light");
 
     // cube
     {
@@ -53,19 +50,11 @@ Scene make_scene() {
         scene.add(std::move(cube));
     }
 
-    // environment
+    // floor
     {
-        auto env = make_cube(5.0, Vec3{0.0, 4.0, 0.0});
-        env->id.change("environment");
-        env->material = diffuse_gray;
-        scene.add(std::move(env));
-    }
-
-    // top light
-    {
-        auto plane = make_xz_plane(5.0, Vec3{0.0, 3.0, 0.0});
-        plane->id.change("light");
-        plane->material = light;
+        auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0, 0.0});
+        plane->id.change("floor");
+        plane->material = diffuse_gray;
         scene.add(std::move(plane));
     }
 
