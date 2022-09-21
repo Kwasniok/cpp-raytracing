@@ -135,6 +135,13 @@ class Mesh : public Entity {
         low -= elementwise<abs>(low) * epsilon;
         high += elementwise<abs>(high) * epsilon;
 
+        for (int i = 0; i < 3; ++i) {
+            if (low[i] == high[i]) {
+                low[i] -= epsilon;
+                high[i] += epsilon;
+            }
+        }
+
         _bounds = {low, high};
     }
 
