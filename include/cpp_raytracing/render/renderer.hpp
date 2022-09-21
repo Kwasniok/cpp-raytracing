@@ -212,6 +212,7 @@ class Renderer {
     }
 
   protected:
+    /** @brief returns background color for ray segment */
     inline Color background_color(const Geometry& geometry,
                                   const Scene::FreezeGuard& frozen_scene,
                                   const RaySegment& ray_segment) const {
