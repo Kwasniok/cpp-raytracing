@@ -272,7 +272,9 @@ int main(int argc, char** argv) {
     config.twist_radius = parser.get<Scalar>("--twist_radius");
     config.ray_step_size = parser.get<Scalar>("--ray_step_size");
     config.ray_min_step_size = config.ray_step_size * 1e-3;
-    config.ray_max_step_size = config.ray_step_size * 1e+3;
+    // note: Do not increase segment length too much or else some rays might not
+    // resolve the twist at all.
+    config.ray_max_step_size = config.ray_step_size;
     config.ray_max_error = config.ray_step_size * 1e-8;
 
     render_ppm(config);
