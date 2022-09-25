@@ -85,6 +85,27 @@ void SinusoidalMotionMeshAnimator::update_for_time_hook(const Scalar time,
 }
 
 /**
+ * @brief simple sky background (requires Cartesian coorinates)
+ */
+class SkyBackground : public Background {
+  public:
+    /** @brief color near horizon */
+    Color color1 = Colors::WHITE;
+    /** @brief color near horizon */
+    Color color2 = {0.5, 0.7, 1.0};
+
+    virtual ~SkyBackground() = default;
+
+    virtual Color value(const Geometry& geometry,
+                        const RaySegment& ray_segment) const override {
+        const Vec3 direction = unit_vector(ray_segment.direction());
+        const auto t = 0.5 * (std::abs(direction.y()) + 1.0);
+        const Color color = (1.0 - t) * color1 + t * color2;
+        return color;
+    };
+};
+
+/**
  * @brief returns a cube as mesh entity
  * @note Uses Cartesian coordinates.
  */

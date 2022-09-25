@@ -24,8 +24,7 @@ Scene make_scene() {
 
     // background (global illumination)
     {
-        auto background = std::make_shared<ConstantBackground>();
-        background->color = Color{0.5, 0.7, 1.0};
+        auto background = std::make_shared<SkyBackground>();
         scene.active_background = std::move(background);
     }
 
