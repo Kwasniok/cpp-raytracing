@@ -18,8 +18,10 @@ using namespace cpp_raytracing::examples;
  */
 Scene make_scene() {
 
+    const Vec3 camera_position = 1.1 * Vec3{20, 12, 12};
+    const Vec3 pinhole_position = 1.1 * Vec3{15, 8.4, 9};
     auto camera = std::make_shared<PinholeCamera>(cartesian_pinhole_camera(
-        {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
+        camera_position, pinhole_position, {0.0, 1.0, 0.0}, 30.0, 16.0 / 9.0));
     Scene scene(camera);
 
     // background (global illumination)
@@ -29,9 +31,9 @@ Scene make_scene() {
     }
 
     // materials
-    auto diffuse_gray = make_diffuse_3d_checker_material(
-        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
-    diffuse_gray->id.change("diffuse gray");
+    auto metal_gray = make_metal_3d_checker_material(Color{0.45, 0.45, 0.45},
+                                                     Color{0.55, 0.55, 0.55});
+    metal_gray->id.change("metal gray");
 
     auto diffuse_red = make_diffuse_material(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
@@ -53,7 +55,7 @@ Scene make_scene() {
     {
         auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0, 0.0});
         plane->id.change("floor");
-        plane->material = diffuse_gray;
+        plane->material = metal_gray;
         scene.add(std::move(plane));
     }
 
