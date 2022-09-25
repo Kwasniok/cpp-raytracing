@@ -23,6 +23,8 @@
 #ifndef CPP_RAYTRACING_GEOMETRY_TWISTED_ORB_CARTESIAN_HPP
 #define CPP_RAYTRACING_GEOMETRY_TWISTED_ORB_CARTESIAN_HPP
 
+#include <cmath>
+
 #include "../algorithm/runge_kutta.hpp"
 #include "../world/ray_segment.hpp"
 #include "base.hpp"
@@ -63,6 +65,9 @@ class TwistedOrbCartesianRay : public Ray {
   private:
     /** @brief normalize direction based on position */
     void normalize_phase();
+
+    /** @brief recommended step size for inward running ray segment */
+    Scalar adaptive_step_size(const Vec3& start);
 
   private:
     /** @note phase = (position, velocity */
@@ -198,7 +203,10 @@ TwistedOrbCartesianRay::TwistedOrbCartesianRay(
               geometry._ray_step_size, geometry._ray_min_step_size,
               geometry._ray_max_step_size},
       _phase{start, direction},
-      _geometry(geometry) {}
+      _geometry(geometry) {
+
+    _solver.delta_t = adaptive_step_size(start);
+}
 
 std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
 
@@ -211,10 +219,21 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
     }
 
     // create next segment
-    if (_phase.first_half().length() > 1e2 * _geometry._twist_radius) {
-        // far away from origin -> conventional infinite ray segment
+    const Scalar R = _phase.first_half().length();
+    const bool outwards = dot(_phase.first_half(), _phase.second_half()) > 0.0;
+    if (R / _geometry._twist_radius > 5.0 && outwards) {
+        // far away from origin and point away from origin
+        // -> conventional infinite ray segment
         return RaySegment{_phase.first_half(), _phase.second_half(), infinity};
     }
+
+    // adjust step size
+    if (!outwards) {
+        // inward rays need to lower the step size to catch the details
+        _solver.delta_t =
+            (adaptive_step_size(_phase.first_half()) + _solver.delta_t) * 0.5;
+    }
+
     // note: direction is approximately constant for small segments
     const Scalar t_max = _solver.delta_t;
     const RaySegment segment = {_phase.first_half(), _phase.second_half(),
@@ -233,6 +252,13 @@ void TwistedOrbCartesianRay::normalize_phase() {
     const Vec3 pos = _phase.first_half();
     const Vec3 dir = _phase.second_half();
     _phase = Vec6{pos, _geometry.normalize(pos, dir)};
+}
+
+Scalar TwistedOrbCartesianRay::adaptive_step_size(const Vec3& start) {
+    const Scalar R = start.length();
+    return _geometry._ray_step_size * R *
+               std::exp(-R / _geometry._twist_radius) +
+           _solver.delta_t;
 }
 
 std::unique_ptr<Ray>

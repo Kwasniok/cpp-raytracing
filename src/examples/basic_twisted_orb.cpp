@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
         .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
-        .default_value<unsigned long>(100)
+        .default_value<unsigned long>(250)
         .help("depth per ray (amount of ray segments and scatterings)")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
         .help("sptial extend of twisting")
         .scan<'f', Scalar>();
     parser.add_argument("--ray_step_size")
-        .default_value<Scalar>(1.0)
+        .default_value<Scalar>(0.25)
         .help("influences length of ray segments")
         .scan<'f', Scalar>();
 
