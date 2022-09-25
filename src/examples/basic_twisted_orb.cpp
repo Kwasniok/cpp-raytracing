@@ -98,6 +98,12 @@ struct RenderConfig {
     Scalar twist_radius;
     /** @brief size parameter for ray segments */
     Scalar ray_step_size;
+    /** @brief minimal size parameter for ray segments */
+    Scalar ray_min_step_size;
+    /** @brief maximal size parameter for ray segments */
+    Scalar ray_max_step_size;
+    /** @brief max. estimated error for ray segments */
+    Scalar ray_max_error;
 };
 
 /**
@@ -112,7 +118,10 @@ void render_ppm(const RenderConfig& config) {
     };
 
     TwistedOrbCartesianGeometry geometry{
-        config.twist_angle, config.twist_radius, config.ray_step_size};
+        config.twist_angle,       config.twist_radius,
+        config.ray_step_size,     config.ray_min_step_size,
+        config.ray_max_step_size, config.ray_max_error,
+    };
     Scene scene = make_scene();
 
     std::unique_ptr<Renderer> renderer;
@@ -232,7 +241,7 @@ int main(int argc, char** argv) {
         .help("sptial extend of twisting")
         .scan<'f', Scalar>();
     parser.add_argument("--ray_step_size")
-        .default_value<Scalar>(0.1)
+        .default_value<Scalar>(1.0)
         .help("influences length of ray segments")
         .scan<'f', Scalar>();
 
@@ -263,6 +272,9 @@ int main(int argc, char** argv) {
     config.twist_angle = parser.get<Scalar>("--twist_angle");
     config.twist_radius = parser.get<Scalar>("--twist_radius");
     config.ray_step_size = parser.get<Scalar>("--ray_step_size");
+    config.ray_min_step_size = config.ray_step_size * 1e-3;
+    config.ray_max_step_size = config.ray_step_size * 1e+3;
+    config.ray_max_error = config.ray_step_size * 1e-8;
 
     render_ppm(config);
 }

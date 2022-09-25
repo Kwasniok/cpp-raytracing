@@ -47,8 +47,7 @@ class TwistedOrbCartesianRay : public Ray {
      * @param direction normalized direction  tangential vector
      */
     TwistedOrbCartesianRay(const TwistedOrbCartesianGeometry& geometry,
-                           const Vec3& start, const Vec3& direction)
-        : _phase(start, direction), _geometry(geometry){};
+                           const Vec3& start, const Vec3& direction);
 
     virtual ~TwistedOrbCartesianRay() = default;
 
@@ -67,6 +66,7 @@ class TwistedOrbCartesianRay : public Ray {
 
   private:
     /** @note phase = (position, velocity */
+    RungeKutta_DoPri_45_Solver<Vec6, Scalar> _solver;
     Vec6 _phase;
     const TwistedOrbCartesianGeometry& _geometry;
 };
@@ -103,10 +103,30 @@ class TwistedOrbCartesianGeometry : public Geometry {
      */
     TwistedOrbCartesianGeometry(const Scalar twist_angle,
                                 const Scalar twist_radius,
-                                const Scalar ray_step_size)
+                                const Scalar ray_step_size,
+                                const Scalar ray_min_step_size,
+                                const Scalar ray_max_step_size,
+                                const Scalar ray_max_error)
         : _twist_angle(twist_angle),
           _twist_radius(twist_radius),
-          _ray_step_size(ray_step_size){};
+          _ray_step_size(ray_step_size),
+          _ray_min_step_size(ray_min_step_size),
+          _ray_max_step_size(ray_max_step_size),
+          _ray_max_error(ray_max_error),
+          // note: store derivative function once per geometry
+          _phase_derivative_func{[&geo = *this](const Vec6& p) {
+              const Vec3 pos = p.first_half();
+              const Vec3 dir = p.second_half();
+              const auto chris_2 = geo.christoffel_2(pos);
+              return Vec6{
+                  p.second_half(),
+                  Vec3{
+                      -dot(dir, chris_2[0] * dir),
+                      -dot(dir, chris_2[1] * dir),
+                      -dot(dir, chris_2[2] * dir),
+                  },
+              };
+          }} {};
 
     virtual ~TwistedOrbCartesianGeometry() = default;
 
@@ -160,7 +180,25 @@ class TwistedOrbCartesianGeometry : public Geometry {
     Scalar _twist_radius;
     /** @brief ray propagation step size */
     Scalar _ray_step_size;
+    /** @brief lower bound for step size */
+    Scalar _ray_min_step_size;
+    /** @brief upper bound for step size */
+    Scalar _ray_max_step_size;
+    /** @brief upper bound for step size */
+    Scalar _ray_max_error;
+
+    /** @brief differential equation for phase velocity */
+    const std::function<Vec6(const Vec6&)> _phase_derivative_func;
 };
+
+TwistedOrbCartesianRay::TwistedOrbCartesianRay(
+    const TwistedOrbCartesianGeometry& geometry, const Vec3& start,
+    const Vec3& direction)
+    : _solver{geometry._phase_derivative_func, geometry._ray_max_error,
+              geometry._ray_step_size, geometry._ray_min_step_size,
+              geometry._ray_max_step_size},
+      _phase{start, direction},
+      _geometry(geometry) {}
 
 std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
 
@@ -173,31 +211,17 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
     }
 
     // create next segment
+    if (_phase.first_half().length() > 1e2 * _geometry._twist_radius) {
+        // far away from origin -> conventional infinite ray segment
+        return RaySegment{_phase.first_half(), _phase.second_half(), infinity};
+    }
     // note: direction is approximately constant for small segments
-    const Scalar t_max = _geometry._ray_step_size;
+    const Scalar t_max = _solver.delta_t;
     const RaySegment segment = {_phase.first_half(), _phase.second_half(),
                                 t_max};
 
-    // propagate ray by calculating change of phase
-    const std::function<Vec6(const Vec6&)> f = [&geo =
-                                                    _geometry](const Vec6& p) {
-        const Vec3 pos = p.first_half();
-        const Vec3 dir = p.second_half();
-        const auto chris_2 = geo.christoffel_2(pos);
-        return Vec6{
-            p.second_half(),
-            Vec3{
-                -dot(dir, chris_2[0] * dir),
-                -dot(dir, chris_2[1] * dir),
-                -dot(dir, chris_2[2] * dir),
-            },
-        };
-    };
-    const Vec6 delta_phase =
-        runge_kutta_4_delta(f, _phase, _geometry._ray_step_size);
-
     // update state
-    _phase += delta_phase;
+    _phase += _solver.delta(_phase);
 
     // normalize state
     normalize_phase();

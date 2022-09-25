@@ -55,7 +55,15 @@ void test_ray_passing_through() {
     };
     // numericaly: {-8.56156, 14.0917, -18}
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
+
     const Vec3 direction = geometry.normalize(start, direction_non_normalized);
     // numericaly: {-0.349584, 0.575389, -0.734972}
 
@@ -122,7 +130,14 @@ void test_to_onb_jacobian() {
             },
         };
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
 
     for (const auto& [point, jacobian] : points_and_jacobians) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.to_onb_jacobian(point),
@@ -179,7 +194,14 @@ void test_from_onb_jacobian() {
             },
         };
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
 
     for (const auto& [point, jacobian] : points_and_jacobians) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.from_onb_jacobian(point),
@@ -251,7 +273,14 @@ void test_metric() {
             },
         };
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
 
     for (const auto& [point, metric] : points_and_metrics) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.metric(point), metric,
@@ -274,7 +303,14 @@ void test_to_cartesian_coords() {
     // numericaly: {1.57062, 1.59159, 3}
     constexpr Vec3 position_cart = {1.0, 2.0, 3.0};
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
 
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.to_cartesian_coords(position),
                                       position_cart, epsilon);
@@ -322,7 +358,14 @@ void test_inverse_metric() {
             },
         };
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
 
     for (const auto& [point, inv_metric] : points_and_inv_metrics) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.inverse_metric(point),
@@ -439,7 +482,14 @@ void test_christoffel_1() {
         },
     };
 
-    TwistedOrbCartesianGeometry geometry{psi, rho, ray_step_size};
+    TwistedOrbCartesianGeometry geometry{
+        psi,
+        rho,
+        ray_step_size,
+        ray_step_size * 1e-2,
+        ray_step_size * 1e+2,
+        ray_step_size * 1e-4,
+    };
 
     const Ten3x3x3 res = geometry.christoffel_1(point);
     for (int i = 0; i < 3; ++i) {
