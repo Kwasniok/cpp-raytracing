@@ -9,5 +9,6 @@
 #include "geometry/base.hpp"
 #include "geometry/euclidean.hpp"
 #include "geometry/swirl_cartesian.hpp"
+#include "geometry/twisted_orb_cartesian.hpp"
 
 #endif
