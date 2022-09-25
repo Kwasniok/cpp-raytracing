@@ -470,6 +470,20 @@ class Vec6 {
         return *this;
     }
 
+    /** @brief get length of the vector */
+    constexpr Scalar length() const {
+        // NOTE: for version 0.9.9 glm::length is not constexpr
+        return sqrt(length_squared());
+    }
+
+    /**
+     * @brief get length of the vector squared
+     * @note Fater than std::pow(length(),2)`
+     */
+    constexpr Scalar length_squared() const {
+        return glm::dot(_data0, _data0) + glm::dot(_data1, _data1);
+    }
+
     /** @brief tests if vector is zero vector */
     constexpr bool near_zero(const Scalar epsilon) const {
         return std::abs(_data0.x) < epsilon && std::abs(_data0.y) < epsilon &&
