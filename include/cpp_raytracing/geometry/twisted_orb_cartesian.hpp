@@ -55,7 +55,7 @@ class TwistedOrbCartesianRay : public Ray {
     virtual std::optional<RaySegment> next_ray_segment() override;
 
   public:
-    /*
+    /**
      * @brief returns current phase
      * @note For debugging only.
      */
