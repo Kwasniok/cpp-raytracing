@@ -101,10 +101,6 @@ struct RenderConfig {
     Scalar ray_step_size;
     /** @brief minimal size parameter for ray segments */
     Scalar ray_min_step_size;
-    /** @brief maximal size parameter for ray segments */
-    Scalar ray_max_step_size;
-    /** @brief max. estimated error for ray segments */
-    Scalar ray_max_error;
 };
 
 /**
@@ -119,10 +115,8 @@ void render_ppm(const RenderConfig& config) {
     };
 
     TwistedOrbCartesianGeometry geometry{
-        config.twist_angle,       config.twist_radius,
-        config.ray_step_size,     config.ray_min_step_size,
-        config.ray_max_step_size, config.ray_max_error,
-    };
+        config.twist_angle, config.twist_radius, config.ray_step_size,
+        config.ray_min_step_size};
     Scene scene = make_scene();
 
     std::unique_ptr<Renderer> renderer;
@@ -242,8 +236,12 @@ int main(int argc, char** argv) {
         .help("sptial extend of twisting")
         .scan<'f', Scalar>();
     parser.add_argument("--ray_step_size")
-        .default_value<Scalar>(0.25)
+        .default_value<Scalar>(1e-1)
         .help("influences length of ray segments")
+        .scan<'f', Scalar>();
+    parser.add_argument("--ray_min_step_size")
+        .default_value<Scalar>(1e-4)
+        .help("lower bound for length of ray segments")
         .scan<'f', Scalar>();
 
     try {
@@ -273,11 +271,18 @@ int main(int argc, char** argv) {
     config.twist_angle = parser.get<Scalar>("--twist_angle");
     config.twist_radius = parser.get<Scalar>("--twist_radius");
     config.ray_step_size = parser.get<Scalar>("--ray_step_size");
-    config.ray_min_step_size = config.ray_step_size * 1e-3;
-    // note: Do not increase segment length too much or else some rays might not
-    // resolve the twist at all.
-    config.ray_max_step_size = config.ray_step_size;
-    config.ray_max_error = config.ray_step_size * 1e-8;
+    config.ray_min_step_size = parser.get<Scalar>("--ray_min_step_size");
+
+    if (config.ray_step_size > 1.0 && config.twist_angle != 0.0) {
+        std::cerr << "WARNING: ray_step_size > 1.0 is not recommended!"
+                  << std::endl;
+    }
+    if (config.ray_step_size < config.ray_min_step_size) {
+        std::cerr << "ERROR: ray_step_size < ray_min_step_size is not "
+                     "sensible!"
+                  << std::endl;
+        std::exit(1);
+    }
 
     render_ppm(config);
 }

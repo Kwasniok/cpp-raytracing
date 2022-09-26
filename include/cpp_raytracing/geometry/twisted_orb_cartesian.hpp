@@ -71,7 +71,6 @@ class TwistedOrbCartesianRay : public Ray {
 
   private:
     /** @note phase = (position, velocity */
-    RungeKutta_DoPri_45_Solver<Vec6, Scalar> _solver;
     Vec6 _phase;
     const TwistedOrbCartesianGeometry& _geometry;
 };
@@ -109,9 +108,7 @@ class TwistedOrbCartesianGeometry : public Geometry {
     TwistedOrbCartesianGeometry(const Scalar twist_angle,
                                 const Scalar twist_radius,
                                 const Scalar ray_step_size,
-                                const Scalar ray_min_step_size,
-                                const Scalar ray_max_step_size,
-                                const Scalar ray_max_error);
+                                const Scalar ray_min_step_size);
 
     virtual ~TwistedOrbCartesianGeometry() = default;
 
@@ -179,14 +176,7 @@ class TwistedOrbCartesianGeometry : public Geometry {
 TwistedOrbCartesianRay::TwistedOrbCartesianRay(
     const TwistedOrbCartesianGeometry& geometry, const Vec3& start,
     const Vec3& direction)
-    : _solver{geometry._phase_derivative_func, geometry._ray_max_error,
-              geometry._ray_step_size, geometry._ray_min_step_size,
-              geometry._ray_max_step_size},
-      _phase{start, direction},
-      _geometry(geometry) {
-
-    _solver.delta_t = adaptive_step_size(start);
-}
+    : _phase{start, direction}, _geometry(geometry) {}
 
 std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
 
@@ -208,19 +198,15 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
     }
 
     // adjust step size
-    if (!outwards) {
-        // inward rays need to lower the step size to catch the details
-        _solver.delta_t =
-            (adaptive_step_size(_phase.first_half()) + _solver.delta_t) * 0.5;
-    }
+    const Scalar delta_t = adaptive_step_size(_phase.first_half());
 
     // note: direction is approximately constant for small segments
-    const Scalar t_max = _solver.delta_t;
     const RaySegment segment = {_phase.first_half(), _phase.second_half(),
-                                t_max};
+                                delta_t};
 
     // update state
-    _phase += _solver.delta(_phase);
+    _phase +=
+        runge_kutta_4_delta(_geometry._phase_derivative_func, _phase, delta_t);
 
     // normalize state
     normalize_phase();
@@ -235,22 +221,20 @@ void TwistedOrbCartesianRay::normalize_phase() {
 }
 
 Scalar TwistedOrbCartesianRay::adaptive_step_size(const Vec3& start) {
-    const Scalar R = start.length();
-    return _geometry._ray_step_size * R *
-               std::exp(-R / _geometry._twist_radius) +
-           _solver.delta_t;
+    // relative distance
+    const Scalar D = 0.5 * start.length() / _geometry._twist_radius;
+    // lower step size towards the center
+    const Scalar step_size = _geometry._ray_step_size * std::pow(D, 2);
+    return std::max(step_size, _geometry._ray_min_step_size);
 }
 
 TwistedOrbCartesianGeometry::TwistedOrbCartesianGeometry(
     const Scalar twist_angle, const Scalar twist_radius,
-    const Scalar ray_step_size, const Scalar ray_min_step_size,
-    const Scalar ray_max_step_size, const Scalar ray_max_error)
+    const Scalar ray_step_size, const Scalar ray_min_step_size)
     : _twist_angle(twist_angle),
       _twist_radius(twist_radius),
       _ray_step_size(ray_step_size),
       _ray_min_step_size(ray_min_step_size),
-      _ray_max_step_size(ray_max_step_size),
-      _ray_max_error(ray_max_error),
       // note: store derivative function once per geometry
       _phase_derivative_func{[&geo = *this](const Vec6& p) {
           const Vec3 pos = p.first_half();

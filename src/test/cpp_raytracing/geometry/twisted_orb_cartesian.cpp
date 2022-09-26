@@ -60,8 +60,6 @@ void test_ray_passing_through() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     const Vec3 direction = geometry.normalize(start, direction_non_normalized);
@@ -135,8 +133,6 @@ void test_to_onb_jacobian() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     for (const auto& [point, jacobian] : points_and_jacobians) {
@@ -199,8 +195,6 @@ void test_from_onb_jacobian() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     for (const auto& [point, jacobian] : points_and_jacobians) {
@@ -278,8 +272,6 @@ void test_metric() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     for (const auto& [point, metric] : points_and_metrics) {
@@ -308,8 +300,6 @@ void test_to_cartesian_coords() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.to_cartesian_coords(position),
@@ -363,8 +353,6 @@ void test_inverse_metric() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     for (const auto& [point, inv_metric] : points_and_inv_metrics) {
@@ -487,8 +475,6 @@ void test_christoffel_1() {
         rho,
         ray_step_size,
         ray_step_size * 1e-2,
-        ray_step_size * 1e+2,
-        ray_step_size * 1e-4,
     };
 
     const Ten3x3x3 res = geometry.christoffel_1(point);
