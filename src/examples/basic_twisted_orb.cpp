@@ -168,7 +168,7 @@ void render_ppm(const RenderConfig& config) {
  * @brief program entry point
  */
 int main(int argc, char** argv) {
-    argparse::ArgumentParser parser("basic");
+    argparse::ArgumentParser parser;
     parser.add_argument("-o", "--out")
         .required()
         .help("file output path (excluding extensions)");
@@ -237,7 +237,8 @@ int main(int argc, char** argv) {
         .scan<'f', Scalar>();
     parser.add_argument("--ray_step_size")
         .default_value<Scalar>(1e-1)
-        .help("influences length of ray segments")
+        .help("influences length of ray segments"
+              " (lower value leads to more accurate results but costs more)")
         .scan<'f', Scalar>();
     parser.add_argument("--ray_min_step_size")
         .default_value<Scalar>(1e-4)

@@ -152,7 +152,7 @@ void render_ppm(const RenderConfig& config) {
  * @brief program entry point
  */
 int main(int argc, char** argv) {
-    argparse::ArgumentParser parser("basic");
+    argparse::ArgumentParser parser;
     parser.add_argument("-o", "--out")
         .required()
         .help("file output path (excluding extensions)");
