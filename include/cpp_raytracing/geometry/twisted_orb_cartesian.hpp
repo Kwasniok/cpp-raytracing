@@ -111,27 +111,7 @@ class TwistedOrbCartesianGeometry : public Geometry {
                                 const Scalar ray_step_size,
                                 const Scalar ray_min_step_size,
                                 const Scalar ray_max_step_size,
-                                const Scalar ray_max_error)
-        : _twist_angle(twist_angle),
-          _twist_radius(twist_radius),
-          _ray_step_size(ray_step_size),
-          _ray_min_step_size(ray_min_step_size),
-          _ray_max_step_size(ray_max_step_size),
-          _ray_max_error(ray_max_error),
-          // note: store derivative function once per geometry
-          _phase_derivative_func{[&geo = *this](const Vec6& p) {
-              const Vec3 pos = p.first_half();
-              const Vec3 dir = p.second_half();
-              const auto chris_2 = geo.christoffel_2(pos);
-              return Vec6{
-                  p.second_half(),
-                  Vec3{
-                      -dot(dir, chris_2[0] * dir),
-                      -dot(dir, chris_2[1] * dir),
-                      -dot(dir, chris_2[2] * dir),
-                  },
-              };
-          }} {};
+                                const Scalar ray_max_error);
 
     virtual ~TwistedOrbCartesianGeometry() = default;
 
@@ -260,6 +240,31 @@ Scalar TwistedOrbCartesianRay::adaptive_step_size(const Vec3& start) {
                std::exp(-R / _geometry._twist_radius) +
            _solver.delta_t;
 }
+
+TwistedOrbCartesianGeometry::TwistedOrbCartesianGeometry(
+    const Scalar twist_angle, const Scalar twist_radius,
+    const Scalar ray_step_size, const Scalar ray_min_step_size,
+    const Scalar ray_max_step_size, const Scalar ray_max_error)
+    : _twist_angle(twist_angle),
+      _twist_radius(twist_radius),
+      _ray_step_size(ray_step_size),
+      _ray_min_step_size(ray_min_step_size),
+      _ray_max_step_size(ray_max_step_size),
+      _ray_max_error(ray_max_error),
+      // note: store derivative function once per geometry
+      _phase_derivative_func{[&geo = *this](const Vec6& p) {
+          const Vec3 pos = p.first_half();
+          const Vec3 dir = p.second_half();
+          const auto chris_2 = geo.christoffel_2(pos);
+          return Vec6{
+              p.second_half(),
+              Vec3{
+                  -dot(dir, chris_2[0] * dir),
+                  -dot(dir, chris_2[1] * dir),
+                  -dot(dir, chris_2[2] * dir),
+              },
+          };
+      }} {}
 
 std::unique_ptr<Ray>
 TwistedOrbCartesianGeometry::ray_from(const Vec3& start,
