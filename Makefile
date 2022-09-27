@@ -4,7 +4,10 @@ SRC:=src
 BLD:=build
 OUT:=out
 
-INCLUDES=-I third_party/glm -I third_party/argparse/include
+INCLUDES= \
+	-I third_party/glm \
+	-I third_party/argparse/include \
+	-I third_party/odeint/include \
 
 # GCC
 CPP=g++
