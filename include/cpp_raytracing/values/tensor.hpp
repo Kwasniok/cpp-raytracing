@@ -33,12 +33,16 @@ class Ten3x3x3;
  */
 class Vec2 {
   public:
+    /** @brief iterator type */
     using iterator = Scalar*;
+    /** @brief const iterator type */
     using const_iterator = const Scalar*;
 
   public:
     /** @brief initialize as zero vector */
     constexpr Vec2() : _data{0, 0} {}
+    /** @brief initialize vector with all coefficients having the same value */
+    constexpr Vec2(const Scalar v) : _data{v, v} {}
     /** @brief initialize with coefficients */
     constexpr Vec2(const Scalar u, const Scalar v) : _data{u, v} {}
 
@@ -131,6 +135,8 @@ class Vec2 {
     friend constexpr Vec2 operator*(const Vec2&, const Scalar);
     friend constexpr Vec2 operator*(const Scalar, const Vec2&);
     friend constexpr Vec2 operator/(const Vec2&, const Scalar);
+    friend constexpr Vec2 operator/(const Vec2&, const Vec2&);
+    friend constexpr Vec2 abs(const Vec2&);
     friend constexpr Scalar dot(const Vec2&, const Vec2&);
     friend constexpr Vec2 unit_vector(const Vec2&);
 
@@ -173,6 +179,17 @@ inline constexpr Vec2 operator/(const Vec2& v, const Scalar f) {
     return Vec2(v._data / f);
 }
 
+/** @brief divide elementwise */
+inline constexpr Vec2 operator/(const Vec2& v1, const Vec2& v2) {
+    return Vec2(v1._data[0] / v2._data[0], v1._data[1] / v2._data[1]);
+}
+
+/** @brief elementwise absolute value */
+inline constexpr Vec2 abs(const Vec2& v) {
+    using std::abs;
+    return Vec2(abs(v._data[0]), abs(v._data[1]));
+}
+
 /** @brief scalar product (inner product) */
 inline constexpr Scalar dot(const Vec2& v1, const Vec2& v2) {
     return glm::dot(v1._data, v2._data);
@@ -188,12 +205,16 @@ inline constexpr Vec2 unit_vector(const Vec2& v) {
  */
 class Vec3 {
   public:
+    /** @brief iterator type */
     using iterator = Scalar*;
+    /** @brief const iterator type */
     using const_iterator = const Scalar*;
 
   public:
     /** @brief initialize as zero vector */
     constexpr Vec3() : _data{0, 0, 0} {}
+    /** @brief initialize vector with all coefficients having the same value */
+    constexpr Vec3(const Scalar v) : _data{v, v, v} {}
     /** @brief initialize with coefficients */
     constexpr Vec3(const Scalar x, const Scalar y, const Scalar z)
         : _data{x, y, z} {}
@@ -291,6 +312,8 @@ class Vec3 {
     friend constexpr Vec3 operator*(const Vec3&, const Scalar);
     friend constexpr Vec3 operator*(const Scalar, const Vec3&);
     friend constexpr Vec3 operator/(const Vec3&, const Scalar);
+    friend constexpr Vec3 operator/(const Vec3&, const Vec3&);
+    friend constexpr Vec3 abs(const Vec3&);
     friend constexpr Scalar dot(const Vec3&, const Vec3&);
     friend constexpr Vec3 cross(const Vec3&, const Vec3&);
     friend constexpr Vec3 unit_vector(const Vec3&);
@@ -336,6 +359,18 @@ inline constexpr Vec3 operator*(const Scalar f, const Vec3& v) {
 /** @brief divide elementwise */
 inline constexpr Vec3 operator/(const Vec3& v, const Scalar f) {
     return Vec3(v._data / f);
+}
+
+/** @brief divide elementwise */
+inline constexpr Vec3 operator/(const Vec3& v1, const Vec3& v2) {
+    return Vec3(v1._data[0] / v2._data[0], v1._data[1] / v2._data[1],
+                v1._data[2] / v2._data[2]);
+}
+
+/** @brief elementwise absolute value */
+inline constexpr Vec3 abs(const Vec3& v) {
+    using std::abs;
+    return Vec3(abs(v._data[0]), abs(v._data[1]), abs(v._data[2]));
 }
 
 /** @brief scalar product (inner product) */
@@ -389,47 +424,87 @@ class Vec6 {
   public:
     /** @brief Vec6 iterator */
     struct Iterator {
-
+        /**
+         * @brief value type
+         * @see std::iterator_traits
+         */
         using value_type = Scalar;
+        /**
+         * @brief reference type
+         * @see std::iterator_traits
+         */
         using reference = Scalar&;
+        /**
+         * @brief pointer type
+         * @see std::iterator_traits
+         */
         using pointer = Scalar*;
 
+        /** @brief linked container */
         Vec6* const vec;
+        /** @brief current value */
         Scalar* ptr;
 
+        /** @brief increment */
         Iterator& operator++();
+        /** @brief increment */
         Iterator operator++(int);
-        Scalar& operator*();
+        /** @brief dereference */
+        Scalar& operator*() const;
 
-        bool operator==(const Iterator& rhs);
-        bool operator!=(const Iterator& rhs);
+        /** @brief equals */
+        bool operator==(const Iterator& rhs) const;
+        /** @brief unequals */
+        bool operator!=(const Iterator& rhs) const;
     };
 
     /** @brief Vec6 const iterator */
     struct ConstIterator {
-
-        using value_type = const Scalar;
+        /**
+         * @brief value type
+         * @see std::iterator_traits
+         */
+        using value_type = Scalar;
+        /**
+         * @brief reference type
+         * @see std::iterator_traits
+         */
         using reference = const Scalar&;
+        /**
+         * @brief pointer type
+         * @see std::iterator_traits
+         */
         using pointer = const Scalar*;
 
+        /** @brief linked container */
         const Vec6* const vec;
+        /** @brief current value */
         const Scalar* ptr;
 
+        /** @brief increment */
         ConstIterator& operator++();
+        /** @brief increment */
         ConstIterator operator++(int);
-        Scalar operator*();
+        /** @brief dereference */
+        const Scalar& operator*() const;
 
-        bool operator==(const ConstIterator& rhs);
-        bool operator!=(const ConstIterator& rhs);
+        /** @brief equals */
+        bool operator==(const ConstIterator& rhs) const;
+        /** @brief unequals */
+        bool operator!=(const ConstIterator& rhs) const;
     };
 
   public:
+    /** @brief iterator type */
     using iterator = Iterator;
+    /** @brief const iterator type */
     using const_iterator = ConstIterator;
 
   public:
     /** @brief initialize as zero vector */
     constexpr Vec6() : _data0{0, 0, 0}, _data1{0, 0, 0} {}
+    /** @brief initialize vector with all coefficients having the same value */
+    constexpr Vec6(const Scalar v) : _data0{v, v, v}, _data1{v, v, v} {}
     /** @brief initialize with coefficients */
     constexpr Vec6(const Scalar x, const Scalar y, const Scalar z,
                    const Scalar u, const Scalar v, const Scalar w)
@@ -562,6 +637,8 @@ class Vec6 {
     friend constexpr Vec6 operator*(const Vec6&, const Scalar);
     friend constexpr Vec6 operator*(const Scalar, const Vec6&);
     friend constexpr Vec6 operator/(const Vec6&, const Scalar);
+    friend constexpr Vec6 operator/(const Vec6&, const Vec6&);
+    friend constexpr Vec6 abs(const Vec6&);
 
   private:
     using data_type = glm::vec<3, Scalar>;
@@ -577,21 +654,33 @@ class Vec6 {
 
 namespace std {
 
+/** @brief iterator traits for Vec6 iterator */
 template <>
 struct iterator_traits<cpp_raytracing::Vec6::Iterator> {
+    /** @brief difference type */
     using difference_type = void;
+    /** @brief value type */
     using value_type = cpp_raytracing::Vec6::Iterator::value_type;
+    /** @brief pointer type */
     using pointer_type = cpp_raytracing::Vec6::Iterator::pointer;
+    /** @brief reference type */
     using reference = cpp_raytracing::Vec6::Iterator::reference;
+    /** @brief iterator category */
     using iterator_category = forward_iterator_tag;
 };
 
+/** @brief iterator traits for Vec6 const iterator */
 template <>
 struct iterator_traits<cpp_raytracing::Vec6::ConstIterator> {
+    /** @brief difference type */
     using difference_type = void;
+    /** @brief value type */
     using value_type = cpp_raytracing::Vec6::ConstIterator::value_type;
+    /** @brief pointer type */
     using pointer_type = cpp_raytracing::Vec6::ConstIterator::pointer;
+    /** @brief reference type */
     using reference = cpp_raytracing::Vec6::ConstIterator::reference;
+    /** @brief iterator category */
     using iterator_category = forward_iterator_tag;
 };
 
@@ -613,15 +702,15 @@ Vec6::Iterator Vec6::Iterator::operator++(int) {
     return value;
 }
 
-Scalar& Vec6::Iterator::operator*() {
+Scalar& Vec6::Iterator::operator*() const {
     return *ptr;
 }
 
-bool Vec6::Iterator::operator==(const Iterator& rhs) {
+bool Vec6::Iterator::operator==(const Iterator& rhs) const {
     return vec == rhs.vec && ptr == rhs.ptr;
 }
 
-bool Vec6::Iterator::operator!=(const Iterator& rhs) {
+bool Vec6::Iterator::operator!=(const Iterator& rhs) const {
     return vec != rhs.vec || ptr != rhs.ptr;
 }
 
@@ -639,15 +728,15 @@ Vec6::ConstIterator Vec6::ConstIterator::operator++(int) {
     return value;
 }
 
-Scalar Vec6::ConstIterator::operator*() {
+const Scalar& Vec6::ConstIterator::operator*() const {
     return *ptr;
 }
 
-bool Vec6::ConstIterator::operator==(const ConstIterator& rhs) {
+bool Vec6::ConstIterator::operator==(const ConstIterator& rhs) const {
     return vec == rhs.vec && ptr == rhs.ptr;
 }
 
-bool Vec6::ConstIterator::operator!=(const ConstIterator& rhs) {
+bool Vec6::ConstIterator::operator!=(const ConstIterator& rhs) const {
     return vec != rhs.vec || ptr != rhs.ptr;
 }
 
@@ -681,6 +770,19 @@ inline constexpr Vec6 operator*(const Scalar f, const Vec6& v) {
 /** @brief divide elementwise */
 inline constexpr Vec6 operator/(const Vec6& v, const Scalar f) {
     return Vec6(v._data0 / f, v._data1 / f);
+}
+/** @brief divide elementwise */
+inline constexpr Vec6 operator/(const Vec6& v1, const Vec6& v2) {
+    return Vec6(v1._data0[0] / v2._data0[0], v1._data0[1] / v2._data0[1],
+                v1._data0[2] / v2._data0[2], v1._data1[0] / v2._data1[0],
+                v1._data1[1] / v2._data1[1], v1._data1[2] / v2._data1[2]);
+}
+
+/** @brief elementwise absolute value */
+inline constexpr Vec6 abs(const Vec6& v) {
+    using std::abs;
+    return Vec6(abs(v._data0[0]), abs(v._data0[1]), abs(v._data0[2]),
+                abs(v._data1[0]), abs(v._data1[1]), abs(v._data1[2]));
 }
 
 /**
