@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <iterator>
 
 #include <glm/detail/qualifier.hpp>
 #include <glm/geometric.hpp>
@@ -31,6 +32,10 @@ class Ten3x3x3;
  * @brief 2D floating-point Vector
  */
 class Vec2 {
+  public:
+    using iterator = Scalar*;
+    using const_iterator = const Scalar*;
+
   public:
     /** @brief initialize as zero vector */
     constexpr Vec2() : _data{0, 0} {}
@@ -183,6 +188,10 @@ inline constexpr Vec2 unit_vector(const Vec2& v) {
  */
 class Vec3 {
   public:
+    using iterator = Scalar*;
+    using const_iterator = const Scalar*;
+
+  public:
     /** @brief initialize as zero vector */
     constexpr Vec3() : _data{0, 0, 0} {}
     /** @brief initialize with coefficients */
@@ -203,13 +212,13 @@ class Vec3 {
     constexpr Scalar z() const { return _data.z; }
 
     /** @brief const iterator for first element */
-    constexpr auto begin() const { return &_data[0]; }
+    constexpr const_iterator begin() const { return &_data[0]; }
     /** @brief const iterator for end */
-    constexpr auto end() const { return &_data[0] + 3; }
+    constexpr const_iterator end() const { return &_data[0] + 3; }
     /** @brief iterator for first element */
-    constexpr auto begin() { return &_data[0]; }
+    constexpr iterator begin() { return &_data[0]; }
     /** @brief iterator for end */
-    constexpr auto end() { return &_data[0] + 3; }
+    constexpr iterator end() { return &_data[0] + 3; }
 
     /** @brief tests equivalence */
     constexpr bool operator==(const Vec3& other) const {
@@ -378,6 +387,47 @@ inline Vec3 random_unit_vector() {
  */
 class Vec6 {
   public:
+    /** @brief Vec6 iterator */
+    struct Iterator {
+
+        using value_type = Scalar;
+        using reference = Scalar&;
+        using pointer = Scalar*;
+
+        Vec6* const vec;
+        Scalar* ptr;
+
+        Iterator& operator++();
+        Iterator operator++(int);
+        Scalar& operator*();
+
+        bool operator==(const Iterator& rhs);
+        bool operator!=(const Iterator& rhs);
+    };
+
+    /** @brief Vec6 const iterator */
+    struct ConstIterator {
+
+        using value_type = const Scalar;
+        using reference = const Scalar&;
+        using pointer = const Scalar*;
+
+        const Vec6* const vec;
+        const Scalar* ptr;
+
+        ConstIterator& operator++();
+        ConstIterator operator++(int);
+        Scalar operator*();
+
+        bool operator==(const ConstIterator& rhs);
+        bool operator!=(const ConstIterator& rhs);
+    };
+
+  public:
+    using iterator = Iterator;
+    using const_iterator = ConstIterator;
+
+  public:
     /** @brief initialize as zero vector */
     constexpr Vec6() : _data0{0, 0, 0}, _data1{0, 0, 0} {}
     /** @brief initialize with coefficients */
@@ -410,6 +460,19 @@ class Vec6 {
     constexpr Vec3 second_half() const {
         return Vec3(_data1.x, _data1.y, _data1.z);
     }
+
+    /** @brief const iterator for first element */
+    constexpr const_iterator begin() const {
+        return {.vec = this, .ptr = &_data0[0]};
+    }
+    /** @brief const iterator for end */
+    constexpr const_iterator end() const {
+        return {.vec = this, .ptr = &_data1[0] + 3};
+    }
+    /** @brief iterator for first element */
+    constexpr iterator begin() { return {.vec = this, .ptr = &_data0[0]}; }
+    /** @brief iterator for end */
+    constexpr iterator end() { return {.vec = this, .ptr = &_data1[0] + 3}; }
 
     /** @brief tests equivalence */
     constexpr bool operator==(const Vec6& other) const {
@@ -509,6 +572,84 @@ class Vec6 {
 
     data_type _data0, _data1;
 };
+
+} // namespace cpp_raytracing
+
+namespace std {
+
+template <>
+struct iterator_traits<cpp_raytracing::Vec6::Iterator> {
+    using difference_type = void;
+    using value_type = cpp_raytracing::Vec6::Iterator::value_type;
+    using pointer_type = cpp_raytracing::Vec6::Iterator::pointer;
+    using reference = cpp_raytracing::Vec6::Iterator::reference;
+    using iterator_category = forward_iterator_tag;
+};
+
+template <>
+struct iterator_traits<cpp_raytracing::Vec6::ConstIterator> {
+    using difference_type = void;
+    using value_type = cpp_raytracing::Vec6::ConstIterator::value_type;
+    using pointer_type = cpp_raytracing::Vec6::ConstIterator::pointer;
+    using reference = cpp_raytracing::Vec6::ConstIterator::reference;
+    using iterator_category = forward_iterator_tag;
+};
+
+} // namespace std
+
+namespace cpp_raytracing {
+
+Vec6::Iterator& Vec6::Iterator::operator++() {
+    ++ptr;
+    if (ptr == &vec->_data0[0] + 3) {
+        ptr = &vec->_data1[0];
+    }
+    return *this;
+}
+
+Vec6::Iterator Vec6::Iterator::operator++(int) {
+    Iterator value = *this;
+    ++(*this);
+    return value;
+}
+
+Scalar& Vec6::Iterator::operator*() {
+    return *ptr;
+}
+
+bool Vec6::Iterator::operator==(const Iterator& rhs) {
+    return vec == rhs.vec && ptr == rhs.ptr;
+}
+
+bool Vec6::Iterator::operator!=(const Iterator& rhs) {
+    return vec != rhs.vec || ptr != rhs.ptr;
+}
+
+Vec6::ConstIterator& Vec6::ConstIterator::operator++() {
+    ++ptr;
+    if (ptr == &vec->_data0[0] + 3) {
+        ptr = &vec->_data1[0];
+    }
+    return *this;
+}
+
+Vec6::ConstIterator Vec6::ConstIterator::operator++(int) {
+    ConstIterator value = *this;
+    ++(*this);
+    return value;
+}
+
+Scalar Vec6::ConstIterator::operator*() {
+    return *ptr;
+}
+
+bool Vec6::ConstIterator::operator==(const ConstIterator& rhs) {
+    return vec == rhs.vec && ptr == rhs.ptr;
+}
+
+bool Vec6::ConstIterator::operator!=(const ConstIterator& rhs) {
+    return vec != rhs.vec || ptr != rhs.ptr;
+}
 
 /** @brief write vector as space separated components */
 inline std::ostream& operator<<(std::ostream& os, const Vec6& v) {
