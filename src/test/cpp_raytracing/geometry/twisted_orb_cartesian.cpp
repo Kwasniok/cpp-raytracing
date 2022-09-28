@@ -7,7 +7,11 @@
 namespace cpp_raytracing { namespace test {
 
 constexpr Scalar epsilon = 1e-12;
-constexpr Scalar ray_step_size = 0.1;
+constexpr Scalar ray_initial_step_size = 0.1;
+constexpr Scalar ray_error_abs = 1e-4;
+constexpr Scalar ray_error_rel = 1e-4;
+constexpr Scalar ray_max_length = 1e+8;
+constexpr Scalar ray_segment_length_factor = 1.1;
 
 void test_ray_passing_through() {
 
@@ -58,8 +62,11 @@ void test_ray_passing_through() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     const Vec3 direction = geometry.normalize(start, direction_non_normalized);
@@ -131,8 +138,11 @@ void test_to_onb_jacobian() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     for (const auto& [point, jacobian] : points_and_jacobians) {
@@ -193,8 +203,11 @@ void test_from_onb_jacobian() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     for (const auto& [point, jacobian] : points_and_jacobians) {
@@ -270,8 +283,11 @@ void test_metric() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     for (const auto& [point, metric] : points_and_metrics) {
@@ -298,8 +314,11 @@ void test_to_cartesian_coords() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.to_cartesian_coords(position),
@@ -351,8 +370,11 @@ void test_inverse_metric() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     for (const auto& [point, inv_metric] : points_and_inv_metrics) {
@@ -473,8 +495,11 @@ void test_christoffel_1() {
     TwistedOrbCartesianGeometry geometry{
         psi,
         rho,
-        ray_step_size,
-        ray_step_size * 1e-2,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
     };
 
     const Ten3x3x3 res = geometry.christoffel_1(point);

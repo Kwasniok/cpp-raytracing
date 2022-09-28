@@ -24,8 +24,16 @@
 #define CPP_RAYTRACING_GEOMETRY_TWISTED_ORB_CARTESIAN_HPP
 
 #include <cmath>
+// note specific imports for speed and to avoid warnings for unrelated code
+#include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
+#include <boost/numeric/odeint/iterator/adaptive_time_iterator.hpp>
+#include <boost/numeric/odeint/stepper/generation/generation_controlled_runge_kutta.hpp>
+#include <boost/numeric/odeint/stepper/generation/generation_runge_kutta_cash_karp54.hpp>
+#include <boost/numeric/odeint/stepper/generation/make_controlled.hpp>
+#include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
 
 #include "../algorithm/runge_kutta.hpp"
+#include "../values/tensor_boost_numeric_odeint.hpp"
 #include "../world/ray_segment.hpp"
 #include "base.hpp"
 
@@ -33,6 +41,18 @@ namespace cpp_raytracing {
 
 class TwistedOrbCartesianRay;
 class TwistedOrbCartesianGeometry;
+
+/**
+ * @brief functional object for solving integral of ray propagation
+ * @see TwistedOrbCartesianRay, TwistedOrbCartesianGeometry
+ */
+struct TwistedOrbCartesianRayDifferential {
+    /** @brief linked geometry */
+    const TwistedOrbCartesianGeometry& geometry;
+
+    /** @brief call */
+    void operator()(const Vec6& p, Vec6& dpdt, Scalar t);
+};
 
 /**
  * @brief ray for non-Euclidean twisted orb geometry with Cartesian-like
@@ -55,24 +75,31 @@ class TwistedOrbCartesianRay : public Ray {
 
     virtual std::optional<RaySegment> next_ray_segment() override;
 
-  public:
-    /**
-     * @brief returns current phase
-     * @note For debugging only.
-     */
-    Vec6 phase() const { return _phase; }
+    /** @brief returns current phase */
+    const Vec6& phase() const { return _phase; }
 
   private:
-    /** @brief normalize direction based on position */
-    void normalize_phase();
+    using State = Vec6;
+    using Value = Scalar;
+    using Stepper =
+        boost::numeric::odeint::runge_kutta_cash_karp54<State, Value>;
+    using ControlledStepper =
+        typename boost::numeric::odeint::result_of::make_controlled<
+            Stepper>::type;
+    using System = TwistedOrbCartesianRayDifferential;
+    using Iterator =
+        boost::numeric::odeint::adaptive_time_iterator<ControlledStepper,
+                                                       System, State>;
 
-    /** @brief recommended step size for inward running ray segment */
-    Scalar adaptive_step_size(const Vec3& start);
+    static Iterator
+    make_phase_iterator(TwistedOrbCartesianRay& ray,
+                        const TwistedOrbCartesianGeometry& geometry,
+                        const Vec3& start, const Vec3& direction);
 
   private:
-    /** @note phase = (position, velocity */
     Vec6 _phase;
     const TwistedOrbCartesianGeometry& _geometry;
+    Iterator _phase_iterator;
 };
 
 /**
@@ -107,8 +134,11 @@ class TwistedOrbCartesianGeometry : public Geometry {
      */
     TwistedOrbCartesianGeometry(const Scalar twist_angle,
                                 const Scalar twist_radius,
-                                const Scalar ray_step_size,
-                                const Scalar ray_min_step_size);
+                                const Scalar ray_initial_step_size,
+                                const Scalar ray_error_abs,
+                                const Scalar ray_error_rel,
+                                const Scalar ray_max_length,
+                                const Scalar _ray_segment_length_factor);
 
     virtual ~TwistedOrbCartesianGeometry() = default;
 
@@ -160,95 +190,118 @@ class TwistedOrbCartesianGeometry : public Geometry {
     Scalar _twist_angle;
     /** @brief controlls spatial extend of twisting  */
     Scalar _twist_radius;
-    /** @brief ray propagation step size */
-    Scalar _ray_step_size;
-    /** @brief lower bound for step size */
-    Scalar _ray_min_step_size;
-    /** @brief upper bound for step size */
-    Scalar _ray_max_step_size;
-    /** @brief upper bound for step size */
-    Scalar _ray_max_error;
+    /** @brief initial step size for rays */
+    Scalar _ray_initial_step_size;
+    /** @brief absolute error tolerance for rays */
+    Scalar _ray_error_abs;
+    /** @brief relative error tolerance for rays */
+    Scalar _ray_error_rel;
+    /** @brief upper limit for ray length */
+    Scalar _ray_max_length;
+    /**
+     * @brief factor by which to stretch each ray segment
+     * @note Should be a bit larger than `1.0` to avoid small scale geometrical
+     *        banding.
+     */
+    Scalar _ray_segment_length_factor;
 
     /** @brief differential equation for phase velocity */
-    const std::function<Vec6(const Vec6&)> _phase_derivative_func;
+    const TwistedOrbCartesianRayDifferential _phase_derivative_func;
 };
+
+void TwistedOrbCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
+                                                    Scalar t) {
+    const Vec3 pos = p.first_half();
+    const Vec3 dir = p.second_half();
+    const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
+    dpdt = {
+        p.second_half(),
+        Vec3{
+            -dot(dir, chris_2[0] * dir),
+            -dot(dir, chris_2[1] * dir),
+            -dot(dir, chris_2[2] * dir),
+        },
+    };
+}
 
 TwistedOrbCartesianRay::TwistedOrbCartesianRay(
     const TwistedOrbCartesianGeometry& geometry, const Vec3& start,
     const Vec3& direction)
-    : _phase{start, direction}, _geometry(geometry) {}
+    : _phase(start, direction),
+      _geometry{geometry},
+      _phase_iterator{make_phase_iterator(*this, geometry, start, direction)} {}
 
 std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
 
+    const auto& [phase_start, time] = *_phase_iterator;
+    // note: copies! (phase will be updated later)
+    const Scalar time_start = time;
+    const Vec3 position = phase_start.first_half();
+    const Vec3 velocity = phase_start.second_half();
+
     // check for numerical issues
-    if (auto x = _phase.first_half().length(),
-        y = _phase.second_half().length();
+    if (auto x = position.length(), y = velocity.length();
         !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
         // encountered a numerical issue -> abort ray
         return std::nullopt;
     }
 
     // create next segment
-    const Scalar R = _phase.first_half().length();
-    const bool outwards = dot(_phase.first_half(), _phase.second_half()) > 0.0;
+    const Scalar R = position.length();
+    const bool outwards = dot(position, velocity) > 0.0;
     if (R / _geometry._twist_radius > 5.0 && outwards) {
         // far away from origin and point away from origin
         // -> conventional infinite ray segment
-        return RaySegment{_phase.first_half(), _phase.second_half(), infinity};
+        return RaySegment{position, velocity, infinity};
     }
 
-    // adjust step size
-    const Scalar delta_t = adaptive_step_size(_phase.first_half());
-
-    // note: direction is approximately constant for small segments
-    const RaySegment segment = {_phase.first_half(), _phase.second_half(),
-                                delta_t};
-
     // update state
-    _phase +=
-        runge_kutta_4_delta(_geometry._phase_derivative_func, _phase, delta_t);
+    ++_phase_iterator;
 
-    // normalize state
-    normalize_phase();
+    // calculate segment
+    // determine dt
+    const auto& [_, time_end] = *_phase_iterator;
+    // note: extend interval a tiny bit to avoid small scale geometrical banding
+    const Scalar delta_t =
+        (time_end - time_start) * _geometry._ray_segment_length_factor;
+    // note: direction is approximately constant for small segments
+    // note: use initial position and velocity
+    const RaySegment segment = {position, velocity, delta_t};
 
     return segment;
 };
 
-void TwistedOrbCartesianRay::normalize_phase() {
-    const Vec3 pos = _phase.first_half();
-    const Vec3 dir = _phase.second_half();
-    _phase = Vec6{pos, _geometry.normalize(pos, dir)};
-}
+TwistedOrbCartesianRay::Iterator TwistedOrbCartesianRay::make_phase_iterator(
+    TwistedOrbCartesianRay& ray, const TwistedOrbCartesianGeometry& geometry,
+    const Vec3& start, const Vec3& direction) {
+    using namespace boost::numeric::odeint;
 
-Scalar TwistedOrbCartesianRay::adaptive_step_size(const Vec3& start) {
-    // relative distance
-    const Scalar D = 0.5 * start.length() / _geometry._twist_radius;
-    // lower step size towards the center
-    const Scalar step_size = _geometry._ray_step_size * std::pow(D, 2);
-    return std::max(step_size, _geometry._ray_min_step_size);
+    const Scalar initial_dt = geometry._ray_initial_step_size;
+    const Scalar error_abs = geometry._ray_error_abs;
+    const Scalar error_rel = geometry._ray_error_abs;
+
+    ControlledStepper stepper = make_controlled(
+        error_abs, error_rel, runge_kutta_cash_karp54<State, Value>());
+
+    return make_adaptive_time_iterator_begin<ControlledStepper, System, State>(
+        std::move(stepper), geometry._phase_derivative_func, ray._phase, 0.0,
+        geometry._ray_max_length, initial_dt);
 }
 
 TwistedOrbCartesianGeometry::TwistedOrbCartesianGeometry(
     const Scalar twist_angle, const Scalar twist_radius,
-    const Scalar ray_step_size, const Scalar ray_min_step_size)
+    const Scalar ray_initial_step_size, const Scalar ray_error_abs,
+    const Scalar ray_error_rel, const Scalar ray_max_length,
+    const Scalar ray_segment_length_factor)
     : _twist_angle(twist_angle),
       _twist_radius(twist_radius),
-      _ray_step_size(ray_step_size),
-      _ray_min_step_size(ray_min_step_size),
+      _ray_initial_step_size(ray_initial_step_size),
+      _ray_error_abs(ray_error_abs),
+      _ray_error_rel(ray_error_rel),
+      _ray_max_length(ray_max_length),
+      _ray_segment_length_factor(ray_segment_length_factor),
       // note: store derivative function once per geometry
-      _phase_derivative_func{[&geo = *this](const Vec6& p) {
-          const Vec3 pos = p.first_half();
-          const Vec3 dir = p.second_half();
-          const auto chris_2 = geo.christoffel_2(pos);
-          return Vec6{
-              p.second_half(),
-              Vec3{
-                  -dot(dir, chris_2[0] * dir),
-                  -dot(dir, chris_2[1] * dir),
-                  -dot(dir, chris_2[2] * dir),
-              },
-          };
-      }} {}
+      _phase_derivative_func{*this} {}
 
 std::unique_ptr<Ray>
 TwistedOrbCartesianGeometry::ray_from(const Vec3& start,

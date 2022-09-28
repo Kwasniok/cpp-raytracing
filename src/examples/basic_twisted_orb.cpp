@@ -97,10 +97,20 @@ struct RenderConfig {
     Scalar twist_angle;
     /** @brief spatial extend of geoemtric twist effect */
     Scalar twist_radius;
-    /** @brief size parameter for ray segments */
-    Scalar ray_step_size;
-    /** @brief minimal size parameter for ray segments */
-    Scalar ray_min_step_size;
+    /** @brief initial ray segment length parameter */
+    Scalar ray_initial_step_size;
+    /** @brief abs ray integration error */
+    Scalar ray_error_abs;
+    /** @brief rel ray integration error */
+    Scalar ray_error_rel;
+    /** @brief ray length limit */
+    Scalar ray_max_length;
+    /**
+     * @brief factor by which to stretch each ray segment
+     * @note Should be a bit larger than `1.0` to avoid small scale geometrical
+     *        banding.
+     */
+    Scalar ray_segment_length_factor;
 };
 
 /**
@@ -115,8 +125,14 @@ void render_ppm(const RenderConfig& config) {
     };
 
     TwistedOrbCartesianGeometry geometry{
-        config.twist_angle, config.twist_radius, config.ray_step_size,
-        config.ray_min_step_size};
+        config.twist_angle,
+        config.twist_radius,
+        config.ray_initial_step_size,
+        config.ray_error_abs,
+        config.ray_error_rel,
+        config.ray_max_length,
+        config.ray_segment_length_factor,
+    };
     Scene scene = make_scene();
 
     std::unique_ptr<Renderer> renderer;
@@ -235,14 +251,28 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(2.0)
         .help("sptial extend of twisting")
         .scan<'f', Scalar>();
-    parser.add_argument("--ray_step_size")
+    parser.add_argument("--ray_initial_step_size")
         .default_value<Scalar>(1e-1)
-        .help("influences length of ray segments"
-              " (lower value leads to more accurate results but costs more)")
+        .help("influences initial length of ray segments")
         .scan<'f', Scalar>();
-    parser.add_argument("--ray_min_step_size")
-        .default_value<Scalar>(1e-4)
-        .help("lower bound for length of ray segments")
+    parser.add_argument("--ray_error_abs")
+        .default_value<Scalar>(1e-8)
+        .help(
+            "upper bound for absolute ray integration error (lower is better)")
+        .scan<'f', Scalar>();
+    parser.add_argument("--ray_error_rel")
+        .default_value<Scalar>(1e-8)
+        .help(
+            "upper bound for relative ray integration error (lower is better)")
+        .scan<'f', Scalar>();
+    parser.add_argument("--ray_max_length")
+        .default_value<Scalar>(1e+8)
+        .help("upper bound for total ray length (larger is better)")
+        .scan<'f', Scalar>();
+    parser.add_argument("--ray_segment_length_factor")
+        .default_value<Scalar>(1.1)
+        .help("factor to multiply the length of each ray segment (shoulde be a "
+              "bit larger then 1.0 to avoid small scale geometrical banding)")
         .scan<'f', Scalar>();
 
     try {
@@ -271,19 +301,13 @@ int main(int argc, char** argv) {
         parser.get<bool>("--debug_ray_terminations");
     config.twist_angle = parser.get<Scalar>("--twist_angle");
     config.twist_radius = parser.get<Scalar>("--twist_radius");
-    config.ray_step_size = parser.get<Scalar>("--ray_step_size");
-    config.ray_min_step_size = parser.get<Scalar>("--ray_min_step_size");
-
-    if (config.ray_step_size > 1.0 && config.twist_angle != 0.0) {
-        std::cerr << "WARNING: ray_step_size > 1.0 is not recommended!"
-                  << std::endl;
-    }
-    if (config.ray_step_size < config.ray_min_step_size) {
-        std::cerr << "ERROR: ray_step_size < ray_min_step_size is not "
-                     "sensible!"
-                  << std::endl;
-        std::exit(1);
-    }
+    config.ray_initial_step_size =
+        parser.get<Scalar>("--ray_initial_step_size");
+    config.ray_error_abs = parser.get<Scalar>("--ray_error_abs");
+    config.ray_error_rel = parser.get<Scalar>("--ray_error_rel");
+    config.ray_max_length = parser.get<Scalar>("--ray_max_length");
+    config.ray_segment_length_factor =
+        parser.get<Scalar>("--ray_segment_length_factor");
 
     render_ppm(config);
 }
