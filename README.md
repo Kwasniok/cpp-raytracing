@@ -9,6 +9,39 @@ Note: For a conventional linear ray tracer see commit b6bbcfe.
 
 ### Adaptive Non-Linear Ray Propagation
 
+![basic_swirl highres](https://user-images.githubusercontent.com/7516208/193019366-d81259c3-5ef9-402e-a46c-b20b547051ad.png)
+
+Created with `build/examples/basic_swirl` (version ee5499f) using `swirl_strength = 0.01` and `resolution_factor = 4`.
+
+![basic_twisted_orb highres](https://user-images.githubusercontent.com/7516208/193018890-9b75b3b1-5479-45ee-9d46-a07620b4182a.png)
+
+Created with `build/examples/basic_twisted_orb` (version f952428) using `twist_angle = -6.0`, `resolution_factor = 4`, `ray_error_abs  = 1e-12` and `ray_depth = 10000`.
+
+### Materials
+
+![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
+
+Diffuse, Dielectric, Metal & Emission
+
+### Rolling Shutter & Motion Blur
+
+![rolling shutter: rotor in motion](https://user-images.githubusercontent.com/7516208/172665270-88ba7a69-5337-4cf6-bba5-7247ee334ffb.png)
+
+Wheel in Motion.
+
+![rolling shutter: rotor at rest](https://user-images.githubusercontent.com/7516208/172665290-341e4786-5dcd-45e0-b850-2956b121007c.png)
+
+Resting.
+
+### Optimizations
+- Multi-Threaded
+    - Rendering (fully)
+    - BVH Tree Generation (partially)
+- Bounding Volume Hierachy (BVH)
+
+
+## Performance
+
 | | ![basic_twisted_orb twist_angle -6 err_abs e-10](https://user-images.githubusercontent.com/7516208/192962185-89160c38-3620-4540-af3a-fbbe8e942959.png) | ![basic_twisted_orb twist_angle -3 err_abs e-10](https://user-images.githubusercontent.com/7516208/192967775-2a06da8e-ee4b-41ab-a1a6-5d22074014d6.png) | ![basic_twisted_orb angle_0 err_abs_e-10](https://user-images.githubusercontent.com/7516208/192968225-010ed177-3f5e-46f5-8a9f-00d100836863.png) |
 |-|-|-|-|
 | geometry | curved | curved | flat |
@@ -32,21 +65,6 @@ file (commit 2cc272e) | `examples/basic_swirl` | `examples/basic_swirl` | `examp
 | user time (intel i5-4590) | **30min11sec** | **5min47sec** | **9sec** |
 
 note: The image in the middle and right are identical due to the strong similarity of the renderers and usage of pseudo-random number generators with fixed seeds.
-
-### Materials
-- Diffuse, Dielectric, Metal & Emission
-    ![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
-
-### Rolling Shutter & Motion Blur
-![rolling shutter: rotor at rest](https://user-images.githubusercontent.com/7516208/172665290-341e4786-5dcd-45e0-b850-2956b121007c.png)
-![rolling shutter: rotor in motion](https://user-images.githubusercontent.com/7516208/172665270-88ba7a69-5337-4cf6-bba5-7247ee334ffb.png)
-
-### Optimizations
-- Multi-Threaded
-    - Rendering (fully)
-    - BVH Tree Generation (partially)
-- Bounding Volume Hierachy (BVH)
-
 
 ## Build, Test & Preview
 ```bash
