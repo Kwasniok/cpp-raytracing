@@ -211,7 +211,7 @@ int main(int argc, char** argv) {
     parser.add_argument("--time")
         .default_value<Scalar>(0.0)
         .help("time of the frame")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--shutter_mode")
         .default_value(SHUTTER_MODE_GLOBAL_SHUTTER)
         .action([](const std::string& value) {
@@ -225,15 +225,15 @@ int main(int argc, char** argv) {
     parser.add_argument("--exposure_time")
         .default_value<Scalar>(0.0)
         .help("total exposure time per frame")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--total_line_exposure_time")
         .default_value<Scalar>(0.0)
         .help("exposure time per line (rolling shutter mode only)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--gamma")
         .default_value<ColorScalar>(2.0)
         .help("gamma correction for non-raw image formats")
-        .scan<'f', ColorScalar>();
+        .scan<'g', ColorScalar>();
     parser.add_argument("--debug_normals")
         .default_value<bool>(false) // store_true
         .implicit_value(true)
@@ -246,34 +246,34 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(-pi / 2)
         .help("strength of geometric twist effect in radians (max twist angle, "
               "0.0 is flat space)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--twist_radius")
         .default_value<Scalar>(2.0)
         .help("sptial extend of twisting")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--ray_initial_step_size")
         .default_value<Scalar>(1e-1)
         .help("influences initial length of ray segments")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--ray_error_abs")
         .default_value<Scalar>(1e-8)
         .help(
             "upper bound for absolute ray integration error (lower is better)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--ray_error_rel")
         .default_value<Scalar>(1e-8)
         .help(
             "upper bound for relative ray integration error (lower is better)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--ray_max_length")
         .default_value<Scalar>(1e+8)
         .help("upper bound for total ray length (larger is better)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--ray_segment_length_factor")
         .default_value<Scalar>(1.1)
         .help("factor to multiply the length of each ray segment (shoulde be a "
               "bit larger then 1.0 to avoid small scale geometrical banding)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
 
     try {
         parser.parse_args(argc, argv);

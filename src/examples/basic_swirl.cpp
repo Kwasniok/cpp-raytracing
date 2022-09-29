@@ -189,7 +189,7 @@ int main(int argc, char** argv) {
     parser.add_argument("--time")
         .default_value<Scalar>(0.0)
         .help("time of the frame")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--shutter_mode")
         .default_value(SHUTTER_MODE_GLOBAL_SHUTTER)
         .action([](const std::string& value) {
@@ -203,15 +203,15 @@ int main(int argc, char** argv) {
     parser.add_argument("--exposure_time")
         .default_value<Scalar>(0.0)
         .help("total exposure time per frame")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--total_line_exposure_time")
         .default_value<Scalar>(0.0)
         .help("exposure time per line (rolling shutter mode only)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--gamma")
         .default_value<ColorScalar>(2.0)
         .help("gamma correction for non-raw image formats")
-        .scan<'f', ColorScalar>();
+        .scan<'g', ColorScalar>();
     parser.add_argument("--debug_normals")
         .default_value<bool>(false) // store_true
         .implicit_value(true)
@@ -223,11 +223,11 @@ int main(int argc, char** argv) {
     parser.add_argument("--swirl_strength")
         .default_value<Scalar>(0.01)
         .help("strength of geometric swirl effect (0.0 is flat space)")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
     parser.add_argument("--ray_step_size")
         .default_value<Scalar>(0.5)
         .help("influences length of ray segments")
-        .scan<'f', Scalar>();
+        .scan<'g', Scalar>();
 
     try {
         parser.parse_args(argc, argv);
