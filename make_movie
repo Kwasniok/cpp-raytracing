@@ -2,24 +2,36 @@
 
 set -e
 
-EXEC="./build/examples/swirl_triangles"
-# executable specific args
-EXEC_ARGS="--swirl_strength 0.01 --ray_step_size 0.1"
+EXEC="./build/examples/basic_swirl"
 OUT_DIR="./out/movie"
 
-FPS=30 # frames per second
+
+FRAME_START=0
+FRAME_STOP=59
+FPS=60 # frames per second
+RESOLUTION_FACTOR=2 # >= 2 for ffmpeg to work
 EXPOSURE_TIME=$(echo "0.8/${FPS}" | bc -l)
 TOTAL_LINE_EXPOSURE_TIME=$(echo "${EXPOSURE_TIME} / 5.0" | bc -l)
 SAMPLES=10
 SAVE_FREQUENCY=$(echo "${SAMPLES} + 1" | bc -l)
-RAY_DEPTH=100
-RESOLUTION_FACTOR=2 # >= 2 (for ffmpeg to work)
+SWIRL_STRENGTH="0.01"
+RAY_DEPTH=1000
+RAY_MAX_LENGTH=100
+RAY_ERROR_ABS="1e-10"
 
 # time/frame independent parameters
-FIXED_ARGS="--exposure_time ${EXPOSURE_TIME} --total_line_exposure_time ${TOTAL_LINE_EXPOSURE_TIME} --samples ${SAMPLES} --save_frequency ${SAVE_FREQUENCY} --ray_depth ${RAY_DEPTH} --resolution_factor ${RESOLUTION_FACTOR} ${EXEC_ARGS}"
-
-FRAME_START=0
-FRAME_STOP=60
+FIXED_ARGS="\
+--resolution_factor ${RESOLUTION_FACTOR} \
+--exposure_time ${EXPOSURE_TIME} \
+--total_line_exposure_time ${TOTAL_LINE_EXPOSURE_TIME} \
+--samples ${SAMPLES} \
+--save_frequency ${SAVE_FREQUENCY} \
+--swirl_strength ${SWIRL_STRENGTH} \
+--ray_depth ${RAY_DEPTH} \
+--ray_error_abs ${RAY_ERROR_ABS} \
+--ray_max_length ${RAY_MAX_LENGTH} \
+--debug_ray_terminations \
+"
 
 function timestamp {
     echo "        $(date +%H:%M:%S)"
@@ -35,6 +47,10 @@ function ppm {
     echo "${OUT_DIR}/${FRAME}.ppm"
 }
 
+function pfm {
+    FRAME=$1
+    echo "${OUT_DIR}/${FRAME}.pfm"
+}
 
 function png {
     FRAME=$1
@@ -44,7 +60,8 @@ function png {
 function convert2png {
     FRAME=$1
     pnm2png $(ppm ${FRAME}) $(png ${FRAME}) \
-    && rm $(ppm ${FRAME})
+    && rm $(ppm ${FRAME}) \
+    && rm $(pfm ${FRAME})
 }
 
 function render_frame {
@@ -71,7 +88,7 @@ function make_frames {
 }
 
 function make_mp4 {
-    ffmpeg -r 60 -i $(png "%05d") -vcodec libx264 -pix_fmt yuv420p "${OUT_DIR}/mov.mp4"
+    ffmpeg -r ${FPS} -i $(png "%05d") -vcodec libx264 -pix_fmt yuv420p "${OUT_DIR}/mov.mp4"
 }
 
 
