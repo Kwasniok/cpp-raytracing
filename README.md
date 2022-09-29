@@ -70,14 +70,13 @@ note: The image in the middle and right are identical due to the strong similari
 ```bash
 make
 ```
-See `./out` directory for the output.
+See `./build` for the executables and  `./out` directory for the test image output.
 
 ## Documentation
 ```bash
 make doc
 ```
 See `./doc` directory for the documentation.
-
 
 ## Run
 ```bash
