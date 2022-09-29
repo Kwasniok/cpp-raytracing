@@ -236,6 +236,14 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
     const auto& [phase_start, time] = *_phase_iterator;
     // note: copies! (phase will be updated later)
     const Scalar time_start = time;
+
+    // check for ray length
+    if (time_start > _geometry._ray_max_length) {
+        // prematurely end ray due to exceeding length
+        // note: iterator will stop generating new elements for this time/length
+        return std::nullopt;
+    }
+
     const Vec3 position = phase_start.first_half();
     const Vec3 velocity = phase_start.second_half();
 
