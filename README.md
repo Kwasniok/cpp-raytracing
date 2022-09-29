@@ -110,6 +110,7 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 
 - Linux kernel v5.17+
 - C++20
+- C++ Boost v1.80+
 - gcc v12.1+
 - make v4.3+
 - doxygen v1.9+ (optional, documentation)
