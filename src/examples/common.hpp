@@ -213,7 +213,7 @@ std::shared_ptr<Material> make_metal_3d_checker_material(
 std::shared_ptr<Material>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
     auto mat = std::make_shared<Emitter>();
-    mat->color = make_color_texture(color);
+    mat->color = make_color_texture(strength * color);
     return mat;
 }
 
