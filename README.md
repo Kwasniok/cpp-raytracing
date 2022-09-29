@@ -7,13 +7,26 @@ Note: For a conventional linear ray tracer see commit b6bbcfe.
 
 ## Features
 
-### Non-Linear Ray Propagation
 
+### Adaptive Non-Linear Ray Propagation
+
+| | ![basic_twisted_orb twist_angle -6 err_abs e-10](https://user-images.githubusercontent.com/7516208/192962185-89160c38-3620-4540-af3a-fbbe8e942959.png) | ![basic_twisted_orb twist_angle -3 err_abs e-10](https://user-images.githubusercontent.com/7516208/192967775-2a06da8e-ee4b-41ab-a1a6-5d22074014d6.png) | ![basic_twisted_orb angle_0 err_abs_e-10](https://user-images.githubusercontent.com/7516208/192968225-010ed177-3f5e-46f5-8a9f-00d100836863.png) |
+|-|-|-|-|
+| geometry | curved | curved | flat |
+| method | adaptive Cash-Karp | adaptive Cash-Karp | adaptive Cash-Karp |
+file (commit f229e20) | `examples/basic_twisted_orb` | `examples/basic_twisted_orb` | `examples/basic_twisted_orb` |
+| size (`resolution_factor`) | 480x270 pixel (`2`) | 480x270 pixel (`2`) | 480x270 pixel (`2`) |
+| `samples` | `100` | `100` | `100` |
+| `twist_angle` | `-6.0` | `-3.0` | `0.0` |
+| `ray_error_abs` | `1e-10` | `1e-10` | `1e-3` |
+| user time (intel i5-4590) | **61min31sec** | **47min17sec** | **2min41sec** |
+
+### Non-Linear Ray Propagation
 
 | | ![non-linear: swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190710403-8e48caee-bbc7-451e-9fdd-7639b1a749be.png) | ![non-linear: reference swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190714403-650472f9-7f9a-4eaf-8182-0ca079bbcb3d.png) | ![linear: reference flat geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190715517-52e6dd32-8ede-45fb-98d6-1c9abb5c8fbc.png) |
 |-|-|-|-|
 | geometry | curved | flat | flat |
-| method | non-linear propagation | non-linear propagation | linear/conventional propagation |
+| method | Runge-Kutta 4 | Runge-Kutta 4 | linear/conventional propagation |
 file (commit f706fcf) | `examples/swirl_triangles` | `examples/swirl_triangles` | `examples/triangles` |
 | size (`resolution_factor`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) |
 | `samples` | `2400` | `2400` | `2400` |
