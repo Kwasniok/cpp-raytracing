@@ -32,7 +32,6 @@
 #include <boost/numeric/odeint/stepper/generation/make_controlled.hpp>
 #include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
 
-#include "../algorithm/runge_kutta.hpp"
 #include "../values/tensor_boost_numeric_odeint.hpp"
 #include "../world/ray_segment.hpp"
 #include "base.hpp"
@@ -75,7 +74,7 @@ class TwistedOrbCartesianRay : public Ray {
 
     virtual std::optional<RaySegment> next_ray_segment() override;
 
-    /** @brief returns current phase */
+    /** @brief returns current phase (position, velocity) */
     const Vec6& phase() const { return _phase; }
 
   private:
