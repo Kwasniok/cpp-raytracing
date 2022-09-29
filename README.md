@@ -7,7 +7,6 @@ Note: For a conventional linear ray tracer see commit b6bbcfe.
 
 ## Features
 
-
 ### Adaptive Non-Linear Ray Propagation
 
 | | ![basic_twisted_orb twist_angle -6 err_abs e-10](https://user-images.githubusercontent.com/7516208/192962185-89160c38-3620-4540-af3a-fbbe8e942959.png) | ![basic_twisted_orb twist_angle -3 err_abs e-10](https://user-images.githubusercontent.com/7516208/192967775-2a06da8e-ee4b-41ab-a1a6-5d22074014d6.png) | ![basic_twisted_orb angle_0 err_abs_e-10](https://user-images.githubusercontent.com/7516208/192968225-010ed177-3f5e-46f5-8a9f-00d100836863.png) |
@@ -21,20 +20,16 @@ file (commit f229e20) | `examples/basic_twisted_orb` | `examples/basic_twisted_o
 | `ray_error_abs` | `1e-10` | `1e-10` | `1e-3` |
 | user time (intel i5-4590) | **61min31sec** | **47min17sec** | **2min41sec** |
 
-### Non-Linear Ray Propagation
-
-| | ![non-linear: swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190710403-8e48caee-bbc7-451e-9fdd-7639b1a749be.png) | ![non-linear: reference swirl geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190714403-650472f9-7f9a-4eaf-8182-0ca079bbcb3d.png) | ![linear: reference flat geometry 2400 samples](https://user-images.githubusercontent.com/7516208/190715517-52e6dd32-8ede-45fb-98d6-1c9abb5c8fbc.png) |
+| | ![basic_swirl swirl_strength 0.01 err_abs_e-10](https://user-images.githubusercontent.com/7516208/192981000-2349c392-176a-4f33-be48-0b0274f01479.png) | ![basic_swirl 0 err_abs_e-10](https://user-images.githubusercontent.com/7516208/192981968-11b7b375-a414-477b-a0dc-6a2792e8b95b.png) | ![basic_euclidean](https://user-images.githubusercontent.com/7516208/192982282-e9f082dc-b6a0-4955-b049-eed96a2e908e.png) |
 |-|-|-|-|
 | geometry | curved | flat | flat |
-| method | Runge-Kutta 4 | Runge-Kutta 4 | linear/conventional propagation |
-file (commit f706fcf) | `examples/swirl_triangles` | `examples/swirl_triangles` | `examples/triangles` |
-| size (`resolution_factor`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) | 240x135 pixel (`1`) |
-| `samples` | `2400` | `2400` | `2400` |
-| `ray_depth` | `1000` | `50` | `50` |
-| `ray_step_size` | `0.1` | `1000` | - |
+| method | adaptive Cash-Karp | adaptive Cash-Karp | linear |
+file (commit 2cc272e) | `examples/basic_swirl` | `examples/basic_swirl` | `examples/basic_euclidean` |
+| size (`resolution_factor`) | 480x270 pixel (`2`) | 480x270 pixel (`2`) | 480x270 pixel (`2`) |
+| `samples` | `100` | `100` | `100` |
 | `swirl_strength` | `0.01` | `0.0` | - |
-| user time (intel i5-4590) | **833min47sec** | **41min31sec** | **1min49sec** |
-| max. total ray segments | 77,760,000,000 | 3,888,000,000 | 3,888,000,000 |
+| `ray_error_abs` | `1e-10` | `1e-10` | - |
+| user time (intel i5-4590) | **30min11sec** | **5min47sec** | **9sec** |
 
 note: The image in the middle and right are identical due to the strong similarity of the renderers and usage of pseudo-random number generators with fixed seeds.
 
