@@ -4,6 +4,3 @@
 [submodule "third_party/argparse"]
 	path = third_party/argparse
 	url = git@github.com:p-ranav/argparse.git
-[submodule "third_party/odeint"]
-	path = third_party/odeint
-	url = git@github.com:boostorg/odeint.git
