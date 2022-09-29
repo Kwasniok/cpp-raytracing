@@ -94,8 +94,20 @@ struct RenderConfig {
     bool debug_ray_terminations;
     /** @brief strength of geometric swirl effect */
     Scalar swirl_strength;
-    /** @brief size parameter for ray segments */
-    Scalar ray_step_size;
+    /** @brief initial ray segment length parameter */
+    Scalar ray_initial_step_size;
+    /** @brief abs ray integration error */
+    Scalar ray_error_abs;
+    /** @brief rel ray integration error */
+    Scalar ray_error_rel;
+    /** @brief ray length limit */
+    Scalar ray_max_length;
+    /**
+     * @brief factor by which to stretch each ray segment
+     * @note Should be a bit larger than `1.0` to avoid small scale geometrical
+     *        banding.
+     */
+    Scalar ray_segment_length_factor;
 };
 
 /**
@@ -109,8 +121,11 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    SwirlCartesianGeometry geometry{config.swirl_strength,
-                                    config.ray_step_size};
+    SwirlCartesianGeometry geometry{
+        config.swirl_strength, config.ray_initial_step_size,
+        config.ray_error_abs,  config.ray_error_rel,
+        config.ray_max_length, config.ray_segment_length_factor,
+    };
     Scene scene = make_scene();
 
     std::unique_ptr<Renderer> renderer;
@@ -224,9 +239,28 @@ int main(int argc, char** argv) {
         .default_value<Scalar>(0.01)
         .help("strength of geometric swirl effect (0.0 is flat space)")
         .scan<'g', Scalar>();
-    parser.add_argument("--ray_step_size")
-        .default_value<Scalar>(0.5)
-        .help("influences length of ray segments")
+    parser.add_argument("--ray_initial_step_size")
+        .default_value<Scalar>(1e-1)
+        .help("influences initial length of ray segments")
+        .scan<'g', Scalar>();
+    parser.add_argument("--ray_error_abs")
+        .default_value<Scalar>(1e-8)
+        .help(
+            "upper bound for absolute ray integration error (lower is better)")
+        .scan<'g', Scalar>();
+    parser.add_argument("--ray_error_rel")
+        .default_value<Scalar>(1e-8)
+        .help(
+            "upper bound for relative ray integration error (lower is better)")
+        .scan<'g', Scalar>();
+    parser.add_argument("--ray_max_length")
+        .default_value<Scalar>(1e+8)
+        .help("upper bound for total ray length (larger is better)")
+        .scan<'g', Scalar>();
+    parser.add_argument("--ray_segment_length_factor")
+        .default_value<Scalar>(1.1)
+        .help("factor to multiply the length of each ray segment (shoulde be a "
+              "bit larger then 1.0 to avoid small scale geometrical banding)")
         .scan<'g', Scalar>();
 
     try {
@@ -254,7 +288,13 @@ int main(int argc, char** argv) {
     config.debug_ray_terminations =
         parser.get<bool>("--debug_ray_terminations");
     config.swirl_strength = parser.get<Scalar>("--swirl_strength");
-    config.ray_step_size = parser.get<Scalar>("--ray_step_size");
+    config.ray_initial_step_size =
+        parser.get<Scalar>("--ray_initial_step_size");
+    config.ray_error_abs = parser.get<Scalar>("--ray_error_abs");
+    config.ray_error_rel = parser.get<Scalar>("--ray_error_rel");
+    config.ray_max_length = parser.get<Scalar>("--ray_max_length");
+    config.ray_segment_length_factor =
+        parser.get<Scalar>("--ray_segment_length_factor");
 
     render_ppm(config);
 }

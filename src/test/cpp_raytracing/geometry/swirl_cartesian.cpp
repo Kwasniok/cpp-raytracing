@@ -7,7 +7,11 @@
 namespace cpp_raytracing { namespace test {
 
 constexpr Scalar epsilon = 1e-12;
-constexpr Scalar ray_step_size = 1.0;
+constexpr Scalar ray_initial_step_size = 0.1;
+constexpr Scalar ray_error_abs = 1e-4;
+constexpr Scalar ray_error_rel = 1e-4;
+constexpr Scalar ray_max_length = 1e+8;
+constexpr Scalar ray_segment_length_factor = 1.1;
 
 void test_ray_passing_through() {
 
@@ -48,7 +52,14 @@ void test_ray_passing_through() {
      * {-21.7314, -3.64678, 8}
      */
 
-    SwirlCartesianGeometry geometry{a, ray_step_size};
+    SwirlCartesianGeometry geometry{
+        a,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
+    };
 
     const Vec3 normalized_direction = geometry.normalize(start, direction);
 
@@ -106,7 +117,14 @@ void test_to_onb_jacobian() {
      * }
      */
 
-    SwirlCartesianGeometry geometry{a, ray_step_size};
+    SwirlCartesianGeometry geometry{
+        a,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
+    };
 
     // to_onb_jacobiand
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.to_onb_jacobian(point),
@@ -159,7 +177,14 @@ void test_from_onb_jacobian() {
      * }
      */
 
-    SwirlCartesianGeometry geometry{a, ray_step_size};
+    SwirlCartesianGeometry geometry{
+        a,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
+    };
 
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.from_onb_jacobian(point),
                                       from_onb_jacobian, epsilon);
@@ -213,7 +238,14 @@ void test_metric() {
             },
         };
 
-    SwirlCartesianGeometry geometry{a, ray_step_size};
+    SwirlCartesianGeometry geometry{
+        a,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
+    };
 
     for (const auto& [point, metric] : points_and_metrics) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(geometry.metric(point), metric,

@@ -6,7 +6,15 @@
 #ifndef CPP_RAYTRACING_GEOMETRY_SWIRL_CARTESIAN_HPP
 #define CPP_RAYTRACING_GEOMETRY_SWIRL_CARTESIAN_HPP
 
-#include "../algorithm/runge_kutta.hpp"
+// note specific imports for speed and to avoid warnings for unrelated code
+#include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
+#include <boost/numeric/odeint/iterator/adaptive_time_iterator.hpp>
+#include <boost/numeric/odeint/stepper/generation/generation_controlled_runge_kutta.hpp>
+#include <boost/numeric/odeint/stepper/generation/generation_runge_kutta_cash_karp54.hpp>
+#include <boost/numeric/odeint/stepper/generation/make_controlled.hpp>
+#include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
+
+#include "../values/tensor_boost_numeric_odeint.hpp"
 #include "../world/ray_segment.hpp"
 #include "base.hpp"
 
@@ -14,6 +22,18 @@ namespace cpp_raytracing {
 
 class SwirlCartesianRay;
 class SwirlCartesianGeometry;
+
+/**
+ * @brief functional object for solving integral of ray propagation
+ * @see SwirlCartesianRay, SwirlCartesianGeometry
+ */
+struct SwirlCartesianRayDifferential {
+    /** @brief linked geometry */
+    const SwirlCartesianGeometry& geometry;
+
+    /** @brief call */
+    void operator()(const Vec6& p, Vec6& dpdt, Scalar t);
+};
 
 /**
  * @brief ray for non-Euclidean swirl geometry with Cartesian-like coordinates
@@ -29,27 +49,61 @@ class SwirlCartesianRay : public Ray {
      * @param direction normalized direction  tangential vector
      */
     SwirlCartesianRay(const SwirlCartesianGeometry& geometry, const Vec3& start,
-                      const Vec3& direction)
-        : _phase(start, direction), _geometry(geometry){};
+                      const Vec3& direction);
 
     virtual ~SwirlCartesianRay() = default;
 
     virtual std::optional<RaySegment> next_ray_segment() override;
 
   private:
-    /** @brief normalize direction based on position */
-    void normalize_phase();
+    /** @brief returns current phase (position, velocity) */
+    const Vec6& phase() const { return _phase; }
 
   private:
-    /** @note phase = (position, velocity */
+    using State = Vec6;
+    using Value = Scalar;
+    using Stepper =
+        boost::numeric::odeint::runge_kutta_cash_karp54<State, Value>;
+    using ControlledStepper =
+        typename boost::numeric::odeint::result_of::make_controlled<
+            Stepper>::type;
+    using System = SwirlCartesianRayDifferential;
+    using Iterator =
+        boost::numeric::odeint::adaptive_time_iterator<ControlledStepper,
+                                                       System, State>;
+
+    static Iterator make_phase_iterator(SwirlCartesianRay& ray,
+                                        const SwirlCartesianGeometry& geometry,
+                                        const Vec3& start,
+                                        const Vec3& direction);
+
+  private:
+    /** @brief returns current phase (position, velocity)*/
     Vec6 _phase;
     const SwirlCartesianGeometry& _geometry;
+    Iterator _phase_iterator;
 };
 
 /**
  * @brief non-Euclidean swirl geometry with Cartesian-like coordinates
  * @note vectors are with respect to the tangential space
  * @see SwirlCartesianRay
+ * @note The geometry is defined by the transformation form Carthesian space
+ *       `(x,y,z)` to *swirl* coordinates:
+ *       \code
+ *        (u,v,z) = (
+ *            r * cos(phi - a * r * z),
+ *            r * sin(phi - a * r * z),
+ *            z
+ *        )
+ *       where r = sqrt(x * x + y * y), phi = arctan(y / x)
+ *       \endcode
+ *       For constant `a`.
+ *       This is derived from the transformation in cylindric coordinates
+ *      `(r, phi, z)`:
+ *       \code
+ *        (r,alpha,z) = (r, phi - a * r * z, z)
+ *       \endcode
  */
 class SwirlCartesianGeometry : public Geometry {
 
@@ -61,8 +115,11 @@ class SwirlCartesianGeometry : public Geometry {
      * @note `swirl_strength = 0.0` is equivalent to Euclidean space.
      */
     SwirlCartesianGeometry(const Scalar swirl_strength,
-                           const Scalar ray_step_size)
-        : _swirl_strength(swirl_strength), _ray_step_size(ray_step_size){};
+                           const Scalar ray_initial_step_size,
+                           const Scalar ray_error_abs,
+                           const Scalar ray_error_rel,
+                           const Scalar ray_max_length,
+                           const Scalar _ray_segment_length_factor);
 
     virtual ~SwirlCartesianGeometry() = default;
 
@@ -81,74 +138,135 @@ class SwirlCartesianGeometry : public Geometry {
     /** @brief returns normalized vector */
     Vec3 normalize(const Vec3& position, const Vec3& vec) const;
 
-  private:
     /**
      * @brief returns inverse metric
+     * @note Public access for debugging only.
      * @see metric()
      */
     Mat3x3 inverse_metric(const Vec3& position) const;
-
-    /** @brief returns Chirstoffel symbols of first kind */
+    /**
+     * @brief returns Chirstoffel symbols of first kind
+     * @note Public access for debugging only.
+     */
     Ten3x3x3 christoffel_1(const Vec3& position) const;
 
-    /** @brief returns Chirstoffel symbols of second kind */
+    /**
+     * @brief returns Chirstoffel symbols of second kind
+     * @note Public access for debugging only.
+     */
     Ten3x3x3 christoffel_2(const Vec3& position) const;
 
   private:
     /** @brief strength of the swirl effect */
     Scalar _swirl_strength;
-    /** @brief ray propagation step size */
-    Scalar _ray_step_size;
+    /** @brief initial step size for rays */
+    Scalar _ray_initial_step_size;
+    /** @brief absolute error tolerance for rays */
+    Scalar _ray_error_abs;
+    /** @brief relative error tolerance for rays */
+    Scalar _ray_error_rel;
+    /** @brief upper limit for ray length */
+    Scalar _ray_max_length;
+    /**
+     * @brief factor by which to stretch each ray segment
+     * @note Should be a bit larger than `1.0` to avoid small scale geometrical
+     *        banding.
+     */
+    Scalar _ray_segment_length_factor;
+
+    /** @brief differential equation for phase velocity */
+    const SwirlCartesianRayDifferential _phase_derivative_func;
 };
+
+void SwirlCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
+                                               Scalar t) {
+    const Vec3 pos = p.first_half();
+    const Vec3 dir = p.second_half();
+    const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
+    dpdt = {
+        p.second_half(),
+        Vec3{
+            -dot(dir, chris_2[0] * dir),
+            -dot(dir, chris_2[1] * dir),
+            -dot(dir, chris_2[2] * dir),
+        },
+    };
+}
+
+SwirlCartesianRay::SwirlCartesianRay(const SwirlCartesianGeometry& geometry,
+                                     const Vec3& start, const Vec3& direction)
+    : _phase(start, direction),
+      _geometry{geometry},
+      _phase_iterator{make_phase_iterator(*this, geometry, start, direction)} {}
 
 std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
 
+    const auto& [phase_start, time] = *_phase_iterator;
+    // note: copies! (phase will be updated later)
+    const Scalar time_start = time;
+
+    // check for ray length
+    if (time_start > _geometry._ray_max_length) {
+        // prematurely end ray due to exceeding length
+        // note: iterator will stop generating new elements for this time/length
+        return std::nullopt;
+    }
+
+    const Vec3 position = phase_start.first_half();
+    const Vec3 velocity = phase_start.second_half();
+
     // check for numerical issues
-    if (auto x = _phase.first_half().length(),
-        y = _phase.second_half().length();
+    if (auto x = position.length(), y = velocity.length();
         !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
         // encountered a numerical issue -> abort ray
         return std::nullopt;
     }
 
-    // create next segment
-    // note: direction is approximately constant for small segments
-    const Scalar t_max = _geometry._ray_step_size;
-    const RaySegment segment = {_phase.first_half(), _phase.second_half(),
-                                t_max};
-
-    // propagate ray by calculating change of phase
-    const std::function<Vec6(const Vec6&)> f = [&geo =
-                                                    _geometry](const Vec6& p) {
-        const Vec3 pos = p.first_half();
-        const Vec3 dir = p.second_half();
-        const auto chris_2 = geo.christoffel_2(pos);
-        return Vec6{
-            p.second_half(),
-            Vec3{
-                -dot(dir, chris_2[0] * dir),
-                -dot(dir, chris_2[1] * dir),
-                -dot(dir, chris_2[2] * dir),
-            },
-        };
-    };
-    const Vec6 delta_phase =
-        runge_kutta_4_delta(f, _phase, _geometry._ray_step_size);
-
     // update state
-    _phase += delta_phase;
+    ++_phase_iterator;
 
-    // normalize state
-    normalize_phase();
+    // calculate segment
+    // determine dt
+    const auto& [_, time_end] = *_phase_iterator;
+    // note: extend interval a tiny bit to avoid small scale geometrical banding
+    const Scalar delta_t =
+        (time_end - time_start) * _geometry._ray_segment_length_factor;
+    // note: direction is approximately constant for small segments
+    // note: use initial position and velocity
+    const RaySegment segment = {position, velocity, delta_t};
 
     return segment;
 };
 
-void SwirlCartesianRay::normalize_phase() {
-    const Vec3 pos = _phase.first_half();
-    const Vec3 dir = _phase.second_half();
-    _phase = Vec6{pos, _geometry.normalize(pos, dir)};
+SwirlCartesianRay::Iterator SwirlCartesianRay::make_phase_iterator(
+    SwirlCartesianRay& ray, const SwirlCartesianGeometry& geometry,
+    const Vec3& start, const Vec3& direction) {
+    using namespace boost::numeric::odeint;
+
+    const Scalar initial_dt = geometry._ray_initial_step_size;
+    const Scalar error_abs = geometry._ray_error_abs;
+    const Scalar error_rel = geometry._ray_error_abs;
+
+    ControlledStepper stepper = make_controlled(
+        error_abs, error_rel, runge_kutta_cash_karp54<State, Value>());
+
+    return make_adaptive_time_iterator_begin<ControlledStepper, System, State>(
+        std::move(stepper), geometry._phase_derivative_func, ray._phase, 0.0,
+        geometry._ray_max_length, initial_dt);
 }
+
+SwirlCartesianGeometry::SwirlCartesianGeometry(
+    const Scalar swirl_strength, const Scalar ray_initial_step_size,
+    const Scalar ray_error_abs, const Scalar ray_error_rel,
+    const Scalar ray_max_length, const Scalar ray_segment_length_factor)
+    : _swirl_strength(swirl_strength),
+      _ray_initial_step_size(ray_initial_step_size),
+      _ray_error_abs(ray_error_abs),
+      _ray_error_rel(ray_error_rel),
+      _ray_max_length(ray_max_length),
+      _ray_segment_length_factor(ray_segment_length_factor),
+      // note: store derivative function once per geometry
+      _phase_derivative_func{*this} {}
 
 std::unique_ptr<Ray>
 SwirlCartesianGeometry::ray_from(const Vec3& start,
