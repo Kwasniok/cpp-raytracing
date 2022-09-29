@@ -37,6 +37,9 @@ Scene make_scene() {
     auto diffuse_red = make_diffuse_material(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
+    auto light = make_light_material(Color{0.98, 0.97, 0.95}, 1.0);
+    light->id.change("light");
+
     // cube
     {
         auto cube = make_cube(1.0, Vec3{0.0, 0.0, 0.0});
@@ -55,6 +58,14 @@ Scene make_scene() {
         auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0, 0.0});
         plane->id.change("floor");
         plane->material = diffuse_gray;
+        scene.add(std::move(plane));
+    }
+
+    // light
+    {
+        auto plane = make_xz_plane(2.0, Vec3{0.0, 3.0, 0.0});
+        plane->id.change("light");
+        plane->material = light;
         scene.add(std::move(plane));
     }
 
