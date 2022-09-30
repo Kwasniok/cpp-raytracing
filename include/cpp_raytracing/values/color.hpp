@@ -36,13 +36,6 @@ class Color {
     constexpr Color(const ColorScalar r, const ColorScalar g,
                     const ColorScalar b)
         : _data{r, g, b} {}
-    /** @brief copy constructor */
-    constexpr Color(const Color& other)
-        : _data{
-              other.r(),
-              other.g(),
-              other.b(),
-          } {}
 
     /** @brief initialize channels with random values */
     inline static Color random(Scalar min, Scalar max) {
