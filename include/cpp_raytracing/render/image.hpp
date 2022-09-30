@@ -164,9 +164,9 @@ std::ostream& write_color_as_float32_triple(std::ostream& os,
                   "float is not single (32-bit) IEEE 754 conform");
     static_assert(std::endian::native == std::endian::little,
                   "float is not little-endian");
-    const char* const sr = reinterpret_cast<const char* const>(&fr);
-    const char* const sg = reinterpret_cast<const char* const>(&fg);
-    const char* const sb = reinterpret_cast<const char* const>(&fb);
+    const char* const sr = reinterpret_cast<const char*>(&fr);
+    const char* const sg = reinterpret_cast<const char*>(&fg);
+    const char* const sb = reinterpret_cast<const char*>(&fb);
 
     // write bytes
     os.write(sr, sizeof(fr));
