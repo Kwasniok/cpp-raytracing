@@ -24,22 +24,22 @@ class Material;
  */
 struct HitRecord {
     /** @brief intersection point of ray and object */
-    Vec3 point;
+    Vec3 point{};
     /**
      * @brief surface normal pointing towards 'exterior' relative to
      *        othronormal basis
      * @note For independence of the specific geometry all directions must be
      *       converted to a flat space via the local Jacobian at #point.
      */
-    Vec3 normal;
+    Vec3 normal{};
     /** @brief texture coordinates */
-    Vec2 uv_coordinates;
+    Vec2 uv_coordinates{};
     /** @brief material of the object */
-    const Material* material;
+    const Material* material = nullptr;
     /** @brief RaySegment parameter of #point */
-    Scalar t;
+    Scalar t = 0.0;
     /** @brief ray his surface from the outside */
-    bool front_face;
+    bool front_face = false;
 
     /**
      * @brief sets normal and front_face
