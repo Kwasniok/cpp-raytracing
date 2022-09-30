@@ -11,13 +11,25 @@ INCLUDES= \
 
 # GCC
 CPP=g++
-CPP_FLAGS=-Wall -pedantic -std=c++20 -g -fopenmp -I $(INC) $(INCLUDES)
+CPP_FLAGS=-Wall \
+	-Wextra \
+	-pedantic \
+	-std=c++20 \
+	-g \
+	-fopenmp \
+	-I $(INC) $(INCLUDES)\
+
 CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 
 # CLANG
 # CPP=clang++
-# CPP_FLAGS=-Wall -pedantic -std=c++20 -g -fopenmp=libomp -I $(INC) $(INCLUDES)
-
+# CPP_FLAGS=-Wall \
+#	-Wextra \
+#	-pedantic \
+#	-std=c++20 \
+#	g \
+#	-fopenmp=libomp \
+#	-I $(INC) $(INCLUDES)\
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
