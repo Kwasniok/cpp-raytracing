@@ -57,7 +57,7 @@ void test_vec2() {
     auto stepper =
         make_controlled(1.0e-6, 1.0e-6, runge_kutta_cash_karp54<State>());
 
-    auto lorenz = [](const State& x, State& dxdt, double t) {
+    auto lorenz = [](const State& x, State& dxdt, [[maybe_unused]] double t) {
         dxdt[0] = sigma * (x[1] - x[0]);
         dxdt[1] = R * x[0] - x[1] - x[0];
     };
@@ -80,7 +80,7 @@ void test_vec3() {
     auto stepper =
         make_controlled(1.0e-6, 1.0e-6, runge_kutta_cash_karp54<State>());
 
-    auto lorenz = [](const State& x, State& dxdt, double t) {
+    auto lorenz = [](const State& x, State& dxdt, [[maybe_unused]] double t) {
         dxdt[0] = sigma * (x[1] - x[0]);
         dxdt[1] = R * x[0] - x[1] - x[0] * x[2];
         dxdt[2] = -b * x[2] + x[0] * x[1];
@@ -104,7 +104,7 @@ void test_vec6() {
     auto stepper =
         make_controlled(1.0e-6, 1.0e-6, runge_kutta_cash_karp54<State>());
 
-    auto lorenz = [](const State& x, State& dxdt, double t) {
+    auto lorenz = [](const State& x, State& dxdt, [[maybe_unused]] double t) {
         dxdt[0] = sigma * (x[1] - x[0]);
         dxdt[1] = R * x[0] - x[1] - x[0] * x[2];
         dxdt[2] = -b * x[2] + x[0] * x[1];

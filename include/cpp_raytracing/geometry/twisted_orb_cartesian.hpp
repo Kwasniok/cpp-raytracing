@@ -92,8 +92,7 @@ class TwistedOrbCartesianRay : public Ray {
 
     static Iterator
     make_phase_iterator(TwistedOrbCartesianRay& ray,
-                        const TwistedOrbCartesianGeometry& geometry,
-                        const Vec3& start, const Vec3& direction);
+                        const TwistedOrbCartesianGeometry& geometry);
 
   private:
     Vec6 _phase;
@@ -209,7 +208,7 @@ class TwistedOrbCartesianGeometry : public Geometry {
 };
 
 void TwistedOrbCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
-                                                    Scalar t) {
+                                                    [[maybe_unused]] Scalar t) {
     const Vec3 pos = p.first_half();
     const Vec3 dir = p.second_half();
     const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
@@ -228,7 +227,7 @@ TwistedOrbCartesianRay::TwistedOrbCartesianRay(
     const Vec3& direction)
     : _phase(start, direction),
       _geometry{geometry},
-      _phase_iterator{make_phase_iterator(*this, geometry, start, direction)} {}
+      _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
 std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
 
@@ -279,8 +278,7 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
 };
 
 TwistedOrbCartesianRay::Iterator TwistedOrbCartesianRay::make_phase_iterator(
-    TwistedOrbCartesianRay& ray, const TwistedOrbCartesianGeometry& geometry,
-    const Vec3& start, const Vec3& direction) {
+    TwistedOrbCartesianRay& ray, const TwistedOrbCartesianGeometry& geometry) {
     using namespace boost::numeric::odeint;
 
     const Scalar initial_dt = geometry._ray_initial_step_size;

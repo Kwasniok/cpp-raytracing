@@ -29,6 +29,11 @@ class Camera : public Entity {
     virtual std::unique_ptr<Ray> ray_for_coords(const Geometry& geometry,
                                                 const Scalar x,
                                                 const Scalar y) const = 0;
+
+    virtual HitRecord hit_record(const Geometry&, const RaySegment&,
+                                 const Scalar) const {
+        return {.t = infinity};
+    };
 };
 
 /**

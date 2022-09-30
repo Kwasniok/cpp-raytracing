@@ -4,7 +4,13 @@
 
 namespace cpp_raytracing { namespace test {
 
-class Dummy : public Entity {};
+class Dummy : public Entity {
+
+    virtual HitRecord hit_record(const Geometry&, const RaySegment&,
+                                 const Scalar) const {
+        return {.t = infinity};
+    }
+};
 
 void test_id() {
     Dummy dummy;

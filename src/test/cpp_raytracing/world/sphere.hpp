@@ -51,7 +51,7 @@ class Sphere : public Entity {
     }
 };
 
-HitRecord Sphere::hit_record(const Geometry& geometry,
+HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
                              const RaySegment& ray_segment,
                              const Scalar t_min) const {
 

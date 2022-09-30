@@ -31,8 +31,9 @@ class Texture {
     virtual Color value(const Vec2& coordinates, const Vec3& point) const = 0;
 
     /** @brief indicates a missing texture */
-    constexpr static Color value_for_missing_texture(const Vec2& coordinates,
-                                                     const Vec3& point) {
+    constexpr static Color
+    value_for_missing_texture([[maybe_unused]] const Vec2& coordinates,
+                              [[maybe_unused]] const Vec3& point) {
         constexpr Scalar scale = 1 / 10.0;
         constexpr Color light{1.0, 0.0, 1.0};
         constexpr Color dark{0.1, 0.0, 0.1};

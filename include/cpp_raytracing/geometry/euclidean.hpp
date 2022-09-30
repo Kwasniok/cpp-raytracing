@@ -55,14 +55,14 @@ class EuclideanGeometry : public Geometry {
                                               unit_vector(target - start));
     }
 
-    virtual Mat3x3 to_onb_jacobian(const Vec3& position) const override {
+    virtual Mat3x3 to_onb_jacobian(const Vec3&) const override {
         return Mat3x3::identity();
     }
-    virtual Mat3x3 from_onb_jacobian(const Vec3& position) const override {
+    virtual Mat3x3 from_onb_jacobian(const Vec3&) const override {
         return Mat3x3::identity();
     }
 
-    virtual Mat3x3 metric(const Vec3& position) const override {
+    virtual Mat3x3 metric(const Vec3&) const override {
         return Mat3x3::identity();
     }
 };

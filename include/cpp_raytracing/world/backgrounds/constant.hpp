@@ -20,8 +20,9 @@ class ConstantBackground : public Background {
 
     virtual ~ConstantBackground() = default;
 
-    virtual Color value(const Geometry& geometry,
-                        const RaySegment& ray_segment) const override {
+    virtual Color
+    value([[maybe_unused]] const Geometry& geometry,
+          [[maybe_unused]] const RaySegment& ray_segment) const override {
         return color;
     };
 };

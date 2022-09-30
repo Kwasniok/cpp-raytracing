@@ -23,7 +23,8 @@ class Isotropic : public Material {
     virtual ~Isotropic() = default;
 
     virtual std::pair<Vec3, Color>
-    scatter(const HitRecord& record, const Vec3& ray_direction) const override {
+    scatter(const HitRecord& record,
+            [[maybe_unused]] const Vec3& ray_direction) const override {
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)

@@ -22,7 +22,8 @@ class Emitter : public Material {
     virtual ~Emitter() = default;
 
     virtual std::pair<Vec3, Color>
-    scatter(const HitRecord& record, const Vec3& ray_direction) const override {
+    scatter(const HitRecord& record,
+            [[maybe_unused]] const Vec3& ray_direction) const override {
         const Vec3 direction = Vec3::zero(); // emissive
 
         const Color color_value =

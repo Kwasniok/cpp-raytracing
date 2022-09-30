@@ -62,9 +62,7 @@ class Entity {
      */
     virtual HitRecord hit_record(const Geometry& geometry,
                                  const RaySegment& ray_segment,
-                                 const Scalar t_min = 0.0) const {
-        return {.t = infinity};
-    }
+                                 const Scalar t_min = 0.0) const = 0;
 
     /**
      * @brief might return a boundaring box if the entity is bounded

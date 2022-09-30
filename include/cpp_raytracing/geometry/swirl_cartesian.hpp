@@ -73,9 +73,7 @@ class SwirlCartesianRay : public Ray {
                                                        System, State>;
 
     static Iterator make_phase_iterator(SwirlCartesianRay& ray,
-                                        const SwirlCartesianGeometry& geometry,
-                                        const Vec3& start,
-                                        const Vec3& direction);
+                                        const SwirlCartesianGeometry& geometry);
 
   private:
     /** @brief returns current phase (position, velocity)*/
@@ -179,7 +177,7 @@ class SwirlCartesianGeometry : public Geometry {
 };
 
 void SwirlCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
-                                               Scalar t) {
+                                               [[maybe_unused]] Scalar t) {
     const Vec3 pos = p.first_half();
     const Vec3 dir = p.second_half();
     const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
@@ -197,7 +195,7 @@ SwirlCartesianRay::SwirlCartesianRay(const SwirlCartesianGeometry& geometry,
                                      const Vec3& start, const Vec3& direction)
     : _phase(start, direction),
       _geometry{geometry},
-      _phase_iterator{make_phase_iterator(*this, geometry, start, direction)} {}
+      _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
 std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
 
@@ -238,9 +236,9 @@ std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
     return segment;
 };
 
-SwirlCartesianRay::Iterator SwirlCartesianRay::make_phase_iterator(
-    SwirlCartesianRay& ray, const SwirlCartesianGeometry& geometry,
-    const Vec3& start, const Vec3& direction) {
+SwirlCartesianRay::Iterator
+SwirlCartesianRay::make_phase_iterator(SwirlCartesianRay& ray,
+                                       const SwirlCartesianGeometry& geometry) {
     using namespace boost::numeric::odeint;
 
     const Scalar initial_dt = geometry._ray_initial_step_size;

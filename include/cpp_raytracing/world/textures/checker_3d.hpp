@@ -28,7 +28,7 @@ class Checker3D : public Texture {
 
     virtual ~Checker3D() = default;
 
-    virtual Color value(const Vec2& coordinates,
+    virtual Color value([[maybe_unused]] const Vec2& coordinates,
                         const Vec3& point) const override {
 
         const Vec3 p = (point - offset) * (pi / scale);

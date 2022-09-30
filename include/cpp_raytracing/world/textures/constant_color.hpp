@@ -20,8 +20,8 @@ class ConstantColor : public Texture {
 
     virtual ~ConstantColor() = default;
 
-    virtual Color value(const Vec2& coordinates,
-                        const Vec3& point) const override {
+    virtual Color value([[maybe_unused]] const Vec2& coordinates,
+                        [[maybe_unused]] const Vec3& point) const override {
         return color;
     }
 };

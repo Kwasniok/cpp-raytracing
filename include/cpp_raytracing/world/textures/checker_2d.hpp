@@ -29,7 +29,7 @@ class Checker2D : public Texture {
     virtual ~Checker2D() = default;
 
     virtual Color value(const Vec2& coordinates,
-                        const Vec3& point) const override {
+                        [[maybe_unused]] const Vec3& point) const override {
 
         const Vec2 c = (coordinates - offset) * (pi / scale);
         const auto val = std::sin(c.u()) * std::sin(c.v());
