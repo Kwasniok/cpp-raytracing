@@ -66,8 +66,6 @@ class Entity {
 
     /**
      * @brief might return a boundaring box if the entity is bounded
-     * @param time_min start of the time interval
-     * @param time_max end of the time interval
      * @note If none, the entity might be infinitely large or have no appreance
      *       at all.
      */

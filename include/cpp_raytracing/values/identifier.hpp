@@ -128,7 +128,7 @@ struct default_identifier {
 
 /**
  * @brief represents an identifier for data of type T which are alphanumerical
- * @tparam identifies the collection of objects to be identified
+ * @tparam T type of objects to be identified
  * @note Each object collection has its own identifier pool. Therefore, two
  *       identifiers of equal value but from different collections can be
  *       considered unequal.

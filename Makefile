@@ -35,6 +35,7 @@ CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 # 	-Wunused \
 # 	-Woverloaded-virtual \
 # 	-Wimplicit-fallthrough \
+# 	-Wdocumentation \
 # 	-std=c++20 \
 # 	-g \
 # 	-fopenmp=libomp \

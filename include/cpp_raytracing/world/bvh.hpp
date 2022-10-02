@@ -85,7 +85,7 @@ class BVHTree {
         /**
          * @brief calculates the intersection of the light ray with the entities
          *        of the node and its branches
-         * @returns eihter a defned HitRecord or sets HitRecord::t to
+         * @note `closest_record.t = infinity` signals no intersection.
          * @see BVHTree::hit_record
          * @note The interface is changed in comparison to Entity::hit_record in
          *       order to optimize throughput.
@@ -131,7 +131,7 @@ class BVHTree {
     /**
      * @brief construct BVH tree with container of bounded and unbounded
      *         entities
-     * @tparam container of smart pointers to entities
+     * @tparam Container container of smart pointers to entities
      * @note IMORTANT: The container must be unaltered for the entire lifetime
      *       of this tree! Any change of the container or its elements
      *       invalidates this tree.
@@ -185,13 +185,19 @@ class BVHTree {
     }
 
     /** @brief returns number of bounded entities managed by this tree */
-    std::size_t size_bounded() const { return _root.size(); }
+    std::size_t size_bounded() const {
+        return _root.size();
+    }
 
     /** @brief returns number of unbounded entities managed by this tree */
-    std::size_t size_unbounded() const { return _unbounded_entities.size(); }
+    std::size_t size_unbounded() const {
+        return _unbounded_entities.size();
+    }
 
     /** @brief returns number of entities managed by this tree */
-    std::size_t size() const { return size_bounded() + size_unbounded(); }
+    std::size_t size() const {
+        return size_bounded() + size_unbounded();
+    }
 
   private:
     /**
