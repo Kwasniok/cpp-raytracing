@@ -17,24 +17,10 @@
 namespace cpp_raytracing {
 
 /**
- * @brief clipping with compiletime boundaries
- */
-template <typename T, T low, T high>
-inline constexpr T clip(const T x) {
-    if (x < low) {
-        return low;
-    }
-    if (x > high) {
-        return high;
-    }
-    return x;
-}
-
-/**
  * @brief clipping with runtime boundaries
  */
 template <typename T>
-inline constexpr T clip(const T x, const T low, const T high) {
+constexpr T clip(const T x, const T low, const T high) {
     if (x < low) {
         return low;
     }

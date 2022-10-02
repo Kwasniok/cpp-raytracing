@@ -139,9 +139,10 @@ inline constexpr ColorIntegral int_from_color_scalar(ColorScalar cs) {
     if (std::isnan(cs)) {
         return 0;
     }
-    cs = clip<ColorScalar, 0.0, 1.0>(cs);
+    cs = clip(cs, 0.0, 1.0);
     const ColorIntegral ci = static_cast<ColorIntegral>(cs * 255.0);
-    return clip<ColorIntegral, 0, 255>(ci);
+    return clip(ci, static_cast<ColorIntegral>(0),
+                static_cast<ColorIntegral>(255));
 }
 
 /** @brief add channelwise */
