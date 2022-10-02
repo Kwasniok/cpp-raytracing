@@ -20,7 +20,7 @@ constexpr std::string SHUTTER_MODE_GLOBAL_SHUTTER = "global";
 constexpr std::string SHUTTER_MODE_ROLLING_SHUTTER = "rolling";
 
 /** @brief all shutter modes supported */
-constexpr std::array<const std::string, 2> SHUTTER_MODES = {
+const std::array<const std::string, 2> SHUTTER_MODES = {
     SHUTTER_MODE_GLOBAL_SHUTTER,
     SHUTTER_MODE_ROLLING_SHUTTER,
 };
