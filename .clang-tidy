@@ -1,0 +1,6 @@
+
+Checks:          ''
+WarningsAsErrors: true
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: false
+FormatStyle:     file
