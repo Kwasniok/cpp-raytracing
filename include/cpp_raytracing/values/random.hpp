@@ -13,6 +13,13 @@
 
 namespace cpp_raytracing {
 
+/** @brief returns unique number for each thread */
+inline std::mt19937_64::result_type get_thread_seed() {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+    return static_cast<std::mt19937_64::result_type>(42 * omp_get_thread_num() +
+                                                     1);
+}
+
 /**
  * @brief generates a uniformly random number between the boundaries
  * @note thread-safe (each thread operates independently with a unique seed)
@@ -29,9 +36,7 @@ inline Scalar random_scalar(const Scalar min, const Scalar max) {
     // note: rand() is not guaranteed to be thread-safe
     // note: generator is expensive to create and must be preserved per thread
     //       and is therefore static
-    static thread_local std::mt19937_64 generator(
-        static_cast<std::mt19937_64::result_type>(42 * omp_get_thread_num() +
-                                                  1));
+    static thread_local std::mt19937_64 generator(get_thread_seed());
     // note: distribution is cheap to create and is therefore not static
     std::uniform_real_distribution<Scalar> distribution(min, max);
     return distribution(generator);

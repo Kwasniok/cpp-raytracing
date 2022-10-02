@@ -39,6 +39,8 @@ class BVHCollection : public Entity {
     /** @brief move assignment */
     BVHCollection& operator=(BVHCollection&&) = default;
 
+    ~BVHCollection() override = default;
+
     /**
      * @brief remove all entities.
      * @note Not thread-safe.

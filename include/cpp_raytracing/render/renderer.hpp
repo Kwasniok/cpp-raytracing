@@ -262,8 +262,8 @@ class Renderer {
         Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
         Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
         // transform to camera coordinates
-        x = (2.0 * x / canvas.width - 1.0);
-        y = (2.0 * y / canvas.height - 1.0);
+        x = (2.0 * x / static_cast<Scalar>(canvas.width) - 1.0);
+        y = (2.0 * y / static_cast<Scalar>(canvas.height) - 1.0);
 
         std::unique_ptr<Ray> ray =
             frozen_scene.active_camera.ray_for_coords(geometry, x, y);

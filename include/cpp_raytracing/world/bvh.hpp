@@ -7,6 +7,7 @@
 #define CPP_RAYTRACING_BVH_HPP
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <iterator>
 #include <memory>
@@ -54,7 +55,7 @@ class BVHTree {
                 bounds = value->bounding_box().value();
             } else {
                 const int axis = rand() % 3;
-                const auto comp = pseudo_comparators[axis];
+                const auto comp = pseudo_comparators.at(axis);
                 std::sort(first, last, comp);
 
                 // note: Since the list is separated into two disjoint segments
@@ -229,7 +230,7 @@ class BVHTree {
 
     using pseudo_cmp_t = bool(const Entity* e1, const Entity* e2);
     /** @note entities must not be nullptr and bounded */
-    static constexpr pseudo_cmp_t* pseudo_comparators[3] = {
+    static constexpr std::array<pseudo_cmp_t*, 3> pseudo_comparators = {
         pseudo_comparator_x, pseudo_comparator_y, pseudo_comparator_z};
 
   private:
