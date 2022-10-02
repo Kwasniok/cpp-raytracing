@@ -130,6 +130,8 @@ class Renderer {
      */
     Color ray_color_if_interior_normal = {1.0, 0.0, 0.0};
 
+    virtual ~Renderer() = default;
+
     /** @brief render Scene as RawImage */
     virtual RawImage render(const Geometry& geometry, Scene& scene) = 0;
 
@@ -254,6 +256,8 @@ class GlobalShutterRenderer : public Renderer {
      */
     Scalar exposure_time = 0.0;
 
+    virtual ~GlobalShutterRenderer() = default;
+
     virtual RawImage render(const Geometry& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
@@ -329,6 +333,8 @@ class RollingShutterRenderer : public Renderer {
      *       to be realistic
      */
     Scalar total_line_exposure_time = 0.0;
+
+    virtual ~RollingShutterRenderer() = default;
 
     virtual RawImage render(const Geometry& geometry, Scene& scene) override {
 
