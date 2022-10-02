@@ -12,7 +12,7 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1e-16;
+const Scalar epsilon = 1e-16;
 
 std::shared_ptr<Instance> make_sphere(const Vec3 position,
                                       const Scalar radius) {
@@ -37,8 +37,8 @@ BVHCollection make_collection() {
 void test_bounding_box() {
 
     BVHCollection collection = make_collection();
-    static constexpr Vec3 min{-0.5, -0.5, -0.5};
-    static constexpr Vec3 max{1.5, 1.5, 1.5};
+    static const Vec3 min{-0.5, -0.5, -0.5};
+    static const Vec3 max{1.5, 1.5, 1.5};
 
     // cache
     TEST_ASSERT_THROWS(collection.bounding_box(), std::runtime_error);
@@ -56,8 +56,8 @@ void test_hit_record() {
 
     // cache
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{1.0, 0.0, 0.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{1.0, 0.0, 0.0}};
         TEST_ASSERT_THROWS(collection.hit_record(geometry, ray_segment, 0.0),
                            std::runtime_error);
     }
@@ -65,39 +65,39 @@ void test_hit_record() {
 
     // hits
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{1.0, 0.0, 0.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         TEST_ASSERT_TRUE(record.hits());
     }
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, 1.0, 0.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, 1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         TEST_ASSERT_TRUE(record.hits());
     }
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, 0.0, 1.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, 0.0, 1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         TEST_ASSERT_TRUE(record.hits());
     }
     // misses
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{-1.0, 0.0, 0.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{-1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         TEST_ASSERT_FALSE(record.hits());
     }
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, -1.0, 0.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, -1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         TEST_ASSERT_FALSE(record.hits());
     }
     {
-        static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, 0.0, -1.0}};
+        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                            Vec3{0.0, 0.0, -1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         TEST_ASSERT_FALSE(record.hits());
     }

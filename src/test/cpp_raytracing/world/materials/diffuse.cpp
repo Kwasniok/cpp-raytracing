@@ -7,7 +7,7 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1.0e-12;
+const Scalar epsilon = 1.0e-12;
 
 void test_diffuse() {
     /*

@@ -13,7 +13,7 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr ColorScalar epsilon = 1e-12;
+const ColorScalar epsilon = 1e-12;
 
 /**
  * @brief returns a riangle as mesh entity
@@ -70,7 +70,7 @@ void test_ray_color_euclidean_metal_reflection_background() {
     Scene scene(dummy_camera);
 
     // background (global illumination)
-    constexpr Color background_color = {0.2, 0.3, 0.0};
+    const Color background_color = {0.2, 0.3, 0.0};
     {
         auto background = std::make_shared<ConstantBackground>();
         background->color = background_color;
@@ -78,10 +78,10 @@ void test_ray_color_euclidean_metal_reflection_background() {
     }
 
     // target = perfectly reflective x-y plane
-    constexpr Color material_color = {0.5, 0.7, 0.0};
+    const Color material_color = {0.5, 0.7, 0.0};
     {
         // in x-y plane
-        constexpr Scalar L = 1.0;
+        const Scalar L = 1.0;
         auto tri = make_triange_mesh(Vec3{-L, -L, 0.0}, Vec3{+L, -L, 0.0},
                                      Vec3{0.0, L, 0.0});
         // perfectly reflective metal surface
@@ -92,8 +92,8 @@ void test_ray_color_euclidean_metal_reflection_background() {
     const auto frozen_scene = scene.freeze_for_time(0.0);
 
     // ray with orthonormal inclination with target
-    constexpr Vec3 ray_start = {0.0, 0.0, 1.0};
-    constexpr Vec3 ray_direction = {0.0, 0.0, -1.0};
+    const Vec3 ray_start = {0.0, 0.0, 1.0};
+    const Vec3 ray_direction = {0.0, 0.0, -1.0};
     auto ray = geometry.ray_from(ray_start, ray_direction);
 
     // ******* TEST *******
@@ -103,7 +103,7 @@ void test_ray_color_euclidean_metal_reflection_background() {
     Color color_out = renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
 
     // expect reflection + hit background
-    constexpr Color color_expected = material_color * background_color;
+    const Color color_expected = material_color * background_color;
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color_out, color_expected, epsilon);
 }
 
@@ -130,10 +130,10 @@ void test_ray_color_euclidean_metal_reflection_emitter() {
     }
 
     // target 1 = perfectly reflective x-y plane (z = +1)
-    constexpr Color material_color1 = {0.2, 0.3, 0.0};
+    const Color material_color1 = {0.2, 0.3, 0.0};
     {
         // in x-y plane
-        constexpr Scalar L = 1.0;
+        const Scalar L = 1.0;
         auto tri = make_triange_mesh(Vec3{-L, -L, +1.0}, Vec3{+L, -L, +1.0},
                                      Vec3{0.0, L, +1.0});
         // perfectly reflective metal surface
@@ -142,10 +142,10 @@ void test_ray_color_euclidean_metal_reflection_emitter() {
     }
 
     // target 2 = emitter x-y plane (z = -1)
-    constexpr Color material_color2 = {0.5, 0.7, 0.0};
+    const Color material_color2 = {0.5, 0.7, 0.0};
     {
         // in x-y plane
-        constexpr Scalar L = 1.0;
+        const Scalar L = 1.0;
         auto tri = make_triange_mesh(Vec3{-L, -L, -1.0}, Vec3{+L, -L, -1.0},
                                      Vec3{0.0, L, -1.0});
         // perfectly reflective metal surface
@@ -156,8 +156,8 @@ void test_ray_color_euclidean_metal_reflection_emitter() {
     const auto frozen_scene = scene.freeze_for_time(0.0);
 
     // ray with orthonormal inclination with target
-    constexpr Vec3 ray_start = {0.0, 0.0, 0.0};
-    constexpr Vec3 ray_direction = {0.0, 0.0, 1.0};
+    const Vec3 ray_start = {0.0, 0.0, 0.0};
+    const Vec3 ray_direction = {0.0, 0.0, 1.0};
     auto ray = geometry.ray_from(ray_start, ray_direction);
 
     // ******* TEST *******
@@ -166,7 +166,7 @@ void test_ray_color_euclidean_metal_reflection_emitter() {
     GlobalShutterRenderer renderer;
     Color color_out = renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
     // expect reflection + hit emitter
-    constexpr Color color_expected = material_color1 * material_color2;
+    const Color color_expected = material_color1 * material_color2;
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color_out, color_expected, epsilon);
 }
 

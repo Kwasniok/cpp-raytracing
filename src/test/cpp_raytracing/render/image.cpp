@@ -18,7 +18,7 @@ void test_properties() {
 }
 
 void test_operator_bracket() {
-    constexpr Color color{0.0, 0.5, 1.0};
+    const Color color{0.0, 0.5, 1.0};
     RawImage img{10, 10};
     // non-const
     {
@@ -33,8 +33,8 @@ void test_operator_bracket() {
 }
 
 void test_arithmetic() {
-    constexpr unsigned long N = 8;
-    constexpr ColorScalar f = 8.0;
+    const unsigned long N = 8;
+    const ColorScalar f = 8.0;
     RawImage img1{N, N};
     RawImage img2{N, N};
     for (unsigned long j = 0; j < N; ++j) {
@@ -66,8 +66,8 @@ void test_arithmetic() {
 }
 
 void test_write_image_ppm() {
-    constexpr unsigned long N = 2;
-    constexpr unsigned long M = 3;
+    const unsigned long N = 2;
+    const unsigned long M = 3;
     // note: Enforcing output correctness on character by character basis is in
     //       general not correct (disrespects the PPM grammar) but is most
     //       simple to implement.
@@ -91,8 +91,8 @@ void test_write_image_ppm() {
 }
 
 void test_write_image_pfm() {
-    constexpr unsigned long N = 2;
-    constexpr unsigned long M = 3;
+    const unsigned long N = 2;
+    const unsigned long M = 3;
     // note: Enforcing output correctness on character by character basis is in
     //       general not correct (disrespects the PFM grammar) but is most
     //       simple to implement.

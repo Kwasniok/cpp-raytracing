@@ -6,24 +6,24 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1e-12;
-constexpr Scalar ray_initial_step_size = 0.1;
-constexpr Scalar ray_error_abs = 1e-4;
-constexpr Scalar ray_error_rel = 1e-4;
-constexpr Scalar ray_max_length = 1e+8;
-constexpr Scalar ray_segment_length_factor = 1.1;
+const Scalar epsilon = 1e-12;
+const Scalar ray_initial_step_size = 0.1;
+const Scalar ray_error_abs = 1e-4;
+const Scalar ray_error_rel = 1e-4;
+const Scalar ray_max_length = 1e+8;
+const Scalar ray_segment_length_factor = 1.1;
 
 void test_ray_passing_through() {
 
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
-    constexpr Vec3 start = {2, -3, 5};
-    constexpr Vec3 target = {-7, 11, -13};
+    const Vec3 start = {2, -3, 5};
+    const Vec3 target = {-7, 11, -13};
 
-    constexpr Vec3 direction_non_normalized = {
+    const Vec3 direction_non_normalized = {
         -2.0 -
             sqrt(170.0) *
                 cos(pi / 8 *
@@ -85,8 +85,8 @@ void test_to_onb_jacobian() {
 
     using std::exp, std::cos, std::sin, std::sqrt, std::atan2;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
     const std::vector<std::pair<const Vec3, const Mat3x3>>
         points_and_jacobians = {
@@ -155,8 +155,8 @@ void test_from_onb_jacobian() {
 
     using std::exp, std::cos, std::sin;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
     const std::vector<std::pair<const Vec3, const Mat3x3>>
         points_and_jacobians = {
@@ -220,8 +220,8 @@ void test_metric() {
 
     using std::exp;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
     const std::vector<std::pair<const Vec3, const Mat3x3>> points_and_metrics =
         {
@@ -300,16 +300,16 @@ void test_to_cartesian_coords() {
 
     using std::exp, std::cos, std::sin, std::sqrt, std::atan;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
-    constexpr Vec3 position = {
+    const Vec3 position = {
         +sqrt(5.0) * cos(pi / 8.0 * exp(-sqrt(14.0) / 17.0) - atan(2)),
         -sqrt(5.0) * sin(pi / 8.0 * exp(-sqrt(14.0) / 17.0) - atan(2)),
         3.0,
     };
     // numericaly: {1.57062, 1.59159, 3}
-    constexpr Vec3 position_cart = {1.0, 2.0, 3.0};
+    const Vec3 position_cart = {1.0, 2.0, 3.0};
 
     TwistedOrbCartesianGeometry geometry{
         psi,
@@ -329,8 +329,8 @@ void test_inverse_metric() {
 
     using std::exp;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
     const std::vector<std::pair<const Vec3, const Mat3x3>>
         points_and_inv_metrics = {
@@ -387,8 +387,8 @@ void test_christoffel_1() {
 
     using std::exp;
 
-    constexpr Scalar psi = pi / 8.0;
-    constexpr Scalar rho = 17.0;
+    const Scalar psi = pi / 8.0;
+    const Scalar rho = 17.0;
 
     const Vec3 point = {1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0};
 

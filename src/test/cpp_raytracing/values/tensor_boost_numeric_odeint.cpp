@@ -14,10 +14,10 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1e-4;
-constexpr Scalar sigma = 10.0;
-constexpr Scalar R = 28.0;
-constexpr Scalar b = 8.0 / 3.0;
+const Scalar epsilon = 1e-4;
+const Scalar sigma = 10.0;
+const Scalar R = 28.0;
+const Scalar b = 8.0 / 3.0;
 
 // void test() {
 //     using namespace boost::numeric::odeint;
@@ -67,7 +67,7 @@ void test_vec2() {
     ++it;
     ++it;
 
-    constexpr Vec2 expected = {12.2131, 21.9924};
+    const Vec2 expected = {12.2131, 21.9924};
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(*it, expected, epsilon);
 }
 
@@ -91,7 +91,7 @@ void test_vec3() {
     ++it;
     ++it;
 
-    constexpr Vec3 expected = {11.7446, 17.6449, 15.9846};
+    const Vec3 expected = {11.7446, 17.6449, 15.9846};
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(*it, expected, epsilon);
 }
 
@@ -119,8 +119,8 @@ void test_vec6() {
     ++it;
     ++it;
 
-    constexpr Vec6 expected = {11.7446, 17.6449, 15.9846,
-                               11.7446, 17.6449, 15.9846};
+    const Vec6 expected = {11.7446, 17.6449, 15.9846,
+                           11.7446, 17.6449, 15.9846};
     TEST_ASSERT_ALMOST_EQUAL_ITERABLE(*it, expected, epsilon);
 }
 

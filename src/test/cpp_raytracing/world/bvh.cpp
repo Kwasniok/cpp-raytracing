@@ -12,7 +12,7 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1e-16;
+const Scalar epsilon = 1e-16;
 
 std::unique_ptr<Instance> make_sphere(const Vec3 position,
                                       const Scalar radius) {
@@ -43,8 +43,8 @@ void test_all() {
 
         // bounds
         {
-            static constexpr Vec3 min{-0.5, -0.5, -0.5};
-            static constexpr Vec3 max{1.5, 1.5, 1.5};
+            static const Vec3 min{-0.5, -0.5, -0.5};
+            static const Vec3 max{1.5, 1.5, 1.5};
             const auto bounds = bvh_tree.bounding_box();
             TEST_ASSERT_TRUE(bounds.has_value());
             TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->min(), min, epsilon);
@@ -53,39 +53,39 @@ void test_all() {
 
         // hits
         {
-            static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                    Vec3{1.0, 0.0, 0.0}};
+            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                                Vec3{1.0, 0.0, 0.0}};
             auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
             TEST_ASSERT_TRUE(record.hits());
         }
         {
-            static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                    Vec3{0.0, 1.0, 0.0}};
+            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                                Vec3{0.0, 1.0, 0.0}};
             auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
             TEST_ASSERT_TRUE(record.hits());
         }
         {
-            static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                    Vec3{0.0, 0.0, 1.0}};
+            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                                Vec3{0.0, 0.0, 1.0}};
             auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
             TEST_ASSERT_TRUE(record.hits());
         }
         // misses
         {
-            static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                    Vec3{-1.0, 0.0, 0.0}};
+            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                                Vec3{-1.0, 0.0, 0.0}};
             auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
             TEST_ASSERT_FALSE(record.hits());
         }
         {
-            static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                    Vec3{0.0, -1.0, 0.0}};
+            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                                Vec3{0.0, -1.0, 0.0}};
             auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
             TEST_ASSERT_FALSE(record.hits());
         }
         {
-            static constexpr RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                    Vec3{0.0, 0.0, -1.0}};
+            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
+                                                Vec3{0.0, 0.0, -1.0}};
             auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
             TEST_ASSERT_FALSE(record.hits());
         }

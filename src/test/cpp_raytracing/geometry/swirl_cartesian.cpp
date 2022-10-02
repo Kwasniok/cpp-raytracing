@@ -6,16 +6,16 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1e-12;
-constexpr Scalar ray_initial_step_size = 0.1;
-constexpr Scalar ray_error_abs = 1e-4;
-constexpr Scalar ray_error_rel = 1e-4;
-constexpr Scalar ray_max_length = 1e+8;
-constexpr Scalar ray_segment_length_factor = 1.1;
+const Scalar epsilon = 1e-12;
+const Scalar ray_initial_step_size = 0.1;
+const Scalar ray_error_abs = 1e-4;
+const Scalar ray_error_rel = 1e-4;
+const Scalar ray_max_length = 1e+8;
+const Scalar ray_segment_length_factor = 1.1;
 
 void test_ray_passing_through() {
 
-    constexpr Scalar a = 1.0 / 17.0;
+    const Scalar a = 1.0 / 17.0;
 
     const Vec3 start = {2.0, 3.0, 5.0};
     const Vec3 target = {7.0, 11.0, 13.0};
@@ -75,7 +75,7 @@ void test_ray_passing_through() {
 
 void test_to_onb_jacobian() {
 
-    constexpr Scalar a = 1.0 / 17.0;
+    const Scalar a = 1.0 / 17.0;
 
     const Vec3 point = {2.0, 3.0, 5.0};
 
@@ -133,7 +133,7 @@ void test_to_onb_jacobian() {
 
 void test_from_onb_jacobian() {
 
-    constexpr Scalar a = 1.0 / 17.0;
+    const Scalar a = 1.0 / 17.0;
 
     const Vec3 point = {2.0, 3.0, 5.0};
 
@@ -192,7 +192,7 @@ void test_from_onb_jacobian() {
 
 void test_metric() {
 
-    constexpr Scalar a = 1.0 / 17.0;
+    const Scalar a = 1.0 / 17.0;
 
     const std::vector<std::pair<const Vec3, const Mat3x3>> points_and_metrics =
         {

@@ -7,7 +7,7 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr ColorScalar epsilon = 1.e-12;
+const ColorScalar epsilon = 1.e-12;
 
 void test_default_constructor() {
     Color color{};
@@ -48,11 +48,11 @@ void test_iterator() {
 }
 
 void test_comparison() {
-    constexpr Color color1{1.1, 2.2, 3.3};
-    constexpr Color color2{1.1, 2.2, 3.3};
-    constexpr Color color3{7.7, 2.2, 3.3};
-    constexpr Color color4{1.1, 7.7, 3.3};
-    constexpr Color color5{1.1, 2.2, 7.7};
+    const Color color1{1.1, 2.2, 3.3};
+    const Color color2{1.1, 2.2, 3.3};
+    const Color color3{7.7, 2.2, 3.3};
+    const Color color4{1.1, 7.7, 3.3};
+    const Color color5{1.1, 2.2, 7.7};
 
     {
         TEST_ASSERT_TRUE(color1 == color1);
@@ -71,9 +71,9 @@ void test_comparison() {
 }
 
 void test_arithmetic() {
-    constexpr Color x1{1.1, 2.2, 3.3};
-    constexpr Color x2{4.4, 5.5, 6.6};
-    constexpr ColorScalar f = 7.7;
+    const Color x1{1.1, 2.2, 3.3};
+    const Color x2{4.4, 5.5, 6.6};
+    const ColorScalar f = 7.7;
 
     {
         const auto res = x1 + x2;
@@ -190,31 +190,31 @@ void test_scalar_to_integral_conversion() {
 
 void test_color_constants() {
     {
-        constexpr Color color = Colors::BLACK;
+        const Color color = Colors::BLACK;
         TEST_ASSERT_EQUAL(color.r(), 0.0);
         TEST_ASSERT_EQUAL(color.g(), 0.0);
         TEST_ASSERT_EQUAL(color.b(), 0.0);
     }
     {
-        constexpr Color color = Colors::WHITE;
+        const Color color = Colors::WHITE;
         TEST_ASSERT_EQUAL(color.r(), 1.0);
         TEST_ASSERT_EQUAL(color.g(), 1.0);
         TEST_ASSERT_EQUAL(color.b(), 1.0);
     }
     {
-        constexpr Color color = Colors::RED;
+        const Color color = Colors::RED;
         TEST_ASSERT_EQUAL(color.r(), 1.0);
         TEST_ASSERT_EQUAL(color.g(), 0.0);
         TEST_ASSERT_EQUAL(color.b(), 0.0);
     }
     {
-        constexpr Color color = Colors::GREEN;
+        const Color color = Colors::GREEN;
         TEST_ASSERT_EQUAL(color.r(), 0.0);
         TEST_ASSERT_EQUAL(color.g(), 1.0);
         TEST_ASSERT_EQUAL(color.b(), 0.0);
     }
     {
-        constexpr Color color = Colors::BLUE;
+        const Color color = Colors::BLUE;
         TEST_ASSERT_EQUAL(color.r(), 0.0);
         TEST_ASSERT_EQUAL(color.g(), 0.0);
         TEST_ASSERT_EQUAL(color.b(), 1.0);

@@ -8,7 +8,7 @@
 
 namespace cpp_raytracing { namespace test {
 
-constexpr Scalar epsilon = 1.e-12;
+const Scalar epsilon = 1.e-12;
 
 void test_vec3_default_constructor() {
     Vec3 vec{};
@@ -18,8 +18,8 @@ void test_vec3_default_constructor() {
 }
 
 void test_vec3_random_constructor() {
-    constexpr auto min = -1.1;
-    constexpr auto max = 2.2;
+    const auto min = -1.1;
+    const auto max = 2.2;
     for (long i = 0; i < 1000; ++i) {
         Vec3 vec = Vec3::random(min, max);
         TEST_ASSERT_IN_RANGE(vec.x(), min, max);
@@ -60,11 +60,11 @@ void test_vec3_iterator() {
 }
 
 void test_vec3_comparison() {
-    constexpr Vec3 vec1{1.1, 2.2, 3.3};
-    constexpr Vec3 vec2{1.1, 2.2, 3.3};
-    constexpr Vec3 vec3{7.7, 2.2, 3.3};
-    constexpr Vec3 vec4{1.1, 7.7, 3.3};
-    constexpr Vec3 vec5{1.1, 2.2, 7.7};
+    const Vec3 vec1{1.1, 2.2, 3.3};
+    const Vec3 vec2{1.1, 2.2, 3.3};
+    const Vec3 vec3{7.7, 2.2, 3.3};
+    const Vec3 vec4{1.1, 7.7, 3.3};
+    const Vec3 vec5{1.1, 2.2, 7.7};
 
     {
         TEST_ASSERT_TRUE(vec1 == vec1);
@@ -83,9 +83,9 @@ void test_vec3_comparison() {
 }
 
 void test_vec3_arithmetic() {
-    constexpr Vec3 x1{1.1, 2.2, 3.3};
-    constexpr Vec3 x2{4.4, 5.5, 6.6};
-    constexpr Scalar f = 7.7;
+    const Vec3 x1{1.1, 2.2, 3.3};
+    const Vec3 x2{4.4, 5.5, 6.6};
+    const Scalar f = 7.7;
 
     {
         const auto res = x1 + x2;
@@ -158,19 +158,19 @@ void test_vec3_arithmetic() {
     }
     {
         const auto res = unit_vector(x1);
-        constexpr auto len = std::sqrt(1.1 * 1.1 + 2.2 * 2.2 + 3.3 * 3.3);
+        const auto len = std::sqrt(1.1 * 1.1 + 2.2 * 2.2 + 3.3 * 3.3);
         TEST_ASSERT_ALMOST_EQUAL(res[0], 1.1 / len, epsilon);
         TEST_ASSERT_ALMOST_EQUAL(res[1], 2.2 / len, epsilon);
         TEST_ASSERT_ALMOST_EQUAL(res[2], 3.3 / len, epsilon);
     }
     {
         const auto res = x1.length();
-        constexpr auto len = std::sqrt(1.1 * 1.1 + 2.2 * 2.2 + 3.3 * 3.3);
+        const auto len = std::sqrt(1.1 * 1.1 + 2.2 * 2.2 + 3.3 * 3.3);
         TEST_ASSERT_ALMOST_EQUAL(res, len, epsilon);
     }
     {
         const auto res = x1.length_squared();
-        constexpr auto len_sq = 1.1 * 1.1 + 2.2 * 2.2 + 3.3 * 3.3;
+        const auto len_sq = 1.1 * 1.1 + 2.2 * 2.2 + 3.3 * 3.3;
         TEST_ASSERT_ALMOST_EQUAL(res, len_sq, epsilon);
     }
 }
@@ -183,7 +183,7 @@ void test_vec3_near_zero() {
 }
 
 void test_vec3_random_in_unit_disk() {
-    constexpr auto reps = 1000;
+    const auto reps = 1000;
     Vec3 avg{};
     for (long i = 0; i < reps; ++i) {
         const Vec3 vec = random_in_unit_disk();
@@ -197,7 +197,7 @@ void test_vec3_random_in_unit_disk() {
 }
 
 void test_vec3_random_vector_in_unit_sphere() {
-    constexpr auto reps = 1000;
+    const auto reps = 1000;
     Vec3 avg{};
     for (long i = 0; i < reps; ++i) {
         const Vec3 vec = random_vector_in_unit_sphere();
@@ -210,7 +210,7 @@ void test_vec3_random_vector_in_unit_sphere() {
 }
 
 void test_vec3_random_unit_vector() {
-    constexpr auto reps = 1000;
+    const auto reps = 1000;
     Vec3 avg{};
     for (long i = 0; i < reps; ++i) {
         const Vec3 vec = random_unit_vector();
@@ -243,14 +243,14 @@ void test_vec6_axes() {
 }
 
 void test_vec6_comparison() {
-    constexpr Vec6 vec1{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
-    constexpr Vec6 vec2{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
-    constexpr Vec6 vec3{7.7, 2.2, 3.3, 4.4, 5.5, 6.6};
-    constexpr Vec6 vec4{1.1, 7.7, 3.3, 4.4, 5.5, 6.6};
-    constexpr Vec6 vec5{1.1, 2.2, 7.7, 4.4, 5.5, 6.6};
-    constexpr Vec6 vec6{1.1, 2.2, 3.3, 7.7, 5.5, 6.6};
-    constexpr Vec6 vec7{1.1, 2.2, 3.3, 4.4, 7.7, 6.6};
-    constexpr Vec6 vec8{1.1, 2.2, 3.3, 4.4, 5.5, 7.7};
+    const Vec6 vec1{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+    const Vec6 vec2{1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+    const Vec6 vec3{7.7, 2.2, 3.3, 4.4, 5.5, 6.6};
+    const Vec6 vec4{1.1, 7.7, 3.3, 4.4, 5.5, 6.6};
+    const Vec6 vec5{1.1, 2.2, 7.7, 4.4, 5.5, 6.6};
+    const Vec6 vec6{1.1, 2.2, 3.3, 7.7, 5.5, 6.6};
+    const Vec6 vec7{1.1, 2.2, 3.3, 4.4, 7.7, 6.6};
+    const Vec6 vec8{1.1, 2.2, 3.3, 4.4, 5.5, 7.7};
 
     {
         TEST_ASSERT_TRUE(vec1 == vec1);
@@ -275,9 +275,9 @@ void test_vec6_comparison() {
 }
 
 void test_vec6_arithmetic() {
-    constexpr Vec6 x1{1, 2, 3, 4, 5, 6};
-    constexpr Vec6 x2{7, 8, 9, 10, 11, 12};
-    constexpr Scalar f = 13;
+    const Vec6 x1{1, 2, 3, 4, 5, 6};
+    const Vec6 x2{7, 8, 9, 10, 11, 12};
+    const Scalar f = 13;
 
     {
         const auto res = x1 + x2;
@@ -392,10 +392,10 @@ void test_mat3x3_default_constructor() {
 
 void test_mat3x3_convention() {
     // row first
-    constexpr Mat3x3 mat{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
-    constexpr Vec3 x{1.0, 0.0, 0.0};
-    constexpr Vec3 y{0.0, 1.0, 0.0};
-    constexpr Vec3 z{0.0, 0.0, 1.0};
+    const Mat3x3 mat{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    const Vec3 x{1.0, 0.0, 0.0};
+    const Vec3 y{0.0, 1.0, 0.0};
+    const Vec3 z{0.0, 0.0, 1.0};
 
     {
         // multiplication right
@@ -418,11 +418,11 @@ void test_mat3x3_convention() {
 }
 
 void test_mat3x3_comparison() {
-    constexpr Mat3x3 mat1{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
-    constexpr Mat3x3 mat2{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
-    constexpr Mat3x3 mat3{{1.1, 12.34, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
-    constexpr Mat3x3 mat4{{1.1, 2.2, 3.3}, {12.34, 5.5, 6.6}, {7.7, 8.8, 9.9}};
-    constexpr Mat3x3 mat5{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 12.34}};
+    const Mat3x3 mat1{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    const Mat3x3 mat2{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    const Mat3x3 mat3{{1.1, 12.34, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    const Mat3x3 mat4{{1.1, 2.2, 3.3}, {12.34, 5.5, 6.6}, {7.7, 8.8, 9.9}};
+    const Mat3x3 mat5{{1.1, 2.2, 3.3}, {4.4, 5.5, 6.6}, {7.7, 8.8, 12.34}};
 
     {
         TEST_ASSERT_TRUE(mat1 == mat1);
@@ -441,10 +441,10 @@ void test_mat3x3_comparison() {
 }
 
 void mat3x3_arithmetic() {
-    constexpr Mat3x3 mat1{{1.9, 2.8, 3.7}, {4.6, 5.5, 6.4}, {3.7, 2.8, 1.9}};
-    constexpr Mat3x3 mat2{{9.1, 8.2, 7.3}, {6.4, 5.5, 4.6}, {3.7, 2.8, 1.9}};
-    constexpr Vec3 vec1{10.10, 11.11, 12.12};
-    constexpr Scalar f = 1 / 11.0;
+    const Mat3x3 mat1{{1.9, 2.8, 3.7}, {4.6, 5.5, 6.4}, {3.7, 2.8, 1.9}};
+    const Mat3x3 mat2{{9.1, 8.2, 7.3}, {6.4, 5.5, 4.6}, {3.7, 2.8, 1.9}};
+    const Vec3 vec1{10.10, 11.11, 12.12};
+    const Scalar f = 1 / 11.0;
 
     {
         const auto res = mat1 + mat2;
@@ -508,8 +508,8 @@ void mat3x3_arithmetic() {
 }
 
 void test_mat3x3_rotation_mat() {
-    constexpr Vec3 axis{1.1, 2.2, 3.3};
-    constexpr Mat3x3 identity = Mat3x3{
+    const Vec3 axis{1.1, 2.2, 3.3};
+    const Mat3x3 identity = Mat3x3{
         {1.0, 0.0, 0.0},
         {0.0, 1.0, 0.0},
         {0.0, 0.0, 1.0},
@@ -520,20 +520,20 @@ void test_mat3x3_rotation_mat() {
 
     {
         // values
-        constexpr Mat3x3 expected{
+        const Mat3x3 expected{
             {0.5811329478584188, -0.6399638097631108, -0.5027234021873948},
             {0.09283351724552164, -0.5615787520127085, 0.8221990290456893},
             {-0.8084964038195901, -0.524476527102342, -0.26694182424164375}};
-        constexpr Scalar epsilon = 1e-14;
+        const Scalar epsilon = 1e-14;
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(mat, expected, epsilon);
     }
     {
         // values of inverse
-        constexpr Mat3x3 expected{
+        const Mat3x3 expected{
             {0.5811329478584188, 0.09283351724552164, -0.8084964038195901},
             {-0.6399638097631108, -0.5615787520127085, -0.524476527102342},
             {-0.5027234021873948, 0.8221990290456893, -0.26694182424164375}};
-        constexpr Scalar epsilon = 1e-14;
+        const Scalar epsilon = 1e-14;
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(inv_mat, expected, epsilon);
     }
 
@@ -558,8 +558,8 @@ void test_mat3x3_rotation_mat() {
 }
 
 void test_mat3x3_scaling_mat() {
-    constexpr Vec3 axis{1.1, 2.2, 3.3};
-    constexpr Mat3x3 identity = Mat3x3{
+    const Vec3 axis{1.1, 2.2, 3.3};
+    const Mat3x3 identity = Mat3x3{
         {1.0, 0.0, 0.0},
         {0.0, 1.0, 0.0},
         {0.0, 0.0, 1.0},
