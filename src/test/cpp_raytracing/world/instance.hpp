@@ -143,30 +143,22 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
                 rotation_mat(rotation) * scaling_mat(scale);
 
             // transform all corners and select min/max coefficients
-            Vec3 min{infinity, infinity, infinity};
-            Vec3 max{-infinity, -infinity, -infinity};
+            Vec3 low{infinity, infinity, infinity};
+            Vec3 high{-infinity, -infinity, -infinity};
             for (auto i = 0; i < 2; ++i) {
                 for (auto j = 0; j < 2; ++j) {
                     for (auto k = 0; k < 2; ++k) {
                         const Vec3 corner =
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
                             transformation * Vec3{x[i], y[j], z[k]};
-                        min = Vec3{
-                            std::min(min.x(), corner.x()),
-                            std::min(min.y(), corner.y()),
-                            std::min(min.z(), corner.z()),
-                        };
-                        max = Vec3{
-                            std::max(max.x(), corner.x()),
-                            std::max(max.y(), corner.y()),
-                            std::max(max.z(), corner.z()),
-                        };
+                        low = elementwise<min>(low, corner);
+                        high = elementwise<max>(high, corner);
                     }
                 }
             }
 
             // complete affine transformation via translation
-            return AxisAlignedBoundingBox{min + position, max + position};
+            return AxisAlignedBoundingBox{low + position, high + position};
         }
     }
     return std::nullopt;
