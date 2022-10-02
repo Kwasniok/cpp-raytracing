@@ -14,6 +14,11 @@ CPP=g++
 CPP_FLAGS=-Wall \
 	-Wextra \
 	-pedantic \
+	-Wnon-virtual-dtor \
+	-Wold-style-cast \
+	-Wunused \
+	-Woverloaded-virtual \
+	-Wimplicit-fallthrough \
 	-std=c++20 \
 	-g \
 	-fopenmp \
@@ -24,12 +29,17 @@ CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 # CLANG
 # CPP=clang++
 # CPP_FLAGS=-Wall \
-#	-Wextra \
-#	-pedantic \
-#	-std=c++20 \
-#	g \
-#	-fopenmp=libomp \
-#	-I $(INC) $(INCLUDES)\
+# 	-Wextra \
+# 	-pedantic \
+# 	-Wnon-virtual-dtor \
+# 	-Wold-style-cast \
+# 	-Wunused \
+# 	-Woverloaded-virtual \
+# 	-Wimplicit-fallthrough \
+# 	-std=c++20 \
+# 	-g \
+# 	-fopenmp=libomp \
+# 	-I $(INC) $(INCLUDES)\
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
