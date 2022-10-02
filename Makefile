@@ -52,11 +52,11 @@ endif
 ### DEFAULT ###
 .PHONY: default
 .DEFAULT_GOAL=default
-default: test example_previews
+default: test run_examples
 
 ### ALL ###
 .PHONY: all
-all: test doc example_previews
+all: test doc run_examples
 
 ### CLEAN ##
 .PHONY:clean
@@ -113,8 +113,12 @@ $(EXAMPLES): $(BLD)/%: $(SRC)/%.cpp $(BLD)/%.d
 # import dependencies for all example binaries
 include $(EXAMPLE_DEPENDS)
 
-.PHONY: example_previews
-example_previews: $(EXAMPLES);
+
+.PHONY: examples
+examples: $(EXAMPLES);
+
+.PHONY: run_examples
+run_examples: $(EXAMPLES);
 	@mkdir -p $(OUT)
 	@for E in $(EXAMPLES); \
 	do \
