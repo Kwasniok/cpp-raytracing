@@ -37,10 +37,26 @@ class LinearMotionMeshAnimator : public MeshAnimator {
     /** @brief time for which `position = start` */
     Scalar time_offset = 0.0;
 
-    virtual ~LinearMotionMeshAnimator() = default;
+    /** @brief default constructor */
+    LinearMotionMeshAnimator() = default;
+
+    /** @brief copy constructor */
+    LinearMotionMeshAnimator(const LinearMotionMeshAnimator&) = delete;
+
+    /** @brief move constructor */
+    LinearMotionMeshAnimator(LinearMotionMeshAnimator&&) = default;
+
+    /** @brief copy assignment */
+    LinearMotionMeshAnimator&
+    operator=(const LinearMotionMeshAnimator&) = delete;
+
+    /** @brief move assignment */
+    LinearMotionMeshAnimator& operator=(LinearMotionMeshAnimator&&) = default;
+
+    ~LinearMotionMeshAnimator() override = default;
 
   protected:
-    virtual void update_for_time_hook(const Scalar time, Mesh* mesh) override;
+    void update_for_time_hook(const Scalar time, Mesh* mesh) override;
 };
 
 void LinearMotionMeshAnimator::update_for_time_hook(const Scalar time,
@@ -67,10 +83,27 @@ class SinusoidalMotionMeshAnimator : public MeshAnimator {
     /** @brief time for which `position = start` */
     Scalar time_offset = 0.0;
 
-    virtual ~SinusoidalMotionMeshAnimator() = default;
+    /** @brief default constructor */
+    SinusoidalMotionMeshAnimator() = default;
+
+    /** @brief copy constructor */
+    SinusoidalMotionMeshAnimator(const SinusoidalMotionMeshAnimator&) = delete;
+
+    /** @brief move constructor */
+    SinusoidalMotionMeshAnimator(SinusoidalMotionMeshAnimator&&) = default;
+
+    /** @brief copy assignment */
+    SinusoidalMotionMeshAnimator&
+    operator=(const SinusoidalMotionMeshAnimator&) = delete;
+
+    /** @brief move assignment */
+    SinusoidalMotionMeshAnimator&
+    operator=(SinusoidalMotionMeshAnimator&&) = default;
+
+    ~SinusoidalMotionMeshAnimator() override = default;
 
   protected:
-    virtual void update_for_time_hook(const Scalar time, Mesh* mesh) override;
+    void update_for_time_hook(const Scalar time, Mesh* mesh) override;
 };
 
 void SinusoidalMotionMeshAnimator::update_for_time_hook(const Scalar time,
@@ -94,10 +127,25 @@ class SkyBackground : public Background {
     /** @brief color near horizon */
     Color color2 = {0.5, 0.7, 1.0};
 
-    virtual ~SkyBackground() = default;
+    /** @brief default constructor */
+    SkyBackground() = default;
 
-    virtual Color value([[maybe_unused]] const Geometry& geometry,
-                        const RaySegment& ray_segment) const override {
+    /** @brief copy constructor */
+    SkyBackground(const SkyBackground&) = delete;
+
+    /** @brief move constructor */
+    SkyBackground(SkyBackground&&) = default;
+
+    /** @brief copy assignment */
+    SkyBackground& operator=(const SkyBackground&) = delete;
+
+    /** @brief move assignment */
+    SkyBackground& operator=(SkyBackground&&) = default;
+
+    ~SkyBackground() override = default;
+
+    Color value([[maybe_unused]] const Geometry& geometry,
+                const RaySegment& ray_segment) const override {
         const Vec3 direction = unit_vector(ray_segment.direction());
         const auto t = 0.5 * (std::abs(direction.y()) + 1.0);
         const Color color = (1.0 - t) * color1 + t * color2;

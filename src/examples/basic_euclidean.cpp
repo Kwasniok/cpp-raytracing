@@ -64,32 +64,32 @@ Scene make_scene() {
 /** @brief configuration for render_ppm */
 struct RenderConfig {
     /** @brief wheather to log detailed information during the render process */
-    bool verbose;
+    bool verbose = false;
     /** @brief path to output file (excluding extensions) */
     string path;
     /**
      * @brief factor to upscale the resolution
      * @note 1 <-> 240p, 8 <-> 1080p, 16 <-> 4k
      */
-    unsigned long resolution_factor;
+    unsigned long resolution_factor = 1;
     /** @brief samples per pixel */
-    unsigned long samples;
+    unsigned long samples = 1;
     /** @brief save progress every n samples */
-    unsigned long save_frequency;
+    unsigned long save_frequency = 1;
     /** @brief depth per ray */
-    unsigned long ray_depth;
+    unsigned long ray_depth = 0;
     /** @brief time of the frame */
-    Scalar time;
+    Scalar time = 0.0;
     /** @brief shutter mode */
-    std::string shutter_mode;
+    std::string shutter_mode = SHUTTER_MODE_GLOBAL;
     /** @brief exposure frame */
-    Scalar exposure_time;
+    Scalar exposure_time = 0.0;
     /** @brief exposure line */
-    Scalar total_line_exposure_time;
+    Scalar total_line_exposure_time = 0.0;
     /** @brief gamma correction for non-raw images */
-    ColorScalar gamma;
+    ColorScalar gamma = 2.0;
     /** @brief debug normals */
-    bool debug_normals;
+    bool debug_normals = false;
 };
 
 /**
@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
         .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
-        .default_value<unsigned long>(50)
+        .default_value<unsigned long>(50) // NOLINT
         .help("depth per ray")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")

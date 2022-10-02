@@ -64,50 +64,50 @@ Scene make_scene() {
 /** @brief configuration for render_ppm */
 struct RenderConfig {
     /** @brief wheather to log detailed information during the render process */
-    bool verbose;
+    bool verbose = false;
     /** @brief path to output file (excluding extensions) */
     string path;
     /**
      * @brief factor to upscale the resolution
      * @note 1 <-> 240p, 8 <-> 1080p, 16 <-> 4k
      */
-    unsigned long resolution_factor;
+    unsigned long resolution_factor = 1;
     /** @brief samples per pixel */
-    unsigned long samples;
+    unsigned long samples = 1;
     /** @brief save progress every n samples */
-    unsigned long save_frequency;
+    unsigned long save_frequency = 1;
     /** @brief depth per ray */
-    unsigned long ray_depth;
+    unsigned long ray_depth = 0;
     /** @brief time of the frame */
-    Scalar time;
+    Scalar time = 0.0;
     /** @brief shutter mode */
-    std::string shutter_mode;
+    std::string shutter_mode = SHUTTER_MODE_GLOBAL;
     /** @brief exposure frame */
-    Scalar exposure_time;
+    Scalar exposure_time = 0.0;
     /** @brief exposure line */
-    Scalar total_line_exposure_time;
+    Scalar total_line_exposure_time = 0.0;
     /** @brief gamma correction for non-raw images */
-    ColorScalar gamma;
+    ColorScalar gamma = 2.0;
     /** @brief debug normals */
-    bool debug_normals;
+    bool debug_normals = false;
     /** @brief debug premature ray termination */
-    bool debug_ray_terminations;
+    bool debug_ray_terminations = false;
     /** @brief strength of geometric swirl effect */
-    Scalar swirl_strength;
+    Scalar swirl_strength = 0.0;
     /** @brief initial ray segment length parameter */
-    Scalar ray_initial_step_size;
+    Scalar ray_initial_step_size = 1.0;
     /** @brief abs ray integration error */
-    Scalar ray_error_abs;
+    Scalar ray_error_abs = 1.0;
     /** @brief rel ray integration error */
-    Scalar ray_error_rel;
+    Scalar ray_error_rel = 1.0;
     /** @brief ray length limit */
-    Scalar ray_max_length;
+    Scalar ray_max_length = 1.0;
     /**
      * @brief factor by which to stretch each ray segment
      * @note Should be a bit larger than `1.0` to avoid small scale geometrical
      *        banding.
      */
-    Scalar ray_segment_length_factor;
+    Scalar ray_segment_length_factor = 1.0;
 };
 
 /**
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
         .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
-        .default_value<unsigned long>(100)
+        .default_value<unsigned long>(100)// NOLINT
         .help("depth per ray (amount of ray segments and scatterings)")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")
