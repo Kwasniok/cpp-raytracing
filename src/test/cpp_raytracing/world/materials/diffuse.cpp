@@ -7,8 +7,6 @@
 
 namespace cpp_raytracing { namespace test {
 
-const Scalar epsilon = 1.0e-12;
-
 void test_diffuse() {
     /*
      sketch of hit scenario:

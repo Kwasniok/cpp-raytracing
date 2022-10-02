@@ -7,8 +7,6 @@
 
 namespace cpp_raytracing { namespace test {
 
-const Scalar epsilon = 1.0e-12;
-
 void test_metal_no_roughness() {
     /*
      sketch of hit scenario:

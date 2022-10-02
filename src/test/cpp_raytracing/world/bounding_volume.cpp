@@ -115,7 +115,6 @@ void test_hit() {
 void test_hit_corner_cases() {
     static const Vec3 min{1.0, 2.0, 3.0};
     static const Vec3 max{4.0, 5.0, 6.0};
-    static const Vec3 mid{2.5, 3.5, 4.5};
     static const AxisAlignedBoundingBox box{min, max};
 
     {

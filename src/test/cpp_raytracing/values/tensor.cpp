@@ -443,7 +443,6 @@ void test_mat3x3_comparison() {
 void mat3x3_arithmetic() {
     const Mat3x3 mat1{{1.9, 2.8, 3.7}, {4.6, 5.5, 6.4}, {3.7, 2.8, 1.9}};
     const Mat3x3 mat2{{9.1, 8.2, 7.3}, {6.4, 5.5, 4.6}, {3.7, 2.8, 1.9}};
-    const Vec3 vec1{10.10, 11.11, 12.12};
     const Scalar f = 1 / 11.0;
 
     {
