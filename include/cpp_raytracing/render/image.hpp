@@ -144,13 +144,33 @@ std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
        << std::endl;
     os << max_color << " # max color value per channel" << std::endl;
 
-    for (long y = image.height() - 1; y >= 0; --y) {
+    for (unsigned long y = image.height() - 1;
+         y != std::numeric_limits<unsigned long>::max(); --y) {
         for (unsigned long x = 0; x < image.width(); ++x) {
             write_color_as_uint8_triple(os, image[{x, y}], scale, 1.0 / gamma);
             os << "   ";
         }
         os << std::endl;
     }
+    return os;
+}
+
+/** @brief write binary 32-bit little-endian float to stream */
+std::ostream& write_binary_float32(std::ostream& os, const float value) {
+    // convert to bytes (asserts IEEE 754 32-bit little endian)
+    constexpr static auto IEEE_754_DIGITS = 24;
+    static_assert(std::numeric_limits<float>::is_iec559,
+                  "float is not IEEE 754 conform");
+    static_assert(std::numeric_limits<float>::digits == IEEE_754_DIGITS,
+                  "float is not single (32-bit) IEEE 754 conform");
+    static_assert(std::endian::native == std::endian::little,
+                  "float is not little-endian");
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): see above
+    const char* const binary_data = reinterpret_cast<const char*>(&value);
+
+    // write bytes
+    os.write(binary_data, sizeof(value));
+
     return os;
 }
 
@@ -167,23 +187,14 @@ std::ostream& write_color_as_float32_triple(std::ostream& os,
     const float fr = static_cast<float>(color.r());
     const float fg = static_cast<float>(color.g());
     const float fb = static_cast<float>(color.b());
+
     // no gamma correction
 
-    // convert to bytes (asserts IEEE 754 32-bit little endian)
-    static_assert(std::numeric_limits<float>::is_iec559,
-                  "float is not IEEE 754 conform");
-    static_assert(std::numeric_limits<float>::digits == 24,
-                  "float is not single (32-bit) IEEE 754 conform");
-    static_assert(std::endian::native == std::endian::little,
-                  "float is not little-endian");
-    const char* const sr = reinterpret_cast<const char*>(&fr);
-    const char* const sg = reinterpret_cast<const char*>(&fg);
-    const char* const sb = reinterpret_cast<const char*>(&fb);
-
     // write bytes
-    os.write(sr, sizeof(fr));
-    os.write(sg, sizeof(fg));
-    os.write(sb, sizeof(fb));
+    write_binary_float32(os, fr);
+    write_binary_float32(os, fg);
+    write_binary_float32(os, fb);
+
     return os;
 }
 
