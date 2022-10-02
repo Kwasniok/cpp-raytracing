@@ -59,6 +59,11 @@ default: test run_examples
 .PHONY: all
 all: test doc run_examples
 
+
+### VALIDATE ###
+.PHONY: validate
+validate: test examples doc run_examples check_tidy
+
 ### CLEAN ##
 .PHONY:clean
 clean:
@@ -128,3 +133,16 @@ run_examples: $(EXAMPLES);
 		--out $(OUT)/example_$${E##*/}.preview \
 		#--verbose \
 	done
+
+
+ALL_SOURCE_FILES = $(shell find $(SRC) $(INC) -iname *.hpp -o -iname *.cpp)
+
+### CLANG-TIDY ###
+.PHONY: check_tidy
+check_tidy:
+	@set -e; for F in $(ALL_SOURCE_FILES); \
+	do \
+		echo "checking if tidy: $$F"; \
+		clang-tidy --warnings-as-errors="*" $$F -- -std=c++20 $(INCLUDES); \
+	done
+	 
