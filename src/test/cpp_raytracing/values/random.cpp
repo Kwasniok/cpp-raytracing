@@ -6,6 +6,7 @@
 namespace cpp_raytracing { namespace test {
 
 void test_random_scalar_unit_scale() {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
     for (long i = 0; i < 1000; ++i) {
         TEST_ASSERT_IN_RANGE(random_scalar(0.0, 1.0), 0.0, 1.0);
     }
@@ -14,6 +15,7 @@ void test_random_scalar_unit_scale() {
 void test_random_scalar_arbitrary_scale() {
     const Scalar min = -7.11e+35;
     const Scalar max = 23.33e-27;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
     for (long i = 0; i < 1000; ++i) {
         TEST_ASSERT_IN_RANGE(random_scalar(min, max), min, max);
     }

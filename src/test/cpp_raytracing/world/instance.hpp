@@ -40,20 +40,24 @@ class Instance : public Entity {
 
     /** @brief default construct with default idenfifier root */
     Instance() = default;
+    /** @brief copy constructor */
+    Instance(const Instance& other) = delete;
     /** @brief move constructor */
     Instance(Instance&& other) = default;
+    /** @brief copy assignment */
+    Instance& operator=(const Instance& other) = delete;
     /** @brief move assignment */
     Instance& operator=(Instance&& other) = default;
 
-    virtual ~Instance() = default;
+    ~Instance() override = default;
 
-    virtual void set_time(const Scalar time) override;
+    void set_time(const Scalar time) override;
 
-    virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray_segment,
-                                 const Scalar t_min = 0.0) const override;
+    HitRecord hit_record(const Geometry& geometry,
+                         const RaySegment& ray_segment,
+                         const Scalar t_min = 0.0) const override;
 
-    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
     /**
      * @brief clone an instanc
@@ -127,8 +131,11 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
     if (entity) {
         const auto bounds = entity->bounding_box();
         if (bounds) {
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays)
             const Scalar x[2] = {bounds->min().x(), bounds->max().x()};
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays)
             const Scalar y[2] = {bounds->min().y(), bounds->max().y()};
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays)
             const Scalar z[2] = {bounds->min().z(), bounds->max().z()};
 
             // linear transformation (translation is deferred)
@@ -142,6 +149,7 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
                 for (auto j = 0; j < 2; ++j) {
                     for (auto k = 0; k < 2; ++k) {
                         const Vec3 corner =
+                            // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
                             transformation * Vec3{x[i], y[j], z[k]};
                         min = Vec3{
                             std::min(min.x(), corner.x()),

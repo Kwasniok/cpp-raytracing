@@ -6,8 +6,8 @@ namespace cpp_raytracing { namespace test {
 
 class Dummy : public Entity {
 
-    virtual HitRecord hit_record(const Geometry&, const RaySegment&,
-                                 const Scalar) const {
+    HitRecord hit_record(const Geometry&, const RaySegment&,
+                         const Scalar) const override {
         return {.t = infinity};
     }
 };

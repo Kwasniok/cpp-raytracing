@@ -107,7 +107,7 @@ void test_dielectric_into_glass() {
     // collect statistics
     int refractions = 0; // ideal: ~95%
     int reflections = 0; // ideal: ~5%
-    int total = 1000000; // must be >= 1000
+    int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_ASSERT_EQUAL(ray_col, mat_col);
@@ -174,7 +174,7 @@ void test_dielectric_total_reflection() {
     };
     const Vec3 direction_in = unit_vector({1.0, 1.0, 0.0});
     const Vec3 direction_reflection = unit_vector({-1.0, 1.0, 0.0});
-    int total = 1000000; // must be >= 1000
+    int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_ASSERT_EQUAL(ray_col, mat_col);

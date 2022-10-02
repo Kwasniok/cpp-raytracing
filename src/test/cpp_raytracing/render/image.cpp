@@ -39,8 +39,12 @@ void test_arithmetic() {
     RawImage img2{N, N};
     for (unsigned long j = 0; j < N; ++j) {
         for (unsigned long i = 0; i < N; ++i) {
-            img1[{i, j}] = Color(N * N - i, N * N - j, 0.0);
-            img2[{i, j}] = Color(i, j, 0.0);
+            const auto a = static_cast<ColorScalar>(N * N - i);
+            const auto b = static_cast<ColorScalar>(N * N - j);
+            const auto c = static_cast<ColorScalar>(i);
+            const auto d = static_cast<ColorScalar>(j);
+            img1[{i, j}] = Color(a, b, 0.0);
+            img2[{i, j}] = Color(c, d, 0.0);
         }
     }
     // add
@@ -80,7 +84,9 @@ void test_write_image_ppm() {
     RawImage img{N, M};
     for (unsigned long i = 0; i < N; ++i) {
         for (unsigned long j = 0; j < M; ++j) {
-            img[{i, j}] = Color(i, j, 0.0);
+            const auto a = static_cast<ColorScalar>(i);
+            const auto b = static_cast<ColorScalar>(j);
+            img[{i, j}] = Color(a, b, 0.0);
         }
     }
     {
@@ -107,7 +113,9 @@ void test_write_image_pfm() {
     RawImage img{N, M};
     for (unsigned long i = 0; i < N; ++i) {
         for (unsigned long j = 0; j < M; ++j) {
-            img[{i, j}] = Color(i, j, 0.0);
+            const auto a = static_cast<ColorScalar>(i);
+            const auto b = static_cast<ColorScalar>(j);
+            img[{i, j}] = Color(a, b, 0.0);
         }
     }
     {
@@ -116,7 +124,7 @@ void test_write_image_pfm() {
         const auto s = ss.str();
         TEST_ASSERT_EQUAL(s.size(), output.size());
         for (std::size_t i = 0; i < output.size(); ++i) {
-            TEST_ASSERT_EQUAL(static_cast<std::uint8_t>(s[i]), output[i]);
+            TEST_ASSERT_EQUAL(static_cast<std::uint8_t>(s.at(i)), output.at(i));
         }
     }
 }

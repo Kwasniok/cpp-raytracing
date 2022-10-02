@@ -27,13 +27,24 @@ class Sphere : public Entity {
     /** @brief material of the sphere */
     std::shared_ptr<Material> material;
 
-    virtual ~Sphere() = default;
+    /** @brief default construct with default idenfifier root */
+    Sphere() = default;
+    /** @brief copy constructor */
+    Sphere(const Sphere& other) = delete;
+    /** @brief move constructor */
+    Sphere(Sphere&& other) = default;
+    /** @brief copy assignment */
+    Sphere& operator=(const Sphere& other) = delete;
+    /** @brief move assignment */
+    Sphere& operator=(Sphere&& other) = default;
 
-    virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray_segment,
-                                 const Scalar t_min = 0.0) const override;
+    ~Sphere() override = default;
 
-    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    HitRecord hit_record(const Geometry& geometry,
+                         const RaySegment& ray_segment,
+                         const Scalar t_min = 0.0) const override;
+
+    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
   private:
     /**
