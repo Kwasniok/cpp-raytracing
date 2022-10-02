@@ -15,14 +15,14 @@
 namespace cpp_raytracing::examples {
 
 /** @brief global shutter mode constant */
-const std::string SHUTTER_MODE_GLOBAL_SHUTTER = "global";
+const std::string SHUTTER_MODE_GLOBAL = "global";
 /** @brief rolling shutter mode constant */
-const std::string SHUTTER_MODE_ROLLING_SHUTTER = "rolling";
+const std::string SHUTTER_MODE_ROLLING = "rolling";
 
 /** @brief all shutter modes supported */
 const auto SHUTTER_MODES = std::to_array({
-    SHUTTER_MODE_GLOBAL_SHUTTER,
-    SHUTTER_MODE_ROLLING_SHUTTER,
+    SHUTTER_MODE_GLOBAL,
+    SHUTTER_MODE_ROLLING,
 });
 
 /**

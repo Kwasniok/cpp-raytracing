@@ -137,12 +137,12 @@ void render_ppm(const RenderConfig& config) {
 
     std::unique_ptr<Renderer> renderer;
 
-    if (config.shutter_mode == SHUTTER_MODE_GLOBAL_SHUTTER) {
+    if (config.shutter_mode == SHUTTER_MODE_GLOBAL) {
         auto rendr = std::make_unique<GlobalShutterRenderer>();
         rendr->exposure_time = config.exposure_time;
         renderer = std::move(rendr);
     }
-    if (config.shutter_mode == SHUTTER_MODE_ROLLING_SHUTTER) {
+    if (config.shutter_mode == SHUTTER_MODE_ROLLING) {
         auto rendr = std::make_unique<RollingShutterRenderer>();
         rendr->frame_exposure_time = config.exposure_time;
         rendr->total_line_exposure_time = config.total_line_exposure_time;
@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
         .help("time of the frame")
         .scan<'g', Scalar>();
     parser.add_argument("--shutter_mode")
-        .default_value(SHUTTER_MODE_GLOBAL_SHUTTER)
+        .default_value(SHUTTER_MODE_GLOBAL)
         .action([](const std::string& value) {
             if (std::find(SHUTTER_MODES.begin(), SHUTTER_MODES.end(), value) !=
                 SHUTTER_MODES.end()) {
