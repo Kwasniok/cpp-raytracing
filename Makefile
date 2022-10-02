@@ -5,6 +5,7 @@ BLD:=build
 OUT:=out
 
 INCLUDES= \
+	-I $(INC) \
 	-I third_party/glm \
 	-I third_party/argparse/include \
 
@@ -21,7 +22,7 @@ CPP_FLAGS=-Wall \
 	-std=c++20 \
 	-g \
 	-fopenmp \
-	-I $(INC) $(INCLUDES)\
+	$(INCLUDES)\
 
 CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 
@@ -39,7 +40,7 @@ CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 # 	-std=c++20 \
 # 	-g \
 # 	-fopenmp=libomp \
-# 	-I $(INC) $(INCLUDES)\
+# 	$(INCLUDES)\
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
