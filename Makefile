@@ -140,9 +140,5 @@ ALL_SOURCE_FILES = $(shell find $(SRC) $(INC) -iname *.hpp -o -iname *.cpp)
 ### CLANG-TIDY ###
 .PHONY: check_tidy
 check_tidy:
-	@set -e; for F in $(ALL_SOURCE_FILES); \
-	do \
-		echo "checking if tidy: $$F"; \
-		clang-tidy --warnings-as-errors="*" $$F -- -std=c++20 $(INCLUDES); \
-	done
+	clang-tidy --warnings-as-errors="*" $(ALL_SOURCE_FILES) -- -std=c++20 $(INCLUDES)
 	 
