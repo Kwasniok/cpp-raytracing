@@ -102,7 +102,7 @@ class UniqueRegister {
         }
 
         // obtain and increment number
-        unsigned long number = atoi(str.c_str() + pos);
+        auto number = atoi(str.c_str() + pos);
         number += 1;
 
         // replace number

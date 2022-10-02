@@ -198,7 +198,7 @@ class BVHTree {
      * @note entities must not be nullptr and bounded
      * @note strict weak ordering (required by std::sort)
      */
-    static bool pseudo_comparator(const int axis, const Entity* e1,
+    static bool pseudo_comparator(const std::size_t axis, const Entity* e1,
                                   const Entity* e2) {
         auto const b1 = e1->bounding_box();
         auto const b2 = e2->bounding_box();

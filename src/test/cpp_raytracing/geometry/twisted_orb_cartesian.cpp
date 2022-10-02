@@ -503,7 +503,7 @@ void test_christoffel_1() {
     };
 
     const Ten3x3x3 res = geometry.christoffel_1(point);
-    for (int i = 0; i < 3; ++i) {
+    for (unsigned int i = 0; i < 3; ++i) {
         TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res[i], expected[i], epsilon);
     }
 }

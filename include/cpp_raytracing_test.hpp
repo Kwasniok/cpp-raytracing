@@ -86,11 +86,11 @@ inline void assert_openmp_is_multithreading(const char* file, const int line) {
     constexpr int N = 4;
     std::array<int, N> buffer{};
 #pragma omp parallel for num_threads(N)
-    for (int i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
         buffer[i] = omp_get_thread_num();
     }
-    for (int i = 0; i < N; ++i) {
-        if (buffer[i] != i) {
+    for (unsigned int i = 0; i < N; ++i) {
+        if (buffer[i] != static_cast<int>(i)) {
             throw AssertionFailedException(
                 message("assert_openmp_is_multithreading()", file, line,
                         "failed because multithreading in OpenMP is not "

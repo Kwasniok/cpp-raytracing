@@ -24,10 +24,11 @@ void test_random_scalar_multithreading() {
     const int N = std::min(4, omp_get_thread_limit());
     TEST_ASSERT_TRUE(N >= 4);
 
-    std::vector<Scalar> results(N);
+    std::vector<Scalar> results(static_cast<std::size_t>(N));
 #pragma omp parallel for num_threads(N)
     for (int i = 0; i < N; ++i) {
-        results[omp_get_thread_num()] = random_scalar(-2.0, 5.0);
+        auto n = static_cast<std::size_t>(omp_get_thread_num());
+        results[n] = random_scalar(-2.0, 5.0);
     }
     // note: The assertion might have a (very small) chance of randomly causing
     //       a false-positive.

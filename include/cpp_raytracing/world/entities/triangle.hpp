@@ -117,7 +117,7 @@ std::optional<AxisAlignedBoundingBox> Triangle::bounding_box() const {
     Vec3 low = {+infinity, +infinity, +infinity};
     Vec3 high = {-infinity, -infinity, -infinity};
 
-    for (int i = 0; i < 3; ++i) {
+    for (unsigned int i = 0; i < 3; ++i) {
         low = elementwise<min>(low, points[i]);
         high = elementwise<max>(high, points[i]);
     }

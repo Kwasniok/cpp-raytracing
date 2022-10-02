@@ -76,7 +76,7 @@ struct vector_space_norm_inf<cpp_raytracing::Vec6> {
         using std::max;
         using std::abs;
         cpp_raytracing::Scalar res = -cpp_raytracing::infinity;
-        for (int i = 0; i < 6; ++i) {
+        for (unsigned int i = 0; i < 6; ++i) {
             res = max(res, abs(v[i]));
         }
         return res;

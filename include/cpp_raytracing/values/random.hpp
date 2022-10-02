@@ -29,8 +29,9 @@ inline Scalar random_scalar(const Scalar min, const Scalar max) {
     // note: rand() is not guaranteed to be thread-safe
     // note: generator is expensive to create and must be preserved per thread
     //       and is therefore static
-    static thread_local std::mt19937_64 generator(42 * omp_get_thread_num() +
-                                                  1);
+    static thread_local std::mt19937_64 generator(
+        static_cast<std::mt19937_64::result_type>(42 * omp_get_thread_num() +
+                                                  1));
     // note: distribution is cheap to create and is therefore not static
     std::uniform_real_distribution<Scalar> distribution(min, max);
     return distribution(generator);
