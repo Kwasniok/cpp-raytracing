@@ -243,7 +243,7 @@ SwirlCartesianRay::make_phase_iterator(SwirlCartesianRay& ray,
 
     const Scalar initial_dt = geometry._ray_initial_step_size;
     const Scalar error_abs = geometry._ray_error_abs;
-    const Scalar error_rel = geometry._ray_error_abs;
+    const Scalar error_rel = geometry._ray_error_rel;
 
     ControlledStepper stepper = make_controlled(
         error_abs, error_rel, runge_kutta_cash_karp54<State, Value>());
