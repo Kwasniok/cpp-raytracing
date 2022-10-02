@@ -23,8 +23,18 @@ class Background {
 
     /** @brief default construct with default idenfifier root */
     Background() = default;
+
+    /** @brief copy constructor */
+    Background(const Background&) = delete;
+
     /** @brief move constructor */
-    Background(Background&& other) = default;
+    Background(Background&&) = default;
+
+    /** @brief copy assignment */
+    Background& operator=(const Background&) = delete;
+
+    /** @brief move assignment */
+    Background& operator=(Background&&) = default;
 
     virtual ~Background() = default;
 

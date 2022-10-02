@@ -70,9 +70,21 @@ class TwistedOrbCartesianRay : public Ray {
     TwistedOrbCartesianRay(const TwistedOrbCartesianGeometry& geometry,
                            const Vec3& start, const Vec3& direction);
 
-    virtual ~TwistedOrbCartesianRay() = default;
+    /** @brief copy constructor */
+    TwistedOrbCartesianRay(const TwistedOrbCartesianRay&) = default;
 
-    virtual std::optional<RaySegment> next_ray_segment() override;
+    /** @brief move constructor */
+    TwistedOrbCartesianRay(TwistedOrbCartesianRay&&) = default;
+
+    /** @brief copy assignment */
+    TwistedOrbCartesianRay& operator=(const TwistedOrbCartesianRay&) = delete;
+
+    /** @brief move assignment */
+    TwistedOrbCartesianRay& operator=(TwistedOrbCartesianRay&&) = delete;
+
+    ~TwistedOrbCartesianRay() override = default;
+
+    std::optional<RaySegment> next_ray_segment() override;
 
     /** @brief returns current phase (position, velocity) */
     const Vec6& phase() const { return _phase; }
@@ -138,18 +150,32 @@ class TwistedOrbCartesianGeometry : public Geometry {
                                 const Scalar ray_max_length,
                                 const Scalar _ray_segment_length_factor);
 
-    virtual ~TwistedOrbCartesianGeometry() = default;
+    /** @brief copy constructor */
+    TwistedOrbCartesianGeometry(const TwistedOrbCartesianGeometry&) = default;
 
-    virtual std::unique_ptr<Ray> ray_from(const Vec3& start,
-                                          const Vec3& direction) const override;
+    /** @brief move constructor */
+    TwistedOrbCartesianGeometry(TwistedOrbCartesianGeometry&&) = default;
 
-    virtual std::unique_ptr<Ray>
-    ray_passing_through(const Vec3& start, const Vec3& target) const override;
+    /** @brief copy assignment */
+    TwistedOrbCartesianGeometry&
+    operator=(const TwistedOrbCartesianGeometry&) = delete;
 
-    virtual Mat3x3 to_onb_jacobian(const Vec3& position) const override;
-    virtual Mat3x3 from_onb_jacobian(const Vec3& position) const override;
+    /** @brief move assignment */
+    TwistedOrbCartesianGeometry&
+    operator=(TwistedOrbCartesianGeometry&&) = delete;
 
-    virtual Mat3x3 metric(const Vec3& position) const override;
+    ~TwistedOrbCartesianGeometry() override = default;
+
+    std::unique_ptr<Ray> ray_from(const Vec3& start,
+                                  const Vec3& direction) const override;
+
+    std::unique_ptr<Ray> ray_passing_through(const Vec3& start,
+                                             const Vec3& target) const override;
+
+    Mat3x3 to_onb_jacobian(const Vec3& position) const override;
+    Mat3x3 from_onb_jacobian(const Vec3& position) const override;
+
+    Mat3x3 metric(const Vec3& position) const override;
 
   public:
     /** @brief returns normalized vector */

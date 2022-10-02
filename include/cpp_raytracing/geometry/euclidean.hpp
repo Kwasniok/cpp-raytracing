@@ -21,9 +21,21 @@ class EuclideanRay : public Ray {
     EuclideanRay(const Vec3& start, const Vec3& direction)
         : _start(start), _direction(direction){};
 
-    virtual ~EuclideanRay() = default;
+    /** @brief copy constructor */
+    EuclideanRay(const EuclideanRay&) = default;
 
-    virtual std::optional<RaySegment> next_ray_segment() override {
+    /** @brief move constructor */
+    EuclideanRay(EuclideanRay&&) = default;
+
+    /** @brief copy assignment */
+    EuclideanRay& operator=(const EuclideanRay&) = default;
+
+    /** @brief move assignment */
+    EuclideanRay& operator=(EuclideanRay&&) = default;
+
+    ~EuclideanRay() override = default;
+
+    std::optional<RaySegment> next_ray_segment() override {
         if (_has_next) {
             _has_next = false;
             return RaySegment{_start, _direction};
@@ -42,29 +54,42 @@ class EuclideanRay : public Ray {
  */
 class EuclideanGeometry : public Geometry {
   public:
-    virtual ~EuclideanGeometry() = default;
+    /** @brief default constructor */
+    EuclideanGeometry() = default;
 
-    virtual std::unique_ptr<Ray>
-    ray_from(const Vec3& start, const Vec3& direction) const override {
+    /** @brief copy constructor */
+    EuclideanGeometry(const EuclideanGeometry&) = default;
+
+    /** @brief move constructor */
+    EuclideanGeometry(EuclideanGeometry&&) = default;
+
+    /** @brief copy assignment */
+    EuclideanGeometry& operator=(const EuclideanGeometry&) = default;
+
+    /** @brief move assignment */
+    EuclideanGeometry& operator=(EuclideanGeometry&&) = default;
+
+    ~EuclideanGeometry() override = default;
+
+    std::unique_ptr<Ray> ray_from(const Vec3& start,
+                                  const Vec3& direction) const override {
         return std::make_unique<EuclideanRay>(start, direction);
     }
 
-    virtual std::unique_ptr<Ray>
+    std::unique_ptr<Ray>
     ray_passing_through(const Vec3& start, const Vec3& target) const override {
         return std::make_unique<EuclideanRay>(start,
                                               unit_vector(target - start));
     }
 
-    virtual Mat3x3 to_onb_jacobian(const Vec3&) const override {
+    Mat3x3 to_onb_jacobian(const Vec3&) const override {
         return Mat3x3::identity();
     }
-    virtual Mat3x3 from_onb_jacobian(const Vec3&) const override {
+    Mat3x3 from_onb_jacobian(const Vec3&) const override {
         return Mat3x3::identity();
     }
 
-    virtual Mat3x3 metric(const Vec3&) const override {
-        return Mat3x3::identity();
-    }
+    Mat3x3 metric(const Vec3&) const override { return Mat3x3::identity(); }
 };
 
 } // namespace cpp_raytracing

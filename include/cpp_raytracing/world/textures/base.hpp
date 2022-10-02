@@ -22,8 +22,18 @@ class Texture {
 
     /** @brief default construct with default identifier root */
     Texture() = default;
+
+    /** @brief copy constructor */
+    Texture(const Texture& other) = delete;
+
     /** @brief move constructor */
     Texture(Texture&& other) = default;
+
+    /** @brief copy assignment */
+    Texture& operator=(const Texture& other) = delete;
+
+    /** @brief move assignment */
+    Texture& operator=(Texture&& other) = default;
 
     virtual ~Texture() = default;
 

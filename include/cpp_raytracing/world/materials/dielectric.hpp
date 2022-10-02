@@ -27,10 +27,25 @@ class Dielectric : public Material {
      */
     Scalar index_of_refraction = 1.0;
 
-    virtual ~Dielectric() = default;
+    /** @brief default construct with default idenfifier root */
+    Dielectric() = default;
 
-    virtual std::pair<Vec3, Color>
-    scatter(const HitRecord& record, const Vec3& ray_direction) const override {
+    /** @brief copy constructor */
+    Dielectric(const Dielectric&) = delete;
+
+    /** @brief move constructor */
+    Dielectric(Dielectric&&) = default;
+
+    /** @brief copy assignment */
+    Dielectric& operator=(const Dielectric&) = delete;
+
+    /** @brief move assignment */
+    Dielectric& operator=(Dielectric&&) = default;
+
+    ~Dielectric() override = default;
+
+    std::pair<Vec3, Color> scatter(const HitRecord& record,
+                                   const Vec3& ray_direction) const override {
         // note: This algorithm assumes vacuum to medium transitions and
         // vice versa
         //       only.

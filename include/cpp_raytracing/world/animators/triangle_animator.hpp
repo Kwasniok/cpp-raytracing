@@ -19,10 +19,25 @@ class Entity;
  */
 class TriangleAnimator : public Animator {
   public:
-    virtual ~TriangleAnimator() = default;
+    /** @brief default constructor */
+    TriangleAnimator() = default;
+
+    /** @brief copy constructor */
+    TriangleAnimator(const TriangleAnimator&) = default;
+
+    /** @brief move constructor */
+    TriangleAnimator(TriangleAnimator&&) = default;
+
+    /** @brief copy assignment */
+    TriangleAnimator& operator=(const TriangleAnimator&) = default;
+
+    /** @brief move assignment */
+    TriangleAnimator& operator=(TriangleAnimator&&) = default;
+
+    ~TriangleAnimator() override = default;
 
     /** @brief invoke update of entity for given time */
-    virtual void update_for_time(const Scalar time, Entity* entity) override;
+    void update_for_time(const Scalar time, Entity* entity) override;
 
   protected:
     /** @brief hook for update_for_time */

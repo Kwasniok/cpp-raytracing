@@ -20,9 +20,24 @@ class Isotropic : public Material {
     /** @brief color of the isotropic 'surface' */
     std::shared_ptr<Texture> color;
 
-    virtual ~Isotropic() = default;
+    /** @brief default construct with default idenfifier root */
+    Isotropic() = default;
 
-    virtual std::pair<Vec3, Color>
+    /** @brief copy constructor */
+    Isotropic(const Isotropic&) = delete;
+
+    /** @brief move constructor */
+    Isotropic(Isotropic&&) = default;
+
+    /** @brief copy assignment */
+    Isotropic& operator=(const Isotropic&) = delete;
+
+    /** @brief move assignment */
+    Isotropic& operator=(Isotropic&&) = default;
+
+    ~Isotropic() override = default;
+
+    std::pair<Vec3, Color>
     scatter(const HitRecord& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
 

@@ -34,9 +34,7 @@ struct AssertionFailedException : std::exception {
     AssertionFailedException(const char* message) : message(message) {}
 
     /** @brief get message */
-    virtual const char* what() const noexcept override {
-        return message.c_str();
-    }
+    const char* what() const noexcept override { return message.c_str(); }
 
   private:
     std::string message;

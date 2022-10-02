@@ -33,15 +33,30 @@ class Mesh : public Entity {
     /** @brief material of the plane */
     std::shared_ptr<Material> material;
 
-    virtual ~Mesh() = default;
+    /** @brief default constructor */
+    Mesh() = default;
 
-    virtual void set_time(const Scalar time) override;
+    /** @brief copy constructor */
+    Mesh(const Mesh&) = delete;
 
-    virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray_segment,
-                                 const Scalar t_min = 0.0) const override;
+    /** @brief move constructor */
+    Mesh(Mesh&&) = default;
 
-    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    /** @brief copy assignment */
+    Mesh& operator=(const Mesh&) = delete;
+
+    /** @brief move assignment */
+    Mesh& operator=(Mesh&&) = default;
+
+    ~Mesh() override = default;
+
+    void set_time(const Scalar time) override;
+
+    HitRecord hit_record(const Geometry& geometry,
+                         const RaySegment& ray_segment,
+                         const Scalar t_min = 0.0) const override;
+
+    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
   private:
     /**

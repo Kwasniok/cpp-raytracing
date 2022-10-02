@@ -17,11 +17,25 @@ class ConstantColor : public Texture {
   public:
     /** @brief color of the surface */
     Color color = Colors::WHITE;
+    /** @brief default construct with default idenfifier root */
+    ConstantColor() = default;
 
-    virtual ~ConstantColor() = default;
+    /** @brief copy constructor */
+    ConstantColor(const ConstantColor&) = delete;
 
-    virtual Color value([[maybe_unused]] const Vec2& coordinates,
-                        [[maybe_unused]] const Vec3& point) const override {
+    /** @brief move constructor */
+    ConstantColor(ConstantColor&&) = default;
+
+    /** @brief copy assignment */
+    ConstantColor& operator=(const ConstantColor&) = delete;
+
+    /** @brief move assignment */
+    ConstantColor& operator=(ConstantColor&&) = default;
+
+    ~ConstantColor() override = default;
+
+    Color value([[maybe_unused]] const Vec2& coordinates,
+                [[maybe_unused]] const Vec3& point) const override {
         return color;
     }
 };

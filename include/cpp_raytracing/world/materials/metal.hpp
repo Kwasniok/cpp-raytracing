@@ -25,10 +25,25 @@ class Metal : public Material {
      */
     Scalar roughness = 0.0;
 
-    virtual ~Metal() = default;
+    /** @brief default construct with default idenfifier root */
+    Metal() = default;
 
-    virtual std::pair<Vec3, Color>
-    scatter(const HitRecord& record, const Vec3& ray_direction) const override {
+    /** @brief copy constructor */
+    Metal(const Metal&) = delete;
+
+    /** @brief move constructor */
+    Metal(Metal&&) = default;
+
+    /** @brief copy assignment */
+    Metal& operator=(const Metal&) = delete;
+
+    /** @brief move assignment */
+    Metal& operator=(Metal&&) = default;
+
+    ~Metal() override = default;
+
+    std::pair<Vec3, Color> scatter(const HitRecord& record,
+                                   const Vec3& ray_direction) const override {
         const Vec3 para = dot(record.normal, ray_direction) * record.normal;
         const Vec3 ortho = ray_direction - para;
         const Vec3 direction = reflect(ortho, para, roughness);

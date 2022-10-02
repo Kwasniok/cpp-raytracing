@@ -26,8 +26,18 @@ class Material {
 
     /** @brief default construct with default idenfifier root */
     Material() = default;
+
+    /** @brief copy constructor */
+    Material(const Material&) = delete;
+
     /** @brief move constructor */
-    Material(Material&& other) = default;
+    Material(Material&&) = default;
+
+    /** @brief copy assignment */
+    Material& operator=(const Material&) = delete;
+
+    /** @brief move assignment */
+    Material& operator=(Material&&) = default;
 
     virtual ~Material() = default;
 

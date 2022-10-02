@@ -24,13 +24,28 @@ class Triangle : public Entity {
     /** @brief material of the plane */
     std::shared_ptr<Material> material;
 
-    virtual ~Triangle() = default;
+    /** @brief default constructor */
+    Triangle() = default;
 
-    virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray_segment,
-                                 const Scalar t_min = 0.0) const override;
+    /** @brief copy constructor */
+    Triangle(const Triangle&) = delete;
 
-    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    /** @brief move constructor */
+    Triangle(Triangle&&) = default;
+
+    /** @brief copy assignment */
+    Triangle& operator=(const Triangle&) = delete;
+
+    /** @brief move assignment */
+    Triangle& operator=(Triangle&&) = default;
+
+    ~Triangle() override = default;
+
+    HitRecord hit_record(const Geometry& geometry,
+                         const RaySegment& ray_segment,
+                         const Scalar t_min = 0.0) const override;
+
+    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
   private:
     /**

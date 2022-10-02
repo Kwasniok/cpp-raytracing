@@ -19,9 +19,24 @@ class Entity;
  */
 class MeshAnimator : public Animator {
   public:
-    virtual ~MeshAnimator() = default;
+    /** @brief default constructor */
+    MeshAnimator() = default;
 
-    virtual void update_for_time(const Scalar time, Entity* entity) override;
+    /** @brief copy constructor */
+    MeshAnimator(const MeshAnimator&) = default;
+
+    /** @brief move constructor */
+    MeshAnimator(MeshAnimator&&) = default;
+
+    /** @brief copy assignment */
+    MeshAnimator& operator=(const MeshAnimator&) = default;
+
+    /** @brief move assignment */
+    MeshAnimator& operator=(MeshAnimator&&) = default;
+
+    ~MeshAnimator() override = default;
+
+    void update_for_time(const Scalar time, Entity* entity) override;
 
   protected:
     /** @brief hook for update_for_time */

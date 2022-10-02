@@ -26,10 +26,25 @@ class Checker2D : public Texture {
     /** @brief size of each box in uv coordinates */
     Scalar scale = 1.0;
 
-    virtual ~Checker2D() = default;
+    /** @brief default construct with default idenfifier root */
+    Checker2D() = default;
 
-    virtual Color value(const Vec2& coordinates,
-                        [[maybe_unused]] const Vec3& point) const override {
+    /** @brief copy constructor */
+    Checker2D(const Checker2D&) = delete;
+
+    /** @brief move constructor */
+    Checker2D(Checker2D&&) = default;
+
+    /** @brief copy assignment */
+    Checker2D& operator=(const Checker2D&) = delete;
+
+    /** @brief move assignment */
+    Checker2D& operator=(Checker2D&&) = default;
+
+    ~Checker2D() override = default;
+
+    Color value(const Vec2& coordinates,
+                [[maybe_unused]] const Vec3& point) const override {
 
         const Vec2 c = (coordinates - offset) * (pi / scale);
         const auto val = std::sin(c.u()) * std::sin(c.v());

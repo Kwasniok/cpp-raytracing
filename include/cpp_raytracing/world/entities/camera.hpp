@@ -30,8 +30,8 @@ class Camera : public Entity {
                                                 const Scalar x,
                                                 const Scalar y) const = 0;
 
-    virtual HitRecord hit_record(const Geometry&, const RaySegment&,
-                                 const Scalar) const {
+    HitRecord hit_record(const Geometry&, const RaySegment&,
+                         const Scalar) const override {
         return {.t = infinity};
     };
 };
@@ -61,9 +61,9 @@ class PinholeCamera : public Camera {
     PinholeCamera(const Vec3& pinhole, T surface_arg)
         : detector_surface(std::forward<T>(surface_arg)), pinhole(pinhole) {}
 
-    virtual std::unique_ptr<Ray> ray_for_coords(const Geometry& geometry,
-                                                const Scalar x,
-                                                const Scalar y) const override {
+    std::unique_ptr<Ray> ray_for_coords(const Geometry& geometry,
+                                        const Scalar x,
+                                        const Scalar y) const override {
         const Vec3 start = detector_surface(x, y);
         return geometry.ray_passing_through(start, pinhole);
     }

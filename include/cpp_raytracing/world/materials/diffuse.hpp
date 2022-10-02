@@ -22,9 +22,24 @@ class Diffuse : public Material {
     /** @brief color of the diffuse surface */
     std::shared_ptr<Texture> color;
 
-    virtual ~Diffuse() = default;
+    /** @brief default construct with default idenfifier root */
+    Diffuse() = default;
 
-    virtual std::pair<Vec3, Color>
+    /** @brief copy constructor */
+    Diffuse(const Diffuse&) = delete;
+
+    /** @brief move constructor */
+    Diffuse(Diffuse&&) = default;
+
+    /** @brief copy assignment */
+    Diffuse& operator=(const Diffuse&) = delete;
+
+    /** @brief move assignment */
+    Diffuse& operator=(Diffuse&&) = default;
+
+    ~Diffuse() override = default;
+
+    std::pair<Vec3, Color>
     scatter(const HitRecord& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
         Vec3 direction = record.normal + random_unit_vector();

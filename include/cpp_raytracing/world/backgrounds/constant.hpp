@@ -18,11 +18,25 @@ class ConstantBackground : public Background {
     /** @brief color of the background */
     Color color = Colors::WHITE;
 
-    virtual ~ConstantBackground() = default;
+    /** @brief default constructor */
+    ConstantBackground() = default;
 
-    virtual Color
-    value([[maybe_unused]] const Geometry& geometry,
-          [[maybe_unused]] const RaySegment& ray_segment) const override {
+    /** @brief copy constructor */
+    ConstantBackground(const ConstantBackground&) = delete;
+
+    /** @brief move constructor */
+    ConstantBackground(ConstantBackground&&) = default;
+
+    /** @brief copy assignment */
+    ConstantBackground& operator=(const ConstantBackground&) = delete;
+
+    /** @brief move assignment */
+    ConstantBackground& operator=(ConstantBackground&&) = default;
+
+    ~ConstantBackground() override = default;
+
+    Color value([[maybe_unused]] const Geometry& geometry,
+                [[maybe_unused]] const RaySegment& ray_segment) const override {
         return color;
     };
 };

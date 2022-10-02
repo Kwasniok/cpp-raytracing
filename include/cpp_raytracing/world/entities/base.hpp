@@ -28,8 +28,16 @@ class Entity {
 
     /** @brief default construct with default idenfifier root */
     Entity() = default;
+
+    /** @brief copy constructor */
+    Entity(const Entity&) = delete;
+
     /** @brief move constructor */
     Entity(Entity&& other) = default;
+
+    /** @brief copy assignment */
+    Entity& operator=(const Entity&) = delete;
+
     /** @brief move assignment */
     Entity& operator=(Entity&& other) = default;
 

@@ -19,6 +19,21 @@ namespace cpp_raytracing {
  */
 class Ray {
   public:
+    /** @brief default constructor */
+    Ray() = default;
+
+    /** @brief copy constructor */
+    Ray(const Ray&) = default;
+
+    /** @brief move constructor */
+    Ray(Ray&&) = default;
+
+    /** @brief copy assignment */
+    Ray& operator=(const Ray&) = default;
+
+    /** @brief move assignment */
+    Ray& operator=(Ray&&) = default;
+
     virtual ~Ray() = default;
 
     /**
@@ -33,6 +48,21 @@ class Ray {
  */
 class Geometry {
   public:
+    /** @brief default constructor */
+    Geometry() = default;
+
+    /** @brief copy constructor */
+    Geometry(const Geometry&) = default;
+
+    /** @brief move constructor */
+    Geometry(Geometry&&) = default;
+
+    /** @brief copy assignment */
+    Geometry& operator=(const Geometry&) = default;
+
+    /** @brief move assignment */
+    Geometry& operator=(Geometry&&) = default;
+
     virtual ~Geometry() = default;
 
     /**

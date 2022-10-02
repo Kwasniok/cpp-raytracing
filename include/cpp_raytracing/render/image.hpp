@@ -27,8 +27,20 @@ class RawImage {
     /** @brief initialize with dimensions */
     RawImage(unsigned long width, unsigned long height)
         : _pixel_colors(width * height), _width(width), _height(height) {}
+
+    /** @brief copy constructor */
+    RawImage(const RawImage&) = delete;
+
     /** @brief move constructor */
     RawImage(RawImage&&) = default;
+
+    /** @brief copy assignment */
+    RawImage& operator=(const RawImage&) = delete;
+
+    /** @brief move assignment */
+    RawImage& operator=(RawImage&&) = default;
+
+    ~RawImage() = default;
 
     /** @brief width in pixel */
     unsigned long width() const { return _width; }
@@ -152,9 +164,9 @@ std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
 std::ostream& write_color_as_float32_triple(std::ostream& os,
                                             const Color& color) {
     // convert to float32
-    const float fr = color.r();
-    const float fg = color.g();
-    const float fb = color.b();
+    const float fr = static_cast<float>(color.r());
+    const float fg = static_cast<float>(color.g());
+    const float fb = static_cast<float>(color.b());
     // no gamma correction
 
     // convert to bytes (asserts IEEE 754 32-bit little endian)

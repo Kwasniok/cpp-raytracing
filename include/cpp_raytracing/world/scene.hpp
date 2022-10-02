@@ -46,6 +46,18 @@ class Scene {
                     const Scalar time);
 
       public:
+        /** @brief copy constructor */
+        FreezeGuard(const FreezeGuard&) = delete;
+
+        /** @brief move constructor */
+        FreezeGuard(FreezeGuard&&) = delete;
+
+        /** @brief copy assignment */
+        FreezeGuard& operator=(const FreezeGuard&) = delete;
+
+        /** @brief move assignment */
+        FreezeGuard& operator=(FreezeGuard&&) = delete;
+
         /** @brief unfreezes the scene */
         inline ~FreezeGuard();
 
@@ -88,8 +100,20 @@ class Scene {
     /** @brief initialize with an active camera */
     Scene(std::shared_ptr<Camera> active_camera)
         : active_camera(active_camera){};
+
+    /** @brief copy constructor */
+    Scene(const Scene&) = delete;
+
     /** @brief move constructor */
     Scene(Scene&&) = default;
+
+    /** @brief copy assignment */
+    Scene& operator=(const Scene&) = delete;
+
+    /** @brief move assignment */
+    Scene& operator=(Scene&&) = default;
+
+    ~Scene() = default;
 
     /**
      * @brief remove all entities

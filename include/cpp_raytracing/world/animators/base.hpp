@@ -20,6 +20,21 @@ class Entity;
  */
 class Animator {
   public:
+    /** @brief default constructor */
+    Animator() = default;
+
+    /** @brief copy constructor */
+    Animator(const Animator&) = default;
+
+    /** @brief move constructor */
+    Animator(Animator&&) = default;
+
+    /** @brief copy assignment */
+    Animator& operator=(const Animator&) = default;
+
+    /** @brief move assignment */
+    Animator& operator=(Animator&&) = default;
+
     virtual ~Animator() = default;
 
     /** @brief invoke update of entity for given time */

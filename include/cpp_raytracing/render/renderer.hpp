@@ -130,6 +130,21 @@ class Renderer {
      */
     Color ray_color_if_interior_normal = {1.0, 0.0, 0.0};
 
+    /** @brief default constructor */
+    Renderer() = default;
+
+    /** @brief copy constructor */
+    Renderer(const Renderer&) = default;
+
+    /** @brief move constructor */
+    Renderer(Renderer&&) = default;
+
+    /** @brief copy assignment */
+    Renderer& operator=(const Renderer&) = default;
+
+    /** @brief move assignment */
+    Renderer& operator=(Renderer&&) = default;
+
     virtual ~Renderer() = default;
 
     /** @brief render Scene as RawImage */
@@ -256,9 +271,24 @@ class GlobalShutterRenderer : public Renderer {
      */
     Scalar exposure_time = 0.0;
 
-    virtual ~GlobalShutterRenderer() = default;
+    /** @brief default constructor */
+    GlobalShutterRenderer() = default;
 
-    virtual RawImage render(const Geometry& geometry, Scene& scene) override {
+    /** @brief copy constructor */
+    GlobalShutterRenderer(const GlobalShutterRenderer&) = default;
+
+    /** @brief move constructor */
+    GlobalShutterRenderer(GlobalShutterRenderer&&) = default;
+
+    /** @brief copy assignment */
+    GlobalShutterRenderer& operator=(const GlobalShutterRenderer&) = default;
+
+    /** @brief move assignment */
+    GlobalShutterRenderer& operator=(GlobalShutterRenderer&&) = default;
+
+    ~GlobalShutterRenderer() override = default;
+
+    RawImage render(const Geometry& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
@@ -334,9 +364,24 @@ class RollingShutterRenderer : public Renderer {
      */
     Scalar total_line_exposure_time = 0.0;
 
-    virtual ~RollingShutterRenderer() = default;
+    /** @brief default constructor */
+    RollingShutterRenderer() = default;
 
-    virtual RawImage render(const Geometry& geometry, Scene& scene) override {
+    /** @brief copy constructor */
+    RollingShutterRenderer(const RollingShutterRenderer&) = default;
+
+    /** @brief move constructor */
+    RollingShutterRenderer(RollingShutterRenderer&&) = default;
+
+    /** @brief copy assignment */
+    RollingShutterRenderer& operator=(const RollingShutterRenderer&) = default;
+
+    /** @brief move assignment */
+    RollingShutterRenderer& operator=(RollingShutterRenderer&&) = default;
+
+    ~RollingShutterRenderer() override = default;
+
+    RawImage render(const Geometry& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 

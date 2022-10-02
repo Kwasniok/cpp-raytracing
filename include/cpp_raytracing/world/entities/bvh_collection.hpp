@@ -26,9 +26,18 @@ class BVHCollection : public Entity {
   public:
     /** @brief initialize with active camera */
     BVHCollection() = default;
+
+    /** @brief copy constructor */
+    BVHCollection(const BVHCollection&) = delete;
+
     /** @brief move constructor */
     BVHCollection(BVHCollection&&) = default;
-    virtual ~BVHCollection() = default;
+
+    /** @brief copy assignment */
+    BVHCollection& operator=(const BVHCollection&) = delete;
+
+    /** @brief move assignment */
+    BVHCollection& operator=(BVHCollection&&) = default;
 
     /**
      * @brief remove all entities.
@@ -55,21 +64,21 @@ class BVHCollection : public Entity {
      * @note Invalidates cache.
      * @note Not thread-safe.
      */
-    virtual void set_time(const Scalar time) override;
+    void set_time(const Scalar time) override;
 
     /**
      * @note Requires valid cache.
      * @note Thread-safe.
      */
-    virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment& ray_segment,
-                                 const Scalar t_min = 0.0) const override;
+    HitRecord hit_record(const Geometry& geometry,
+                         const RaySegment& ray_segment,
+                         const Scalar t_min = 0.0) const override;
 
     /**
      * @note Requires valid cache.
      * @note Thread-safe.
      */
-    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
 
   public:
     /**

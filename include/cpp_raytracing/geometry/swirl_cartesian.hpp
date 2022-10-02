@@ -51,9 +51,21 @@ class SwirlCartesianRay : public Ray {
     SwirlCartesianRay(const SwirlCartesianGeometry& geometry, const Vec3& start,
                       const Vec3& direction);
 
-    virtual ~SwirlCartesianRay() = default;
+    /** @brief copy constructor */
+    SwirlCartesianRay(const SwirlCartesianRay&) = default;
 
-    virtual std::optional<RaySegment> next_ray_segment() override;
+    /** @brief move constructor */
+    SwirlCartesianRay(SwirlCartesianRay&&) = default;
+
+    /** @brief copy assignment */
+    SwirlCartesianRay& operator=(const SwirlCartesianRay&) = delete;
+
+    /** @brief move assignment */
+    SwirlCartesianRay& operator=(SwirlCartesianRay&&) = delete;
+
+    ~SwirlCartesianRay() override = default;
+
+    std::optional<RaySegment> next_ray_segment() override;
 
   private:
     /** @brief returns current phase (position, velocity) */
@@ -119,18 +131,30 @@ class SwirlCartesianGeometry : public Geometry {
                            const Scalar ray_max_length,
                            const Scalar _ray_segment_length_factor);
 
-    virtual ~SwirlCartesianGeometry() = default;
+    /** @brief copy constructor */
+    SwirlCartesianGeometry(const SwirlCartesianGeometry&) = default;
 
-    virtual std::unique_ptr<Ray> ray_from(const Vec3& start,
-                                          const Vec3& direction) const override;
+    /** @brief move constructor */
+    SwirlCartesianGeometry(SwirlCartesianGeometry&&) = default;
 
-    virtual std::unique_ptr<Ray>
-    ray_passing_through(const Vec3& start, const Vec3& target) const override;
+    /** @brief copy assignment */
+    SwirlCartesianGeometry& operator=(const SwirlCartesianGeometry&) = delete;
 
-    virtual Mat3x3 to_onb_jacobian(const Vec3& position) const override;
-    virtual Mat3x3 from_onb_jacobian(const Vec3& position) const override;
+    /** @brief move assignment */
+    SwirlCartesianGeometry& operator=(SwirlCartesianGeometry&&) = delete;
 
-    virtual Mat3x3 metric(const Vec3& position) const override;
+    ~SwirlCartesianGeometry() override = default;
+
+    std::unique_ptr<Ray> ray_from(const Vec3& start,
+                                  const Vec3& direction) const override;
+
+    std::unique_ptr<Ray> ray_passing_through(const Vec3& start,
+                                             const Vec3& target) const override;
+
+    Mat3x3 to_onb_jacobian(const Vec3& position) const override;
+    Mat3x3 from_onb_jacobian(const Vec3& position) const override;
+
+    Mat3x3 metric(const Vec3& position) const override;
 
   public:
     /** @brief returns normalized vector */

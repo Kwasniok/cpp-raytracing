@@ -19,9 +19,24 @@ class Emitter : public Material {
     /** @brief color of the emitting surface */
     std::shared_ptr<Texture> color;
 
-    virtual ~Emitter() = default;
+    /** @brief default construct with default idenfifier root */
+    Emitter() = default;
 
-    virtual std::pair<Vec3, Color>
+    /** @brief copy constructor */
+    Emitter(const Emitter&) = delete;
+
+    /** @brief move constructor */
+    Emitter(Emitter&&) = default;
+
+    /** @brief copy assignment */
+    Emitter& operator=(const Emitter&) = delete;
+
+    /** @brief move assignment */
+    Emitter& operator=(Emitter&&) = default;
+
+    ~Emitter() override = default;
+
+    std::pair<Vec3, Color>
     scatter(const HitRecord& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
         const Vec3 direction = Vec3::zero(); // emissive
