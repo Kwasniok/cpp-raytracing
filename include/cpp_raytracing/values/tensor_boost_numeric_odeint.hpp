@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_TENSOR_BOOST_NUMERIC_ODEINT_HPP
 #define CPP_RAYTRACING_TENSOR_BOOST_NUMERIC_ODEINT_HPP
 
+#include <boost/numeric/odeint/algebra/norm_result_type.hpp>
 #include <boost/numeric/odeint/algebra/vector_space_algebra.hpp>
 
 #include "tensor.hpp"
