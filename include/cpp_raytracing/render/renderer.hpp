@@ -44,6 +44,18 @@ class Renderer {
     /** @brief callback type used by Renderer::render() */
     using RenderCallbackFunc = std::function<void(const State&)>;
 
+    /**
+     * @brief default minimal ray length
+     * @see minimal_ray_length
+     */
+    constexpr static Scalar DEFAULT_RAY_MINIMAL_LENGTH = 1e-5;
+
+    /**
+     * @brief default infrequent_render_callback
+     * @see infrequent_render_callback_frequency
+     */
+    constexpr static unsigned long DEFAULT_INFREQUENT_CALLBACK_FREQUENCY = 10;
+
     /** @brief canvas for the image to be rendered */
     Canvas canvas;
 
@@ -100,7 +112,8 @@ class Renderer {
      *        `infrequent_render_callback` steps
      * @note A step might be a full image sample.
      */
-    unsigned long infrequent_callback_frequency = 10;
+    unsigned long infrequent_callback_frequency =
+        DEFAULT_INFREQUENT_CALLBACK_FREQUENCY;
 
     /** @brief time the exposure of the frame starts */
     Scalar time = 0.0;
@@ -110,7 +123,7 @@ class Renderer {
      * @note Must be strictly larger than zero.
      * @see maximal_ray_length
      */
-    Scalar minimal_ray_length = 1e-5;
+    Scalar minimal_ray_length = DEFAULT_RAY_MINIMAL_LENGTH;
 
     /**
      * @brief if true color entitites based on normals instead of thier
