@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_SCALAR_HPP
 #define CPP_RAYTRACING_SCALAR_HPP
 
+#include <cmath>
 #include <limits>
 #include <numbers>
 
