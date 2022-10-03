@@ -196,9 +196,8 @@ class Identifier {
      *       (Move the value if necessary.)
      * @see make_if_available, make_always
      */
-    explicit Identifier(std::string&& str) : _value() {
+    explicit Identifier(std::string&& str) : _value(std::move(str)) {
         _register.set_to_next_free_and_claim(str);
-        _value = std::move(str);
     }
 
     /**
