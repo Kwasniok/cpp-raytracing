@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <istream>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <unordered_set>
@@ -76,12 +77,8 @@ class UniqueRegister {
      */
     static void set_to_next(std::string& str) {
         // find begin of suffix
-        std::size_t pos = str.length() - 1;
-        while (pos > 0 && str[pos] != '_') {
-            --pos;
-        }
-
-        if (pos == 0) {
+        auto pos = str.find_last_of('_');
+        if (pos == str.npos) {
             // not a proper clone suffix -> add a new suffix
             add_suffix(str);
             return;
@@ -91,8 +88,11 @@ class UniqueRegister {
         pos += 1;
 
         // check if suffix is a number
-        for (std::size_t i = pos; i < str.length(); ++i) {
-            if (!std::isdigit(str[i])) {
+        {
+            auto first = str.begin();
+            std::advance(first, pos);
+            if (std::any_of(first, str.end(),
+                            [](const char& c) { return !std::isdigit(c); })) {
                 // not a proper clone suffix -> add a new suffix
                 add_suffix(str);
                 return;
@@ -100,7 +100,7 @@ class UniqueRegister {
         }
 
         // obtain and increment number
-        auto number = atoi(str.c_str() + pos);
+        auto number = std::stoi(str.substr(pos));
         number += 1;
 
         // replace number
