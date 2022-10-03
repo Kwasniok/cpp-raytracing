@@ -302,21 +302,26 @@ class Identifier {
 
   private:
     /** @brief register for used strings */
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     static internal::UniqueRegister _register;
     /**
      * @brief counts default constructed identifiers
      * @note This counter speeds up identifier generation significantly in the
      *       case where the exact value of the identifer does not matter.
      */
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     static unsigned long _counter;
+
     /** @brief identifer value */
     std::string _value; // NOTE: do not make const, must be movable
 };
 
 template <typename T>
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 internal::UniqueRegister Identifier<T>::_register;
 
 template <typename T>
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 unsigned long Identifier<T>::_counter = 0;
 
 /** @brief write Identifier to ostream */
