@@ -20,6 +20,7 @@ void test_vec3_default_constructor() {
 void test_vec3_random_constructor() {
     const auto min = -1.1;
     const auto max = 2.2;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
     for (long i = 0; i < 1000; ++i) {
         Vec3 vec = Vec3::random(min, max);
         TEST_ASSERT_IN_RANGE(vec.x(), min, max);

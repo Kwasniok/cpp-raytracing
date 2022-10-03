@@ -95,6 +95,7 @@ void test_clone() {
     Identifier<void> id = Identifier<void>::make_always("abc");
     for (int l = 0; l < 2; ++l) {
         std::vector<Identifier<void>> clone_ids;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
         for (int i = 2; i < 1005; ++i) {
             auto clone_id = id.clone();
             std::string expected = "abc";
