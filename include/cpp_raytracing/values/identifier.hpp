@@ -33,8 +33,6 @@ class UniqueRegister {
      */
     bool claim(const std::string& str) {
         const auto [_, success] = _storage.insert(hash(str));
-        if (success) {
-        }
         return success;
     }
     /**
@@ -56,7 +54,7 @@ class UniqueRegister {
     }
 
   private:
-    hash_t hash(const std::string& str) {
+    static hash_t hash(const std::string& str) {
         return std::hash<std::string>{}(str);
     }
 
