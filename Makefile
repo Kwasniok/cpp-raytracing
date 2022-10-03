@@ -11,7 +11,8 @@ INCLUDES= \
 
 # GCC
 CPP=g++
-CPP_FLAGS=-Wall \
+CPP_FLAGS= \
+	-Wall \
 	-Wextra \
 	-pedantic \
 	-Wnon-virtual-dtor \
@@ -28,7 +29,8 @@ CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 
 # CLANG
 # CPP=clang++
-# CPP_FLAGS=-Wall \
+# CPP_FLAGS= \
+# -Wall \
 # 	-Wextra \
 # 	-pedantic \
 # 	-Wnon-virtual-dtor \
