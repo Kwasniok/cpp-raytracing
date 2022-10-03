@@ -47,7 +47,7 @@ ifeq ($(DEBUG), 1)
     CPP_FLAGS += -O0 -DDEBUG
     BLD:=$(BLD)/debug
 else
-    CPP_FLAGS += -Ofast
+    CPP_FLAGS += -Ofast -march=native
 endif
 
 ### DEFAULT ###
