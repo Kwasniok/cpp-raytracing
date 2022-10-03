@@ -133,6 +133,7 @@ struct default_identifier {
  * @note Identifers are 'slippery' which means they might change the the suffix
  *       of their value in order to avoid collissions when created or changed.
  *       Use make_always if this is undesired.
+ * @note Identifers are not thread-safe.
  */
 template <typename T>
 class Identifier {
