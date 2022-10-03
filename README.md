@@ -136,12 +136,14 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 - Linux kernel v5.17+
 - C++20
 - C++ Boost v1.80+
-- gcc v12.2+
+- gcc v12.2+ or glang v14.0+
 - make v4.3+
 - doxygen v1.9+ (optional, documentation)
 - netpbm v10.73+ (optional, image processing)
 - imagemagick v7.1+ (optional, image processing)
 - darktable v3.8+ (optional, image processing)
+- clang-format v14.0+ (optional, development)
+- clang-tidy v14.0+ (optional, development)
 - valgrind v3.18+ (optional, debug & profiling)
 - kcachegrind v22.04+ (optional. debug & profiling)
 
