@@ -4,10 +4,16 @@ SRC:=src
 BLD:=build
 OUT:=out
 
+# general includes
 INCLUDES= \
 	-I $(INC) \
-	-I third_party/glm \
-	-I third_party/argparse/include \
+	-isystem third_party/glm \
+	-isystem third_party/argparse/include \
+	-isystem third_party/range-v3/include \
+
+# includes for tests only
+INCLUDES_TEST = \
+	-isystem third_party/doctest \
 
 # GCC
 CPP=g++
@@ -43,6 +49,11 @@ CPP_PROFILE_FLAGS=$(CPP_FLAGS) -pg
 # 	-g \
 # 	-fopenmp=libomp \
 # 	$(INCLUDES)\
+
+# includes for tests only
+CPP_FLAGS_TEST = \
+	$(CPP_FLAGS) \
+	$(INCLUDES_TEST) \
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
@@ -93,11 +104,11 @@ test: $(TESTS);
 
 $(TEST_DEPENDS): $(BLD)/%.d: $(SRC)/%.cpp
 	@mkdir -p $(@D) # provide parent directory of target
-	$(CPP) $(CPP_FLAGS) -MM -MQ $@ -o $@ $<
+	$(CPP) $(CPP_FLAGS_TEST) -MM -MQ $@ -o $@ $<
 
 $(TESTS): $(BLD)/%: $(SRC)/%.cpp $(BLD)/%.d
 	@mkdir -p $(@D) # provide parent directory of target
-	$(CPP) $(CPP_FLAGS) -o $@ $<
+	$(CPP) $(CPP_FLAGS_TEST) -o $@ $<
 
 # import dependencies for all target binaries
 include $(TEST_DEPENDS)
