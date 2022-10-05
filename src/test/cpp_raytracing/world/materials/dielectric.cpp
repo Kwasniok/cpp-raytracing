@@ -1,15 +1,15 @@
+#include "../../../common.hpp"
+
 #include <memory>
 
 #include <cpp_raytracing/world/materials/dielectric.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
 const Scalar epsilon = 1.0e-12;
 
-void test_dielectric_air() {
+TEST_CASE("dielectric_air") {
     /*
      sketch of hit scenario:
 
@@ -51,12 +51,12 @@ void test_dielectric_air() {
     const Vec3 direction_in = unit_vector({1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(direction_out, direction_in, epsilon);
+        CHECK(ray_col == mat_col);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, direction_out, direction_in);
     }
 }
 
-void test_dielectric_into_glass() {
+TEST_CASE("dielectric_into_glass") {
     /*
      sketch of hit scenario:
 
@@ -110,34 +110,27 @@ void test_dielectric_into_glass() {
     int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
-        try { // refraction
-            TEST_ASSERT_ALMOST_EQUAL_ITERABLE(direction_out,
-                                              direction_refraction, epsilon);
+        CHECK(ray_col == mat_col);
+        if ((direction_out - direction_refraction).length() < epsilon) {
             refractions += 1;
-        } catch (const AssertionFailedException& e1) {
-            try { // reflection
-                TEST_ASSERT_ALMOST_EQUAL_ITERABLE(
-                    direction_out, direction_reflection, epsilon);
-                reflections += 1;
-            } catch (const AssertionFailedException& e2) {
-                std::stringstream msg;
-                msg << "= " << direction_out << " is neither a refraction "
-                    << direction_refraction << " nor a reflection "
-                    << direction_reflection
-                    << " with precision of epsilon = " << epsilon;
-                throw AssertionFailedException(
-                    internal::message("ray_out.direction()", __FILE__, __LINE__,
-                                      msg.str().c_str()));
-            }
+        } else if ((direction_out - direction_reflection).length() < epsilon) {
+            reflections += 1;
+        } else {
+            std::stringstream msg;
+            msg << "= " << direction_out << " is neither a refraction "
+                << direction_refraction << " nor a reflection "
+                << direction_reflection
+                << " with precision of epsilon = " << epsilon;
+            auto s = msg.str();
+            FAIL(s);
         }
     }
     // check statistics
-    TEST_ASSERT_IN_RANGE(refractions, int(0.93 * total), int(0.97 * total));
-    TEST_ASSERT_IN_RANGE(reflections, int(0.03 * total), int(0.06 * total));
+    CHECK_IN_RANGE(int(0.93 * total), int(0.97 * total), refractions);
+    CHECK_IN_RANGE(int(0.03 * total), int(0.06 * total), reflections);
 }
 
-void test_dielectric_total_reflection() {
+TEST_CASE("dielectric_total_reflection") {
     /*
      sketch of hit scenario:
 
@@ -177,17 +170,11 @@ void test_dielectric_total_reflection() {
     int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
+        CHECK(ray_col == mat_col);
         // reflection only
-        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(direction_out, direction_reflection,
-                                          epsilon);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, direction_out,
+                                    direction_reflection);
     }
-}
-
-void run_test_suite() {
-    run(test_dielectric_air);
-    run(test_dielectric_into_glass);
-    run(test_dielectric_total_reflection);
 }
 
 }} // namespace cpp_raytracing::test

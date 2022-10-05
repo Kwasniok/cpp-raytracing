@@ -215,6 +215,10 @@ class Identifier {
         }
         return {Identifier{std::move(str), InternalOnly()}};
     }
+    /** @see make_if_available */
+    static std::optional<Identifier> make_if_available(const std::string& str) {
+        return make_if_available(std::string(str));
+    }
     /**
      * @brief unconditionally transforms string to identifier
      * @returns identifer which is either identical to the string (if it is
@@ -230,6 +234,10 @@ class Identifier {
         }
         _register.set_to_next_free_and_claim(str);
         return {std::move(str), InternalOnly()};
+    }
+    /** @see make_always */
+    static Identifier make_always(const std::string& str) {
+        return make_always(std::string(str));
     }
 
     ~Identifier() {

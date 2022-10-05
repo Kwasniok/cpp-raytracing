@@ -1,3 +1,5 @@
+#include "../../common.hpp"
+
 #include <array>
 #include <sstream>
 
@@ -9,11 +11,7 @@
 #include <cpp_raytracing/world/materials/metal.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
-
-const ColorScalar epsilon = 1e-12;
 
 /**
  * @brief returns a riangle as mesh entity
@@ -54,13 +52,11 @@ make_emitter_material(const Color& color, const ColorScalar strength = 1.0) {
     return mat;
 }
 
-void test_ray_color_euclidean_metal_reflection_background() {
-
+TEST_CASE("ray_color_euclidean_metal_reflection_background") {
     // ray hits reflective surface and scatters into background
 
-    // ******* SETUP ********
+    const ColorScalar epsilon = 1e-12;
 
-    // geometry
     EuclideanGeometry geometry;
 
     // test scene
@@ -95,25 +91,25 @@ void test_ray_color_euclidean_metal_reflection_background() {
     const Vec3 ray_start = {0.0, 0.0, 1.0};
     const Vec3 ray_direction = {0.0, 0.0, -1.0};
     auto ray = geometry.ray_from(ray_start, ray_direction);
+    REQUIRE(ray);
 
-    // ******* TEST *******
+    SUBCASE("test") {
+        // renderer
+        GlobalShutterRenderer renderer;
+        Color color_out =
+            renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
 
-    // renderer
-    GlobalShutterRenderer renderer;
-    Color color_out = renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
-
-    // expect reflection + hit background
-    const Color color_expected = material_color * background_color;
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color_out, color_expected, epsilon);
+        // expect reflection + hit background
+        const Color color_expected = material_color * background_color;
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, color_out, color_expected);
+    }
 }
 
-void test_ray_color_euclidean_metal_reflection_emitter() {
-
+TEST_CASE("ray_color_euclidean_metal_reflection_emitter") {
     // ray hits reflective surface and scatters into emitter
 
-    // ******* SETUP ********
+    const ColorScalar epsilon = 1e-12;
 
-    // geometry
     EuclideanGeometry geometry;
 
     // test scene
@@ -159,20 +155,17 @@ void test_ray_color_euclidean_metal_reflection_emitter() {
     const Vec3 ray_start = {0.0, 0.0, 0.0};
     const Vec3 ray_direction = {0.0, 0.0, 1.0};
     auto ray = geometry.ray_from(ray_start, ray_direction);
+    REQUIRE(ray);
 
-    // ******* TEST *******
-
-    // renderer
-    GlobalShutterRenderer renderer;
-    Color color_out = renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
-    // expect reflection + hit emitter
-    const Color color_expected = material_color1 * material_color2;
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(color_out, color_expected, epsilon);
-}
-
-void run_test_suite() {
-    run(test_ray_color_euclidean_metal_reflection_background);
-    run(test_ray_color_euclidean_metal_reflection_emitter);
+    SUBCASE("test") {
+        // renderer
+        GlobalShutterRenderer renderer;
+        Color color_out =
+            renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
+        // expect reflection + hit emitter
+        const Color color_expected = material_color1 * material_color2;
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, color_out, color_expected);
+    }
 }
 
 }} // namespace cpp_raytracing::test

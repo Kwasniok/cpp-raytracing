@@ -1,13 +1,13 @@
+#include "../../../common.hpp"
+
 #include <memory>
 
 #include <cpp_raytracing/world/materials.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
-void test_metal_no_roughness() {
+TEST_CASE("metal_no_roughness") {
     /*
      sketch of hit scenario:
 
@@ -45,17 +45,16 @@ void test_metal_no_roughness() {
     const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
+        CHECK(ray_col == mat_col);
         // parallel to normal
-        TEST_ASSERT_EQUAL(dot(normal, direction_out),
-                          -dot(normal, direction_in));
+        CHECK(dot(normal, direction_out) == -dot(normal, direction_in));
         // orthogonal to normal
-        TEST_ASSERT_EQUAL(direction_out - normal * dot(normal, direction_out),
-                          direction_in - normal * dot(normal, direction_in));
+        CHECK(direction_out - normal * dot(normal, direction_out) ==
+              direction_in - normal * dot(normal, direction_in));
     }
 }
 
-void test_metal_with_roughness() {
+TEST_CASE("metal_with_roughness") {
     /*
      sketch of hit scenario:
 
@@ -93,18 +92,13 @@ void test_metal_with_roughness() {
     const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
+        CHECK(ray_col == mat_col);
         const Vec3 in_para = normal * dot(normal, direction_in);
         const Vec3 in_ortho = direction_in - in_para;
         // test if rand_vec in sphere of radius roughness
         const Vec3 rand_vec = direction_out + in_para - in_ortho;
-        TEST_ASSERT_IN_RANGE(rand_vec.length(), 0.0, mat_rough);
+        CHECK_IN_RANGE(0.0, mat_rough, rand_vec.length());
     }
-}
-
-void run_test_suite() {
-    run(test_metal_no_roughness);
-    run(test_metal_with_roughness);
 }
 
 }} // namespace cpp_raytracing::test

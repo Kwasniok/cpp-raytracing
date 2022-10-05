@@ -27,6 +27,11 @@ using ColorIntegral = unsigned long;
 class Color {
 
   public:
+    /** @brief iterator type */
+    using iterator = Scalar*;
+    /** @brief const iterator type */
+    using const_iterator = const Scalar*;
+
     /**
      * @brief initialize all channels as zeros
      * @see Colors::BLACK
@@ -51,13 +56,13 @@ class Color {
     constexpr ColorScalar b() const { return _data[2]; }
 
     /** @brief const iterator for first element */
-    constexpr auto begin() const { return &_data[0]; }
+    constexpr const_iterator begin() const { return &_data[0]; }
     /** @brief const iterator for end */
-    constexpr auto end() const { return &_data[0] + 3; }
+    constexpr const_iterator end() const { return &_data[0] + 3; }
     /** @brief iterator for first element */
-    constexpr auto begin() { return &_data[0]; }
+    constexpr iterator begin() { return &_data[0]; }
     /** @brief iterator for end */
-    constexpr auto end() { return &_data[0] + 3; }
+    constexpr iterator end() { return &_data[0] + 3; }
 
     /** @brief tests equivalence */
     constexpr bool operator==(const Color& other) const {

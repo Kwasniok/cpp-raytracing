@@ -1,13 +1,13 @@
+#include "../../../common.hpp"
+
 #include <memory>
 
 #include <cpp_raytracing/world/materials/emitter.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
-void test_emitter() {
+TEST_CASE("emitter") {
     /*
      sketch of hit scenario:
 
@@ -40,13 +40,9 @@ void test_emitter() {
     const Vec3 direction_in = {1.0, 0.0, 0.0};
     {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_EQUAL(direction_out, Vec3(0.0, 0.0, 0.0));
+        CHECK(ray_col == mat_col);
+        CHECK(direction_out == Vec3(0.0, 0.0, 0.0));
     }
-}
-
-void run_test_suite() {
-    run(test_emitter);
 }
 
 }} // namespace cpp_raytracing::test

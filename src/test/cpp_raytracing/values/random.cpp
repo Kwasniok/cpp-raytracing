@@ -1,46 +1,40 @@
+#include "../../common.hpp"
+#include "../../common_omp.hpp"
+
 #include <cpp_raytracing/values/random.hpp>
 #include <omp.h>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
-void test_random_scalar_unit_scale() {
+TEST_CASE("random_scalar_unit_scale") {
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
     for (long i = 0; i < 1000; ++i) {
-        TEST_ASSERT_IN_RANGE(random_scalar(0.0, 1.0), 0.0, 1.0);
+        CHECK_IN_RANGE(0.0, 1.0, random_scalar(0.0, 1.0));
     }
 }
 
-void test_random_scalar_arbitrary_scale() {
+TEST_CASE("random_scalar_arbitrary_scale") {
     const Scalar min = -7.11e+35;
     const Scalar max = 23.33e-27;
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
     for (long i = 0; i < 1000; ++i) {
-        TEST_ASSERT_IN_RANGE(random_scalar(min, max), min, max);
+        CHECK_IN_RANGE(min, max, random_scalar(min, max));
     }
 }
 
-void test_random_scalar_multithreading() {
-    TEST_ASSERT_OPENMP_IS_MULTITHREADING();
-    const int N = std::min(4, omp_get_thread_limit());
-    TEST_ASSERT_TRUE(N >= 4);
+TEST_CASE("random_scalar_multithreading") {
+    constexpr int NUM_THREADS = 4;
+    REQUIRE_OPENMP_MULTITHREADING<NUM_THREADS>();
 
-    std::vector<Scalar> results(static_cast<std::size_t>(N));
-#pragma omp parallel for num_threads(N)
-    for (int i = 0; i < N; ++i) {
+    std::vector<Scalar> results(static_cast<std::size_t>(NUM_THREADS));
+#pragma omp parallel for num_threads(NUM_THREADS)
+    for (int i = 0; i < NUM_THREADS; ++i) {
         auto n = static_cast<std::size_t>(omp_get_thread_num());
         results[n] = random_scalar(-2.0, 5.0);
     }
-    // note: The assertion might have a (very small) chance of randomly causing
+    // note: The check might have a (very small) chance of randomly causing
     //       a false-positive.
-    TEST_ASSERT_PAIRWISE_UNIQUE(results);
-}
-
-void run_test_suite() {
-    run(test_random_scalar_unit_scale);
-    run(test_random_scalar_arbitrary_scale);
-    run(test_random_scalar_multithreading);
+    CHECK_PAIRWISE_UNIQUE(results);
 }
 
 }} // namespace cpp_raytracing::test

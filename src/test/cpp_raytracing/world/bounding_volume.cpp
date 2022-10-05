@@ -1,33 +1,33 @@
+#include "../../common.hpp"
+
 #include <limits>
 
 #include <cpp_raytracing/values/tensor.hpp>
 #include <cpp_raytracing/world/bounding_volume.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
 const Scalar epsilon = 1e-16;
 
-void test_constructor() {
+TEST_CASE("constructor") {
     static const Vec3 min{1.0, 2.0, 3.0};
     static const Vec3 max{4.0, 5.0, 6.0};
     {
         static const AxisAlignedBoundingBox box{min, max};
 
-        TEST_ASSERT_EQUAL(box.min(), min);
-        TEST_ASSERT_EQUAL(box.max(), max);
+        CHECK(box.min() == min);
+        CHECK(box.max() == max);
     }
     {
         // max <-> min
         static const AxisAlignedBoundingBox box{max, min};
 
-        TEST_ASSERT_EQUAL(box.min(), min);
-        TEST_ASSERT_EQUAL(box.max(), max);
+        CHECK(box.min() == min);
+        CHECK(box.max() == max);
     }
 }
 
-void test_hit() {
+TEST_CASE("hit") {
     static const Vec3 min{1.0, 2.0, 3.0};
     static const Vec3 max{4.0, 5.0, 6.0};
     static const Vec3 mid{2.5, 3.5, 4.5};
@@ -36,104 +36,104 @@ void test_hit() {
     // start inside
     {
         static const RaySegment ray{mid, {7.0, 0.0, 0.0}};
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_TRUE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_TRUE(box.hit(ray, -infinity, 0.0));
+        CHECK(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK(box.hit(ray, -100.0, 0.0));
+        CHECK(box.hit(ray, -infinity, 0.0));
     }
     {
         static const RaySegment ray{mid, {0.0, 7.0, 0.0}};
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_TRUE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_TRUE(box.hit(ray, -infinity, 0.0));
+        CHECK(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK(box.hit(ray, -100.0, 0.0));
+        CHECK(box.hit(ray, -infinity, 0.0));
     }
     {
         static const RaySegment ray{mid, {0.0, 0.0, 7.0}};
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_TRUE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_TRUE(box.hit(ray, -infinity, 0.0));
+        CHECK(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK(box.hit(ray, -100.0, 0.0));
+        CHECK(box.hit(ray, -infinity, 0.0));
     }
 
     // start outside 'left'
     {
         static const RaySegment ray{Vec3{0.5, 3.5, 4.5}, {7.0, 0.0, 0.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
         static const RaySegment ray{Vec3{2.5, 1.5, 4.5}, {0.0, 7.0, 0.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
         static const RaySegment ray{Vec3{2.5, 3.5, 2.5}, {0.0, 0.0, 7.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
 
     // start outside 'right'
     {
         static const RaySegment ray{Vec3{4.5, 3.5, 4.5}, {-7.0, 0.0, 0.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
         static const RaySegment ray{Vec3{2.5, 5.5, 4.5}, {0.0, -0.7, 0.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
         static const RaySegment ray{Vec3{2.5, 3.5, 6.5}, {0.0, 0.0, -7.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 0.001));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_TRUE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 0.001));
+        CHECK(box.hit(ray, 0.0, 100.0));
+        CHECK(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
 }
 
-void test_hit_corner_cases() {
+TEST_CASE("hit_corner_cases") {
     static const Vec3 min{1.0, 2.0, 3.0};
     static const Vec3 max{4.0, 5.0, 6.0};
     static const AxisAlignedBoundingBox box{min, max};
 
     {
         const RaySegment ray{Vec3{infinity, 3.5, 4.5}, {0.7, 0.0, 0.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 100.0));
+        CHECK_FALSE(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
     {
         const RaySegment ray{Vec3{2.5, infinity, 4.5}, {0.7, 0.0, 0.0}};
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, 100.0));
-        TEST_ASSERT_FALSE(box.hit(ray, 0.0, infinity));
-        TEST_ASSERT_FALSE(box.hit(ray, -100.0, 0.0));
-        TEST_ASSERT_FALSE(box.hit(ray, -infinity, 0.0));
+        CHECK_FALSE(box.hit(ray, 0.0, 100.0));
+        CHECK_FALSE(box.hit(ray, 0.0, infinity));
+        CHECK_FALSE(box.hit(ray, -100.0, 0.0));
+        CHECK_FALSE(box.hit(ray, -infinity, 0.0));
     }
 }
 
-void test_surrounding_box() {
+TEST_CASE("surrounding_box") {
     static const Vec3 min{1.0, 2.0, 3.0};
     static const Vec3 max{4.0, 5.0, 6.0};
     static const AxisAlignedBoundingBox box1{Vec3{1.0, 2.5, 5.0},
@@ -143,11 +143,11 @@ void test_surrounding_box() {
 
     static const auto box = surrounding_box(box1, box2);
 
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(box.min(), min, epsilon);
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(box.max(), max, epsilon);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, box.min(), min);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, box.max(), max);
 }
 
-void test_arithmetic() {
+TEST_CASE("arithmetic") {
     static const AxisAlignedBoundingBox box{
         Vec3{1.0, 2.0, 3.0},
         Vec3{4.0, 5.0, 6.0},
@@ -161,22 +161,15 @@ void test_arithmetic() {
     };
     {
         const AxisAlignedBoundingBox res = box + vec;
-        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.min(), expected.min(), epsilon);
-        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.max(), expected.max(), epsilon);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, res.min(), expected.min());
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, res.max(), expected.max());
     }
     {
         AxisAlignedBoundingBox res = box;
         res += vec;
-        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.min(), expected.min(), epsilon);
-        TEST_ASSERT_ALMOST_EQUAL_ITERABLE(res.max(), expected.max(), epsilon);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, res.min(), expected.min());
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, res.max(), expected.max());
     }
-}
-
-void run_test_suite() {
-    run(test_constructor);
-    run(test_hit);
-    run(test_hit_corner_cases);
-    run(test_arithmetic);
 }
 
 }} // namespace cpp_raytracing::test

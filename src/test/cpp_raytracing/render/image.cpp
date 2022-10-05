@@ -1,38 +1,38 @@
+#include "../../common.hpp"
+
 #include <array>
 #include <sstream>
 
 #include <cpp_raytracing/render/image.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
-void test_constructor() {
+TEST_CASE("constructor") {
     RawImage(10, 10);
 }
 
-void test_properties() {
+TEST_CASE("properties") {
     const RawImage img{10, 20};
-    TEST_ASSERT_EQUAL(img.width(), 10ul);
-    TEST_ASSERT_EQUAL(img.height(), 20ul);
+    CHECK(img.width() == 10ul);
+    CHECK(img.height() == 20ul);
 }
 
-void test_operator_bracket() {
+TEST_CASE("operator_bracket") {
     const Color color{0.0, 0.5, 1.0};
-    RawImage img{10, 10};
-    // non-const
-    {
-        img[{1, 2}] = color;
-        TEST_ASSERT_EQUAL(img[std::pair(1, 2)], color);
+    RawImage image{10, 10};
+    image[{1, 2}] = color;
+
+    SUBCASE("mutable") {
+        CHECK(image[std::pair(1, 2)] == color);
     }
-    // const
-    {
-        const RawImage& cimg = img;
-        TEST_ASSERT_EQUAL(cimg[std::pair(1, 2)], color);
+
+    SUBCASE("const") {
+        const RawImage& cimg = image;
+        CHECK(cimg[std::pair(1, 2)] == color);
     }
 }
 
-void test_arithmetic() {
+TEST_CASE("arithmetic") {
     const unsigned long N = 8;
     const ColorScalar f = 8.0;
     RawImage img1{N, N};
@@ -47,29 +47,27 @@ void test_arithmetic() {
             img2[{i, j}] = Color(c, d, 0.0);
         }
     }
-    // add
-    {
+
+    SUBCASE("add") {
         img1 += img2;
         for (unsigned long j = 0; j < N; ++j) {
             for (unsigned long i = 0; i < N; ++i) {
-                TEST_ASSERT_EQUAL(img1[std::pair(i, j)],
-                                  Color(N * N, N * N, 0.0));
+                CHECK(img1[std::pair(i, j)] == Color(N * N, N * N, 0.0));
             }
         }
     }
-    // multiply
-    {
+
+    SUBCASE("multiply") {
         img2 *= f;
         for (unsigned long j = 0; j < N; ++j) {
             for (unsigned long i = 0; i < N; ++i) {
-                TEST_ASSERT_EQUAL(img2[std::pair(i, j)],
-                                  Color(f * i, f * j, 0.0));
+                CHECK(img2[std::pair(i, j)] == Color(f * i, f * j, 0.0));
             }
         }
     }
 }
 
-void test_write_image_ppm() {
+TEST_CASE("write_image_ppm") {
     const unsigned long N = 2;
     const unsigned long M = 3;
     // note: Enforcing output correctness on character by character basis is in
@@ -89,14 +87,15 @@ void test_write_image_ppm() {
             img[{i, j}] = Color(a, b, 0.0);
         }
     }
+
     {
         std::stringstream ss;
         write_image_ppm(ss, img);
-        TEST_ASSERT_EQUAL(ss.str(), output);
+        CHECK(ss.str() == output);
     }
 }
 
-void test_write_image_pfm() {
+TEST_CASE("write_image_pfm") {
     const unsigned long N = 2;
     const unsigned long M = 3;
     // note: Enforcing output correctness on character by character basis is in
@@ -118,24 +117,16 @@ void test_write_image_pfm() {
             img[{i, j}] = Color(a, b, 0.0);
         }
     }
-    {
+
+    SUBCASE("test") {
         std::stringstream ss;
         write_image_pfm(ss, img);
         const auto s = ss.str();
-        TEST_ASSERT_EQUAL(s.size(), output.size());
+        REQUIRE(s.size() == output.size());
         for (std::size_t i = 0; i < output.size(); ++i) {
-            TEST_ASSERT_EQUAL(static_cast<std::uint8_t>(s.at(i)), output.at(i));
+            CHECK(static_cast<std::uint8_t>(s.at(i)) == output.at(i));
         }
     }
-}
-
-void run_test_suite() {
-    run(test_constructor);
-    run(test_properties);
-    run(test_operator_bracket);
-    run(test_arithmetic);
-    run(test_write_image_ppm);
-    run(test_write_image_pfm);
 }
 
 }} // namespace cpp_raytracing::test

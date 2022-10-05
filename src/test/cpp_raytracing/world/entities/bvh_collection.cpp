@@ -1,11 +1,11 @@
+#include "../../../common.hpp"
+
 #include <memory>
 #include <vector>
 
 #include <cpp_raytracing/geometry/euclidean.hpp>
 #include <cpp_raytracing/world/entities/bvh_collection.hpp>
 #include <cpp_raytracing/world/ray_segment.hpp>
-
-#include <cpp_raytracing_test.hpp>
 
 #include "../instance.hpp"
 #include "../sphere.hpp"
@@ -34,22 +34,22 @@ BVHCollection make_collection() {
     return collection;
 }
 
-void test_bounding_box() {
+TEST_CASE("bounding_box") {
 
     BVHCollection collection = make_collection();
     static const Vec3 min{-0.5, -0.5, -0.5};
     static const Vec3 max{1.5, 1.5, 1.5};
 
     // cache
-    TEST_ASSERT_THROWS(collection.bounding_box(), std::runtime_error);
+    CHECK_THROWS_AS(collection.bounding_box(), std::runtime_error);
 
     collection.generate_cache();
     const auto bounds = collection.bounding_box();
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->min(), min, epsilon);
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(bounds->max(), max, epsilon);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, bounds->min(), min);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, bounds->max(), max);
 }
 
-void test_hit_record() {
+TEST_CASE("hit_record") {
 
     const EuclideanGeometry geometry;
     BVHCollection collection = make_collection();
@@ -58,8 +58,8 @@ void test_hit_record() {
     {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{1.0, 0.0, 0.0}};
-        TEST_ASSERT_THROWS(collection.hit_record(geometry, ray_segment, 0.0),
-                           std::runtime_error);
+        CHECK_THROWS_AS(collection.hit_record(geometry, ray_segment, 0.0),
+                        std::runtime_error);
     }
     collection.generate_cache();
 
@@ -68,44 +68,39 @@ void test_hit_record() {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        TEST_ASSERT_TRUE(record.hits());
+        CHECK(record.hits());
     }
     {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{0.0, 1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        TEST_ASSERT_TRUE(record.hits());
+        CHECK(record.hits());
     }
     {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{0.0, 0.0, 1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        TEST_ASSERT_TRUE(record.hits());
+        CHECK(record.hits());
     }
     // misses
     {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{-1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        TEST_ASSERT_FALSE(record.hits());
+        CHECK_FALSE(record.hits());
     }
     {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{0.0, -1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        TEST_ASSERT_FALSE(record.hits());
+        CHECK_FALSE(record.hits());
     }
     {
         static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                             Vec3{0.0, 0.0, -1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        TEST_ASSERT_FALSE(record.hits());
+        CHECK_FALSE(record.hits());
     }
-}
-
-void run_test_suite() {
-    run(test_bounding_box);
-    run(test_hit_record);
 }
 
 }} // namespace cpp_raytracing::test

@@ -1,11 +1,11 @@
+#include "../../common.hpp"
+
 #include <memory>
 #include <vector>
 
 #include <cpp_raytracing/geometry/euclidean.hpp>
 #include <cpp_raytracing/world/ray_segment.hpp>
 #include <cpp_raytracing/world/scene.hpp>
-
-#include <cpp_raytracing_test.hpp>
 
 #include "instance.hpp"
 #include "sphere.hpp"
@@ -38,67 +38,63 @@ Scene make_scene() {
     return scene;
 }
 
-void test_freeze() {
+TEST_CASE("freeze") {
 
     const EuclideanGeometry geometry;
     Scene scene = make_scene();
-    TEST_ASSERT_FALSE(scene.is_frozen());
+    CHECK_FALSE(scene.is_frozen());
 
     {
         const Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
 
         // frozen
-        TEST_ASSERT_TRUE(scene.is_frozen());
-        TEST_ASSERT_THROWS(scene.clear(), std::runtime_error);
-        TEST_ASSERT_THROWS(scene.add(make_sphere(Vec3{}, 0.5)),
-                           std::runtime_error);
+        CHECK(scene.is_frozen());
+        CHECK_THROWS_AS(scene.clear(), std::runtime_error);
+        CHECK_THROWS_AS(scene.add(make_sphere(Vec3{}, 0.5)),
+                        std::runtime_error);
 
         // hits
         {
             static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                                 Vec3{1.0, 0.0, 0.0}};
             auto record = guard.hit_record(geometry, ray_segment, 0.0);
-            TEST_ASSERT_TRUE(record.hits());
+            CHECK(record.hits());
         }
         {
             static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                                 Vec3{0.0, 1.0, 0.0}};
             auto record = guard.hit_record(geometry, ray_segment, 0.0);
-            TEST_ASSERT_TRUE(record.hits());
+            CHECK(record.hits());
         }
         {
             static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                                 Vec3{0.0, 0.0, 1.0}};
             auto record = guard.hit_record(geometry, ray_segment, 0.0);
-            TEST_ASSERT_TRUE(record.hits());
+            CHECK(record.hits());
         }
         // misses
         {
             static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                                 Vec3{-1.0, 0.0, 0.0}};
             auto record = guard.hit_record(geometry, ray_segment, 0.0);
-            TEST_ASSERT_FALSE(record.hits());
+            CHECK_FALSE(record.hits());
         }
         {
             static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                                 Vec3{0.0, -1.0, 0.0}};
             auto record = guard.hit_record(geometry, ray_segment, 0.0);
-            TEST_ASSERT_FALSE(record.hits());
+            CHECK_FALSE(record.hits());
         }
         {
             static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
                                                 Vec3{0.0, 0.0, -1.0}};
             auto record = guard.hit_record(geometry, ray_segment, 0.0);
-            TEST_ASSERT_FALSE(record.hits());
+            CHECK_FALSE(record.hits());
         }
     }
 
     // unfrozen
-    TEST_ASSERT_FALSE(scene.is_frozen());
-}
-
-void run_test_suite() {
-    run(test_freeze);
+    CHECK_FALSE(scene.is_frozen());
 }
 
 }} // namespace cpp_raytracing::test

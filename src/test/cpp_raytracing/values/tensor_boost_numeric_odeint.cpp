@@ -1,4 +1,4 @@
-#include <cpp_raytracing_test.hpp>
+#include "../../common.hpp"
 
 // note specific imports for spped and to avoid warnings for unrelated code
 #include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
@@ -19,7 +19,7 @@ const Scalar sigma = 10.0;
 const Scalar R = 28.0;
 const Scalar b = 8.0 / 3.0;
 
-void test_vec2() {
+TEST_CASE("vec2") {
     using namespace boost::numeric::odeint;
     using State = Vec2;
 
@@ -39,10 +39,10 @@ void test_vec2() {
     ++it;
 
     const Vec2 expected = {12.2131, 21.9924};
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(*it, expected, epsilon);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, *it, expected);
 }
 
-void test_vec3() {
+TEST_CASE("vec3") {
     using namespace boost::numeric::odeint;
     using State = Vec3;
 
@@ -63,10 +63,10 @@ void test_vec3() {
     ++it;
 
     const Vec3 expected = {11.7446, 17.6449, 15.9846};
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(*it, expected, epsilon);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, *it, expected);
 }
 
-void test_vec6() {
+TEST_CASE("vec6") {
     using namespace boost::numeric::odeint;
     using State = Vec6;
 
@@ -92,14 +92,10 @@ void test_vec6() {
 
     const Vec6 expected = {11.7446, 17.6449, 15.9846,
                            11.7446, 17.6449, 15.9846};
-    TEST_ASSERT_ALMOST_EQUAL_ITERABLE(*it, expected, epsilon);
-}
-
-void run_test_suite() {
-    // run(test);
-    run(test_vec2);
-    run(test_vec3);
-    run(test_vec6);
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, it->first_half(),
+                                expected.first_half());
+    CHECK_ITERABLE_APPROX_EQUAL(epsilon, it->second_half(),
+                                expected.second_half());
 }
 
 }} // namespace cpp_raytracing::test

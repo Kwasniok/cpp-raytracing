@@ -1,13 +1,13 @@
+#include "../../../common.hpp"
+
 #include <memory>
 
 #include <cpp_raytracing/world/materials/diffuse.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-#include <cpp_raytracing_test.hpp>
-
 namespace cpp_raytracing { namespace test {
 
-void test_diffuse() {
+TEST_CASE("diffuse") {
     /*
      sketch of hit scenario:
 
@@ -42,15 +42,11 @@ void test_diffuse() {
     const Vec3 direction_in = {1.0, 0.0, 0.0};
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        TEST_ASSERT_EQUAL(ray_col, mat_col);
-        TEST_ASSERT_FALSE(direction_out.near_zero(Diffuse::epsilon));
+        CHECK(ray_col == mat_col);
+        CHECK_FALSE(direction_out.near_zero(Diffuse::epsilon));
         const Vec3 vec = direction_out - record.normal;
-        TEST_ASSERT_IN_RANGE(vec.length(), 0.0, 1.0);
+        CHECK_IN_RANGE(0.0, 1.0, vec.length());
     }
-}
-
-void run_test_suite() {
-    run(test_diffuse);
 }
 
 }} // namespace cpp_raytracing::test
