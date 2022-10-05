@@ -153,5 +153,12 @@ ALL_SOURCE_FILES = $(shell find $(SRC) $(INC) -iname *.hpp -o -iname *.cpp)
 ### CLANG-TIDY ###
 .PHONY: check_tidy
 check_tidy:
-	clang-tidy --warnings-as-errors="*" $(ALL_SOURCE_FILES) -- -std=c++20 $(INCLUDES)
-	 
+	clang-tidy \
+	--warnings-as-errors="*" \
+	$(ALL_SOURCE_FILES) \
+	-- \
+	-std=c++20 \
+	$(INCLUDES) \
+	$(INCLUDES_TEST) \
+
+ 
