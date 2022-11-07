@@ -235,27 +235,23 @@ class TwistedOrbCartesianGeometry : public Geometry {
 
 void TwistedOrbCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
                                                     [[maybe_unused]] Scalar t) {
-    const Vec3 pos = p.first_half();
-    const Vec3 dir = p.second_half();
+    using namespace tensor;
+
+    const auto [pos, dir] = split(p);
     const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
-    dpdt = {
-        p.second_half(),
-        Vec3{
-            -dot(dir, chris_2[0] * dir),
-            -dot(dir, chris_2[1] * dir),
-            -dot(dir, chris_2[2] * dir),
-        },
-    };
+    dpdt = outer_sum(dir, gttl::contraction<1, 2>(
+                              gttl::contraction<1, 3>(chris_2, dir), -dir));
 }
 
 TwistedOrbCartesianRay::TwistedOrbCartesianRay(
     const TwistedOrbCartesianGeometry& geometry, const Vec3& start,
     const Vec3& direction)
-    : _phase(start, direction),
+    : _phase{tensor::outer_sum(start, direction)},
       _geometry{geometry},
       _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
 std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
+    using namespace tensor;
 
     const auto& [phase_start, time] = *_phase_iterator;
     // note: copies! (phase will be updated later)
@@ -268,18 +264,17 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
         return std::nullopt;
     }
 
-    const Vec3 position = phase_start.first_half();
-    const Vec3 velocity = phase_start.second_half();
+    const auto [position, velocity] = split(phase_start);
 
     // check for numerical issues
-    if (auto x = position.length(), y = velocity.length();
+    if (auto x = length(position), y = length(velocity);
         !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
         // encountered a numerical issue -> abort ray
         return std::nullopt;
     }
 
     // create next segment
-    const Scalar R = position.length();
+    const Scalar R = length(position);
     const bool outwards = dot(position, velocity) > 0.0;
     if (R / _geometry._twist_radius > 5.0 && outwards) {
         // far away from origin and point away from origin
@@ -343,12 +338,14 @@ TwistedOrbCartesianGeometry::ray_from(const Vec3& start,
 std::unique_ptr<Ray>
 TwistedOrbCartesianGeometry::ray_passing_through(const Vec3& start,
                                                  const Vec3& target) const {
+    using namespace tensor;
+
     // convert positions to flat space
     const Vec3 start_cart = to_cartesian_coords(start);
     const Vec3 target_cart = to_cartesian_coords(target);
 
     // in flat space direction = difference
-    const Vec3 direction_cart = unit_vector(target_cart - start_cart);
+    const Vec3 direction_cart = tensor::unit_vector(target_cart - start_cart);
     const Mat3x3 jacobian = from_onb_jacobian(start);
 
     // transform direction back to cuved space
@@ -374,17 +371,17 @@ TwistedOrbCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
     const Scalar sphi = std::sin(phi);
 
     return {
-        Vec3{
-            (u * cphi - r2 * (-v / r2 - u * psi / t / (R * rho)) * sphi) / r,
-            (v * cphi - r2 * (u / r2 - v * psi / t / (R * rho)) * sphi) / r,
-            (r * z * psi * sphi / t) / (R * rho),
-        },
-        Vec3{
-            (r2 * (-v / r2 - u * psi / t / (R * rho)) * cphi + u * sphi) / r,
-            (r2 * (u / r2 - v * psi / t / (R * rho)) * cphi + v * sphi) / r,
-            -(r * z * psi * cphi / t) / (R * rho),
-        },
-        Vec3{0, 0, 1},
+        // clang-format off
+        (u * cphi - r2 * (-v / r2 - u * psi / t / (R * rho)) * sphi) / r,
+        (v * cphi - r2 * (u / r2 - v * psi / t / (R * rho)) * sphi) / r,
+        (r * z * psi * sphi / t) / (R * rho),
+       
+        (r2 * (-v / r2 - u * psi / t / (R * rho)) * cphi + u * sphi) / r,
+        (r2 * (u / r2 - v * psi / t / (R * rho)) * cphi + v * sphi) / r,
+        -(r * z * psi * cphi / t) / (R * rho),
+
+        0, 0, 1,
+        // clang-format on
     };
 }
 
@@ -404,21 +401,21 @@ TwistedOrbCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
     const Scalar sphi = std::sin(phi);
 
     return {
-        Vec3{
-            ((u * R * rho - v * r2 * psi / t) * cphi + v * R * rho * sphi) /
-                (r * R * rho),
-            (-v * R * rho * cphi + (u * R * rho - v * r2 * psi / t) * sphi) /
-                (r * R * rho),
-            -v * z * psi / t / (R * rho),
-        },
-        Vec3{
-            ((v * R * rho + u * r2 * psi / t) * cphi - u * R * rho * sphi) /
-                (r * R * rho),
-            (u * R * rho * cphi + (v * R * rho + u * r2 * psi / t) * sphi) /
-                (r * R * rho),
-            u * z * psi / t / (R * rho),
-        },
-        Vec3{0, 0, 1},
+        // clang-format off
+        ((u * R * rho - v * r2 * psi / t) * cphi + v * R * rho * sphi) /
+            (r * R * rho),
+        (-v * R * rho * cphi + (u * R * rho - v * r2 * psi / t) * sphi) /
+            (r * R * rho),
+        -v * z * psi / t / (R * rho),
+
+        ((v * R * rho + u * r2 * psi / t) * cphi - u * R * rho * sphi) /
+            (r * R * rho),
+        (u * R * rho * cphi + (v * R * rho + u * r2 * psi / t) * sphi) /
+            (r * R * rho),
+        u * z * psi / t / (R * rho),
+
+        0, 0, 1,
+        // clang-format on
     };
 }
 
@@ -449,15 +446,19 @@ Mat3x3 TwistedOrbCartesianGeometry::metric(const Vec3& position) const {
     const Scalar f22 = 1.0 + s * r2 * z * z * psi * psi / (R2 * rho2);
 
     return {
-        Vec3{f00, f01, f02},
-        Vec3{f01, f11, f12},
-        Vec3{f02, f12, f22},
+        // clang-format off
+        f00, f01, f02,
+        f01, f11, f12,
+        f02, f12, f22,
+        // clang-format on
     };
 }
 
 Vec3 TwistedOrbCartesianGeometry::normalize(const Vec3& position,
                                             const Vec3& vec) const {
-    return vec / std::sqrt(dot(vec, metric(position) * vec));
+    using namespace tensor;
+
+    return vec * (Scalar{1} / std::sqrt(dot(vec, metric(position) * vec)));
 }
 
 Vec3 TwistedOrbCartesianGeometry::to_cartesian_coords(
@@ -496,9 +497,11 @@ Mat3x3 TwistedOrbCartesianGeometry::inverse_metric(const Vec3& position) const {
     const Scalar f22 = 1.0;
 
     return {
-        Vec3{f00, f01, f02},
-        Vec3{f01, f11, f12},
-        Vec3{f02, f12, f22},
+        // clang-format off
+        f00, f01, f02,
+        f01, f11, f12,
+        f02, f12, f22,
+        // clang-format on
     };
 }
 
@@ -654,21 +657,20 @@ TwistedOrbCartesianGeometry::christoffel_1(const Vec3& position) const {
                         psi / (R5 * rho3);
 
     return Ten3x3x3{
-        Mat3x3{
-            Vec3{fuuu, fuuv, fuuz},
-            Vec3{fuuv, fuvv, fuvz},
-            Vec3{fuuz, fuvz, fuzz},
-        },
-        Mat3x3{
-            Vec3{fvuu, fvuv, fvuz},
-            Vec3{fvuv, fvvv, fvvz},
-            Vec3{fvuz, fvvz, fvzz},
-        },
-        Mat3x3{
-            Vec3{fzuu, fzuv, fzuz},
-            Vec3{fzuv, fzvv, fzvz},
-            Vec3{fzuz, fzvz, fzzz},
-        },
+        // clang-format off
+        // x
+        fuuu, fuuv, fuuz,
+        fuuv, fuvv, fuvz,
+        fuuz, fuvz, fuzz,
+        // y
+        fvuu, fvuv, fvuz,
+        fvuv, fvvv, fvvz,
+        fvuz, fvvz, fvzz,
+        // z
+        fzuu, fzuv, fzuz,
+        fzuv, fzvv, fzvz,
+        fzuz, fzvz, fzzz,
+        // clang-format on
     };
 }
 
@@ -677,14 +679,7 @@ TwistedOrbCartesianGeometry::christoffel_2(const Vec3& position) const {
     const Mat3x3 inv_metric = inverse_metric(position);
     const Ten3x3x3 chris_1 = christoffel_1(position);
 
-    return {
-        chris_1[0] * inv_metric[0][0] + chris_1[1] * inv_metric[0][1] +
-            chris_1[2] * inv_metric[0][2],
-        chris_1[0] * inv_metric[1][0] + chris_1[1] * inv_metric[1][1] +
-            chris_1[2] * inv_metric[1][2],
-        chris_1[0] * inv_metric[2][0] + chris_1[1] * inv_metric[2][1] +
-            chris_1[2] * inv_metric[2][2],
-    };
+    return gttl::contraction<1, 2>(inv_metric, chris_1);
 }
 
 } // namespace cpp_raytracing

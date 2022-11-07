@@ -78,18 +78,20 @@ class EuclideanGeometry : public Geometry {
 
     std::unique_ptr<Ray>
     ray_passing_through(const Vec3& start, const Vec3& target) const override {
-        return std::make_unique<EuclideanRay>(start,
-                                              unit_vector(target - start));
+        return std::make_unique<EuclideanRay>(
+            start, tensor::unit_vector(target - start));
     }
 
     Mat3x3 to_onb_jacobian(const Vec3&) const override {
-        return Mat3x3::identity();
+        return tensor::identity_mat<3_D>;
     }
     Mat3x3 from_onb_jacobian(const Vec3&) const override {
-        return Mat3x3::identity();
+        return tensor::identity_mat<3_D>;
     }
 
-    Mat3x3 metric(const Vec3&) const override { return Mat3x3::identity(); }
+    Mat3x3 metric(const Vec3&) const override {
+        return tensor::identity_mat<3_D>;
+    }
 };
 
 } // namespace cpp_raytracing

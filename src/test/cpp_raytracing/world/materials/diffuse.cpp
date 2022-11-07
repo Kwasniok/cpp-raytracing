@@ -7,6 +7,10 @@
 
 namespace cpp_raytracing { namespace test {
 
+using namespace tensor;
+
+const Scalar epsilon = 1.0e-12;
+
 TEST_CASE("diffuse") {
     /*
      sketch of hit scenario:
@@ -42,10 +46,12 @@ TEST_CASE("diffuse") {
     const Vec3 direction_in = {1.0, 0.0, 0.0};
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
-        CHECK_FALSE(direction_out.near_zero(Diffuse::epsilon));
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
+        CHECK_FALSE(tensor::near_zero(direction_out, Diffuse::epsilon));
         const Vec3 vec = direction_out - record.normal;
-        CHECK_IN_RANGE(0.0, 1.0, vec.length());
+        CHECK_IN_RANGE(0.0, 1.0, length(vec));
     }
 }
 

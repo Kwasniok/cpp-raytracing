@@ -146,8 +146,11 @@ class SkyBackground : public Background {
 
     Color value([[maybe_unused]] const Geometry& geometry,
                 const RaySegment& ray_segment) const override {
+
+        using namespace tensor;
+
         const Vec3 direction = unit_vector(ray_segment.direction());
-        const auto t = 0.5 * (std::abs(direction.y()) + 1.0);
+        const auto t = 0.5 * (std::abs(direction[1]) + 1.0);
         const Color color = (1.0 - t) * color1 + t * color2;
         return color;
     };

@@ -56,6 +56,8 @@ class Triangle : public Entity {
      */
     static constexpr std::pair<Scalar, Scalar>
     uv_tri_coords(const Vec3& b1, const Vec3& b2, const Vec3& x) {
+        using namespace tensor;
+
         const Scalar b1b1 = dot(b1, b1);
         const Scalar b1b2 = dot(b1, b2);
         const Scalar b2b2 = dot(b2, b2);
@@ -71,6 +73,7 @@ class Triangle : public Entity {
 HitRecord Triangle::hit_record(const Geometry& geometry,
                                const RaySegment& ray_segment,
                                const Scalar t_min) const {
+    using namespace tensor;
 
     // basis for span
     const Vec3 b1 = points[1] - points[0];
@@ -119,7 +122,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry,
     // note: The normal is position dependent since the tri might be curved.
     Vec3 normal = cross(metric * b1, metric * b2);
     // normalize
-    normal = normal / std::sqrt(dot(normal, metric * normal));
+    normal *= Scalar{1} / std::sqrt(dot(normal, metric * normal));
     record.set_face_normal(to_onb_jacobian, metric, d, normal);
     record.material = material.get();
     return record;
@@ -133,13 +136,13 @@ std::optional<AxisAlignedBoundingBox> Triangle::bounding_box() const {
     Vec3 high = {-infinity, -infinity, -infinity};
 
     for (const auto& point : points) {
-        low = elementwise<min>(low, point);
-        high = elementwise<max>(high, point);
+        low.inplace_elementwise(min, point);
+        high.inplace_elementwise(max, point);
     }
 
     // padding to guarantee non-zero volume
-    low -= elementwise<abs>(low) * epsilon;
-    high += elementwise<abs>(high) * epsilon;
+    low -= low.elementwise(abs) * epsilon;
+    high += high.elementwise(abs) * epsilon;
 
     return AxisAlignedBoundingBox{low, high};
 }

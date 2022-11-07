@@ -7,9 +7,9 @@ OUT:=out
 # general includes
 INCLUDES= \
 	-I $(INC) \
-	-isystem third_party/glm \
 	-isystem third_party/argparse/include \
 	-isystem third_party/range-v3/include \
+	-isystem third_party/gttl/include \
 
 # includes for tests only
 INCLUDES_TEST = \

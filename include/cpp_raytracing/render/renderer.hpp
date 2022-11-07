@@ -168,6 +168,8 @@ class Renderer {
                     const Scene::FreezeGuard& frozen_scene, Ray* ray,
                     const unsigned long depth) const {
 
+        using namespace tensor;
+
         // propagate ray
         const std::optional<RaySegment> current_opt_segment =
             ray->next_ray_segment();
@@ -224,7 +226,7 @@ class Renderer {
             to_onb_jacobian * current_segment.direction();
         const auto [onb_scatter_direction, color] =
             record.material->scatter(record, onb_ray_direction);
-        if (onb_scatter_direction == Vec3::zero()) {
+        if (is_zero(onb_scatter_direction)) {
             // is emitter
             return color;
         } else {

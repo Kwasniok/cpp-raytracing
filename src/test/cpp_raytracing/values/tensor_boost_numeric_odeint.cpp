@@ -19,29 +19,6 @@ const Scalar sigma = 10.0;
 const Scalar R = 28.0;
 const Scalar b = 8.0 / 3.0;
 
-TEST_CASE("vec2") {
-    using namespace boost::numeric::odeint;
-    using State = Vec2;
-
-    State x = {10.0, 10.0};
-
-    auto stepper =
-        make_controlled(1.0e-6, 1.0e-6, runge_kutta_cash_karp54<State>());
-
-    auto lorenz = [](const State& x, State& dxdt, [[maybe_unused]] double t) {
-        dxdt[0] = sigma * (x[1] - x[0]);
-        dxdt[1] = R * x[0] - x[1] - x[0];
-    };
-
-    auto it = make_adaptive_iterator_begin(stepper, lorenz, x, 0.0, 1.0, 0.01);
-    ++it;
-    ++it;
-    ++it;
-
-    const Vec2 expected = {12.2131, 21.9924};
-    CHECK_ITERABLE_APPROX_EQUAL(epsilon, *it, expected);
-}
-
 TEST_CASE("vec3") {
     using namespace boost::numeric::odeint;
     using State = Vec3;
@@ -64,38 +41,6 @@ TEST_CASE("vec3") {
 
     const Vec3 expected = {11.7446, 17.6449, 15.9846};
     CHECK_ITERABLE_APPROX_EQUAL(epsilon, *it, expected);
-}
-
-TEST_CASE("vec6") {
-    using namespace boost::numeric::odeint;
-    using State = Vec6;
-
-    State x = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
-
-    auto stepper =
-        make_controlled(1.0e-6, 1.0e-6, runge_kutta_cash_karp54<State>());
-
-    auto lorenz = [](const State& x, State& dxdt, [[maybe_unused]] double t) {
-        dxdt[0] = sigma * (x[1] - x[0]);
-        dxdt[1] = R * x[0] - x[1] - x[0] * x[2];
-        dxdt[2] = -b * x[2] + x[0] * x[1];
-        //
-        dxdt[3] = sigma * (x[4] - x[3]);
-        dxdt[4] = R * x[3] - x[4] - x[3] * x[5];
-        dxdt[5] = -b * x[5] + x[3] * x[4];
-    };
-
-    auto it = make_adaptive_iterator_begin(stepper, lorenz, x, 0.0, 1.0, 0.01);
-    ++it;
-    ++it;
-    ++it;
-
-    const Vec6 expected = {11.7446, 17.6449, 15.9846,
-                           11.7446, 17.6449, 15.9846};
-    CHECK_ITERABLE_APPROX_EQUAL(epsilon, it->first_half(),
-                                expected.first_half());
-    CHECK_ITERABLE_APPROX_EQUAL(epsilon, it->second_half(),
-                                expected.second_half());
 }
 
 }} // namespace cpp_raytracing::test

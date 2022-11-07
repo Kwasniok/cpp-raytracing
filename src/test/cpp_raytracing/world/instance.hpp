@@ -78,31 +78,36 @@ class Instance : public Entity {
      * @note Updated by set_time if an entity is present.
      * @see set_time
      */
-    Mat3x3 _transformation = Mat3x3::identity();
+    Mat3x3 _transformation = tensor::identity_mat<3_D>;
     /**
      * @brief cached inverse rotation and scaling
      * @note Updated by set_time if an entity is present.
      * @see set_time
      */
-    Mat3x3 _inv_transformation = Mat3x3::identity();
+    Mat3x3 _inv_transformation = tensor::identity_mat<3_D>;
 };
 
 void Instance::set_time(const Scalar time) {
+    using namespace tensor;
+
     // super call
     this->Entity::set_time(time);
 
     // cache transformation if nedded
     if (entity) {
         entity->set_time(time);
-        _transformation = rotation_mat(rotation) * scaling_mat(scale);
+        _transformation = rotation_mat(rotation) * scaling_mat<3_D>(scale);
         _inv_transformation =
-            inverse_scaling_mat(scale) * inverse_rotation_mat(rotation);
+            inverse_scaling_mat<3_D>(scale) * inverse_rotation_mat(rotation);
     }
 }
 
 HitRecord Instance::hit_record(const Geometry& geometry,
                                const RaySegment& ray_segment,
                                const Scalar t_min) const {
+
+    using namespace tensor;
+
     if (entity) {
         // inverse transform ray to instance space, calculate hit record and
         // transform hit record
@@ -128,19 +133,21 @@ HitRecord Instance::hit_record(const Geometry& geometry,
 }
 
 std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
+    using namespace tensor;
+
     if (entity) {
         const auto bounds = entity->bounding_box();
         if (bounds) {
             // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays)
-            const Scalar x[2] = {bounds->min().x(), bounds->max().x()};
+            const Scalar x[2] = {bounds->min()[0], bounds->max()[0]};
             // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays)
-            const Scalar y[2] = {bounds->min().y(), bounds->max().y()};
+            const Scalar y[2] = {bounds->min()[1], bounds->max()[1]};
             // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays)
-            const Scalar z[2] = {bounds->min().z(), bounds->max().z()};
+            const Scalar z[2] = {bounds->min()[2], bounds->max()[2]};
 
             // linear transformation (translation is deferred)
             const Mat3x3 transformation =
-                rotation_mat(rotation) * scaling_mat(scale);
+                rotation_mat(rotation) * scaling_mat<3_D>(scale);
 
             // transform all corners and select min/max coefficients
             Vec3 low{infinity, infinity, infinity};
@@ -151,8 +158,8 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
                         const Vec3 corner =
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
                             transformation * Vec3{x[i], y[j], z[k]};
-                        low = elementwise<min>(low, corner);
-                        high = elementwise<max>(high, corner);
+                        low.inplace_elementwise(min, corner);
+                        high.inplace_elementwise(max, corner);
                     }
                 }
             }

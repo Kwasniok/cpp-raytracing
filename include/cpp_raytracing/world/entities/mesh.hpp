@@ -67,6 +67,8 @@ class Mesh : public Entity {
      */
     static constexpr std::pair<Scalar, Scalar>
     uv_tri_coords(const Vec3& b1, const Vec3& b2, const Vec3& x) {
+        using namespace tensor;
+
         const Scalar b1b1 = dot(b1, b1);
         const Scalar b1b2 = dot(b1, b2);
         const Scalar b2b2 = dot(b2, b2);
@@ -82,7 +84,10 @@ class Mesh : public Entity {
                               const RaySegment& ray_segment, const Scalar t_min,
                               const Vec3& point0, const Vec3& point1,
                               const Vec3& point2) const {
+
+        using namespace tensor;
         // basis for span
+
         const Vec3 b1 = point1 - point0;
         const Vec3 b2 = point2 - point0;
         // pseudo-normal (NOT the face normal)
@@ -129,7 +134,7 @@ class Mesh : public Entity {
         // note: The normal is position dependent since the tri might be curved.
         Vec3 normal = cross(metric * b1, metric * b2);
         // normalize
-        normal = normal / std::sqrt((dot(normal, metric * normal)));
+        normal *= Scalar{1} / std::sqrt((dot(normal, metric * normal)));
         record.set_face_normal(to_onb_jacobian, metric, d, normal);
         record.material = material.get();
         return record;
@@ -142,13 +147,13 @@ class Mesh : public Entity {
         Vec3 high = {-infinity, -infinity, -infinity};
 
         for (const auto& point : points) {
-            low = elementwise<min>(low, point);
-            high = elementwise<max>(high, point);
+            low.inplace_elementwise(min, point);
+            high.inplace_elementwise(max, point);
         }
 
         // padding to guarantee non-zero volume
-        low -= elementwise<abs>(low) * epsilon;
-        high += elementwise<abs>(high) * epsilon;
+        low -= low.elementwise(abs) * epsilon;
+        high += high.elementwise(abs) * epsilon;
 
         for (unsigned int i = 0; i < 3; ++i) {
             if (low[i] == high[i]) {
@@ -162,7 +167,10 @@ class Mesh : public Entity {
 
   private:
     // note: initial value is irrelevant
-    AxisAlignedBoundingBox _bounds = {Vec3::zero(), Vec3::zero()};
+    AxisAlignedBoundingBox _bounds = {
+        tensor::zero_vec<3_D>,
+        tensor::zero_vec<3_D>,
+    };
 };
 
 /**

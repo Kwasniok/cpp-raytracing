@@ -62,21 +62,17 @@ TEST_CASE("SwirlCartesianGeometry") {
         const Vec3 point = {2.0, 3.0, 5.0};
 
         const Mat3x3 to_onb_jacobian = {
-            Vec3{
-                // clang-format off
-                ((2.0 + 15.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 3.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                ((2.0 + 15.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) - 3.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                3.0 * sqrt(13.0) / 17.0,
-                // clang-format on
-            },
-            Vec3{
-                // clang-format off
-                ((3.0 - 10.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) - 2.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                ((3.0 - 10.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 2.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                -2.0 * sqrt(13.0) / 17.0,
-                // clang-format on
-            },
-            Vec3{0.0, 0.0, 1.0},
+            // clang-format off
+            ((2.0 + 15.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 3.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            ((2.0 + 15.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) - 3.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            3.0 * sqrt(13.0) / 17.0,
+
+            ((3.0 - 10.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) - 2.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            ((3.0 - 10.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 2.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            -2.0 * sqrt(13.0) / 17.0,
+            
+            0.0, 0.0, 1.0,
+            // clang-format on
         };
         /*
          * numerical:
@@ -88,30 +84,24 @@ TEST_CASE("SwirlCartesianGeometry") {
          */
 
         const auto jacobian = geometry.to_onb_jacobian(point);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian[0], to_onb_jacobian[0]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian[1], to_onb_jacobian[1]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian[2], to_onb_jacobian[2]);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian, to_onb_jacobian);
     }
 
     SUBCASE("from_onb_jacobian") {
         const Vec3 point = {2.0, 3.0, 5.0};
 
         const Mat3x3 from_onb_jacobian = {
-            Vec3{
-                // clang-format off
-                ((3.0 - 10.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) +  2.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                (-(2.0 + 15.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 3.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                -13.0 / 17.0 * sin(5.0 * sqrt(13.0) / 17.0 + atan2(3, 2)),
-                // clang-format on
-            },
-            Vec3{
-                // clang-format off
-                (-(3.0 - 10.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 2.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                ((2.0 + 15.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 3.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
-                13.0 / 17.0 * cos(5.0 * sqrt(13.0) / 17.0 + atan2(3, 2)),
-                // clang-format on
-            },
-            Vec3{0.0, 0.0, 1.0},
+            // clang-format off
+            ((3.0 - 10.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) +  2.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            (-(2.0 + 15.0 * sqrt(13.0) / 17.0) * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 3.0 * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            -13.0 / 17.0 * sin(5.0 * sqrt(13.0) / 17.0 + atan2(3, 2)),
+
+            (-(3.0 - 10.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 2.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            ((2.0 + 15.0 * sqrt(13.0) / 17.0) * cos(5.0 * sqrt(13) / 17.0 + atan2(3, 2)) + 3.0 * sin(5.0 * sqrt(13) / 17.0 + atan2(3, 2))) / sqrt(13.0),
+            13.0 / 17.0 * cos(5.0 * sqrt(13.0) / 17.0 + atan2(3, 2)),
+
+           0.0, 0.0, 1.0,
+            // clang-format on
         };
         /*
          * numerical:
@@ -123,9 +113,7 @@ TEST_CASE("SwirlCartesianGeometry") {
          */
 
         const auto jacobian = geometry.from_onb_jacobian(point);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian[0], from_onb_jacobian[0]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian[1], from_onb_jacobian[1]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian[2], from_onb_jacobian[2]);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, jacobian, from_onb_jacobian);
     }
 
     SUBCASE("metric") {
@@ -135,9 +123,11 @@ TEST_CASE("SwirlCartesianGeometry") {
             {
                 Vec3{2.0, 0.0, 0.0},
                 Mat3x3{
-                    Vec3{1.0, 0.0, 0.0},
-                    Vec3{0.0, 1.0, 4 * a},
-                    Vec3{0.0, 4 * a, 1 + 16 * a * a},
+                    // clang-format off
+                    1.0, 0.0, 0.0,
+                    0.0, 1.0, 4 * a,
+                    0.0, 4 * a, 1 + 16 * a * a,
+                    // clang-format on
                 },
             },
             {
@@ -147,21 +137,19 @@ TEST_CASE("SwirlCartesianGeometry") {
                  * {0.5, 0.333333, 0.2}
                  */
                 Mat3x3{
-                    Vec3{
-                        28901.0 / 28900.0 - 2.0 / (85.0 * sqrt(13.0)),
-                        1.0 / 43350.0 + 1.0 / (102 * sqrt(13.0)),
-                        (13.0 - 340.0 * sqrt(13.0)) / 104040,
-                    },
-                    Vec3{
-                        1.0 / 43350.0 + 1.0 / (102.0 * sqrt(13.0)),
-                        65026.0 / 65025.0 + 2.0 / (85.0 * sqrt(13.0)),
-                        (13.0 + 765.0 * sqrt(13.0)) / 156060.0,
-                    },
-                    Vec3{
-                        (13.0 - 340.0 * sqrt(13.0)) / 104040.0,
-                        (13.0 + 765.0 * sqrt(13.0)) / 156060.0,
-                        374713.0 / 374544.0,
-                    },
+                    // clang-format off
+                    28901.0 / 28900.0 - 2.0 / (85.0 * sqrt(13.0)),
+                    1.0 / 43350.0 + 1.0 / (102 * sqrt(13.0)),
+                    (13.0 - 340.0 * sqrt(13.0)) / 104040,
+
+                    1.0 / 43350.0 + 1.0 / (102.0 * sqrt(13.0)),
+                    65026.0 / 65025.0 + 2.0 / (85.0 * sqrt(13.0)),
+                    (13.0 + 765.0 * sqrt(13.0)) / 156060.0,
+
+                    (13.0 - 340.0 * sqrt(13.0)) / 104040.0,
+                    (13.0 + 765.0 * sqrt(13.0)) / 156060.0,
+                    374713.0 / 374544.0,
+                    // clang-format on
                 },
                 /*
                  * numerical:
@@ -176,9 +164,7 @@ TEST_CASE("SwirlCartesianGeometry") {
 
         for (const auto& [point, metric] : points_and_metrics) {
             const auto met = geometry.metric(point);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[0], metric[0]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[1], metric[1]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[2], metric[2]);
+            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met, metric);
         }
     }
 }

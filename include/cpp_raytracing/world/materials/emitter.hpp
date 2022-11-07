@@ -39,7 +39,9 @@ class Emitter : public Material {
     std::pair<Vec3, Color>
     scatter(const HitRecord& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
-        const Vec3 direction = Vec3::zero(); // emissive
+        using namespace tensor;
+
+        const Vec3 direction = zero_vec<3_D>; // emissive
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)

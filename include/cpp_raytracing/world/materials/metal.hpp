@@ -44,6 +44,8 @@ class Metal : public Material {
 
     std::pair<Vec3, Color> scatter(const HitRecord& record,
                                    const Vec3& ray_direction) const override {
+        using namespace tensor;
+
         const Vec3 para = dot(record.normal, ray_direction) * record.normal;
         const Vec3 ortho = ray_direction - para;
         const Vec3 direction = reflect(ortho, para, roughness);
@@ -60,7 +62,9 @@ class Metal : public Material {
     /** @brief reflected ray */
     static inline Vec3 reflect(const Vec3 ortho, const Vec3 para,
                                const Scalar roughness) {
-        return ortho - para + roughness * random_vector_in_unit_sphere();
+        using namespace tensor;
+
+        return ortho - para + roughness * random_vec_inside_unit_sphere<3_D>();
     }
 };
 

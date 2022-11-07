@@ -80,6 +80,7 @@ PinholeCamera cartesian_pinhole_camera(const Vec3 detector_origin,
                                        const Vec3 up_direction,
                                        const Scalar vertical_field_of_view_deg,
                                        const Scalar aspect_ratio) {
+    using namespace tensor;
 
     const auto theta = rad_from_deg(vertical_field_of_view_deg);
     const auto viewport_height = 2 * std::tan(theta / 2.0);
@@ -88,7 +89,7 @@ PinholeCamera cartesian_pinhole_camera(const Vec3 detector_origin,
     const auto w = unit_vector(pinhole - detector_origin);
     const auto u = unit_vector(cross(up_direction, w));
     const auto v = cross(u, w);
-    const Scalar focus_distance = (pinhole - detector_origin).length();
+    const Scalar focus_distance = length(pinhole - detector_origin);
 
     const auto x = focus_distance * (viewport_width / 2.0) * u;
     const auto y = focus_distance * (viewport_height / 2.0) * v;

@@ -48,7 +48,7 @@ class Material {
      *       emissive.
      * @note All vectors are asserted to be relative to an othronormal basis!
      *       (The tangential space of a surface is flat.)
-     * @see Vec3::zero()
+     * @see zero_vec<3_D>
      */
     virtual std::pair<Vec3, Color> scatter(const HitRecord& record,
                                            const Vec3& ray_direction) const = 0;

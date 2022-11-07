@@ -8,8 +8,7 @@
 
 #include <iostream>
 
-#include <glm/detail/qualifier.hpp>
-#include <glm/geometric.hpp>
+#include <gttl/tensor.hpp>
 
 #include "../util.hpp"
 #include "../values/random.hpp"
@@ -27,16 +26,11 @@ using ColorIntegral = unsigned long;
 class Color {
 
   public:
-    /** @brief iterator type */
-    using iterator = Scalar*;
-    /** @brief const iterator type */
-    using const_iterator = const Scalar*;
-
     /**
      * @brief initialize all channels as zeros
      * @see Colors::BLACK
      */
-    constexpr Color() : _data{0.0, 0.0, 0.0} {}
+    constexpr Color() : _data{} {}
     /** @brief initialize with RGB channel values */
     constexpr Color(const ColorScalar r, const ColorScalar g,
                     const ColorScalar b)
@@ -56,23 +50,13 @@ class Color {
     constexpr ColorScalar b() const { return _data[2]; }
 
     /** @brief const iterator for first element */
-    constexpr const_iterator begin() const { return &_data[0]; }
+    constexpr auto begin() const { return std::cbegin(_data); }
     /** @brief const iterator for end */
-    constexpr const_iterator end() const { return &_data[0] + 3; }
+    constexpr auto end() const { return std::cend(_data); }
     /** @brief iterator for first element */
-    constexpr iterator begin() { return &_data[0]; }
+    constexpr auto begin() { return std::begin(_data); }
     /** @brief iterator for end */
-    constexpr iterator end() { return &_data[0] + 3; }
-
-    /** @brief tests equivalence */
-    constexpr bool operator==(const Color& other) const {
-        return _data == other._data;
-    }
-
-    /** @brief tests inequivalence */
-    constexpr bool operator!=(const Color& other) const {
-        return _data != other._data;
-    }
+    constexpr auto end() { return std::end(_data); }
 
     /** @brief negate channelwise */
     constexpr Color operator-() const { return Color{-_data}; }
@@ -104,12 +88,12 @@ class Color {
     }
     /** @brief multiply channelwise */
     constexpr Color& operator*=(const Color& other) {
-        _data *= other._data;
+        _data.elementwise(std::multiplies<ColorScalar>{}, other._data);
         return *this;
     }
     /** @brief divide channelwise */
     constexpr Color& operator/=(const ColorScalar fac) {
-        _data /= fac;
+        _data *= ColorScalar{1} / fac;
         return *this;
     }
 
@@ -121,8 +105,8 @@ class Color {
     friend constexpr Color operator/(const Color&, const ColorScalar);
 
   private:
-    using data_type = glm::vec<3, ColorScalar>;
-    constexpr Color(const data_type data) : _data(data) {}
+    using data_type = gttl::Tensor<ColorScalar, 1, gttl::Dimensions<1>{3}>;
+    constexpr Color(const data_type& data) : _data(data) {}
 
     data_type _data;
 };
@@ -167,7 +151,8 @@ inline constexpr Color operator*(const Color& color, const ColorScalar f) {
 
 /** @brief multiply channelwise */
 inline constexpr Color operator*(const Color& color1, const Color& color2) {
-    return Color(color1._data * color2._data);
+    const auto mul = typename Color::data_type::traits_type::mul{};
+    return Color(color1._data.elementwise(mul, color2._data));
 }
 
 /** @brief multiply channelwise */
@@ -177,7 +162,11 @@ inline constexpr Color operator*(const ColorScalar f, const Color& color) {
 
 /** @brief divide channelwise */
 inline constexpr Color operator/(const Color& color, const ColorScalar f) {
-    return Color(color._data / f);
+    const auto div = typename Color::data_type::traits_type::div{};
+    const auto func = [div=div, f=f](const auto x) constexpr {
+        return div(x, f);
+    };
+    return Color(color._data.elementwise(func));
 }
 
 /** @brief color constants */

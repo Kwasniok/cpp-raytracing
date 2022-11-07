@@ -46,6 +46,8 @@ class Dielectric : public Material {
 
     std::pair<Vec3, Color> scatter(const HitRecord& record,
                                    const Vec3& ray_direction) const override {
+        using namespace tensor;
+
         // note: This algorithm assumes vacuum to medium transitions and
         // vice versa
         //       only.
@@ -89,9 +91,11 @@ class Dielectric : public Material {
     static constexpr Vec3 refract(Vec3 ortho, const Vec3 normal,
                                   const Scalar index_of_refraction) {
 
+        using namespace tensor;
+
         ortho *= index_of_refraction;
         const Vec3 para =
-            -std::sqrt(std::abs(1.0 - ortho.length_squared())) * normal;
+            -std::sqrt(std::abs(1.0 - length_squared(ortho))) * normal;
         return ortho + para;
     }
 

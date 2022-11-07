@@ -42,8 +42,11 @@ class Diffuse : public Material {
     std::pair<Vec3, Color>
     scatter(const HitRecord& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
-        Vec3 direction = record.normal + random_unit_vector();
-        if (direction.near_zero(epsilon)) {
+
+        using namespace tensor;
+
+        Vec3 direction = record.normal + random_unit_vec<3_D>();
+        if (tensor::near_zero(direction, epsilon)) {
             // in case of normal and random vector beeing antiparallel
             // use normal instead
             direction = record.normal;

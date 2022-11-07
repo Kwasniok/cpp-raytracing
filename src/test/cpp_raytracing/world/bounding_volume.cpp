@@ -15,15 +15,23 @@ TEST_CASE("constructor") {
     {
         static const AxisAlignedBoundingBox box{min, max};
 
-        CHECK(box.min() == min);
-        CHECK(box.max() == max);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(box.min()[i] == doctest::Approx(min[i]).epsilon(epsilon));
+        }
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(box.max()[i] == doctest::Approx(max[i]).epsilon(epsilon));
+        }
     }
     {
         // max <-> min
         static const AxisAlignedBoundingBox box{max, min};
 
-        CHECK(box.min() == min);
-        CHECK(box.max() == max);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(box.min()[i] == doctest::Approx(min[i]).epsilon(epsilon));
+        }
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(box.max()[i] == doctest::Approx(max[i]).epsilon(epsilon));
+        }
     }
 }
 

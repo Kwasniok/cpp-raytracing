@@ -25,9 +25,10 @@ std::shared_ptr<Instance> make_sphere(const Vec3 position,
 }
 
 Scene make_scene() {
+    using namespace tensor;
 
     auto dummy_camera = std::make_shared<PinholeCamera>(
-        Vec3::zero(), [](const Scalar x, const Scalar y) {
+        zero_vec<3_D>, [](const Scalar x, const Scalar y) {
             return Vec3{x, y, 0.0};
         });
 

@@ -52,6 +52,8 @@ struct HitRecord {
      */
     void set_face_normal(const Mat3x3& to_onb_jacobian, const Mat3x3& metric,
                          const Vec3& ray_direction, const Vec3& face_normal) {
+        using namespace tensor;
+
         front_face = dot(face_normal, metric * ray_direction) < 0.0;
         normal = front_face ? face_normal : -face_normal;
         normal = to_onb_jacobian * normal;

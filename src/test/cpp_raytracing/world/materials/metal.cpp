@@ -7,6 +7,10 @@
 
 namespace cpp_raytracing { namespace test {
 
+using namespace tensor;
+
+const Scalar epsilon = 1.0e-12;
+
 TEST_CASE("metal_no_roughness") {
     /*
      sketch of hit scenario:
@@ -45,12 +49,18 @@ TEST_CASE("metal_no_roughness") {
     const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
         // parallel to normal
-        CHECK(dot(normal, direction_out) == -dot(normal, direction_in));
+        CHECK(dot(normal, direction_out) ==
+              doctest::Approx(-dot(normal, direction_in)).epsilon(epsilon));
         // orthogonal to normal
-        CHECK(direction_out - normal * dot(normal, direction_out) ==
-              direction_in - normal * dot(normal, direction_in));
+        const auto v1 = direction_out - normal * dot(normal, direction_out);
+        const auto v2 = direction_in - normal * dot(normal, direction_in);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(v1[i] == doctest::Approx(v2[i]).epsilon(epsilon));
+        }
     }
 }
 
@@ -92,12 +102,14 @@ TEST_CASE("metal_with_roughness") {
     const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
         const Vec3 in_para = normal * dot(normal, direction_in);
         const Vec3 in_ortho = direction_in - in_para;
         // test if rand_vec in sphere of radius roughness
         const Vec3 rand_vec = direction_out + in_para - in_ortho;
-        CHECK_IN_RANGE(0.0, mat_rough, rand_vec.length());
+        CHECK_IN_RANGE(0.0, mat_rough, length(rand_vec));
     }
 }
 

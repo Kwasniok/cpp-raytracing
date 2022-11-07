@@ -46,7 +46,7 @@ class Checker3D : public Texture {
                 const Vec3& point) const override {
 
         const Vec3 p = (point - offset) * (pi / scale);
-        const auto val = std::sin(p.x()) * std::sin(p.y()) * std::sin(p.z());
+        const auto val = std::sin(p[0]) * std::sin(p[1]) * std::sin(p[2]);
 
         const bool is_primary = val < 0.0;
 

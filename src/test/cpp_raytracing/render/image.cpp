@@ -7,6 +7,8 @@
 
 namespace cpp_raytracing { namespace test {
 
+constexpr Scalar epsilon = 1.0e-12;
+
 TEST_CASE("constructor") {
     RawImage(10, 10);
 }
@@ -23,12 +25,12 @@ TEST_CASE("operator_bracket") {
     image[{1, 2}] = color;
 
     SUBCASE("mutable") {
-        CHECK(image[std::pair(1, 2)] == color);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, image[std::pair(1, 2)], color);
     }
 
     SUBCASE("const") {
         const RawImage& cimg = image;
-        CHECK(cimg[std::pair(1, 2)] == color);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, cimg[std::pair(1, 2)], color);
     }
 }
 
@@ -52,7 +54,8 @@ TEST_CASE("arithmetic") {
         img1 += img2;
         for (unsigned long j = 0; j < N; ++j) {
             for (unsigned long i = 0; i < N; ++i) {
-                CHECK(img1[std::pair(i, j)] == Color(N * N, N * N, 0.0));
+                CHECK_ITERABLE_APPROX_EQUAL(epsilon, img1[std::pair(i, j)],
+                                            Color(N * N, N * N, 0.0));
             }
         }
     }
@@ -61,7 +64,8 @@ TEST_CASE("arithmetic") {
         img2 *= f;
         for (unsigned long j = 0; j < N; ++j) {
             for (unsigned long i = 0; i < N; ++i) {
-                CHECK(img2[std::pair(i, j)] == Color(f * i, f * j, 0.0));
+                CHECK_ITERABLE_APPROX_EQUAL(epsilon, img2[std::pair(i, j)],
+                                            Color(f * i, f * j, 0.0));
             }
         }
     }

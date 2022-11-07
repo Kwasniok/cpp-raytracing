@@ -65,21 +65,17 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
                 {
                     Vec3{1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0},
                     Mat3x3{
-                        Vec3{
-                            // clang-format off
-                            cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
-                            -sin(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
-                            sqrt(13.0) * pi * sin(pi / (8.0 * exp(19.0 / 510.0)) + atan2(2, 3)) / (2584.0 * exp(19.0 / 510.0)),
-                            // clang-format on
-                        },
-                        Vec3{
-                            // clang-format off
-                            sin(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (-3.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 2.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
-                            cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (-3.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 2.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
-                            -sqrt(13.0) * pi * cos(pi / (8.0 * exp(19.0 / 510.0)) + atan2(2, 3)) / (2584.0 * exp(19.0 / 510.0)),
-                            // clang-format on
-                        },
-                        Vec3{0, 0, 1},
+                        // clang-format off
+                        cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
+                        -sin(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
+                        sqrt(13.0) * pi * sin(pi / (8.0 * exp(19.0 / 510.0)) + atan2(2, 3)) / (2584.0 * exp(19.0 / 510.0)),
+
+                        sin(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (-3.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 2.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
+                        cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (-3.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 2.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
+                        -sqrt(13.0) * pi * cos(pi / (8.0 * exp(19.0 / 510.0)) + atan2(2, 3)) / (2584.0 * exp(19.0 / 510.0)),
+
+                        0, 0, 1,
+                        // clang-format on
                     },
                     /* numerically:
                     {
@@ -93,9 +89,7 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
 
         for (const auto& [point, jacobian] : points_and_jacobians) {
             const auto jac = geometry.to_onb_jacobian(point);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac[0], jacobian[0]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac[1], jacobian[1]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac[2], jacobian[2]);
+            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac, jacobian);
         }
     }
 
@@ -106,21 +100,17 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
                 {
                     Vec3{1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0},
                     Mat3x3{
-                        Vec3{
-                            // clang-format off
-                            cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (-3.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 2.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
-                            sin(pi / (8.0 * exp(19.0 / 510.0))) -  5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
-                            -pi / (1292.0 * exp(19.0 / 510.0)),
-                            // clang-format on
-                        },
-                        Vec3{
-                            // clang-format off
-                            (15.0 * pi * cos(pi / (8.0 * exp(19.0 / 510.0))) - 2.0 * (2584.0 * exp(19.0 / 510.0) + 5 * pi) * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
-                            cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
-                            3.0 * pi / (2584.0 * exp(19.0 / 510.0)),
-                            // clang-format on
-                        },
-                        Vec3{0, 0, 1},
+                        // clang-format off
+                        cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (-3.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 2.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
+                        sin(pi / (8.0 * exp(19.0 / 510.0))) -  5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (7752.0 * exp(19.0 / 510.0)),
+                        -pi / (1292.0 * exp(19.0 / 510.0)),
+
+                        (15.0 * pi * cos(pi / (8.0 * exp(19.0 / 510.0))) - 2.0 * (2584.0 * exp(19.0 / 510.0) + 5 * pi) * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
+                        cos(pi / (8.0 * exp(19.0 / 510.0))) + 5.0 * pi * (2.0 * cos(pi / (8.0 * exp(19.0 / 510.0))) + 3.0 * sin(pi / (8.0 * exp(19.0 / 510.0)))) / (5168.0 * exp(19.0 / 510.0)),
+                        3.0 * pi / (2584.0 * exp(19.0 / 510.0)),
+
+                        0, 0, 1,
+                        // clang-format on
                     },
                     /* numerically:
                     {
@@ -134,9 +124,7 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
 
         for (const auto& [point, jacobian] : points_and_jacobians) {
             const auto jac = geometry.from_onb_jacobian(point);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac[0], jacobian[0]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac[1], jacobian[1]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac[2], jacobian[2]);
+            CHECK_ITERABLE_APPROX_EQUAL(epsilon, jac, jacobian);
         }
     }
 
@@ -147,43 +135,35 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
                 {
                     Vec3{2.0, 0.0, 0.0},
                     Mat3x3{
-                        Vec3{
-                            1.0 + pi * pi / (4624.0 * exp(4.0 / 17.0)),
-                            -pi / (68.0 * exp(2.0 / 17.0)),
-                            0.0,
-                        },
-                        Vec3{
-                            -pi / (68.0 * exp(2.0 / 17.0)),
-                            1.0,
-                            0.0,
-                        },
-                        Vec3{0.0, 0.0, 1.0},
+                        // clang-format off
+                        1.0 + pi * pi / (4624.0 * exp(4.0 / 17.0)),
+                        -pi / (68.0 * exp(2.0 / 17.0)),
+                        0.0,
+
+                        -pi / (68.0 * exp(2.0 / 17.0)),
+                        1.0,
+                        0.0,
+
+                        0.0, 0.0, 1.0,
+                        // clang-format on
                     },
                 },
                 {
                     Vec3{1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0},
                     Mat3x3{
-                        Vec3{
-                            // clang-format off
-                            1.0 + 5.0 * pi * (20672.0 * exp(19.0 / 510.0) + 65.0 * pi) /  (26708224.0 * exp(19.0 / 255.0)),
-                            25.0 * pi * (-2584.0 * exp(19.0 / 510) + 13.0 * pi) / (40062336.0 * exp(19.0 / 255.0)),
-                            pi * (10336.0 * exp(19.0 / 510.0) + 65.0 * pi) / (13354112.0 * exp(19.0 / 255.0)),
-                            // clang-format on
-                        },
-                        Vec3{
-                            // clang-format off
-                            25.0 * pi * (-2584 * exp(19.0 / 510) + 13.0 * pi) / (40062336.0 * exp(19.0 / 255.0)),
-                            1.0 + 5.0 * pi * (-46512.0 * exp(19.0 / 510.0) + 65.0 * pi) / (60093504.0 * exp(19.0 / 255.0)),
-                            pi * (-23256.0 * exp(19.0 / 510.0) + 65.0 * pi) / (20031168.0 * exp(19.0 / 255.0)),
-                            // clang-format on
-                        },
-                        Vec3{
-                            // clang-format off
-                            pi * (10336.0 * exp(19.0 / 510.0) + 65.0 * pi) / (13354112.0 * exp(19.0 / 255.0)),
-                            pi * (-23256.0 * exp(19.0 / 510.0) + 65.0 * pi) / (20031168.0 * exp(19.0 / 255.0)),
-                            1.0 + 13 * pi * pi / (6677056.0 * exp(19.0 / 255.0)),
-                            // clang-format on
-                        },
+                        // clang-format off
+                        1.0 + 5.0 * pi * (20672.0 * exp(19.0 / 510.0) + 65.0 * pi) /  (26708224.0 * exp(19.0 / 255.0)),
+                        25.0 * pi * (-2584.0 * exp(19.0 / 510) + 13.0 * pi) / (40062336.0 * exp(19.0 / 255.0)),
+                        pi * (10336.0 * exp(19.0 / 510.0) + 65.0 * pi) / (13354112.0 * exp(19.0 / 255.0)),
+
+                        25.0 * pi * (-2584 * exp(19.0 / 510) + 13.0 * pi) / (40062336.0 * exp(19.0 / 255.0)),
+                        1.0 + 5.0 * pi * (-46512.0 * exp(19.0 / 510.0) + 65.0 * pi) / (60093504.0 * exp(19.0 / 255.0)),
+                        pi * (-23256.0 * exp(19.0 / 510.0) + 65.0 * pi) / (20031168.0 * exp(19.0 / 255.0)),
+
+                        pi * (10336.0 * exp(19.0 / 510.0) + 65.0 * pi) / (13354112.0 * exp(19.0 / 255.0)),
+                        pi * (-23256.0 * exp(19.0 / 510.0) + 65.0 * pi) / (20031168.0 * exp(19.0 / 255.0)),
+                        1.0 + 13 * pi * pi / (6677056.0 * exp(19.0 / 255.0)),
+                        // clang-format on
                     },
                     /* numerically:
                         {
@@ -197,9 +177,7 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
 
         for (const auto& [point, metric] : points_and_metrics) {
             const auto met = geometry.metric(point);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[0], metric[0]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[1], metric[1]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[2], metric[2]);
+            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met, metric);
         }
     }
 
@@ -223,25 +201,18 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
                 {
                     Vec3{1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0},
                     Mat3x3{
-                        Vec3{
-                            // clang-format off
-                            1.0 - 5.0 * pi / (1292.0 * exp(19.0 / 510.0)) + pi * pi / (166464.0 * exp(19.0 / 255.0)),
-                            (3400.0 * exp(19.0 / 510.0) - 19.0 * pi) * pi / (2108544.0 * exp(19.0 / 255.0)),
-                            -pi / (1292.0 * exp(19.0 / 510.0)),
-                            // clang-format on
-                        },
-                        Vec3{
-                            // clang-format off
-                            (3400.0 * exp(19.0 / 510.0) - 19.0 * pi) * pi / (2108544.0 * exp(19.0 / 255.0)),
-                            1.0 + 5.0 * pi / (1292.0 * exp(19.0 / 510.0)) +  pi * pi / (73984.0 * exp(19.0 / 255.0)),
-                            3.0 * pi / (2584.0 * exp(19.0 / 510.0)),
-                            // clang-format on
-                        },
-                        Vec3{
-                            -pi / (1292.0 * exp(19.0 / 510.0)),
-                            3.0 * pi / (2584.0 * exp(19.0 / 510.0)),
-                            1.0,
-                        },
+                        // clang-format off
+                        1.0 - 5.0 * pi / (1292.0 * exp(19.0 / 510.0)) + pi * pi / (166464.0 * exp(19.0 / 255.0)),
+                        (3400.0 * exp(19.0 / 510.0) - 19.0 * pi) * pi / (2108544.0 * exp(19.0 / 255.0)),
+                        -pi / (1292.0 * exp(19.0 / 510.0)),
+                        (3400.0 * exp(19.0 / 510.0) - 19.0 * pi) * pi / (2108544.0 * exp(19.0 / 255.0)),
+                        1.0 + 5.0 * pi / (1292.0 * exp(19.0 / 510.0)) +  pi * pi / (73984.0 * exp(19.0 / 255.0)),
+                        3.0 * pi / (2584.0 * exp(19.0 / 510.0)),
+
+                        -pi / (1292.0 * exp(19.0 / 510.0)),
+                        3.0 * pi / (2584.0 * exp(19.0 / 510.0)),
+                        1.0,
+                        // clang-format on
                     },
                     /* numerically:
                     {
@@ -255,9 +226,7 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
 
         for (const auto& [point, inv_metric] : points_and_inv_metrics) {
             const auto met = geometry.inverse_metric(point);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[0], inv_metric[0]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[1], inv_metric[1]);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met[2], inv_metric[2]);
+            CHECK_ITERABLE_APPROX_EQUAL(epsilon, met, inv_metric);
         }
     }
 
@@ -350,33 +319,26 @@ TEST_CASE("TwistedOrbCartesianGeometry") {
             357643.0 * pi * pi / (40977092672.0 * exp(19.0 / 255.0));
 
         const Ten3x3x3 expected = {
-            Mat3x3{
-                Vec3{fuuu, fuuv, fuuz},
-                Vec3{fuuv, fuvv, fuvz},
-                Vec3{fuuz, fuvz, fuzz},
-            },
-            Mat3x3{
-                Vec3{fvuu, fvuv, fvuz},
-                Vec3{fvuv, fvvv, fvvz},
-                Vec3{fvuz, fvvz, fvzz},
-            },
-            Mat3x3{
-                Vec3{fzuu, fzuv, fzuz},
-                Vec3{fzuv, fzvv, fzvz},
-                Vec3{fzuz, fzvz, fzzz},
-            },
+            // clang-format off
+            // x
+            fuuu, fuuv, fuuz,
+            fuuv, fuvv, fuvz,
+            fuuz, fuvz, fuzz,
+
+            // y
+            fvuu, fvuv, fvuz,
+            fvuv, fvvv, fvvz,
+            fvuz, fvvz, fvzz,
+
+            // z
+            fzuu, fzuv, fzuz,
+            fzuv, fzvv, fzvz,
+            fzuz, fzvz, fzzz,
+            // clang-format on
         };
 
         const Ten3x3x3 chris1 = geometry.christoffel_1(point);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[0][0], expected[0][0]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[0][1], expected[0][1]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[0][2], expected[0][2]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[1][0], expected[1][0]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[1][1], expected[1][1]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[1][2], expected[1][2]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[2][0], expected[2][0]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[2][1], expected[2][1]);
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1[2][2], expected[2][2]);
+        CHECK_ITERABLE_APPROX_EQUAL(epsilon, chris1, expected);
     }
 }
 

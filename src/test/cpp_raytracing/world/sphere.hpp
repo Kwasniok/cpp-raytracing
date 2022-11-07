@@ -55,8 +55,8 @@ class Sphere : public Entity {
      *       mappings in maths and physics.
      */
     static Vec2 uv_coordinates(const Vec3& normal) {
-        const auto theta = std::acos(-normal.y());
-        const auto phi = std::atan2(-normal.z(), normal.x()) + pi;
+        const auto theta = std::acos(-normal[1]);
+        const auto phi = std::atan2(-normal[2], normal[0]) + pi;
 
         return {phi / (2.0 * pi), theta / pi};
     }
@@ -65,6 +65,7 @@ class Sphere : public Entity {
 HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
                              const RaySegment& ray_segment,
                              const Scalar t_min) const {
+    using namespace tensor;
 
     // analytical geometry: line hits sphere
     // ray: s + t*d
@@ -101,11 +102,11 @@ HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
 
     // found solution in range
     const Vec3 point = ray_segment.at(t);
-    const Vec3 normal = point / radius;
+    const Vec3 normal = point * (Scalar{1} / radius);
     HitRecord record;
     record.t = t;
     record.point = point;
-    record.set_face_normal(Mat3x3::identity(), Mat3x3::identity(),
+    record.set_face_normal(tensor::identity_mat<3_D>, tensor::identity_mat<3_D>,
                            ray_segment.direction(), normal);
     record.uv_coordinates = uv_coordinates(normal);
     record.material = material.get();

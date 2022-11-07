@@ -41,12 +41,14 @@ class Isotropic : public Material {
     scatter(const HitRecord& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
 
+        using namespace tensor;
+
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
                   : Texture::value_for_missing_texture(record.uv_coordinates,
                                                        record.point);
 
-        return {random_vector_in_unit_sphere(), color_value};
+        return {random_vec_inside_unit_sphere<3_D>(), color_value};
     }
 };
 

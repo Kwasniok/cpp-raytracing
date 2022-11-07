@@ -202,26 +202,23 @@ class SwirlCartesianGeometry : public Geometry {
 
 void SwirlCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
                                                [[maybe_unused]] Scalar t) {
-    const Vec3 pos = p.first_half();
-    const Vec3 dir = p.second_half();
+    using namespace tensor;
+
+    const auto [pos, dir] = split(p);
     const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
-    dpdt = {
-        p.second_half(),
-        Vec3{
-            -dot(dir, chris_2[0] * dir),
-            -dot(dir, chris_2[1] * dir),
-            -dot(dir, chris_2[2] * dir),
-        },
-    };
+    dpdt = outer_sum(dir, gttl::contraction<1, 2>(
+                              gttl::contraction<1, 3>(chris_2, dir), -dir));
 }
 
 SwirlCartesianRay::SwirlCartesianRay(const SwirlCartesianGeometry& geometry,
                                      const Vec3& start, const Vec3& direction)
-    : _phase(start, direction),
+    : _phase{tensor::outer_sum(start, direction)},
       _geometry{geometry},
       _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
 std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
+
+    using namespace tensor;
 
     const auto& [phase_start, time] = *_phase_iterator;
     // note: copies! (phase will be updated later)
@@ -234,11 +231,9 @@ std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
         return std::nullopt;
     }
 
-    const Vec3 position = phase_start.first_half();
-    const Vec3 velocity = phase_start.second_half();
-
+    const auto [position, velocity] = split(phase_start);
     // check for numerical issues
-    if (auto x = position.length(), y = velocity.length();
+    if (auto x = length(position), y = length(velocity);
         !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
         // encountered a numerical issue -> abort ray
         return std::nullopt;
@@ -303,17 +298,17 @@ SwirlCartesianGeometry::ray_passing_through(const Vec3& start,
     const Scalar a = _swirl_strength;
 
     // start
-    const Scalar u0 = start.x();
-    const Scalar v0 = start.y();
-    const Scalar z0 = start.z();
+    const Scalar u0 = start[0];
+    const Scalar v0 = start[1];
+    const Scalar z0 = start[2];
     const Scalar r0 = std::sqrt(u0 * u0 + v0 * v0);
     const Scalar arz0 = a * r0 * z0;
     const Scalar phi0 = std::atan2(v0, u0) + arz0;
 
     // target
-    const Scalar u1 = target.x();
-    const Scalar v1 = target.y();
-    const Scalar z1 = target.z();
+    const Scalar u1 = target[0];
+    const Scalar v1 = target[1];
+    const Scalar z1 = target[2];
     const Scalar r1 = std::sqrt(u1 * u1 + v1 * v1);
     const Scalar arz1 = a * r1 * z1;
     const Scalar phi1 = std::atan2(v1, u1) + arz1;
@@ -336,9 +331,9 @@ SwirlCartesianGeometry::ray_passing_through(const Vec3& start,
 
 Mat3x3 SwirlCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
     const Scalar a = _swirl_strength;
-    const Scalar u = position.x();
-    const Scalar v = position.y();
-    const Scalar z = position.z();
+    const Scalar u = position[0];
+    const Scalar v = position[1];
+    const Scalar z = position[2];
     const Scalar r = std::sqrt(u * u + v * v);
     // note: convention is atan2(y, x)
     const Scalar phi = std::atan2(v, u) + a * r * z;
@@ -346,25 +341,25 @@ Mat3x3 SwirlCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
     const Scalar cphi = std::cos(phi);
 
     return {
-        Vec3{
-            ((u + a * v * z * r) * cphi + v * sphi) / r,
-            ((u + a * v * z * r) * sphi - v * cphi) / r,
-            a * v * r,
-        },
-        Vec3{
-            ((v - a * u * z * r) * cphi - u * sphi) / r,
-            ((v - a * u * z * r) * sphi + u * cphi) / r,
-            -a * u * r,
-        },
-        Vec3{0, 0, 1},
+        // clang-format off
+        ((u + a * v * z * r) * cphi + v * sphi) / r,
+        ((u + a * v * z * r) * sphi - v * cphi) / r,
+        a * v * r,
+
+        ((v - a * u * z * r) * cphi - u * sphi) / r,
+        ((v - a * u * z * r) * sphi + u * cphi) / r,
+        -a * u * r,
+
+        0, 0, 1,
+        // clang-format on
     };
 }
 
 Mat3x3 SwirlCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
     const Scalar a = _swirl_strength;
-    const Scalar u = position.x();
-    const Scalar v = position.y();
-    const Scalar z = position.z();
+    const Scalar u = position[0];
+    const Scalar v = position[1];
+    const Scalar z = position[2];
     const Scalar r = std::sqrt(u * u + v * v);
     // note: convention is atan2(y, x)
     const Scalar phi = std::atan2(v, u) + a * r * z;
@@ -372,81 +367,83 @@ Mat3x3 SwirlCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
     const Scalar cphi = std::cos(phi);
 
     return {
-        Vec3{
-            ((v - a * u * z * r) * sphi + u * cphi) / r,
-            (-(u + a * v * z * r) * sphi + v * cphi) / r,
-            -a * r * r * sphi,
-        },
-        Vec3{
-            ((-v + a * u * z * r) * cphi + u * sphi) / r,
-            ((u + a * v * z * r) * cphi + v * sphi) / r,
-            a * r * r * cphi,
-        },
-        Vec3{0, 0, 1},
+        // clang-format off
+        ((v - a * u * z * r) * sphi + u * cphi) / r,
+        (-(u + a * v * z * r) * sphi + v * cphi) / r,
+        -a * r * r * sphi,
+
+        ((-v + a * u * z * r) * cphi + u * sphi) / r,
+        ((u + a * v * z * r) * cphi + v * sphi) / r,
+        a * r * r * cphi,
+
+        0, 0, 1,
+        // clang-format on
     };
 }
 
 Mat3x3 SwirlCartesianGeometry::metric(const Vec3& position) const {
     const Scalar a = _swirl_strength;
-    const Scalar u = position.x();
-    const Scalar v = position.y();
-    const Scalar z = position.z();
+    const Scalar u = position[0];
+    const Scalar v = position[1];
+    const Scalar z = position[2];
     const Scalar r = std::sqrt(u * u + v * v);
 
     return {
-        Vec3{
+        // clang-format off
             1 + a * u * z * (a * u * z - 2 * v / r),
             a * z * (u * u - v * v + a * u * v * z * r) / r,
             a * r * (a * u * z * r - v),
-        },
-        Vec3{
+   
             (a * z * (u * u - v * v + a * u * v * z * r)) / r,
             1 + a * v * z * (2 * u / r + a * v * z),
             a * (u * r + a * v * z * r * r),
-        },
-        Vec3{
+
             a * r * (a * u * z * r - v),
             a * r * (u + a * v * z * r),
             1 + a * a * r * r * r * r,
-        },
+        // clang-format on
     };
 }
 
 Vec3 SwirlCartesianGeometry::normalize(const Vec3& position,
                                        const Vec3& vec) const {
-    return vec / std::sqrt(dot(vec, metric(position) * vec));
+    using namespace tensor;
+
+    return vec * (Scalar{1} / std::sqrt(dot(vec, metric(position) * vec)));
 }
 
 Mat3x3 SwirlCartesianGeometry::inverse_metric(const Vec3& position) const {
     const Scalar a = _swirl_strength;
-    const Scalar u = position.x();
-    const Scalar v = position.y();
-    const Scalar z = position.z();
+    const Scalar u = position[0];
+    const Scalar v = position[1];
+    const Scalar z = position[2];
     const Scalar r = std::sqrt(u * u + v * v);
     const Scalar s = u * u - v * v;
     const Scalar u2v2z2 = u * u + v * v + z * z;
 
     return {
-        Vec3{
-            1 + a * v * ((2 * u * z) / r + a * v * (r * r + z * z)),
-            a * ((-s * z) / r - a * u * v * u2v2z2),
-            a * v * r,
-        },
-        Vec3{
-            a * ((-s * z) / r - a * u * v * u2v2z2),
-            1 + a * u * ((-2 * v * z) / r + a * u * u2v2z2),
-            -a * u * r,
-        },
-        Vec3{a * v * r, -a * u * r, 1},
+        // clang-format off
+        1 + a * v * ((2 * u * z) / r + a * v * (r * r + z * z)),
+        a * ((-s * z) / r - a * u * v * u2v2z2),
+        a * v * r,
+
+        a * ((-s * z) / r - a * u * v * u2v2z2),
+        1 + a * u * ((-2 * v * z) / r + a * u * u2v2z2),
+        -a * u * r,
+      
+        a * v * r,
+        -a * u * r,
+        1,
+        // clang-format on
     };
 }
 
 Ten3x3x3 SwirlCartesianGeometry::christoffel_1(const Vec3& position) const {
 
     const Scalar a = _swirl_strength;
-    const Scalar u = position.x();
-    const Scalar v = position.y();
-    const Scalar z = position.z();
+    const Scalar u = position[0];
+    const Scalar v = position[1];
+    const Scalar z = position[2];
     const Scalar r = std::sqrt(u * u + v * v);
 
     const Scalar arz = a * r * z;
@@ -468,57 +465,46 @@ Ten3x3x3 SwirlCartesianGeometry::christoffel_1(const Vec3& position) const {
     const Scalar sin3_alpha = std::pow(sin_alpha, 3);
 
     return {
-        Mat3x3{
-            Vec3{
-                a * z * (arz * cos_alpha - sin3_alpha),
-                -a * z * cos3_alpha,
-                a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
-            },
-            Vec3{
-                -a * z * cos3_alpha,
-                -0.25 * a * z *
-                    (-4 * arz * cos_alpha + 9 * sin_alpha + sin_3alpha),
-                0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
-            },
-            Vec3{a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
-                 0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
-                 -a2r3 * cos_alpha},
-        },
-        Mat3x3{
-            Vec3{
-                0.25 * a * z *
-                    (9 * cos_alpha - cos_3alpha + 4 * arz * sin_alpha),
-                a * z * sin3_alpha,
-                0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
-            },
-            Vec3{
-                a * z * sin3_alpha,
-                a * z * (cos3_alpha + arz * sin_alpha),
-                a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
-            },
-            Vec3{
-                0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
-                a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
-                -a2r3 * sin_alpha,
-            },
-        },
-        Mat3x3{
-            Vec3{
-                0.5 * a2r2 * z * (3 + cos_2alpha),
-                a2r2 * z * cos_alpha * sin_alpha,
-                2 * a2r3 * cos_alpha,
-            },
-            Vec3{
-                a2r2 * z * cos_alpha * sin_alpha,
-                -(0.5) * a2r2 * z * (-3 + cos_2alpha),
-                2 * a2r3 * sin_alpha,
-            },
-            Vec3{
-                2 * a2r3 * cos_alpha,
-                2 * a2r3 * sin_alpha,
-                0,
-            },
-        },
+        // clang-format off
+        // x
+        a * z * (arz * cos_alpha - sin3_alpha),
+        -a * z * cos3_alpha,
+        a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
+
+        -a * z * cos3_alpha,
+        -0.25 * a * z * (-4 * arz * cos_alpha + 9 * sin_alpha + sin_3alpha),
+        0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
+
+        a * r * cos_alpha * (arz * cos_alpha - sin_alpha),
+        0.5 * a * r * (-3 + cos_2alpha + arz * sin_2alpha),
+        -a2r3 * cos_alpha,
+
+        // y
+        0.25 * a * z * (9 * cos_alpha - cos_3alpha + 4 * arz * sin_alpha),
+        a * z * sin3_alpha,
+        0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
+
+        a * z * sin3_alpha,
+        a * z * (cos3_alpha + arz * sin_alpha),
+        a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
+
+        0.5 * a * r * (3 + cos_2alpha + arz * sin_2alpha),
+        a * r * sin_alpha * (cos_alpha + arz * sin_alpha),
+        -a2r3 * sin_alpha,
+
+        // z
+        0.5 * a2r2 * z * (3 + cos_2alpha),
+        a2r2 * z * cos_alpha * sin_alpha,
+        2 * a2r3 * cos_alpha,
+
+        a2r2 * z * cos_alpha * sin_alpha,
+        -(0.5) * a2r2 * z * (-3 + cos_2alpha),
+        2 * a2r3 * sin_alpha,
+
+        2 * a2r3 * cos_alpha,
+        2 * a2r3 * sin_alpha,
+        0,
+        // clang-format on
     };
 }
 
@@ -526,14 +512,7 @@ Ten3x3x3 SwirlCartesianGeometry::christoffel_2(const Vec3& position) const {
     const Mat3x3 inv_metric = inverse_metric(position);
     const Ten3x3x3 chris_1 = christoffel_1(position);
 
-    return {
-        chris_1[0] * inv_metric[0][0] + chris_1[1] * inv_metric[0][1] +
-            chris_1[2] * inv_metric[0][2],
-        chris_1[0] * inv_metric[1][0] + chris_1[1] * inv_metric[1][1] +
-            chris_1[2] * inv_metric[1][2],
-        chris_1[0] * inv_metric[2][0] + chris_1[1] * inv_metric[2][1] +
-            chris_1[2] * inv_metric[2][2],
-    };
+    return gttl::contraction<1, 2>(inv_metric, chris_1);
 }
 
 } // namespace cpp_raytracing

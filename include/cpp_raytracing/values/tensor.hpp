@@ -8,965 +8,193 @@
 
 #include <array>
 #include <cmath>
-#include <iostream>
-#include <iterator>
+#include <utility>
 
-#include <glm/detail/qualifier.hpp>
-#include <glm/geometric.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include <gttl/dimensions.hpp>
+#include <gttl/tensor.hpp>
 
-#include "../values/random.hpp"
+#include "random.hpp"
 #include "scalar.hpp"
 
 namespace cpp_raytracing {
 
-class Vec2;
-class Vec3;
-class Vec6;
-class Mat3x3;
-class Ten3x3x3;
+using gttl::literals::operator"" _D;
 
-/**
- * @brief 2D floating-point Vector
- */
-class Vec2 {
-  public:
-    /** @brief iterator type */
-    using iterator = Scalar*;
-    /** @brief const iterator type */
-    using const_iterator = const Scalar*;
+/** @brief generic vector */
+template <gttl::Dimension DIMENSION>
+using Vec = gttl::Tensor<Scalar, 1, gttl::Dimensions<1>{DIMENSION}>;
 
-  public:
-    /** @brief initialize as zero vector */
-    constexpr Vec2() : _data{0, 0} {}
-    /** @brief initialize vector with all coefficients having the same value */
-    constexpr Vec2(const Scalar v) : _data{v, v} {}
-    /** @brief initialize with coefficients */
-    constexpr Vec2(const Scalar u, const Scalar v) : _data{u, v} {}
+/** @brief 2D vector */
+using Vec2 = Vec<2_D>;
+/** @brief 3D vector */
+using Vec3 = Vec<3_D>;
+/** @brief 6D vector */
+using Vec6 = Vec<6_D>;
 
-    /** @brief initialize coefficients with random values */
-    inline static Vec2 random(Scalar min, Scalar max) {
-        return {random_scalar(min, max), random_scalar(min, max)};
+/** @brief generic (square) matrix  */
+template <gttl::Dimension DIMENSION>
+using Mat = gttl::Tensor<Scalar, 2, gttl::Dimensions<2>{DIMENSION, DIMENSION}>;
+
+/** @brief 3x3 matrix */
+using Mat3x3 = Mat<3_D>;
+
+/** @brief generic (Christoffel's symbols-like) rank3 tensor  */
+template <gttl::Dimension DIMENSION>
+using TenR3 =
+    gttl::Tensor<Scalar, 3,
+                 gttl::Dimensions<3>{DIMENSION, DIMENSION, DIMENSION}>;
+
+/** @brief 3x3x3 rank3 tensor */
+using Ten3x3x3 = TenR3<3_D>;
+
+namespace tensor {
+
+/** @brief true, iff sum of absolutes of elements is exactly zero */
+template <typename Tensor>
+constexpr bool is_zero(const Tensor& ten) {
+    const auto abs = typename Tensor::traits_type::abs{};
+    Scalar total = 0;
+    for (const auto& x : ten) {
+        total += abs(x);
     }
+    return abs(total) == Scalar{0};
+}
 
-    /** @brief get u coefficient */
-    constexpr Scalar u() const { return _data.x; }
-    /** @brief get v coefficient */
-    constexpr Scalar v() const { return _data.y; }
-
-    /** @brief const iterator for first element */
-    constexpr auto begin() const { return &_data[0]; }
-    /** @brief const iterator for end */
-    constexpr auto end() const { return &_data[0] + 2; }
-    /** @brief iterator for first element */
-    constexpr auto begin() { return &_data[0]; }
-    /** @brief iterator for end */
-    constexpr auto end() { return &_data[0] + 2; }
-
-    /** @brief tests equivalence */
-    constexpr bool operator==(const Vec2& other) const {
-        return _data == other._data;
+/** @brief true, iff sum of absolutes of elements is smaller than epsilon */
+template <typename Tensor>
+constexpr bool near_zero(const Tensor& ten, const Scalar epsilon) {
+    const auto abs = typename Tensor::traits_type::abs{};
+    Scalar total = 0;
+    for (const auto& x : ten) {
+        total += abs(x);
     }
-
-    /** @brief tests inequivalence */
-    constexpr bool operator!=(const Vec2& other) const {
-        return _data != other._data;
-    }
-
-    /** @brief negate elementwise */
-    constexpr Vec2 operator-() const { return Vec2{-_data}; }
-
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=u, 1=v`
-     */
-    constexpr Scalar operator[](unsigned long i) const { return _data[i]; }
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=u, 1=v`
-     */
-    constexpr Scalar& operator[](unsigned long i) { return _data[i]; }
-
-    /** @brief add elementwise */
-    constexpr Vec2& operator+=(const Vec2& other) {
-        _data += other._data;
-        return *this;
-    }
-    /** @brief subtract elementwise */
-    constexpr Vec2& operator-=(const Vec2& other) {
-        _data -= other._data;
-        return *this;
-    }
-    /** @brief multiply elementwise */
-    constexpr Vec2& operator*=(const Scalar fac) {
-        _data *= fac;
-        return *this;
-    }
-    /** @brief divide elementwise */
-    constexpr Vec2& operator/=(const Scalar fac) {
-        _data /= fac;
-        return *this;
-    }
-
-    /** @brief get length of the vector */
-    constexpr Scalar length() const {
-        // NOTE: for version 0.9.9 glm::length is not constexpr
-        return sqrt(length_squared());
-    }
-
-    /**
-     * @brief get length of the vector squared
-     * @note Fater than std::pow(length(),2)`
-     */
-    constexpr Scalar length_squared() const { return glm::dot(_data, _data); }
-
-    /** @brief tests if vector is zero vector */
-    constexpr bool near_zero(const Scalar epsilon) const {
-        return std::abs(_data.x) < epsilon && std::abs(_data.y) < epsilon;
-    }
-
-    /** @brief zero vector */
-    static constexpr Vec2 zero() { return Vec2{}; }
-
-    friend constexpr Vec2 operator+(const Vec2&, const Vec2&);
-    friend constexpr Vec2 operator-(const Vec2&, const Vec2&);
-    friend constexpr Vec2 operator*(const Vec2&, const Scalar);
-    friend constexpr Vec2 operator*(const Scalar, const Vec2&);
-    friend constexpr Vec2 operator/(const Vec2&, const Scalar);
-    friend constexpr Vec2 operator/(const Vec2&, const Vec2&);
-    friend constexpr Vec2 abs(const Vec2&);
-    friend constexpr Scalar dot(const Vec2&, const Vec2&);
-    friend constexpr Vec2 unit_vector(const Vec2&);
-
-  private:
-    using data_type = glm::vec<2, Scalar>;
-    constexpr Vec2(const data_type& data) : _data(data) {}
-    constexpr Vec2(data_type&& data) : _data(std::move(data)) {}
-
-    data_type _data;
-};
-
-/** @brief write vector as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Vec2& v) {
-    os << "Vec2(" << v[0] << ", " << v[1] << ")";
-    return os;
+    return abs(total) < epsilon;
 }
 
-/** @brief add elementwise */
-inline constexpr Vec2 operator+(const Vec2& v1, const Vec2& v2) {
-    return Vec2(v1._data + v2._data);
-}
-
-/** @brief subtract elementwise */
-inline constexpr Vec2 operator-(const Vec2& v1, const Vec2& v2) {
-    return Vec2(v1._data - v2._data);
-}
-
-/** @brief multiply elementwise */
-inline constexpr Vec2 operator*(const Vec2& v, const Scalar f) {
-    return Vec2(v._data * f);
-}
-
-/** @brief multiply elementwise */
-inline constexpr Vec2 operator*(const Scalar f, const Vec2& v) {
-    return v * f;
-}
-
-/** @brief divide elementwise */
-inline constexpr Vec2 operator/(const Vec2& v, const Scalar f) {
-    return Vec2(v._data / f);
-}
-
-/** @brief divide elementwise */
-inline constexpr Vec2 operator/(const Vec2& v1, const Vec2& v2) {
-    return Vec2(v1._data[0] / v2._data[0], v1._data[1] / v2._data[1]);
-}
-
-/** @brief elementwise absolute value */
-inline constexpr Vec2 abs(const Vec2& v) {
-    using std::abs;
-    return Vec2(abs(v._data[0]), abs(v._data[1]));
-}
-
-/** @brief scalar product (inner product) */
-inline constexpr Scalar dot(const Vec2& v1, const Vec2& v2) {
-    return glm::dot(v1._data, v2._data);
-}
-
-/** @brief get normalized vector */
-inline constexpr Vec2 unit_vector(const Vec2& v) {
-    return v / v.length();
-}
-
-/**
- * @brief 3D floating-point Vector
- */
-class Vec3 {
-  public:
-    /** @brief iterator type */
-    using iterator = Scalar*;
-    /** @brief const iterator type */
-    using const_iterator = const Scalar*;
-
-  public:
-    /** @brief initialize as zero vector */
-    constexpr Vec3() : _data{0, 0, 0} {}
-    /** @brief initialize vector with all coefficients having the same value */
-    constexpr Vec3(const Scalar v) : _data{v, v, v} {}
-    /** @brief initialize with coefficients */
-    constexpr Vec3(const Scalar x, const Scalar y, const Scalar z)
-        : _data{x, y, z} {}
-
-    /** @brief initialize coefficients with random values */
-    inline static Vec3 random(Scalar min, Scalar max) {
-        return {random_scalar(min, max), random_scalar(min, max),
-                random_scalar(min, max)};
-    }
-
-    /** @brief get x coefficient */
-    constexpr Scalar x() const { return _data.x; }
-    /** @brief get y coefficient */
-    constexpr Scalar y() const { return _data.y; }
-    /** @brief get z coefficient */
-    constexpr Scalar z() const { return _data.z; }
-
-    /** @brief const iterator for first element */
-    constexpr const_iterator begin() const { return &_data[0]; }
-    /** @brief const iterator for end */
-    constexpr const_iterator end() const { return &_data[0] + 3; }
-    /** @brief iterator for first element */
-    constexpr iterator begin() { return &_data[0]; }
-    /** @brief iterator for end */
-    constexpr iterator end() { return &_data[0] + 3; }
-
-    /** @brief tests equivalence */
-    constexpr bool operator==(const Vec3& other) const {
-        return _data == other._data;
-    }
-
-    /** @brief tests inequivalence */
-    constexpr bool operator!=(const Vec3& other) const {
-        return _data != other._data;
-    }
-
-    /** @brief negate elementwise */
-    constexpr Vec3 operator-() const { return Vec3{-_data}; }
-
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z`
-     */
-    constexpr Scalar operator[](unsigned long i) const { return _data[i]; }
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z`
-     */
-    constexpr Scalar& operator[](unsigned long i) { return _data[i]; }
-
-    /** @brief add elementwise */
-    constexpr Vec3& operator+=(const Vec3& other) {
-        _data += other._data;
-        return *this;
-    }
-    /** @brief subtract elementwise */
-    constexpr Vec3& operator-=(const Vec3& other) {
-        _data -= other._data;
-        return *this;
-    }
-    /** @brief multiply elementwise */
-    constexpr Vec3& operator*=(const Scalar fac) {
-        _data *= fac;
-        return *this;
-    }
-    /** @brief divide elementwise */
-    constexpr Vec3& operator/=(const Scalar fac) {
-        _data /= fac;
-        return *this;
-    }
-
-    /** @brief get length of the vector */
-    constexpr Scalar length() const {
-        // NOTE: for version 0.9.9 glm::length is not constexpr
-        return sqrt(length_squared());
-    }
-
-    /**
-     * @brief get length of the vector squared
-     * @note Fater than std::pow(length(),2)`
-     */
-    constexpr Scalar length_squared() const { return glm::dot(_data, _data); }
-
-    /** @brief tests if vector is zero vector */
-    constexpr bool near_zero(const Scalar epsilon) const {
-        return std::abs(_data.x) < epsilon && std::abs(_data.y) < epsilon &&
-               std::abs(_data.z) < epsilon;
-    }
-
-    /** @brief zero vector */
-    static constexpr Vec3 zero() { return Vec3{}; }
-
-    friend constexpr Vec3 operator+(const Vec3&, const Vec3&);
-    friend constexpr Vec3 operator-(const Vec3&, const Vec3&);
-    friend constexpr Vec3 operator*(const Vec3&, const Scalar);
-    friend constexpr Vec3 operator*(const Scalar, const Vec3&);
-    friend constexpr Vec3 operator/(const Vec3&, const Scalar);
-    friend constexpr Vec3 operator/(const Vec3&, const Vec3&);
-    friend constexpr Vec3 abs(const Vec3&);
-    friend constexpr Scalar dot(const Vec3&, const Vec3&);
-    friend constexpr Vec3 cross(const Vec3&, const Vec3&);
-    friend constexpr Vec3 unit_vector(const Vec3&);
-
-    friend class Mat3x3;
-    friend Vec3 operator*(const Mat3x3&, const Vec3&);
-    friend Vec3 operator*(const Vec3&, const Mat3x3&);
-
-  private:
-    using data_type = glm::vec<3, Scalar>;
-    constexpr Vec3(const data_type& data) : _data(data) {}
-    constexpr Vec3(data_type&& data) : _data(std::move(data)) {}
-
-    data_type _data;
-};
-
-/** @brief write vector as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Vec3& v) {
-    os << "Vec3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
-    return os;
-}
-
-/** @brief add elementwise */
-inline constexpr Vec3 operator+(const Vec3& v1, const Vec3& v2) {
-    return Vec3(v1._data + v2._data);
-}
-
-/** @brief subtract elementwise */
-inline constexpr Vec3 operator-(const Vec3& v1, const Vec3& v2) {
-    return Vec3(v1._data - v2._data);
-}
-
-/** @brief multiply elementwise */
-inline constexpr Vec3 operator*(const Vec3& v, const Scalar f) {
-    return Vec3(v._data * f);
-}
-
-/** @brief multiply elementwise */
-inline constexpr Vec3 operator*(const Scalar f, const Vec3& v) {
-    return v * f;
-}
-
-/** @brief divide elementwise */
-inline constexpr Vec3 operator/(const Vec3& v, const Scalar f) {
-    return Vec3(v._data / f);
-}
-
-/** @brief divide elementwise */
-inline constexpr Vec3 operator/(const Vec3& v1, const Vec3& v2) {
-    return Vec3(v1._data[0] / v2._data[0], v1._data[1] / v2._data[1],
-                v1._data[2] / v2._data[2]);
-}
-
-/** @brief elementwise absolute value */
-inline constexpr Vec3 abs(const Vec3& v) {
-    using std::abs;
-    return Vec3(abs(v._data[0]), abs(v._data[1]), abs(v._data[2]));
-}
-
-/** @brief scalar product (inner product) */
-inline constexpr Scalar dot(const Vec3& v1, const Vec3& v2) {
-    return glm::dot(v1._data, v2._data);
-}
-
-/** @brief cross product (vector product) */
-inline constexpr Vec3 cross(const Vec3& v1, const Vec3& v2) {
-    return Vec3(glm::cross(v1._data, v2._data));
-}
-
-/** @brief get normalized vector */
-inline constexpr Vec3 unit_vector(const Vec3& v) {
-    return v / v.length();
-}
-
-/** @brief random vector in 2D x-y-unit disk */
-inline Vec3 random_in_unit_disk() {
-    // rejection based and uniform
-    while (true) {
-        auto v =
-            Vec3(random_scalar(-1.0, +1.0), random_scalar(-1.0, +1.0), 0.0);
-        if (v.length_squared() >= 1)
-            continue;
-        return v;
-    }
-}
-
-/** @brief random vector in 3D unit sphere */
-inline Vec3 random_vector_in_unit_sphere() {
-    // rejection based and uniform
-    while (true) {
-        const auto v = Vec3::random(-1.0, +1.0);
-        if (dot(v, v) >= 1.0) {
-            continue;
-        }
-        return v;
-    }
-}
-
-/** @brief random vector in 2D surface of unit sphere */
-inline Vec3 random_unit_vector() {
-    return unit_vector(random_vector_in_unit_sphere());
-}
-
-/**
- * @brief 6D floating-point Vector
- */
-class Vec6 {
-  public:
-    /** @brief Vec6 iterator */
-    struct Iterator {
-        /**
-         * @brief value type
-         * @see std::iterator_traits
-         */
-        using value_type = Scalar;
-        /**
-         * @brief reference type
-         * @see std::iterator_traits
-         */
-        using reference = Scalar&;
-        /**
-         * @brief pointer type
-         * @see std::iterator_traits
-         */
-        using pointer = Scalar*;
-
-        /** @brief linked container */
-        Vec6* const vec;
-        /** @brief current value */
-        Scalar* ptr;
-
-        /** @brief increment */
-        Iterator& operator++();
-        /** @brief increment */
-        Iterator operator++(int);
-        /** @brief dereference */
-        Scalar& operator*() const;
-
-        /** @brief equals */
-        bool operator==(const Iterator& rhs) const;
-        /** @brief unequals */
-        bool operator!=(const Iterator& rhs) const;
+/** @brief returns tuple of two 3D vectors from 6D vector */
+constexpr std::tuple<Vec3, Vec3> split(const Vec6& vec) {
+    return {
+        Vec3{vec[0], vec[1], vec[2]},
+        Vec3{vec[3], vec[4], vec[5]},
     };
+}
 
-    /** @brief Vec6 const iterator */
-    struct ConstIterator {
-        /**
-         * @brief value type
-         * @see std::iterator_traits
-         */
-        using value_type = Scalar;
-        /**
-         * @brief reference type
-         * @see std::iterator_traits
-         */
-        using reference = const Scalar&;
-        /**
-         * @brief pointer type
-         * @see std::iterator_traits
-         */
-        using pointer = const Scalar*;
-
-        /** @brief linked container */
-        const Vec6* const vec;
-        /** @brief current value */
-        const Scalar* ptr;
-
-        /** @brief increment */
-        ConstIterator& operator++();
-        /** @brief increment */
-        ConstIterator operator++(int);
-        /** @brief dereference */
-        const Scalar& operator*() const;
-
-        /** @brief equals */
-        bool operator==(const ConstIterator& rhs) const;
-        /** @brief unequals */
-        bool operator!=(const ConstIterator& rhs) const;
+/** @brief returns 6D vector from two 3D vectors */
+constexpr Vec6 outer_sum(const Vec3& lhs, const Vec3& rhs) {
+    return {
+        lhs[0], lhs[1], lhs[2], rhs[0], rhs[1], rhs[2],
     };
-
-  public:
-    /** @brief iterator type */
-    using iterator = Iterator;
-    /** @brief const iterator type */
-    using const_iterator = ConstIterator;
-
-  public:
-    /** @brief initialize as zero vector */
-    constexpr Vec6() : _data0{0, 0, 0}, _data1{0, 0, 0} {}
-    /** @brief initialize vector with all coefficients having the same value */
-    constexpr Vec6(const Scalar v) : _data0{v, v, v}, _data1{v, v, v} {}
-    /** @brief initialize with coefficients */
-    constexpr Vec6(const Scalar x, const Scalar y, const Scalar z,
-                   const Scalar u, const Scalar v, const Scalar w)
-        : _data0{x, y, z}, _data1{u, v, w} {}
-    /** @brief initialize with coefficients */
-    constexpr Vec6(const Vec3& xyz, const Vec3& uvw)
-        : _data0{xyz.x(), xyz.y(), xyz.z()},
-          _data1{uvw.x(), uvw.y(), uvw.z()} {}
-
-    /** @brief get x coefficient */
-    constexpr Scalar x() const { return _data0.x; }
-    /** @brief get y coefficient */
-    constexpr Scalar y() const { return _data0.y; }
-    /** @brief get z coefficient */
-    constexpr Scalar z() const { return _data0.z; }
-    /** @brief get u coefficient */
-    constexpr Scalar u() const { return _data1.x; }
-    /** @brief get v coefficient */
-    constexpr Scalar v() const { return _data1.y; }
-    /** @brief get w coefficient */
-    constexpr Scalar w() const { return _data1.z; }
-
-    /** @brief first three elements as a vector */
-    constexpr Vec3 first_half() const {
-        return Vec3(_data0.x, _data0.y, _data0.z);
-    }
-    /** @brief last three elements as a vector */
-    constexpr Vec3 second_half() const {
-        return Vec3(_data1.x, _data1.y, _data1.z);
-    }
-
-    /** @brief const iterator for first element */
-    constexpr const_iterator begin() const {
-        return {.vec = this, .ptr = &_data0[0]};
-    }
-    /** @brief const iterator for end */
-    constexpr const_iterator end() const {
-        return {.vec = this, .ptr = &_data1[0] + 3};
-    }
-    /** @brief iterator for first element */
-    constexpr iterator begin() { return {.vec = this, .ptr = &_data0[0]}; }
-    /** @brief iterator for end */
-    constexpr iterator end() { return {.vec = this, .ptr = &_data1[0] + 3}; }
-
-    /** @brief tests equivalence */
-    constexpr bool operator==(const Vec6& other) const {
-        return _data0 == other._data0 && _data1 == other._data1;
-    }
-
-    /** @brief tests inequivalence */
-    constexpr bool operator!=(const Vec6& other) const {
-        return _data0 != other._data0 || _data1 != other._data1;
-    }
-
-    /** @brief negate elementwise */
-    constexpr Vec6 operator-() const { return Vec6{-_data0, -_data1}; }
-
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z, 3=u, 4=v, 5=w`
-     */
-    constexpr Scalar operator[](unsigned long i) const {
-        if (i < 3) {
-            return _data0[i];
-        }
-        return _data1[i - 3];
-    }
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z, 3=u, 4=v, 5=w`
-     */
-    constexpr Scalar& operator[](unsigned long i) {
-        if (i < 3) {
-            return _data0[i];
-        }
-        return _data1[i - 3];
-    }
-
-    /** @brief add elementwise */
-    constexpr Vec6& operator+=(const Vec6& other) {
-        _data0 += other._data0;
-        _data1 += other._data1;
-        return *this;
-    }
-    /** @brief subtract elementwise */
-    constexpr Vec6& operator-=(const Vec6& other) {
-        _data0 -= other._data0;
-        _data1 -= other._data1;
-        return *this;
-    }
-    /** @brief multiply elementwise */
-    constexpr Vec6& operator*=(const Scalar fac) {
-        _data0 *= fac;
-        _data1 *= fac;
-        return *this;
-    }
-    /** @brief divide elementwise */
-    constexpr Vec6& operator/=(const Scalar fac) {
-        _data0 /= fac;
-        _data1 /= fac;
-        return *this;
-    }
-
-    /** @brief get length of the vector */
-    constexpr Scalar length() const {
-        // NOTE: for version 0.9.9 glm::length is not constexpr
-        return sqrt(length_squared());
-    }
-
-    /**
-     * @brief get length of the vector squared
-     * @note Fater than std::pow(length(),2)`
-     */
-    constexpr Scalar length_squared() const {
-        return glm::dot(_data0, _data0) + glm::dot(_data1, _data1);
-    }
-
-    /** @brief tests if vector is zero vector */
-    constexpr bool near_zero(const Scalar epsilon) const {
-        return std::abs(_data0.x) < epsilon && std::abs(_data0.y) < epsilon &&
-               std::abs(_data0.z) < epsilon && std::abs(_data1.x) < epsilon &&
-               std::abs(_data1.y) < epsilon && std::abs(_data1.z) < epsilon;
-    }
-
-    /** @brief zero vector */
-    static constexpr Vec6 zero() { return Vec6{}; }
-
-    friend constexpr Vec6 operator+(const Vec6&, const Vec6&);
-    friend constexpr Vec6 operator-(const Vec6&, const Vec6&);
-    friend constexpr Vec6 operator*(const Vec6&, const Scalar);
-    friend constexpr Vec6 operator*(const Scalar, const Vec6&);
-    friend constexpr Vec6 operator/(const Vec6&, const Scalar);
-    friend constexpr Vec6 operator/(const Vec6&, const Vec6&);
-    friend constexpr Vec6 abs(const Vec6&);
-
-  private:
-    using data_type = glm::vec<3, Scalar>;
-    constexpr Vec6(const data_type& data0, const data_type& data1)
-        : _data0(data0), _data1(data1) {}
-    constexpr Vec6(data_type&& data0, data_type&& data1)
-        : _data0(std::move(data0)), _data1(std::move(data1)) {}
-
-    data_type _data0, _data1;
-};
-
-} // namespace cpp_raytracing
-
-namespace std {
-
-/** @brief iterator traits for Vec6 iterator */
-template <>
-struct iterator_traits<cpp_raytracing::Vec6::Iterator> {
-    /** @brief difference type */
-    using difference_type = void;
-    /** @brief value type */
-    using value_type = cpp_raytracing::Vec6::Iterator::value_type;
-    /** @brief pointer type */
-    using pointer_type = cpp_raytracing::Vec6::Iterator::pointer;
-    /** @brief reference type */
-    using reference = cpp_raytracing::Vec6::Iterator::reference;
-    /** @brief iterator category */
-    using iterator_category = forward_iterator_tag;
-};
-
-/** @brief iterator traits for Vec6 const iterator */
-template <>
-struct iterator_traits<cpp_raytracing::Vec6::ConstIterator> {
-    /** @brief difference type */
-    using difference_type = void;
-    /** @brief value type */
-    using value_type = cpp_raytracing::Vec6::ConstIterator::value_type;
-    /** @brief pointer type */
-    using pointer_type = cpp_raytracing::Vec6::ConstIterator::pointer;
-    /** @brief reference type */
-    using reference = cpp_raytracing::Vec6::ConstIterator::reference;
-    /** @brief iterator category */
-    using iterator_category = forward_iterator_tag;
-};
-
-} // namespace std
-
-namespace cpp_raytracing {
-
-Vec6::Iterator& Vec6::Iterator::operator++() {
-    ++ptr;
-    if (ptr == &vec->_data0[0] + 3) {
-        ptr = &vec->_data1[0];
-    }
-    return *this;
 }
 
-Vec6::Iterator Vec6::Iterator::operator++(int) {
-    Iterator value = *this;
-    ++(*this);
-    return value;
+/** @brief returns dot product of vectors */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr Scalar dot(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& lhs,
+                     const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& rhs) {
+    return gttl::contraction<0, 1>(lhs, rhs);
 }
 
-Scalar& Vec6::Iterator::operator*() const {
-    return *ptr;
-}
-
-bool Vec6::Iterator::operator==(const Iterator& rhs) const {
-    return vec == rhs.vec && ptr == rhs.ptr;
-}
-
-bool Vec6::Iterator::operator!=(const Iterator& rhs) const {
-    return vec != rhs.vec || ptr != rhs.ptr;
-}
-
-Vec6::ConstIterator& Vec6::ConstIterator::operator++() {
-    ++ptr;
-    if (ptr == &vec->_data0[0] + 3) {
-        ptr = &vec->_data1[0];
-    }
-    return *this;
-}
-
-Vec6::ConstIterator Vec6::ConstIterator::operator++(int) {
-    ConstIterator value = *this;
-    ++(*this);
-    return value;
-}
-
-const Scalar& Vec6::ConstIterator::operator*() const {
-    return *ptr;
-}
-
-bool Vec6::ConstIterator::operator==(const ConstIterator& rhs) const {
-    return vec == rhs.vec && ptr == rhs.ptr;
-}
-
-bool Vec6::ConstIterator::operator!=(const ConstIterator& rhs) const {
-    return vec != rhs.vec || ptr != rhs.ptr;
-}
-
-/** @brief write vector as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Vec6& v) {
-    os << "Vec6(" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3]
-       << ", " << v[4] << ", " << v[5] << ")";
-    return os;
-}
-
-/** @brief add elementwise */
-inline constexpr Vec6 operator+(const Vec6& v1, const Vec6& v2) {
-    return Vec6(v1._data0 + v2._data0, v1._data1 + v2._data1);
-}
-
-/** @brief subtract elementwise */
-inline constexpr Vec6 operator-(const Vec6& v1, const Vec6& v2) {
-    return Vec6(v1._data0 - v2._data0, v1._data1 - v2._data1);
-}
-
-/** @brief multiply elementwise */
-inline constexpr Vec6 operator*(const Vec6& v, const Scalar f) {
-    return Vec6(v._data0 * f, v._data1 * f);
-}
-
-/** @brief multiply elementwise */
-inline constexpr Vec6 operator*(const Scalar f, const Vec6& v) {
-    return v * f;
-}
-
-/** @brief divide elementwise */
-inline constexpr Vec6 operator/(const Vec6& v, const Scalar f) {
-    return Vec6(v._data0 / f, v._data1 / f);
-}
-/** @brief divide elementwise */
-inline constexpr Vec6 operator/(const Vec6& v1, const Vec6& v2) {
-    return Vec6(v1._data0[0] / v2._data0[0], v1._data0[1] / v2._data0[1],
-                v1._data0[2] / v2._data0[2], v1._data1[0] / v2._data1[0],
-                v1._data1[1] / v2._data1[1], v1._data1[2] / v2._data1[2]);
-}
-
-/** @brief elementwise absolute value */
-inline constexpr Vec6 abs(const Vec6& v) {
-    using std::abs;
-    return Vec6(abs(v._data0[0]), abs(v._data0[1]), abs(v._data0[2]),
-                abs(v._data1[0]), abs(v._data1[1]), abs(v._data1[2]));
-}
-
-/**
- * @brief returns new Vec3 based on elementwise application
- */
-template <ScalarCombinator1* func>
-inline constexpr Vec3 elementwise(const Vec3& x) {
+/** @brief returns cross product of 3D vectors */
+constexpr Vec3 cross(const Vec3& lhs, const Vec3& rhs) {
     return Vec3{
-        func(x[0]),
-        func(x[1]),
-        func(x[2]),
+        lhs[1] * rhs[2] - lhs[2] * rhs[1],
+        lhs[2] * rhs[0] - lhs[0] * rhs[2],
+        lhs[0] * rhs[1] - lhs[1] * rhs[0],
     };
 }
 
-/**
- * @brief returns new Vec3 based on elementwise combination
- */
-template <ScalarCombinator2* func>
-inline constexpr Vec3 elementwise(const Vec3& x, const Vec3& y) {
-    return Vec3{
-        func(x[0], y[0]),
-        func(x[1], y[1]),
-        func(x[2], y[2]),
-    };
+/** @brief returns square of length of vector (= rank1 tensor) */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr Scalar
+length_squared(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
+    return dot(vec, vec);
 }
 
-// note: Some of the functions are laking constexpr because this was not
-//      supported by GLM v0.9.9 at the time of writing.
-
-/**
- * @brief 3Dx3D floating-point Matrix
- */
-class Mat3x3 {
-  public:
-    /**
-     * @brief initialize as identity matrix
-     * @note Coefficients are listed row first.
-     */
-    constexpr Mat3x3() : _data{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0} {}
-    /**
-     *  @brief initialize with vectors
-     * @note Each vector is a row.
-     */
-    constexpr Mat3x3(const Vec3& x, const Vec3& y, const Vec3& z)
-        : _data{
-              // note: glm stortes column first!
-              x._data[0], y._data[0], z._data[0], x._data[1], y._data[1],
-              z._data[1], x._data[2], y._data[2], z._data[2],
-          } {}
-    /** @brief copy constructor */
-    constexpr Mat3x3(const Mat3x3& other) = default;
-    /** @brief move constructor */
-    constexpr Mat3x3(Mat3x3&& other) = default;
-    /** @brief copy assignment */
-    constexpr Mat3x3& operator=(const Mat3x3& other) = default;
-    /** @brief move assignment */
-    constexpr Mat3x3& operator=(Mat3x3&& other) = default;
-
-    /** @brief get x coefficient */
-    constexpr Vec3 x() const {
-        // note: glm stortes column first!
-        return Vec3{_data[0][0], _data[1][0], _data[2][0]};
-    }
-    /** @brief get y coefficient */
-    constexpr Vec3 y() const {
-        // note: glm stortes column first!
-        return Vec3{_data[0][1], _data[1][1], _data[2][1]};
-    }
-    /** @brief get z coefficient */
-    constexpr Vec3 z() const {
-        // note: glm stortes column first!
-        return Vec3{_data[0][2], _data[1][2], _data[2][2]};
-    }
-
-    /** @brief const iterator for first element */
-    constexpr auto begin() const { return &_data[0][0]; }
-    /** @brief const iterator for end */
-    constexpr auto end() const { return &_data[0][0] + 9; }
-    /** @brief iterator for first element */
-    auto begin() { return &_data[0][0]; }
-    /** @brief iterator for end */
-    auto end() { return &_data[0][0] + 9; }
-
-    /** @brief tests equivalence */
-    constexpr bool operator==(const Mat3x3& other) const {
-        return _data == other._data;
-    }
-
-    /** @brief tests inequivalence */
-    bool operator!=(const Mat3x3& other) const { return _data != other._data; }
-
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z`
-     */
-    constexpr Vec3 operator[](unsigned long i) const { return Vec3{_data[i]}; }
-
-    /** @brief negate elementwise */
-    Mat3x3 operator-() const { return Mat3x3{-_data}; }
-
-    /** @brief add elementwise */
-    Mat3x3& operator+=(const Mat3x3& other) {
-        _data += other._data;
-        return *this;
-    }
-    /** @brief subtract elementwise */
-    Mat3x3& operator-=(const Mat3x3& other) {
-        _data -= other._data;
-        return *this;
-    }
-    /** @brief matrix multiplication */
-    Mat3x3& operator*=(const Mat3x3& other) {
-        _data *= other._data;
-        return *this;
-    }
-    /** @brief matrix multiplication */
-    Mat3x3& operator*=(const Scalar other) {
-        _data *= other;
-        return *this;
-    }
-
-    /** @brief identity matix */
-    static constexpr Mat3x3 identity() { return Mat3x3{}; }
-
-    friend std::ostream& operator<<(std::ostream& os, const Mat3x3& mat);
-    friend Mat3x3 operator+(const Mat3x3&, const Mat3x3&);
-    friend Mat3x3 operator-(const Mat3x3&, const Mat3x3&);
-    friend Mat3x3 operator*(const Mat3x3&, const Mat3x3&);
-    friend Vec3 operator*(const Mat3x3&, const Vec3&);
-    friend Vec3 operator*(const Vec3&, const Mat3x3&);
-    friend Mat3x3 operator*(const Scalar, const Mat3x3&);
-    friend Mat3x3 operator*(const Mat3x3&, const Scalar);
-
-  private:
-    using data_type = glm::mat<3, 3, Scalar>;
-    constexpr Mat3x3(const data_type& data) : _data(data) {}
-    constexpr Mat3x3(data_type&& data) : _data(std::move(data)) {}
-
-    data_type _data;
-};
-
-/** @brief write matrix as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Mat3x3& mat) {
-    os << "Mat3x3(" << '\n'
-       << mat._data[0][0] << ", " << mat._data[0][1] << ", " << mat._data[0][2]
-       << "," << '\n'
-       << mat._data[1][0] << ", " << mat._data[1][1] << ", " << mat._data[1][2]
-       << "," << '\n'
-       << mat._data[2][0] << ", " << mat._data[2][1] << ", " << mat._data[2][2]
-       << '\n'
-       << ")";
-    return os;
+/** @brief returns square of length of vector (= rank1 tensor) */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr Scalar
+length(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
+    return std::sqrt(length_squared(vec));
 }
 
-/** @brief add elementwise */
-inline Mat3x3 operator+(const Mat3x3& mat1, const Mat3x3& mat2) {
-    return Mat3x3(mat1._data + mat2._data);
+/** @brief returns vector of length one */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>
+unit_vector(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
+    return vec * (1.0 / length(vec));
 }
 
-/** @brief subtract elementwise */
-inline Mat3x3 operator-(const Mat3x3& mat1, const Mat3x3& mat2) {
-    return Mat3x3(mat1._data - mat2._data);
+/** @brief zero vector */
+template <gttl::Dimension DIMENSION>
+constexpr Vec<DIMENSION> zero_vec{};
+
+/** @brief random vector where each element is in the given range */
+template <gttl::Dimension DIMENSION>
+inline Vec<DIMENSION> random_vec(const Scalar min, const Scalar max) {
+    Vec<DIMENSION> vec;
+    for (auto& x : vec) {
+        x = random_scalar(min, max);
+    }
+    return vec;
 }
 
-/** @brief matrix multiplication */
-inline Mat3x3 operator*(const Mat3x3& mat1, const Mat3x3& mat2) {
-    return Mat3x3(mat1._data * mat2._data);
-}
-/** @brief matrix multiplication  */
-inline Vec3 operator*(const Mat3x3& mat1, const Vec3& vec2) {
-    return Vec3(mat1._data * vec2._data);
-}
-/** @brief matrix multiplication  */
-inline Vec3 operator*(const Vec3& vec1, const Mat3x3& mat2) {
-    return Vec3(vec1._data * mat2._data);
+/** @brief random vector where each element is in the given range */
+template <gttl::Dimension DIMENSION>
+inline Vec<DIMENSION> random_unit_vec(const Scalar min, const Scalar max) {
+    Vec<DIMENSION> vec;
+    for (auto& x : vec) {
+        x = random_scalar(min, max);
+    }
+    return vec;
 }
 
-/** @brief scalar multiplication  */
-inline Mat3x3 operator*(const Scalar f1, const Mat3x3& mat2) {
-    return Mat3x3(f1 * mat2._data);
+/** @brief random vector of at most unit length (uniform distribution) */
+template <gttl::Dimension DIMENSION>
+inline Vec<DIMENSION> random_vec_inside_unit_sphere() {
+    // rejection based and uniform
+    // note: inefficient for large dimensions but okay for <=3D
+    while (true) {
+        const auto vec = random_vec<DIMENSION>(-1.0, 1.0);
+        if (length_squared(vec) >= 1.0)
+            continue;
+        return vec;
+    }
 }
-/** @brief scalar multiplication  */
-inline Mat3x3 operator*(const Mat3x3& mat1, const Scalar f2) {
-    return Mat3x3(f2 * mat1._data);
+
+/** @brief random vector on surface of unit sphere (uniform distribution) */
+template <gttl::Dimension DIMENSION>
+inline Vec<DIMENSION> random_unit_vec() {
+    return unit_vector(random_vec_inside_unit_sphere<DIMENSION>());
+}
+
+/** @brief matrix-vector multiplication */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr gttl::Tensor<Scalar, 1, DIMENSIONS, Traits> operator*(
+    const gttl::Tensor<Scalar, 2,
+                       gttl::cexpr::array::concatenate(DIMENSIONS, DIMENSIONS),
+                       Traits>& mat,
+    const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
+    return gttl::contraction<1, 2>(mat, vec);
+}
+
+/** @brief vector-matrix multiplication */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr gttl::Tensor<Scalar, 1, DIMENSIONS, Traits> operator*(
+    const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec,
+    const gttl::Tensor<Scalar, 2,
+                       gttl::cexpr::array::concatenate(DIMENSIONS, DIMENSIONS),
+                       Traits>& mat) {
+    return gttl::contraction<0, 1>(vec, mat);
+}
+
+/** @brief matrix-matrix multiplication */
+template <typename Scalar, std::size_t RANK1, std::size_t RANK2,
+          gttl::Dimensions<RANK1> DIMENSIONS1,
+          gttl::Dimensions<RANK2> DIMENSIONS2, typename Traits>
+constexpr auto
+operator*(const gttl::Tensor<Scalar, RANK1, DIMENSIONS1, Traits>& lhs,
+          const gttl::Tensor<Scalar, RANK2, DIMENSIONS2, Traits>&
+              rhs) requires((RANK1 == 2) && (RANK2 == 2)) {
+    return gttl::contraction<1, 2>(lhs, rhs);
 }
 
 /**
@@ -975,18 +203,20 @@ inline Mat3x3 operator*(const Mat3x3& mat1, const Scalar f2) {
  *       `R_x`, `R_y`, `R_z` (roll, pitch, yaw, Trait-Bryan angles).
  * @see inverse_rotation_mat
  */
-Mat3x3 rotation_mat(const Vec3& axis) {
-    const Scalar cx = std::cos(axis.x());
-    const Scalar sx = std::sin(axis.x());
-    const Scalar cy = std::cos(axis.y());
-    const Scalar sy = std::sin(axis.y());
-    const Scalar cz = std::cos(axis.z());
-    const Scalar sz = std::sin(axis.z());
+inline Mat3x3 rotation_mat(const Vec3& axis) {
+    const Scalar cx = std::cos(axis[0]);
+    const Scalar sx = std::sin(axis[0]);
+    const Scalar cy = std::cos(axis[1]);
+    const Scalar sy = std::sin(axis[1]);
+    const Scalar cz = std::cos(axis[2]);
+    const Scalar sz = std::sin(axis[2]);
 
     return Mat3x3{
-        {cy * cz, sx * sy * cz - cx * sz, cx * sy * cz + sx * sz},
-        {cy * sz, sx * sy * sz + cx * cz, cx * sy * sz - sx * cz},
-        {-sy, sx * cy, cx * cy},
+        // clang-format off
+        cy * cz, sx * sy * cz - cx * sz, cx * sy * cz + sx * sz,
+        cy * sz, sx * sy * sz + cx * cz, cx * sy * sz - sx * cz,
+        -sy, sx * cy, cx * cy,
+        // clang-format on
     };
 }
 
@@ -997,169 +227,67 @@ Mat3x3 rotation_mat(const Vec3& axis) {
  * angles).
  * @see rotation_mat
  */
-Mat3x3 inverse_rotation_mat(const Vec3& axis) {
-    const Scalar cx = std::cos(axis.x());
-    const Scalar sx = std::sin(axis.x());
-    const Scalar cy = std::cos(axis.y());
-    const Scalar sy = std::sin(axis.y());
-    const Scalar cz = std::cos(axis.z());
-    const Scalar sz = std::sin(axis.z());
+inline Mat3x3 inverse_rotation_mat(const Vec3& axis) {
+    const Scalar cx = std::cos(axis[0]);
+    const Scalar sx = std::sin(axis[0]);
+    const Scalar cy = std::cos(axis[1]);
+    const Scalar sy = std::sin(axis[1]);
+    const Scalar cz = std::cos(axis[2]);
+    const Scalar sz = std::sin(axis[2]);
 
     return Mat3x3{
-        {cy * cz, cy * sz, -sy},
-        {sx * sy * cz - cx * sz, cx * cz + sx * sy * sz, sx * cy},
-        {cx * sy * cz + sx * sz, -cz * sx + cx * sy * sz, cx * cy},
+        // clang-format off
+        cy * cz, cy * sz, -sy,
+        sx * sy * cz - cx * sz, cx * cz + sx * sy * sz, sx * cy,
+        cx * sy * cz + sx * sz, -cz * sx + cx * sy * sz, cx * cy,
+        // clang-format on
     };
 }
+
+/**
+ * @brief returns identity matrix
+ */
+template <gttl::Dimension DIMENSION>
+inline Mat<DIMENSION> make_identity_mat() {
+    Mat<DIMENSION> mat{}; // zero-initialization is required
+    for (std::size_t i = 0; i < DIMENSION; ++i) {
+        mat[i][i] = Scalar{1};
+    }
+    return mat;
+}
+
+/**
+ * @brief returns identity matrix
+ */
+template <gttl::Dimension DIMENSION>
+const Mat<DIMENSION> identity_mat = make_identity_mat<DIMENSION>();
 
 /**
  * @brief returns scaling matrix for given scale coefficients
  * @see inverse_scaling_mat
  */
-Mat3x3 scaling_mat(const Vec3& vec) {
-    return Mat3x3{
-        {vec.x(), 0.0, 0.0},
-        {0.0, vec.y(), 0.0},
-        {0.0, 0.0, vec.z()},
-    };
+template <gttl::Dimension DIMENSION>
+constexpr Mat<DIMENSION> scaling_mat(const Vec<DIMENSION>& vec) {
+    Mat<DIMENSION> mat{}; // zero-initialization is required
+    for (std::size_t i = 0; i < DIMENSION; ++i) {
+        mat[i][i] = vec[i];
+    }
+    return mat;
 }
 
 /**
  * @brief returns inverse scaling matrix for given scale coefficients
  * @see scaling_mat
  */
-Mat3x3 inverse_scaling_mat(const Vec3& vec) {
-    return Mat3x3{
-        {1.0 / vec.x(), 0.0, 0.0},
-        {0.0, 1.0 / vec.y(), 0.0},
-        {0.0, 0.0, 1.0 / vec.z()},
-    };
+template <gttl::Dimension DIMENSION>
+constexpr Mat<DIMENSION> inverse_scaling_mat(const Vec<DIMENSION>& vec) {
+    Mat<DIMENSION> mat{}; // zero-initialization is required
+    for (std::size_t i = 0; i < DIMENSION; ++i) {
+        mat[i][i] = Scalar{1} / vec[i];
+    }
+    return mat;
 }
 
-/**
- * @brief 3Dx3Dx3D floating-point tensor
- */
-class Ten3x3x3 {
-  public:
-    /**
-     * @brief initialize as identity tensor
-     * @note Coefficients are listed row first.
-     */
-    constexpr Ten3x3x3()
-        : _data{Mat3x3::identity(), Mat3x3::identity(), Mat3x3::identity()} {}
-    /**
-     *  @brief initialize with vectors
-     * @note Each vector is a row.
-     */
-    constexpr Ten3x3x3(const Mat3x3& x, const Mat3x3& y, const Mat3x3& z)
-        : _data{x, y, z} {}
-
-    /** @brief get x matrix */
-    constexpr Mat3x3& x() { return _data[0]; }
-    /** @brief get y matrix */
-    constexpr Mat3x3& y() { return _data[1]; }
-    /** @brief get z matrix */
-    constexpr Mat3x3& z() { return _data[2]; }
-
-    /** @brief tests equivalence */
-    constexpr bool operator==(const Ten3x3x3& other) const {
-        return _data == other._data;
-    }
-
-    /** @brief tests inequivalence */
-    constexpr bool operator!=(const Ten3x3x3& other) const {
-        return _data != other._data;
-    }
-
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z`
-     */
-    constexpr Mat3x3& operator[](unsigned long i) { return _data[i]; }
-    /**
-     * @brief enumerated accces to coefficients
-     * @note: `0=x, 1=y, 2=z`
-     */
-    constexpr const Mat3x3& operator[](unsigned long i) const {
-        return _data[i];
-    }
-
-    /** @brief negate elementwise */
-    Ten3x3x3 operator-() const {
-        return Ten3x3x3{-_data[0], -_data[1], -_data[2]};
-    }
-
-    /** @brief add elementwise */
-    Ten3x3x3& operator+=(const Ten3x3x3& other) {
-        _data[0] += other._data[0];
-        _data[1] += other._data[1];
-        _data[2] += other._data[2];
-        return *this;
-    }
-    /** @brief subtract elementwise */
-    Ten3x3x3& operator-=(const Ten3x3x3& other) {
-        _data[0] -= other._data[0];
-        _data[1] -= other._data[1];
-        _data[2] -= other._data[2];
-        return *this;
-    }
-    /** @brief multiply elementwise */
-    Ten3x3x3& operator*=(const Mat3x3& other) {
-        _data[0] *= other;
-        _data[1] *= other;
-        _data[2] *= other;
-        return *this;
-    }
-
-    /** @brief identity matix */
-    static constexpr Ten3x3x3 identity() { return Ten3x3x3{}; }
-
-    friend Ten3x3x3 operator+(const Ten3x3x3&, const Ten3x3x3&);
-    friend Ten3x3x3 operator-(const Ten3x3x3&, const Ten3x3x3&);
-    friend Ten3x3x3 operator*(const Ten3x3x3&, const Mat3x3&);
-    friend Ten3x3x3 operator*(const Mat3x3&, const Ten3x3x3&);
-
-  private:
-    using data_type = std::array<Mat3x3, 3>;
-    constexpr Ten3x3x3(const data_type& data) : _data(data) {}
-    constexpr Ten3x3x3(data_type&& data) : _data(std::move(data)) {}
-
-    data_type _data;
-};
-
-/** @brief write tensor as space separated components */
-inline std::ostream& operator<<(std::ostream& os, const Ten3x3x3& ten) {
-    os << "Ten3x3x3(" << '\n'
-       << ten[0] << "," << '\n'
-       << ten[1] << "," << '\n'
-       << ten[2] << '\n'
-       << ")";
-    return os;
-}
-
-/** @brief add elementwise */
-inline Ten3x3x3 operator+(const Ten3x3x3& ten1, const Ten3x3x3& ten2) {
-    Ten3x3x3 res = ten1;
-    res += ten2;
-    return res;
-}
-
-/** @brief subtract elementwise */
-inline Ten3x3x3 operator-(const Ten3x3x3& ten1, const Ten3x3x3& ten2) {
-    Ten3x3x3 res = ten1;
-    res -= ten2;
-    return res;
-}
-
-/** @brief multiply elementwise from right hand side*/
-inline Ten3x3x3 operator*(const Ten3x3x3& ten, const Mat3x3& mat) {
-    return Ten3x3x3{ten[0] * mat, ten[1] * mat, ten[2] * mat};
-}
-
-/** @brief multiply elementwise from left hand side*/
-inline Ten3x3x3 operator*(const Mat3x3& mat, const Ten3x3x3& ten) {
-    return Ten3x3x3{mat * ten[0], mat * ten[1], mat * ten[2]};
-}
-
+} // namespace tensor
 } // namespace cpp_raytracing
 #endif

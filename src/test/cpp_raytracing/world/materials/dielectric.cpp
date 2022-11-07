@@ -7,6 +7,8 @@
 
 namespace cpp_raytracing { namespace test {
 
+using namespace tensor;
+
 const Scalar epsilon = 1.0e-12;
 
 TEST_CASE("dielectric_air") {
@@ -48,10 +50,12 @@ TEST_CASE("dielectric_air") {
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector({1.0, 1.0, 0.0});
+    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
         CHECK_ITERABLE_APPROX_EQUAL(epsilon, direction_out, direction_in);
     }
 }
@@ -95,8 +99,8 @@ TEST_CASE("dielectric_into_glass") {
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector({1.0, 1.0, 0.0});
-    const Vec3 direction_reflection = unit_vector({-1.0, 1.0, 0.0});
+    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
+    const Vec3 direction_reflection = unit_vector(Vec3{-1.0, 1.0, 0.0});
     // Snell's law for 45°
     const Scalar refraction_angle = std::asin(1 / std::sqrt(2) / ior);
     const Vec3 direction_refraction = {
@@ -110,10 +114,12 @@ TEST_CASE("dielectric_into_glass") {
     int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
-        if ((direction_out - direction_refraction).length() < epsilon) {
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
+        if (length(direction_out - direction_refraction) < epsilon) {
             refractions += 1;
-        } else if ((direction_out - direction_reflection).length() < epsilon) {
+        } else if (length(direction_out - direction_reflection) < epsilon) {
             reflections += 1;
         } else {
             std::stringstream msg;
@@ -165,12 +171,14 @@ TEST_CASE("dielectric_total_reflection") {
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector({1.0, 1.0, 0.0});
-    const Vec3 direction_reflection = unit_vector({-1.0, 1.0, 0.0});
+    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
+    const Vec3 direction_reflection = unit_vector(Vec3{-1.0, 1.0, 0.0});
     int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
         // reflection only
         CHECK_ITERABLE_APPROX_EQUAL(epsilon, direction_out,
                                     direction_reflection);

@@ -49,7 +49,7 @@ class Texture {
         constexpr Color dark{0.1, 0.0, 0.1};
 
         const int val =
-            int(coordinates.u() / scale) + int(coordinates.v() / scale);
+            int(coordinates[0] / scale) + int(coordinates[1] / scale);
         const bool is_light = val % 2 == 0;
 
         return is_light ? light : dark;

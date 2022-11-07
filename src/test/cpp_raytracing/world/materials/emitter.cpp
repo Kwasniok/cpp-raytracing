@@ -7,6 +7,8 @@
 
 namespace cpp_raytracing { namespace test {
 
+const Scalar epsilon = 1.0e-12;
+
 TEST_CASE("emitter") {
     /*
      sketch of hit scenario:
@@ -40,8 +42,12 @@ TEST_CASE("emitter") {
     const Vec3 direction_in = {1.0, 0.0, 0.0};
     {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        CHECK(ray_col == mat_col);
-        CHECK(direction_out == Vec3(0.0, 0.0, 0.0));
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
+        }
+        for (auto i = 0; i < 3; ++i) {
+            CHECK(direction_out[i] == 0.0);
+        }
     }
 }
 

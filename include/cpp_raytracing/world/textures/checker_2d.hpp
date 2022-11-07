@@ -47,7 +47,7 @@ class Checker2D : public Texture {
                 [[maybe_unused]] const Vec3& point) const override {
 
         const Vec2 c = (coordinates - offset) * (pi / scale);
-        const auto val = std::sin(c.u()) * std::sin(c.v());
+        const auto val = std::sin(c[0]) * std::sin(c[1]);
 
         const bool is_primary = val < 0.0;
 

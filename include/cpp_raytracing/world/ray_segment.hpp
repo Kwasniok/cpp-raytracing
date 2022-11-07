@@ -55,7 +55,7 @@ class RaySegment {
 
     /** @brief tests if direction of ray is a zero vector */
     constexpr bool direction_near_zero(const Scalar epsilon) const {
-        return _direction.near_zero(epsilon);
+        return tensor::near_zero(_direction, epsilon);
     }
 
     /** @brief tests if direction of ray is a perfect zero vector */
