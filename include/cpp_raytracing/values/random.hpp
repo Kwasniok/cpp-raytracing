@@ -24,7 +24,7 @@ inline std::mt19937_64::result_type get_thread_seed() {
  * @brief generates a uniformly random number between the boundaries
  * @note thread-safe (each thread operates independently with a unique seed)
  */
-inline Scalar random_scalar(const Scalar min, const Scalar max) {
+inline Scalar random_scalar(const Scalar min = 0.0, const Scalar max = 1.0) {
     // IMPORTNANT: This version of the function with a thread_local static
     //             generator is the only one so far which did not cause a severe
     //             performance penalty!
