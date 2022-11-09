@@ -49,6 +49,13 @@ class Color {
     /** @brief blue channel*/
     constexpr ColorScalar b() const { return _data[2]; }
 
+    /** @brief red channel*/
+    constexpr ColorScalar& r() { return _data[0]; }
+    /** @brief green channel*/
+    constexpr ColorScalar& g() { return _data[1]; }
+    /** @brief blue channel*/
+    constexpr ColorScalar& b() { return _data[2]; }
+
     /** @brief const iterator for first element */
     constexpr auto begin() const { return std::cbegin(_data); }
     /** @brief const iterator for end */
@@ -163,7 +170,7 @@ inline constexpr Color operator*(const ColorScalar f, const Color& color) {
 /** @brief divide channelwise */
 inline constexpr Color operator/(const Color& color, const ColorScalar f) {
     const auto div = typename Color::data_type::traits_type::div{};
-    const auto func = [div=div, f=f](const auto x) constexpr {
+    const auto func = [&](const auto x) constexpr {
         return div(x, f);
     };
     return Color(color._data.elementwise(func));
