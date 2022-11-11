@@ -679,8 +679,7 @@ TwistedOrbCartesianGeometry::christoffel_2(const Vec3& position) const {
     const Mat3x3 inv_metric = inverse_metric(position);
     const Ten3x3x3 chris_1 = christoffel_1(position);
 
-    // note: less expensive contraction in this configuration then all others
-    return gttl::contraction<0, 3>(chris_1, inv_metric);
+    return gttl::contraction<1, 2>(inv_metric, chris_1);
 }
 
 } // namespace cpp_raytracing
