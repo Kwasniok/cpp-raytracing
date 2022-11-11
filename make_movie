@@ -2,16 +2,16 @@
 
 set -e
 
-EXEC="./build/examples/swirl_triangles"
+EXEC="./build/examples/basic_euclidean"
 # executable specific args
-EXEC_ARGS="--swirl_strength 0.01 --ray_step_size 0.1"
+EXEC_ARGS=""
 OUT_DIR="./out/movie"
 
 FPS=30 # frames per second
 EXPOSURE_TIME=$(echo "0.8/${FPS}" | bc -l)
 TOTAL_LINE_EXPOSURE_TIME=$(echo "${EXPOSURE_TIME} / 5.0" | bc -l)
 SAMPLES=10
-SAVE_FREQUENCY=$(echo "${SAMPLES} + 1" | bc -l)
+SAVE_FREQUENCY=100
 RAY_DEPTH=100
 RESOLUTION_FACTOR=2 # >= 2 (for ffmpeg to work)
 
