@@ -1,15 +1,21 @@
 #!/usr/bin/bash
 
-make build/examples/benchmark
+set -e
+
+EXEC="build/examples/basic_twisted_orb"
+
+make ${EXEC}
 
 mkdir -p out/profiles
 
 valgrind \
     --tool=callgrind \
     --callgrind-out-file="out/profiles/callgrind.out.latest" \
-    ./build/examples/benchmark \
+    --dump-instr=yes \
+    --collect-jumps=yes \
+    ./${EXEC} \
     --out out/out.ppm \
-    --samples 50 \
+    --samples 1 \
     --ray_depth 50 \
 
 kcachegrind "out/profiles/callgrind.out.latest"
