@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE cpp_raytracing::world::materials::dielectric
+
 #include "../../../common.hpp"
 
 #include <memory>
@@ -5,13 +7,14 @@
 #include <cpp_raytracing/world/materials/dielectric.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-using namespace tensor;
+constexpr ray::Scalar epsilon = 1.0e-12;
 
-const Scalar epsilon = 1.0e-12;
+BOOST_AUTO_TEST_CASE(dielectric_air, *but::tolerance(epsilon)) {
+    using ray::tensor::unit_vector, ray::tensor::length;
 
-TEST_CASE("dielectric_air") {
     /*
      sketch of hit scenario:
 
@@ -32,35 +35,35 @@ TEST_CASE("dielectric_air") {
      outcome: ray is probabilistic reflected or refracted based on the angle and
               IOR
      */
-    const Color mat_col{0.0, 0.5, 1.0};
-    const Scalar ior = 1.0;
-    std::shared_ptr<Material> mat;
+    const ray::Color mat_col{0.0, 0.5, 1.0};
+    const ray::Scalar ior = 1.0;
+    std::shared_ptr<ray::Material> mat;
     {
-        auto dielectric = std::make_unique<Dielectric>();
-        auto texture = std::make_shared<ConstantColor>();
+        auto dielectric = std::make_unique<ray::Dielectric>();
+        auto texture = std::make_shared<ray::ConstantColor>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
-    const HitRecord record{
-        .point = Vec3{1.0, 0.0, 0.0},
-        .normal = Vec3{-1.0, 0.0, 0.0},
+    const ray::HitRecord record{
+        .point = ray::Vec3{1.0, 0.0, 0.0},
+        .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
-        }
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, direction_out, direction_in);
+        TEST_EQUAL_RANGES(ray_col, mat_col);
+        TEST_EQUAL_RANGES(direction_out, direction_in);
     }
 }
 
-TEST_CASE("dielectric_into_glass") {
+BOOST_AUTO_TEST_CASE(dielectric_into_glass, *but::tolerance(epsilon)) {
+    using ray::tensor::unit_vector, ray::tensor::length;
+
     /*
      sketch of hit scenario:
 
@@ -81,29 +84,30 @@ TEST_CASE("dielectric_into_glass") {
      outcome: ray is probabilistic reflected or refracted based on the angle and
               IOR
      */
-    const Color mat_col{0.0, 0.5, 1.0};
-    const Scalar ior = 1.5;
-    std::shared_ptr<Material> mat;
+    const ray::Color mat_col{0.0, 0.5, 1.0};
+    const ray::Scalar ior = 1.5;
+    std::shared_ptr<ray::Material> mat;
     {
-        auto dielectric = std::make_unique<Dielectric>();
-        auto texture = std::make_shared<ConstantColor>();
+        auto dielectric = std::make_unique<ray::Dielectric>();
+        auto texture = std::make_shared<ray::ConstantColor>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
-    const HitRecord record{
-        .point = Vec3{1.0, 0.0, 0.0},
-        .normal = Vec3{-1.0, 0.0, 0.0},
+    const ray::HitRecord record{
+        .point = ray::Vec3{1.0, 0.0, 0.0},
+        .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
-    const Vec3 direction_reflection = unit_vector(Vec3{-1.0, 1.0, 0.0});
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
+    const ray::Vec3 direction_reflection =
+        unit_vector(ray::Vec3{-1.0, 1.0, 0.0});
     // Snell's law for 45°
-    const Scalar refraction_angle = std::asin(1 / std::sqrt(2) / ior);
-    const Vec3 direction_refraction = {
+    const ray::Scalar refraction_angle = std::asin(1 / std::sqrt(2) / ior);
+    const ray::Vec3 direction_refraction = {
         std::cos(refraction_angle),
         std::sin(refraction_angle),
         0.0,
@@ -111,12 +115,11 @@ TEST_CASE("dielectric_into_glass") {
     // collect statistics
     int refractions = 0; // ideal: ~95%
     int reflections = 0; // ideal: ~5%
-    int total = 1000000; // must be >= 1000 // NOLINT
+    int total = 100000;  // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
-        }
+        TEST_EQUAL_RANGES(ray_col, mat_col);
+
         if (length(direction_out - direction_refraction) < epsilon) {
             refractions += 1;
         } else if (length(direction_out - direction_reflection) < epsilon) {
@@ -128,15 +131,17 @@ TEST_CASE("dielectric_into_glass") {
                 << direction_reflection
                 << " with precision of epsilon = " << epsilon;
             auto s = msg.str();
-            FAIL(s);
+            BOOST_FAIL(s);
         }
     }
     // check statistics
-    CHECK_IN_RANGE(int(0.93 * total), int(0.97 * total), refractions);
-    CHECK_IN_RANGE(int(0.03 * total), int(0.06 * total), reflections);
+    CHECK_IN_BOUNDS(refractions, int(0.93 * total), int(0.97 * total));
+    CHECK_IN_BOUNDS(reflections, int(0.03 * total), int(0.06 * total));
 }
 
-TEST_CASE("dielectric_total_reflection") {
+BOOST_AUTO_TEST_CASE(dielectric_total_reflection, *but::tolerance(epsilon)) {
+    using ray::tensor::unit_vector, ray::tensor::length;
+
     /*
      sketch of hit scenario:
 
@@ -153,36 +158,32 @@ TEST_CASE("dielectric_total_reflection") {
      outcome: ray is reflected based on the angle and IOR
      note: IOR < sqrt(2) = 1.41... would result in partial refraction
      */
-    const Color mat_col{0.0, 0.5, 1.0};
-    const Scalar ior = 1 / 1.5;
-    std::shared_ptr<Material> mat;
+    const ray::Color mat_col{0.0, 0.5, 1.0};
+    const ray::Scalar ior = 1 / 1.5;
+    std::shared_ptr<ray::Material> mat;
     {
-        auto dielectric = std::make_unique<Dielectric>();
-        auto texture = std::make_shared<ConstantColor>();
+        auto dielectric = std::make_unique<ray::Dielectric>();
+        auto texture = std::make_shared<ray::ConstantColor>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
-    const HitRecord record{
-        .point = Vec3{1.0, 0.0, 0.0},
-        .normal = Vec3{-1.0, 0.0, 0.0},
+    const ray::HitRecord record{
+        .point = ray::Vec3{1.0, 0.0, 0.0},
+        .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
-    const Vec3 direction_reflection = unit_vector(Vec3{-1.0, 1.0, 0.0});
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
+    const ray::Vec3 direction_reflection =
+        unit_vector(ray::Vec3{-1.0, 1.0, 0.0});
     int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
-        }
+        TEST_EQUAL_RANGES(ray_col, mat_col);
         // reflection only
-        CHECK_ITERABLE_APPROX_EQUAL(epsilon, direction_out,
-                                    direction_reflection);
+        TEST_EQUAL_RANGES(direction_out, direction_reflection);
     }
 }
-
-}} // namespace cpp_raytracing::test

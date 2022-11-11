@@ -12,7 +12,7 @@
 #include <cpp_raytracing/values/tensor.hpp>
 #include <cpp_raytracing/world/entities/base.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace cpp_raytracing {
 
 /**
  * @brief represents an instance
@@ -171,6 +171,6 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
     return std::nullopt;
 }
 
-}} // namespace cpp_raytracing::test
+} // namespace cpp_raytracing
 
 #endif

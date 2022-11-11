@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE cpp_raytracing::values::tensor_boost_numeric_odeint
+
 #include "../../common.hpp"
 
 // note specific imports for spped and to avoid warnings for unrelated code
@@ -12,16 +14,19 @@
 #include <cpp_raytracing/values/tensor.hpp>
 #include <cpp_raytracing/values/tensor_boost_numeric_odeint.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-const Scalar epsilon = 1e-4;
-const Scalar sigma = 10.0;
-const Scalar R = 28.0;
-const Scalar b = 8.0 / 3.0;
+using ray::operator"" _D;
 
-TEST_CASE("vec3") {
+const ray::Scalar epsilon = 1e-3;
+const ray::Scalar sigma = 10.0;
+const ray::Scalar R = 28.0;
+const ray::Scalar b = 8.0 / 3.0;
+
+BOOST_AUTO_TEST_CASE(lorenz_attractor_vec3, *but::tolerance(epsilon)) {
     using namespace boost::numeric::odeint;
-    using State = Vec3;
+    using State = ray::Vec3;
 
     State x = {10.0, 10.0, 10.0};
 
@@ -39,8 +44,6 @@ TEST_CASE("vec3") {
     ++it;
     ++it;
 
-    const Vec3 expected = {11.7446, 17.6449, 15.9846};
-    CHECK_ITERABLE_APPROX_EQUAL(epsilon, *it, expected);
+    const ray::Vec3 expected = {11.7446, 17.6449, 15.9846};
+    TEST_EQUAL_RANGES(*it, expected);
 }
-
-}} // namespace cpp_raytracing::test

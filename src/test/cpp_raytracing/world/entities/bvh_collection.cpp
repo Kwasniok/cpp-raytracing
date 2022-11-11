@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE cpp_raytracing::world::entities::base
+
 #include "../../../common.hpp"
 
 #include <memory>
@@ -10,97 +12,93 @@
 #include "../instance.hpp"
 #include "../sphere.hpp"
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-const Scalar epsilon = 1e-16;
+constexpr ray::Scalar epsilon = 1e-16;
 
-std::shared_ptr<Instance> make_sphere(const Vec3 position,
-                                      const Scalar radius) {
-    auto sphere = std::make_shared<Sphere>();
-    sphere->radius = radius;
+struct BVHCollectionFixture {
+    BVHCollectionFixture() {
+        collection.add(ray::make_sphere(ray::Vec3{1.0, 0.0, 0.0}, 0.5));
+        collection.add(ray::make_sphere(ray::Vec3{0.0, 1.0, 0.0}, 0.5));
+        collection.add(ray::make_sphere(ray::Vec3{0.0, 0.0, 1.0}, 0.5));
+    }
+    ~BVHCollectionFixture() = default;
 
-    auto instance = std::make_shared<Instance>();
-    instance->entity = sphere;
-    instance->position = position;
+    const ray::EuclideanGeometry geometry{};
+    ray::BVHCollection collection;
+};
 
-    return instance;
-}
-
-BVHCollection make_collection() {
-    BVHCollection collection;
-    collection.add(make_sphere(Vec3{1.0, 0.0, 0.0}, 0.5));
-    collection.add(make_sphere(Vec3{0.0, 1.0, 0.0}, 0.5));
-    collection.add(make_sphere(Vec3{0.0, 0.0, 1.0}, 0.5));
-    return collection;
-}
-
-TEST_CASE("bounding_box") {
-
-    BVHCollection collection = make_collection();
-    static const Vec3 min{-0.5, -0.5, -0.5};
-    static const Vec3 max{1.5, 1.5, 1.5};
-
-    // cache
-    CHECK_THROWS_AS(collection.bounding_box(), std::runtime_error);
-
+BOOST_FIXTURE_TEST_CASE(bounding_box_cache, BVHCollectionFixture) {
+    BOOST_CHECK_THROW(collection.bounding_box(), std::runtime_error);
     collection.generate_cache();
+    collection.bounding_box();
+}
+
+BOOST_FIXTURE_TEST_CASE(bounding_box, BVHCollectionFixture,
+                        *but::tolerance(epsilon)) {
+    collection.generate_cache();
+
+    constexpr ray::Vec3 min{-0.5, -0.5, -0.5};
+    constexpr ray::Vec3 max{1.5, 1.5, 1.5};
+
     const auto bounds = collection.bounding_box();
-    CHECK_ITERABLE_APPROX_EQUAL(epsilon, bounds->min(), min);
-    CHECK_ITERABLE_APPROX_EQUAL(epsilon, bounds->max(), max);
+    TEST_EQUAL_RANGES(bounds->min(), min);
+    TEST_EQUAL_RANGES(bounds->max(), max);
 }
 
-TEST_CASE("hit_record") {
+BOOST_FIXTURE_TEST_CASE(hit_record_cache, BVHCollectionFixture) {
+    constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                          ray::Vec3{1.0, 0.0, 0.0}};
 
-    const EuclideanGeometry geometry;
-    BVHCollection collection = make_collection();
-
-    // cache
-    {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{1.0, 0.0, 0.0}};
-        CHECK_THROWS_AS(collection.hit_record(geometry, ray_segment, 0.0),
-                        std::runtime_error);
-    }
+    BOOST_CHECK_THROW(collection.hit_record(geometry, ray_segment, 0.0),
+                      std::runtime_error);
     collection.generate_cache();
+    collection.hit_record(geometry, ray_segment, 0.0);
+}
 
-    // hits
+BOOST_FIXTURE_TEST_CASE(hit_record_hits, BVHCollectionFixture,
+                        *but::tolerance(epsilon)) {
+    collection.generate_cache();
     {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{1.0, 0.0, 0.0}};
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        CHECK(record.hits());
+        BOOST_CHECK(record.hits());
     }
     {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{0.0, 1.0, 0.0}};
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, 1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        CHECK(record.hits());
+        BOOST_CHECK(record.hits());
     }
     {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{0.0, 0.0, 1.0}};
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, 0.0, 1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        CHECK(record.hits());
-    }
-    // misses
-    {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{-1.0, 0.0, 0.0}};
-        auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        CHECK_FALSE(record.hits());
-    }
-    {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{0.0, -1.0, 0.0}};
-        auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        CHECK_FALSE(record.hits());
-    }
-    {
-        static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                            Vec3{0.0, 0.0, -1.0}};
-        auto record = collection.hit_record(geometry, ray_segment, 0.0);
-        CHECK_FALSE(record.hits());
+        BOOST_CHECK(record.hits());
     }
 }
 
-}} // namespace cpp_raytracing::test
+BOOST_FIXTURE_TEST_CASE(hit_record_misses, BVHCollectionFixture,
+                        *but::tolerance(epsilon)) {
+    collection.generate_cache();
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{-1.0, 0.0, 0.0}};
+        auto record = collection.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(!record.hits());
+    }
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, -1.0, 0.0}};
+        auto record = collection.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(!record.hits());
+    }
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, 0.0, -1.0}};
+        auto record = collection.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(!record.hits());
+    }
+}

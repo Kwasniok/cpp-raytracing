@@ -95,7 +95,7 @@ class Color {
     }
     /** @brief multiply channelwise */
     constexpr Color& operator*=(const Color& other) {
-        _data.elementwise(std::multiplies<ColorScalar>{}, other._data);
+        _data.inplace_elementwise(std::multiplies<ColorScalar>{}, other._data);
         return *this;
     }
     /** @brief divide channelwise */

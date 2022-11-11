@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE cpp_raytracing::world::materials::emitter
+
 #include "../../../common.hpp"
 
 #include <memory>
@@ -5,11 +7,14 @@
 #include <cpp_raytracing/world/materials/emitter.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-const Scalar epsilon = 1.0e-12;
+using ray::operator"" _D;
 
-TEST_CASE("emitter") {
+constexpr ray::Scalar epsilon = 1.0e-12;
+
+BOOST_AUTO_TEST_CASE(emitter, *but::tolerance(epsilon)) {
     /*
      sketch of hit scenario:
 
@@ -23,32 +28,28 @@ TEST_CASE("emitter") {
      outcome: ray is absorbed
               outgoing ray has no direction
      */
-    const Color mat_col{0.0, 0.5, 1.0};
-    std::shared_ptr<Material> mat;
+    const ray::Color mat_col{0.0, 0.5, 1.0};
+    const ray::Vec3 v0 = ray::tensor::zero_vec<3_D>;
+    std::shared_ptr<ray::Material> mat;
     {
-        auto emitter = std::make_unique<Emitter>();
-        auto texture = std::make_shared<ConstantColor>();
+        auto emitter = std::make_unique<ray::Emitter>();
+        auto texture = std::make_shared<ray::ConstantColor>();
         texture->color = mat_col;
         emitter->color = std::move(texture);
         mat = std::move(emitter);
     }
-    const HitRecord record{
-        .point = Vec3{1.0, 0.0, 0.0},
-        .normal = Vec3{-1.0, 0.0, 0.0},
+    const ray::HitRecord record{
+        .point = ray::Vec3{1.0, 0.0, 0.0},
+        .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = {1.0, 0.0, 0.0};
+    const ray::Vec3 direction_in = {1.0, 0.0, 0.0};
     {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
-        }
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(direction_out[i] == 0.0);
-        }
+
+        TEST_EQUAL_RANGES(ray_col, mat_col);
+        TEST_EQUAL_RANGES(direction_out, v0);
     }
 }
-
-}} // namespace cpp_raytracing::test

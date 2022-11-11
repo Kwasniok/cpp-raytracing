@@ -10,7 +10,7 @@
 
 #include <cpp_raytracing/world/entities/base.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace cpp_raytracing {
 
 /**
  * @brief spherical object
@@ -118,6 +118,18 @@ std::optional<AxisAlignedBoundingBox> Sphere::bounding_box() const {
                                   Vec3{radius, radius, radius}};
 }
 
-}} // namespace cpp_raytracing::test
+std::unique_ptr<Instance> make_sphere(const Vec3 position,
+                                      const Scalar radius) {
+    auto sphere = std::make_shared<Sphere>();
+    sphere->radius = radius;
+
+    auto instance = std::make_unique<Instance>();
+    instance->entity = sphere;
+    instance->position = position;
+
+    return instance;
+}
+
+} // namespace cpp_raytracing
 
 #endif

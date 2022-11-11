@@ -1,5 +1,7 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
+#ifndef CPP_RAYTRACING_TEST_COMMON_OMP_HPP
+#define CPP_RAYTRACING_TEST_COMMON_OMP_HPP
+
+#include <boost/test/included/unit_test.hpp>
 
 #include <array>
 #include <omp.h>
@@ -12,6 +14,10 @@ void REQUIRE_OPENMP_MULTITHREADING() {
         buffer.at(i) = omp_get_thread_num();
     }
     for (unsigned int i = 0; i < NUM_THREADS; ++i) {
-        CHECK(buffer.at(i) == static_cast<int>(i));
+        if (buffer.at(i) != static_cast<int>(i)) {
+            BOOST_FAIL("OMP not working as expected.");
+        }
     }
 }
+
+#endif

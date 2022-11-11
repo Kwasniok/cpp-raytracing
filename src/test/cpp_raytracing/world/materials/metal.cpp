@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE cpp_raytracing::world::materials::metal
+
 #include "../../../common.hpp"
 
 #include <memory>
@@ -5,13 +7,15 @@
 #include <cpp_raytracing/world/materials.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-using namespace tensor;
+constexpr ray::Scalar epsilon = 1.0e-12;
 
-const Scalar epsilon = 1.0e-12;
+BOOST_AUTO_TEST_CASE(metal_no_roughness, *but::tolerance(epsilon)) {
+    using ray::tensor::unit_vector, ray::tensor::length, ray::tensor::near_zero,
+        ray::tensor::dot;
 
-TEST_CASE("metal_no_roughness") {
     /*
      sketch of hit scenario:
 
@@ -27,44 +31,42 @@ TEST_CASE("metal_no_roughness") {
               outgoing ray is reflected + roughness * random vector in unit
               sphere
      */
-    const Color mat_col{0.0, 0.5, 1.0};
-    const Scalar mat_rough = 0.0;
-    std::shared_ptr<Material> mat;
+    const ray::Color mat_col{0.0, 0.5, 1.0};
+    const ray::Scalar mat_rough = 0.0;
+    std::shared_ptr<ray::Material> mat;
     {
-        auto metal = std::make_unique<Metal>();
-        auto texture = std::make_shared<ConstantColor>();
+        auto metal = std::make_unique<ray::Metal>();
+        auto texture = std::make_shared<ray::ConstantColor>();
         texture->color = mat_col;
         metal->color = std::move(texture);
         metal->roughness = mat_rough;
         mat = std::move(metal);
     }
-    const Vec3 normal{-1.0, 0.0, 0.0};
-    const HitRecord record{
-        .point = Vec3{1.0, 0.0, 0.0},
+    const ray::Vec3 normal{-1.0, 0.0, 0.0};
+    const ray::HitRecord record{
+        .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
-        }
+        TEST_EQUAL_RANGES(ray_col, mat_col);
         // parallel to normal
-        CHECK(dot(normal, direction_out) ==
-              doctest::Approx(-dot(normal, direction_in)).epsilon(epsilon));
+        BOOST_CHECK(dot(normal, direction_out) == -dot(normal, direction_in));
         // orthogonal to normal
         const auto v1 = direction_out - normal * dot(normal, direction_out);
         const auto v2 = direction_in - normal * dot(normal, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(v1[i] == doctest::Approx(v2[i]).epsilon(epsilon));
-        }
+        TEST_EQUAL_RANGES(v1, v2);
     }
 }
 
-TEST_CASE("metal_with_roughness") {
+BOOST_AUTO_TEST_CASE(metal_with_roughness, *but::tolerance(epsilon)) {
+    using ray::tensor::unit_vector, ray::tensor::length, ray::tensor::near_zero,
+        ray::tensor::dot;
+
     /*
      sketch of hit scenario:
 
@@ -80,37 +82,33 @@ TEST_CASE("metal_with_roughness") {
               outgoing ray is reflected + roughness * random vector in unit
               sphere
      */
-    const Color mat_col{0.0, 0.5, 1.0};
-    const Scalar mat_rough = 0.25;
-    std::shared_ptr<Material> mat;
+    const ray::Color mat_col{0.0, 0.5, 1.0};
+    const ray::Scalar mat_rough = 0.25;
+    std::shared_ptr<ray::Material> mat;
     {
-        auto metal = std::make_unique<Metal>();
-        auto texture = std::make_shared<ConstantColor>();
+        auto metal = std::make_unique<ray::Metal>();
+        auto texture = std::make_shared<ray::ConstantColor>();
         texture->color = mat_col;
         metal->color = std::move(texture);
         metal->roughness = mat_rough;
         mat = std::move(metal);
     }
-    const Vec3 normal{-1.0, 0.0, 0.0};
-    const HitRecord record{
-        .point = Vec3{1.0, 0.0, 0.0},
+    const ray::Vec3 normal{-1.0, 0.0, 0.0};
+    const ray::HitRecord record{
+        .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const Vec3 direction_in = unit_vector(Vec3{1.0, 1.0, 0.0});
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
-        for (auto i = 0; i < 3; ++i) {
-            CHECK(ray_col[i] == doctest::Approx(mat_col[i]).epsilon(epsilon));
-        }
-        const Vec3 in_para = normal * dot(normal, direction_in);
-        const Vec3 in_ortho = direction_in - in_para;
+        TEST_EQUAL_RANGES(ray_col, mat_col);
+        const ray::Vec3 in_para = normal * dot(normal, direction_in);
+        const ray::Vec3 in_ortho = direction_in - in_para;
         // test if rand_vec in sphere of radius roughness
-        const Vec3 rand_vec = direction_out + in_para - in_ortho;
-        CHECK_IN_RANGE(0.0, mat_rough, length(rand_vec));
+        const ray::Vec3 rand_vec = direction_out + in_para - in_ortho;
+        CHECK_IN_BOUNDS(length(rand_vec), 0.0, mat_rough);
     }
 }
-
-}} // namespace cpp_raytracing::test

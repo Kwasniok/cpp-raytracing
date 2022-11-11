@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE cpp_raytracing::world::bvh
+
 #include "../../common.hpp"
 
 #include <memory>
@@ -10,86 +12,84 @@
 #include "instance.hpp"
 #include "sphere.hpp"
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-const Scalar epsilon = 1e-16;
+constexpr ray::Scalar epsilon = 1e-16;
 
-std::unique_ptr<Instance> make_sphere(const Vec3 position,
-                                      const Scalar radius) {
-    auto sphere = std::make_shared<Sphere>();
-    sphere->radius = radius;
+struct BVHFixture {
+    BVHFixture() {
+        entities.push_back(ray::make_sphere(ray::Vec3{1.0, 0.0, 0.0}, 0.5));
+        entities.push_back(ray::make_sphere(ray::Vec3{0.0, 1.0, 0.0}, 0.5));
+        entities.push_back(ray::make_sphere(ray::Vec3{0.0, 0.0, 1.0}, 0.5));
+    }
+    ~BVHFixture() = default;
 
-    auto instance = std::make_unique<Instance>();
-    instance->entity = sphere;
-    instance->position = position;
+    const ray::EuclideanGeometry geometry{};
+    std::vector<std::unique_ptr<ray::Entity>> entities{};
+};
 
-    return instance;
+BOOST_FIXTURE_TEST_CASE(size, BVHFixture, *but::tolerance(epsilon)) {
+    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+
+    BOOST_CHECK(bvh_tree.size_bounded() == entities.size());
+    BOOST_CHECK(bvh_tree.size_unbounded() == 0ul);
+    BOOST_CHECK(bvh_tree.size() == entities.size());
 }
 
-TEST_CASE("all") {
-    const EuclideanGeometry geometry;
-    std::vector<std::unique_ptr<Entity>> entities;
-    entities.push_back(make_sphere(Vec3{1.0, 0.0, 0.0}, 0.5));
-    entities.push_back(make_sphere(Vec3{0.0, 1.0, 0.0}, 0.5));
-    entities.push_back(make_sphere(Vec3{0.0, 0.0, 1.0}, 0.5));
+BOOST_FIXTURE_TEST_CASE(bounds, BVHFixture, *but::tolerance(epsilon)) {
+    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+
+    constexpr ray::Vec3 min{-0.5, -0.5, -0.5};
+    constexpr ray::Vec3 max{1.5, 1.5, 1.5};
+    const auto bounds = bvh_tree.bounding_box();
+    BOOST_CHECK(bounds.has_value());
+    TEST_EQUAL_RANGES(bounds->min(), min);
+    TEST_EQUAL_RANGES(bounds->max(), max);
+}
+
+BOOST_FIXTURE_TEST_CASE(hits, BVHFixture, *but::tolerance(epsilon)) {
+    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+
     {
-        const auto& container = entities; // access as const
-        BVHTree bvh_tree = BVHTree(container);
-
-        // size
-        CHECK(bvh_tree.size_bounded() == entities.size());
-        CHECK(bvh_tree.size_unbounded() == 0ul);
-        CHECK(bvh_tree.size() == entities.size());
-
-        // bounds
-        {
-            static const Vec3 min{-0.5, -0.5, -0.5};
-            static const Vec3 max{1.5, 1.5, 1.5};
-            const auto bounds = bvh_tree.bounding_box();
-            CHECK(bounds.has_value());
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, bounds->min(), min);
-            CHECK_ITERABLE_APPROX_EQUAL(epsilon, bounds->max(), max);
-        }
-
-        // hits
-        {
-            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{1.0, 0.0, 0.0}};
-            auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
-            CHECK(record.hits());
-        }
-        {
-            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, 1.0, 0.0}};
-            auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
-            CHECK(record.hits());
-        }
-        {
-            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, 0.0, 1.0}};
-            auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
-            CHECK(record.hits());
-        }
-        // misses
-        {
-            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{-1.0, 0.0, 0.0}};
-            auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
-            CHECK_FALSE(record.hits());
-        }
-        {
-            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, -1.0, 0.0}};
-            auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
-            CHECK_FALSE(record.hits());
-        }
-        {
-            static const RaySegment ray_segment{Vec3{0.0, 0.0, 0.0},
-                                                Vec3{0.0, 0.0, -1.0}};
-            auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
-            CHECK_FALSE(record.hits());
-        }
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{1.0, 0.0, 0.0}};
+        auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(record.hits());
+    }
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, 1.0, 0.0}};
+        auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(record.hits());
+    }
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, 0.0, 1.0}};
+        auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(record.hits());
     }
 }
 
-}} // namespace cpp_raytracing::test
+BOOST_FIXTURE_TEST_CASE(misses, BVHFixture, *but::tolerance(epsilon)) {
+    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{-1.0, 0.0, 0.0}};
+        auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(!record.hits());
+    }
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, -1.0, 0.0}};
+        auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(!record.hits());
+    }
+    {
+        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                              ray::Vec3{0.0, 0.0, -1.0}};
+        auto record = bvh_tree.hit_record(geometry, ray_segment, 0.0);
+        BOOST_CHECK(!record.hits());
+    }
+}

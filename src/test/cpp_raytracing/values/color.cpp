@@ -1,181 +1,200 @@
-#include "../../common.hpp"
+#define BOOST_TEST_MODULE cpp_raytracing::values::color
 
 #include <array>
 #include <limits>
 
+#include "../../common.hpp"
+
 #include <cpp_raytracing/values/color.hpp>
 
-namespace cpp_raytracing { namespace test {
+namespace but = boost::unit_test;
+namespace ray = cpp_raytracing;
 
-const ColorScalar epsilon = 1.e-12;
+const ray::ColorScalar epsilon = 1.e-12;
 
-TEST_CASE("default_constructor") {
-    Color color{};
-    CHECK(color.r() == 0.0);
-    CHECK(color.g() == 0.0);
-    CHECK(color.b() == 0.0);
+BOOST_AUTO_TEST_CASE(default_constructor, *but::tolerance(epsilon)) {
+    ray::Color color{};
+    std::array<ray::ColorScalar, 3> elems{0.0, 0.0, 0.0};
+    TEST_EQUAL_RANGES(color, elems);
 }
 
-// TEST_CASE("chanels") {
-//     Color color{1.1, 2.2, 3.3};
-//     CHECK(color.r() == 1.1);
-//     CHECK(color.g() == 2.2);
-//     CHECK(color.b() == 3.3);
-// }
+BOOST_AUTO_TEST_CASE(chanels_const, *but::tolerance(epsilon)) {
+    const ray::Color color{1.1, 2.2, 3.3};
+    BOOST_TEST(color.r() == 1.1);
+    BOOST_TEST(color.g() == 2.2);
+    BOOST_TEST(color.b() == 3.3);
+}
 
-// TEST_CASE("iterator") {
-//     SUBCASE("mutalbe read") {
-//         Color color{1.1, 2.2, 3.3};
-//         std::array<ColorScalar, 3> elems{1.1, 2.2, 3.3};
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, color, elems);
-//     }
-//     SUBCASE("mutable write") {
-//         Color color{1.1, 2.2, 3.3};
-//         std::array<ColorScalar, 3> elems = {7.7, 7.7, 7.7};
-//         for (auto& e : color) {
-//             e = 7.7;
-//         }
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, color, elems);
-//     }
-//     SUBCASE("const") {
-//         const Color color{1.1, 2.2, 3.3};
-//         std::array<ColorScalar, 3> elems{1.1, 2.2, 3.3};
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, color, elems);
-//     }
-// }
+BOOST_AUTO_TEST_CASE(chanels_mut, *but::tolerance(epsilon)) {
+    ray::Color color;
+    color.r() = 1.1;
+    color.g() = 2.2;
+    color.b() = 3.3;
+    BOOST_TEST(color.r() == 1.1);
+    BOOST_TEST(color.g() == 2.2);
+    BOOST_TEST(color.b() == 3.3);
+}
 
-// TEST_CASE("arithmetic") {
-//     const Color x1{1.1, 2.2, 3.3};
-//     const Color x2{4.4, 5.5, 6.6};
-//     const ColorScalar f = 7.7;
+BOOST_AUTO_TEST_CASE(iterator_read_const, *but::tolerance(epsilon)) {
+    const ray::Color color{1.1, 2.2, 3.3};
+    std::array<ray::ColorScalar, 3> elems{1.1, 2.2, 3.3};
+    TEST_EQUAL_RANGES(color, elems);
+}
 
-//     const Color sum{5.5, 7.7, 9.9};
-//     const Color diff{3.3, 3.3, 3.3};
-//     const Color prod{8.47, 16.94, 25.41};
-//     const Color sprod{4.84, 12.1, 21.78};
-//     const Color div{1.1 / 7.7, 2.2 / 7.7, 3.3 / 7.7};
+BOOST_AUTO_TEST_CASE(iterator_write_mut, *but::tolerance(epsilon)) {
+    ray::Color color;
+    std::array<ray::ColorScalar, 3> elems{1.1, 2.2, 3.3};
+    auto it = std::begin(color);
+    *(it++) = 1.1;
+    *(it++) = 2.2;
+    *(it++) = 3.3;
+    TEST_EQUAL_RANGES(color, elems);
+}
 
-//     SUBCASE("add") {
-//         const auto res = x1 + x2;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, sum);
-//     }
-//     SUBCASE("implace add") {
-//         auto res = x1;
-//         res += x2;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, sum);
-//     }
-//     SUBCASE("subtract") {
-//         const auto res = x2 - x1;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, diff);
-//     }
-//     SUBCASE("inplace subtract") {
-//         auto res = x2;
-//         res -= x1;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, diff);
-//     }
-//     SUBCASE("multiply by scalar (right)") {
-//         const auto res = x1 * f;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, prod);
-//     }
-//     SUBCASE("multiply by scalar (left)") {
-//         const auto res = f * x1;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, prod);
-//     }
-//     SUBCASE("inplace multiply by scalar") {
-//         auto res = x1;
-//         res *= f;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, prod);
-//     }
-//     SUBCASE("scalar multiplication") {
-//         const auto res = x1 * x2;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, sprod);
-//     }
-//     SUBCASE("inplace scalar multiplication") {
-//         auto res = x1;
-//         res *= x2;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, sprod);
-//     }
-//     SUBCASE("scalar division") {
-//         const auto res = x1 / f;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, div);
-//     }
-//     SUBCASE("inplace scalar division") {
-//         auto res = x1;
-//         res /= f;
-//         CHECK_ITERABLE_APPROX_EQUAL(epsilon, res, div);
-//     }
-// }
+BOOST_AUTO_TEST_CASE(inplace_plus, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::Color x2{4.4, 5.5, 6.6};
+    std::array<ray::ColorScalar, 3> elems{5.5, 7.7, 9.9};
+    ray::Color res = x1;
+    res += x2;
+    TEST_EQUAL_RANGES(res, elems);
+}
 
-// TEST_CASE("scalar to integral conversion") {
-//     SUBCASE("zero") {
-//         const auto res = int_from_color_scalar(0.0);
-//         CHECK(res == ColorIntegral(0));
-//     }
-//     SUBCASE("one") {
-//         const auto res = int_from_color_scalar(1.0);
-//         CHECK(res == ColorIntegral(255));
-//     }
-//     SUBCASE("clipping low") {
-//         const auto res = int_from_color_scalar(-3.0);
-//         CHECK(res == ColorIntegral(0));
-//     }
-//     SUBCASE("clipping high") {
-//         const auto res = int_from_color_scalar(+3.0);
-//         CHECK(res == ColorIntegral(255));
-//     }
-//     SUBCASE("clipping -infinity") {
-//         const auto res = int_from_color_scalar(
-//             -std::numeric_limits<ColorScalar>::infinity());
-//         CHECK(res == ColorIntegral(0));
-//     }
-//     SUBCASE("clipping infinity") {
-//         const auto res =
-//             int_from_color_scalar(std::numeric_limits<ColorScalar>::infinity());
-//         CHECK(res == ColorIntegral(255));
-//     }
-//     SUBCASE("quiet nan") {
-//         const auto res = int_from_color_scalar(
-//             std::numeric_limits<ColorScalar>::quiet_NaN());
-//         CHECK(res == ColorIntegral(0));
-//     }
-//     SUBCASE("signaling nan") {
-//         const auto res = int_from_color_scalar(
-//             std::numeric_limits<ColorScalar>::signaling_NaN());
-//         CHECK(res == ColorIntegral(0));
-//     }
-// }
+BOOST_AUTO_TEST_CASE(plus, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::Color x2{4.4, 5.5, 6.6};
+    std::array<ray::ColorScalar, 3> elems{5.5, 7.7, 9.9};
+    ray::Color res = x1 + x2;
+    TEST_EQUAL_RANGES(res, elems);
+}
 
-// TEST_CASE("color constants") {
-//     SUBCASE("black") {
-//         const Color color = Colors::BLACK;
-//         CHECK(color.r() == 0.0);
-//         CHECK(color.g() == 0.0);
-//         CHECK(color.b() == 0.0);
-//     }
-//     SUBCASE("white") {
-//         const Color color = Colors::WHITE;
-//         CHECK(color.r() == 1.0);
-//         CHECK(color.g() == 1.0);
-//         CHECK(color.b() == 1.0);
-//     }
-//     SUBCASE("red") {
-//         const Color color = Colors::RED;
-//         CHECK(color.r() == 1.0);
-//         CHECK(color.g() == 0.0);
-//         CHECK(color.b() == 0.0);
-//     }
-//     SUBCASE("green") {
-//         const Color color = Colors::GREEN;
-//         CHECK(color.r() == 0.0);
-//         CHECK(color.g() == 1.0);
-//         CHECK(color.b() == 0.0);
-//     }
-//     SUBCASE("blue") {
-//         const Color color = Colors::BLUE;
-//         CHECK(color.r() == 0.0);
-//         CHECK(color.g() == 0.0);
-//         CHECK(color.b() == 1.0);
-//     }
-// }
+BOOST_AUTO_TEST_CASE(inplace_minus, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::Color x2{4.4, 5.5, 6.6};
+    std::array<ray::ColorScalar, 3> elems{-3.3, -3.3, -3.3};
+    ray::Color res = x1;
+    res -= x2;
+    TEST_EQUAL_RANGES(res, elems);
+}
 
-}} // namespace cpp_raytracing::test
+BOOST_AUTO_TEST_CASE(minus, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::Color x2{4.4, 5.5, 6.6};
+    std::array<ray::ColorScalar, 3> elems{-3.3, -3.3, -3.3};
+    ray::Color res = x1 - x2;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(inplace_scalar_mult, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::ColorScalar fac = 7.7;
+    std::array<ray::ColorScalar, 3> elems{8.47, 16.94, 25.41};
+    ray::Color res = x1;
+    res *= fac;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(scalar_mult, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::ColorScalar fac = 7.7;
+    std::array<ray::ColorScalar, 3> elems{8.47, 16.94, 25.41};
+    ray::Color res;
+    res = x1 * fac;
+
+    TEST_EQUAL_RANGES(res, elems);
+    res = fac * x1;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(inplace_scalar_div, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::ColorScalar fac = 7.7;
+    std::array<ray::ColorScalar, 3> elems{1.1 / 7.7, 2.2 / 7.7, 3.3 / 7.7};
+    ray::Color res = x1;
+    res /= fac;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(scalar_div, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::ColorScalar fac = 7.7;
+    std::array<ray::ColorScalar, 3> elems{1.1 / 7.7, 2.2 / 7.7, 3.3 / 7.7};
+    ray::Color res;
+    res = x1 / fac;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(inplace_elem_mult, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::Color x2{4.4, 5.5, 6.6};
+    std::array<ray::ColorScalar, 3> elems{4.84, 12.1, 21.78};
+    ray::Color res = x1;
+    res *= x2;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(elem_mult, *but::tolerance(epsilon)) {
+    const ray::Color x1{1.1, 2.2, 3.3};
+    const ray::Color x2{4.4, 5.5, 6.6};
+    std::array<ray::ColorScalar, 3> elems{4.84, 12.1, 21.78};
+    ray::Color res;
+    res = x1 * x2;
+    TEST_EQUAL_RANGES(res, elems);
+}
+
+BOOST_AUTO_TEST_CASE(int_from_color_scalar, *but::tolerance(epsilon)) {
+    auto inf = std::numeric_limits<ray::ColorScalar>::infinity();
+    auto quiet_NaN = std::numeric_limits<ray::ColorScalar>::quiet_NaN();
+    auto signaling_NaN = std::numeric_limits<ray::ColorScalar>::signaling_NaN();
+
+    ray::ColorIntegral res;
+
+    res = ray::int_from_color_scalar(ray::ColorScalar{0.0});
+    BOOST_CHECK(res == ray::ColorIntegral{0});
+
+    res = ray::int_from_color_scalar(ray::ColorScalar{1.0});
+    BOOST_CHECK(res == ray::ColorIntegral{255});
+
+    res = ray::int_from_color_scalar(ray::ColorScalar{-3.0});
+    BOOST_CHECK(res == ray::ColorIntegral{0});
+
+    res = ray::int_from_color_scalar(ray::ColorScalar{+3.0});
+    BOOST_CHECK(res == ray::ColorIntegral{255});
+
+    res = ray::int_from_color_scalar(-inf);
+    BOOST_CHECK(res == ray::ColorIntegral{0});
+
+    res = ray::int_from_color_scalar(+inf);
+    BOOST_CHECK(res == ray::ColorIntegral{255});
+
+    res = ray::int_from_color_scalar(quiet_NaN);
+    BOOST_CHECK(res == ray::ColorIntegral{0});
+
+    res = ray::int_from_color_scalar(signaling_NaN);
+    BOOST_CHECK(res == ray::ColorIntegral{0});
+}
+
+BOOST_AUTO_TEST_CASE(color_constants, *but::tolerance(epsilon)) {
+    ray::Color color;
+    std::array<ray::ColorScalar, 3> elems;
+
+    color = ray::Colors::BLACK;
+    elems = {0.0, 0.0, 0.0};
+    TEST_EQUAL_RANGES(color, elems);
+
+    color = ray::Colors::WHITE;
+    elems = {1.0, 1.0, 1.0};
+    TEST_EQUAL_RANGES(color, elems);
+
+    color = ray::Colors::RED;
+    elems = {1.0, 0.0, 0.0};
+    TEST_EQUAL_RANGES(color, elems);
+
+    color = ray::Colors::GREEN;
+    elems = {0.0, 1.0, 0.0};
+    TEST_EQUAL_RANGES(color, elems);
+
+    color = ray::Colors::BLUE;
+    elems = {0.0, 0.0, 1.0};
+    TEST_EQUAL_RANGES(color, elems);
+}
