@@ -9,12 +9,6 @@
 namespace cpp_raytracing {
 
 /**
- * @brief namespace for unittests
- */
-namespace test {
-}
-
-/**
  * @brief namespace for examples
  */
 namespace examples {
