@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background,
 
     // test scene
     auto dummy_camera =
-        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera(
+        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera3D(
             {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, 90.0, 1.0));
     ray::Scene scene(dummy_camera);
 
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter,
 
     // test scene
     auto dummy_camera =
-        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera(
+        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera3D(
             {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, 90.0, 1.0));
     ray::Scene scene(dummy_camera);
 

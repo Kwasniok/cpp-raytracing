@@ -16,9 +16,10 @@
 namespace cpp_raytracing {
 
 /**
- * @brief represents camera interface in 3D
+ * @brief represents camera interface
  */
-class Camera3D : public Entity3D {
+template <Dimension DIMENSION>
+class Camera : public Entity<DIMENSION> {
   public:
     /**
      * @brief calculates ray for canvas coordinates
@@ -30,27 +31,33 @@ class Camera3D : public Entity3D {
                                                 const Scalar x,
                                                 const Scalar y) const = 0;
 
-    HitRecord hit_record(const Geometry&, const RaySegment3D&,
+    HitRecord hit_record(const Geometry&, const RaySegment<DIMENSION>&,
                          const Scalar) const override {
         return {.t = infinity};
     };
 };
+/**
+ * @brief represents camera interface in 3D
+ */
+using Camera3D = Camera<Dimension{3}>;
 
 /**
- * @brief represents a pinhole camera in 3D
+ * @brief represents a pinhole camera
  */
-class PinholeCamera3D : public Camera3D {
+template <Dimension DIMENSION>
+class PinholeCamera : public Camera<DIMENSION> {
   public:
+    using VecType = Vec<DIMENSION>;
     /**
      * @brief representation of detector surface as a char
      * @see ray_for_coords
      */
-    using DetectorSurface = std::function<Vec3(const Scalar, const Scalar)>;
+    using DetectorSurface = std::function<VecType(const Scalar, const Scalar)>;
 
     /** @brief manifold for detector surface */
     DetectorSurface detector_surface;
     /** @brief position of pinhole */
-    Vec3 pinhole;
+    VecType pinhole;
 
     /**
      * @brief construct pinhole camera
@@ -58,16 +65,21 @@ class PinholeCamera3D : public Camera3D {
      * @param surface_arg used to forward initialize detector_surface
      */
     template <class T>
-    PinholeCamera3D(const Vec3& pinhole, T surface_arg)
+    PinholeCamera(const VecType& pinhole, T surface_arg)
         : detector_surface(std::forward<T>(surface_arg)), pinhole(pinhole) {}
 
     std::unique_ptr<Ray> ray_for_coords(const Geometry& geometry,
                                         const Scalar x,
                                         const Scalar y) const override {
-        const Vec3 start = detector_surface(x, y);
+        const VecType start = detector_surface(x, y);
         return geometry.ray_passing_through(start, pinhole);
     }
 };
+
+/**
+ * @brief represents a pinhole camera in 3D
+ */
+using PinholeCamera3D = PinholeCamera<Dimension{3}>;
 
 /**
  * @brief pinhole camera from conventional camera parameters for a cartesian
@@ -75,7 +87,7 @@ class PinholeCamera3D : public Camera3D {
  * @note For convenience, the image is flipped vertically unlike real pinhole
  *       images.
  */
-PinholeCamera3D cartesian_pinhole_camera(
+PinholeCamera3D cartesian_pinhole_camera3D(
     const Vec3 detector_origin, const Vec3 pinhole, const Vec3 up_direction,
     const Scalar vertical_field_of_view_deg, const Scalar aspect_ratio) {
     using namespace tensor;
