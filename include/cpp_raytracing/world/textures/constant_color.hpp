@@ -13,7 +13,8 @@ namespace cpp_raytracing {
 /**
  * @brief simple constant color texture
  */
-class ConstantColor : public Texture {
+template <Dimension DIMENSION>
+class ConstantColor : public Texture<DIMENSION> {
   public:
     /** @brief color of the surface */
     Color color = Colors::WHITE;
@@ -34,11 +35,15 @@ class ConstantColor : public Texture {
 
     ~ConstantColor() override = default;
 
+    /** @see Texture::value */
     Color value([[maybe_unused]] const Vec2& coordinates,
                 [[maybe_unused]] const Vec3& point) const override {
         return color;
     }
 };
+
+/** @brief texture of unifor color for 3D entity */
+using ConstantColor3D = ConstantColor<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

@@ -15,8 +15,12 @@ namespace cpp_raytracing {
 /**
  * @brief texture interface
  */
+template <Dimension DIMENSION>
 class Texture {
   public:
+    /** @brief volume vector type */
+    using VolumeVec = Vec<DIMENSION>;
+
     /** @brief unique texture identifier */
     Identifier<class Texture> id;
 
@@ -38,27 +42,31 @@ class Texture {
     virtual ~Texture() = default;
 
     /** @brief color value for UV coordinates and position in space */
-    virtual Color value(const Vec2& coordinates, const Vec3& point) const = 0;
+    virtual Color value(const Vec2& uv_coordinates,
+                        const VolumeVec& point) const = 0;
 
     /** @brief indicates a missing texture */
     constexpr static Color
-    value_for_missing_texture([[maybe_unused]] const Vec2& coordinates,
-                              [[maybe_unused]] const Vec3& point) {
+    value_for_missing_texture([[maybe_unused]] const Vec2& uv_coordinates,
+                              [[maybe_unused]] const VolumeVec& point) {
         constexpr Scalar scale = 1 / 10.0;
         constexpr Color light{1.0, 0.0, 1.0};
         constexpr Color dark{0.1, 0.0, 0.1};
 
         const int val =
-            int(coordinates[0] / scale) + int(coordinates[1] / scale);
+            int(uv_coordinates[0] / scale) + int(uv_coordinates[1] / scale);
         const bool is_light = val % 2 == 0;
 
         return is_light ? light : dark;
     }
 };
 
+/** @brief texture of 3D entity */
+using Texture3D = Texture<Dimension{3}>;
+
 /** @brief default identifier for textures */
-template <>
-struct default_identifier<Texture> {
+template <Dimension DIMENSION>
+struct default_identifier<Texture<DIMENSION>> {
     /** @brief default identifier for textures */
     static constexpr const char* value = "texture";
 };

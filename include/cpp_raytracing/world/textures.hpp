@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "textures/base.hpp"
-#include "textures/checker_2d.hpp"
-#include "textures/checker_3d.hpp"
 #include "textures/constant_color.hpp"
+#include "textures/surface_checker.hpp"
+#include "textures/volume_checker.hpp"
 
 #endif

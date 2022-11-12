@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(metal_no_roughness, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material> mat;
     {
         auto metal = std::make_unique<ray::Metal>();
-        auto texture = std::make_shared<ray::ConstantColor>();
+        auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         metal->color = std::move(texture);
         metal->roughness = mat_rough;
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(metal_with_roughness, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material> mat;
     {
         auto metal = std::make_unique<ray::Metal>();
-        auto texture = std::make_shared<ray::ConstantColor>();
+        auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         metal->color = std::move(texture);
         metal->roughness = mat_rough;

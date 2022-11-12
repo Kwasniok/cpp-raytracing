@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(diffuse, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material> mat;
     {
         auto diffuse = std::make_unique<ray::Diffuse>();
-        auto texture = std::make_shared<ray::ConstantColor>();
+        auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         diffuse->color = std::move(texture);
         mat = std::move(diffuse);

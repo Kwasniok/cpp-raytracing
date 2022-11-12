@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(dielectric_air, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material> mat;
     {
         auto dielectric = std::make_unique<ray::Dielectric>();
-        auto texture = std::make_shared<ray::ConstantColor>();
+        auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(dielectric_into_glass, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material> mat;
     {
         auto dielectric = std::make_unique<ray::Dielectric>();
-        auto texture = std::make_shared<ray::ConstantColor>();
+        auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(dielectric_total_reflection, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material> mat;
     {
         auto dielectric = std::make_unique<ray::Dielectric>();
-        auto texture = std::make_shared<ray::ConstantColor>();
+        auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         dielectric->color = std::move(texture);
         dielectric->index_of_refraction = ior;

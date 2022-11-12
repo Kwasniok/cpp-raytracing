@@ -207,18 +207,18 @@ std::shared_ptr<Mesh3D> make_xz_plane(const Scalar scale,
 }
 
 /** @brief returns constant color texture */
-std::shared_ptr<Texture> make_color_texture(const Color& color) {
-    auto texture = std::make_shared<ConstantColor>();
+std::shared_ptr<Texture3D> make_color_texture(const Color& color) {
+    auto texture = std::make_shared<ConstantColor3D>();
     texture->color = color;
     return texture;
 }
 
 /** @brief returns texture with 3D checker board pattern */
-std::shared_ptr<Texture>
+std::shared_ptr<Texture3D>
 make_checker_3d_texture(const Color& color1, const Color& color2,
                         const Scalar scale = 1.0,
                         const Vec3& offset = {0.0, 0.0, 0.0}) {
-    auto texture = std::make_shared<Checker3D>();
+    auto texture = std::make_shared<VolumeChecker3D>();
     texture->color1 = color1;
     texture->color2 = color2;
     texture->scale = scale;
@@ -229,7 +229,7 @@ make_checker_3d_texture(const Color& color1, const Color& color2,
 /** @brief returns diffuse material */
 std::shared_ptr<Material> make_diffuse_material(const Color& color) {
     auto mat = std::make_shared<Diffuse>();
-    auto texture = std::make_shared<ConstantColor>();
+    auto texture = std::make_shared<ConstantColor3D>();
     mat->color = make_color_texture(color);
     return mat;
 }

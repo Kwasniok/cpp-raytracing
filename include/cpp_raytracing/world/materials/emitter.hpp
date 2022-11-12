@@ -17,7 +17,7 @@ namespace cpp_raytracing {
 class Emitter : public Material {
   public:
     /** @brief color of the emitting surface */
-    std::shared_ptr<Texture> color;
+    std::shared_ptr<Texture3D> color;
 
     /** @brief default construct with default idenfifier root */
     Emitter() = default;
@@ -45,8 +45,8 @@ class Emitter : public Material {
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
-                  : Texture::value_for_missing_texture(record.uv_coordinates,
-                                                       record.point);
+                  : Texture3D::value_for_missing_texture(record.uv_coordinates,
+                                                         record.point);
 
         return {direction, color_value};
     }

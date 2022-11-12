@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief 2D checker texture
+ * @brief UV coordinates-based checker texture
  */
 
 #ifndef CPP_RAYTRACING_TEXTURES_CHECKER_2D_HPP
@@ -13,10 +13,14 @@
 namespace cpp_raytracing {
 
 /**
- * @brief simple 2D checker texture
+ * @brief simple UV coordinates-based checker texture
  */
-class Checker2D : public Texture {
+template <Dimension DIMENSION>
+class SurfaceChecker : public Texture<DIMENSION> {
   public:
+    /** @brief volume vector type */
+    using VolumeVec = Vec<DIMENSION>;
+
     /** @brief primary color of the surface */
     Color color1 = Colors::WHITE;
     /** @brief secondary color of the surface */
@@ -27,26 +31,27 @@ class Checker2D : public Texture {
     Scalar scale = 1.0;
 
     /** @brief default construct with default idenfifier root */
-    Checker2D() = default;
+    SurfaceChecker() = default;
 
     /** @brief copy constructor */
-    Checker2D(const Checker2D&) = delete;
+    SurfaceChecker(const SurfaceChecker&) = delete;
 
     /** @brief move constructor */
-    Checker2D(Checker2D&&) = default;
+    SurfaceChecker(SurfaceChecker&&) = default;
 
     /** @brief copy assignment */
-    Checker2D& operator=(const Checker2D&) = delete;
+    SurfaceChecker& operator=(const SurfaceChecker&) = delete;
 
     /** @brief move assignment */
-    Checker2D& operator=(Checker2D&&) = default;
+    SurfaceChecker& operator=(SurfaceChecker&&) = default;
 
-    ~Checker2D() override = default;
+    ~SurfaceChecker() override = default;
 
-    Color value(const Vec2& coordinates,
-                [[maybe_unused]] const Vec3& point) const override {
+    /** @see Texture::value */
+    Color value(const Vec2& uv_coordinates,
+                [[maybe_unused]] const VolumeVec& point) const override {
 
-        const Vec2 c = (coordinates - offset) * (pi / scale);
+        const Vec2 c = (uv_coordinates - offset) * (pi / scale);
         const auto val = std::sin(c[0]) * std::sin(c[1]);
 
         const bool is_primary = val < 0.0;
@@ -54,6 +59,9 @@ class Checker2D : public Texture {
         return is_primary ? color1 : color2;
     }
 };
+
+/** @brief 2D surface checker texture  for 3D entities */
+using SurfaceChecker3D = SurfaceChecker<Dimension{3}>;
 
 } // namespace cpp_raytracing
 
