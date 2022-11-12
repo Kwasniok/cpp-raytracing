@@ -28,7 +28,7 @@ const auto SHUTTER_MODES = std::to_array({
 /**
  * @brief linear motion based mesh entity animator
  */
-class LinearMotionMeshAnimator : public MeshAnimator {
+class LinearMotionMeshAnimator3D : public MeshAnimator3D {
   public:
     /** @brief start position for `time = time_offset` of all points */
     std::vector<Vec3> start_points;
@@ -38,29 +38,30 @@ class LinearMotionMeshAnimator : public MeshAnimator {
     Scalar time_offset = 0.0;
 
     /** @brief default constructor */
-    LinearMotionMeshAnimator() = default;
+    LinearMotionMeshAnimator3D() = default;
 
     /** @brief copy constructor */
-    LinearMotionMeshAnimator(const LinearMotionMeshAnimator&) = delete;
+    LinearMotionMeshAnimator3D(const LinearMotionMeshAnimator3D&) = delete;
 
     /** @brief move constructor */
-    LinearMotionMeshAnimator(LinearMotionMeshAnimator&&) = default;
+    LinearMotionMeshAnimator3D(LinearMotionMeshAnimator3D&&) = default;
 
     /** @brief copy assignment */
-    LinearMotionMeshAnimator&
-    operator=(const LinearMotionMeshAnimator&) = delete;
+    LinearMotionMeshAnimator3D&
+    operator=(const LinearMotionMeshAnimator3D&) = delete;
 
     /** @brief move assignment */
-    LinearMotionMeshAnimator& operator=(LinearMotionMeshAnimator&&) = default;
+    LinearMotionMeshAnimator3D&
+    operator=(LinearMotionMeshAnimator3D&&) = default;
 
-    ~LinearMotionMeshAnimator() override = default;
+    ~LinearMotionMeshAnimator3D() override = default;
 
   protected:
-    void update_for_time_hook(const Scalar time, Mesh* mesh) override;
+    void update_for_time_hook(const Scalar time, Mesh3D* mesh) override;
 };
 
-void LinearMotionMeshAnimator::update_for_time_hook(const Scalar time,
-                                                    Mesh* mesh) {
+void LinearMotionMeshAnimator3D::update_for_time_hook(const Scalar time,
+                                                      Mesh3D* mesh) {
     if (mesh == nullptr)
         return;
     mesh->points = start_points;
@@ -72,7 +73,7 @@ void LinearMotionMeshAnimator::update_for_time_hook(const Scalar time,
 /**
  * @brief sinusoidal motion based mesh entity animator
  */
-class SinusoidalMotionMeshAnimator : public MeshAnimator {
+class SinusoidalMotionMeshAnimator3D : public MeshAnimator3D {
   public:
     /** @brief start position for `time = time_offset` of all points */
     std::vector<Vec3> start_points;
@@ -84,30 +85,31 @@ class SinusoidalMotionMeshAnimator : public MeshAnimator {
     Scalar time_offset = 0.0;
 
     /** @brief default constructor */
-    SinusoidalMotionMeshAnimator() = default;
+    SinusoidalMotionMeshAnimator3D() = default;
 
     /** @brief copy constructor */
-    SinusoidalMotionMeshAnimator(const SinusoidalMotionMeshAnimator&) = delete;
+    SinusoidalMotionMeshAnimator3D(const SinusoidalMotionMeshAnimator3D&) =
+        delete;
 
     /** @brief move constructor */
-    SinusoidalMotionMeshAnimator(SinusoidalMotionMeshAnimator&&) = default;
+    SinusoidalMotionMeshAnimator3D(SinusoidalMotionMeshAnimator3D&&) = default;
 
     /** @brief copy assignment */
-    SinusoidalMotionMeshAnimator&
-    operator=(const SinusoidalMotionMeshAnimator&) = delete;
+    SinusoidalMotionMeshAnimator3D&
+    operator=(const SinusoidalMotionMeshAnimator3D&) = delete;
 
     /** @brief move assignment */
-    SinusoidalMotionMeshAnimator&
-    operator=(SinusoidalMotionMeshAnimator&&) = default;
+    SinusoidalMotionMeshAnimator3D&
+    operator=(SinusoidalMotionMeshAnimator3D&&) = default;
 
-    ~SinusoidalMotionMeshAnimator() override = default;
+    ~SinusoidalMotionMeshAnimator3D() override = default;
 
   protected:
-    void update_for_time_hook(const Scalar time, Mesh* mesh) override;
+    void update_for_time_hook(const Scalar time, Mesh3D* mesh) override;
 };
 
-void SinusoidalMotionMeshAnimator::update_for_time_hook(const Scalar time,
-                                                        Mesh* mesh) {
+void SinusoidalMotionMeshAnimator3D::update_for_time_hook(const Scalar time,
+                                                          Mesh3D* mesh) {
     if (mesh == nullptr)
         return;
 
@@ -160,8 +162,8 @@ class SkyBackground : public Background {
  * @brief returns a cube as mesh entity
  * @note Uses Cartesian coordinates.
  */
-std::shared_ptr<Mesh> make_cube(const Scalar scale, const Vec3& position) {
-    auto mesh = std::make_shared<Mesh>();
+std::shared_ptr<Mesh3D> make_cube(const Scalar scale, const Vec3& position) {
+    auto mesh = std::make_shared<Mesh3D>();
     mesh->id.change("cube");
     mesh->points = {
         scale * Vec3{-1.0, -1.0, -1.0} + position, // 0
@@ -174,12 +176,12 @@ std::shared_ptr<Mesh> make_cube(const Scalar scale, const Vec3& position) {
         scale * Vec3{+1.0, +1.0, +1.0} + position, // 7
     };
     mesh->faces = {
-        Face{0, 1, 3}, Face{3, 2, 0}, // -x
-        Face{5, 4, 6}, Face{6, 7, 5}, // +x
-        Face{1, 0, 4}, Face{4, 5, 1}, // -y
-        Face{2, 3, 7}, Face{7, 6, 2}, // +y
-        Face{4, 0, 2}, Face{2, 6, 4}, // -z
-        Face{1, 5, 7}, Face{7, 3, 1}, // +z
+        Face3D{0, 1, 3}, Face3D{3, 2, 0}, // -x
+        Face3D{5, 4, 6}, Face3D{6, 7, 5}, // +x
+        Face3D{1, 0, 4}, Face3D{4, 5, 1}, // -y
+        Face3D{2, 3, 7}, Face3D{7, 6, 2}, // +y
+        Face3D{4, 0, 2}, Face3D{2, 6, 4}, // -z
+        Face3D{1, 5, 7}, Face3D{7, 3, 1}, // +z
     };
 
     return mesh;
@@ -189,8 +191,9 @@ std::shared_ptr<Mesh> make_cube(const Scalar scale, const Vec3& position) {
  * @brief returns a bounded x-z plane as mesh entity
  * @note Uses Cartesian coordinates.
  */
-std::shared_ptr<Mesh> make_xz_plane(const Scalar scale, const Vec3& position) {
-    auto mesh = std::make_shared<Mesh>();
+std::shared_ptr<Mesh3D> make_xz_plane(const Scalar scale,
+                                      const Vec3& position) {
+    auto mesh = std::make_shared<Mesh3D>();
     mesh->id.change("plane");
     mesh->points = {
         scale * Vec3{-1.0, 0.0, -1.0} + position, // 0
@@ -198,7 +201,7 @@ std::shared_ptr<Mesh> make_xz_plane(const Scalar scale, const Vec3& position) {
         scale * Vec3{+1.0, 0.0, -1.0} + position, // 2
         scale * Vec3{+1.0, 0.0, +1.0} + position, // 3
     };
-    mesh->faces = {Face{0, 1, 3}, Face{3, 2, 0}};
+    mesh->faces = {Face3D{0, 1, 3}, Face3D{3, 2, 0}};
 
     return mesh;
 }

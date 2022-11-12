@@ -16,7 +16,7 @@ namespace cpp_raytracing {
  * @brief spherical object
  * @note Asserts Euclidean Geometry and ignores geometry parameter.
  */
-class Sphere : public Entity {
+class Sphere3D : public Entity3D {
   public:
     /**
      * @brief radius
@@ -28,17 +28,17 @@ class Sphere : public Entity {
     std::shared_ptr<Material> material;
 
     /** @brief default construct with default idenfifier root */
-    Sphere() = default;
+    Sphere3D() = default;
     /** @brief copy constructor */
-    Sphere(const Sphere& other) = delete;
+    Sphere3D(const Sphere3D& other) = delete;
     /** @brief move constructor */
-    Sphere(Sphere&& other) = default;
+    Sphere3D(Sphere3D&& other) = default;
     /** @brief copy assignment */
-    Sphere& operator=(const Sphere& other) = delete;
+    Sphere3D& operator=(const Sphere3D& other) = delete;
     /** @brief move assignment */
-    Sphere& operator=(Sphere&& other) = default;
+    Sphere3D& operator=(Sphere3D&& other) = default;
 
-    ~Sphere() override = default;
+    ~Sphere3D() override = default;
 
     HitRecord hit_record(const Geometry& geometry,
                          const RaySegment3D& ray_segment,
@@ -62,9 +62,9 @@ class Sphere : public Entity {
     }
 };
 
-HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
-                             const RaySegment3D& ray_segment,
-                             const Scalar t_min) const {
+HitRecord Sphere3D::hit_record([[maybe_unused]] const Geometry& geometry,
+                               const RaySegment3D& ray_segment,
+                               const Scalar t_min) const {
     using namespace tensor;
 
     // analytical geometry: line hits sphere
@@ -113,18 +113,18 @@ HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
     return record;
 }
 
-std::optional<AxisAlignedBoundingBox3D> Sphere::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Sphere3D::bounding_box() const {
     return AxisAlignedBoundingBox3D{-Vec3{radius, radius, radius},
                                     Vec3{radius, radius, radius}};
 }
 
 /** @brief make a 3D sphere */
-std::unique_ptr<Instance> make_sphere(const Vec3 position,
-                                      const Scalar radius) {
-    auto sphere = std::make_shared<Sphere>();
+std::unique_ptr<Instance3D> make_sphere(const Vec3 position,
+                                        const Scalar radius) {
+    auto sphere = std::make_shared<Sphere3D>();
     sphere->radius = radius;
 
-    auto instance = std::make_unique<Instance>();
+    auto instance = std::make_unique<Instance3D>();
     instance->entity = sphere;
     instance->position = position;
 

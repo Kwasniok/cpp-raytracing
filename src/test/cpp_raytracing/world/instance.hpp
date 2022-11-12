@@ -22,7 +22,7 @@ namespace cpp_raytracing {
  *       direction.
  * @note Asserts Euclidean Geometry and ignores geometry parameter.
  */
-class Instance : public Entity {
+class Instance3D : public Entity3D {
   public:
     /** @brief translation */
     Vec3 position = {0.0, 0.0, 0.0};
@@ -36,20 +36,20 @@ class Instance : public Entity {
     Vec3 scale = {1.0, 1.0, 1.0};
 
     /** @brief instanced entity */
-    std::shared_ptr<Entity> entity;
+    std::shared_ptr<Entity3D> entity;
 
     /** @brief default construct with default idenfifier root */
-    Instance() = default;
+    Instance3D() = default;
     /** @brief copy constructor */
-    Instance(const Instance& other) = delete;
+    Instance3D(const Instance3D& other) = delete;
     /** @brief move constructor */
-    Instance(Instance&& other) = default;
+    Instance3D(Instance3D&& other) = default;
     /** @brief copy assignment */
-    Instance& operator=(const Instance& other) = delete;
+    Instance3D& operator=(const Instance3D& other) = delete;
     /** @brief move assignment */
-    Instance& operator=(Instance&& other) = default;
+    Instance3D& operator=(Instance3D&& other) = default;
 
-    ~Instance() override = default;
+    ~Instance3D() override = default;
 
     void set_time(const Scalar time) override;
 
@@ -64,8 +64,8 @@ class Instance : public Entity {
      * @note The clone is identical up to its id;
      * @see Identifier::clone
      */
-    Instance clone() const {
-        Instance other;
+    Instance3D clone() const {
+        Instance3D other;
         other.id = id.clone();
         other.position = position;
         other.entity = entity;
@@ -87,11 +87,11 @@ class Instance : public Entity {
     Mat3x3 _inv_transformation = tensor::identity_mat<3_D>;
 };
 
-void Instance::set_time(const Scalar time) {
+void Instance3D::set_time(const Scalar time) {
     using namespace tensor;
 
     // super call
-    this->Entity::set_time(time);
+    this->Entity3D::set_time(time);
 
     // cache transformation if nedded
     if (entity) {
@@ -102,9 +102,9 @@ void Instance::set_time(const Scalar time) {
     }
 }
 
-HitRecord Instance::hit_record(const Geometry& geometry,
-                               const RaySegment3D& ray_segment,
-                               const Scalar t_min) const {
+HitRecord Instance3D::hit_record(const Geometry& geometry,
+                                 const RaySegment3D& ray_segment,
+                                 const Scalar t_min) const {
 
     using namespace tensor;
 
@@ -133,7 +133,7 @@ HitRecord Instance::hit_record(const Geometry& geometry,
     }
 }
 
-std::optional<AxisAlignedBoundingBox3D> Instance::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Instance3D::bounding_box() const {
     using namespace tensor;
 
     if (entity) {

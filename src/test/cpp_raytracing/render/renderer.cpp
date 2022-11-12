@@ -21,13 +21,13 @@ constexpr ray::ColorScalar epsilon = 1.0e-12;
 /**
  * @brief returns a riangle as mesh entity
  */
-std::shared_ptr<ray::Mesh> make_triange_mesh(const ray::Vec3& point0,
-                                             const ray::Vec3& point1,
-                                             const ray::Vec3& point2) {
-    auto mesh = std::make_shared<ray::Mesh>();
+std::shared_ptr<ray::Mesh3D> make_triange_mesh(const ray::Vec3& point0,
+                                               const ray::Vec3& point1,
+                                               const ray::Vec3& point2) {
+    auto mesh = std::make_shared<ray::Mesh3D>();
     mesh->id.change("triangle mesh");
     mesh->points = {point0, point1, point2};
-    mesh->faces = {ray::Face{0, 1, 2}};
+    mesh->faces = {ray::Face3D{0, 1, 2}};
 
     return mesh;
 }
@@ -59,14 +59,15 @@ make_emitter_material(const ray::Color& color,
     return mat;
 }
 
-BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background, *but::tolerance(epsilon)) {
+BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background,
+                     *but::tolerance(epsilon)) {
     // ray hits reflective surface and scatters into background
 
     ray::EuclideanGeometry geometry;
 
     // test scene
     auto dummy_camera =
-        std::make_shared<ray::PinholeCamera>(ray::cartesian_pinhole_camera(
+        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera(
             {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, 90.0, 1.0));
     ray::Scene scene(dummy_camera);
 
@@ -111,14 +112,15 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background, *but::tole
     }
 }
 
-BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter, *but::tolerance(epsilon)) {
+BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter,
+                     *but::tolerance(epsilon)) {
     // ray hits reflective surface and scatters into emitter
 
     ray::EuclideanGeometry geometry;
 
     // test scene
     auto dummy_camera =
-        std::make_shared<ray::PinholeCamera>(ray::cartesian_pinhole_camera(
+        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera(
             {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, 90.0, 1.0));
     ray::Scene scene(dummy_camera);
 

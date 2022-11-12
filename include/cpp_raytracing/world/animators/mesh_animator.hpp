@@ -11,42 +11,40 @@
 
 namespace cpp_raytracing {
 
-class Entity;
-
 /**
  * @brief animators update the current state of a mesh entity based on a
  *        given time
  */
-class MeshAnimator : public Animator {
+class MeshAnimator3D : public Animator3D {
   public:
     /** @brief default constructor */
-    MeshAnimator() = default;
+    MeshAnimator3D() = default;
 
     /** @brief copy constructor */
-    MeshAnimator(const MeshAnimator&) = default;
+    MeshAnimator3D(const MeshAnimator3D&) = default;
 
     /** @brief move constructor */
-    MeshAnimator(MeshAnimator&&) = default;
+    MeshAnimator3D(MeshAnimator3D&&) = default;
 
     /** @brief copy assignment */
-    MeshAnimator& operator=(const MeshAnimator&) = default;
+    MeshAnimator3D& operator=(const MeshAnimator3D&) = default;
 
     /** @brief move assignment */
-    MeshAnimator& operator=(MeshAnimator&&) = default;
+    MeshAnimator3D& operator=(MeshAnimator3D&&) = default;
 
-    ~MeshAnimator() override = default;
+    ~MeshAnimator3D() override = default;
 
-    void update_for_time(const Scalar time, Entity* entity) override;
+    void update_for_time(const Scalar time, Entity3D* entity) override;
 
   protected:
     /** @brief hook for update_for_time */
-    virtual void update_for_time_hook(const Scalar time, Mesh* mesh) = 0;
+    virtual void update_for_time_hook(const Scalar time, Mesh3D* mesh) = 0;
 };
 
-void MeshAnimator::update_for_time(const Scalar time, Entity* entity) {
+void MeshAnimator3D::update_for_time(const Scalar time, Entity3D* entity) {
     if (entity == nullptr)
         return;
-    Mesh* mesh = dynamic_cast<Mesh*>(entity);
+    Mesh3D* mesh = dynamic_cast<Mesh3D*>(entity);
     if (mesh) {
         update_for_time_hook(time, mesh);
     } else {

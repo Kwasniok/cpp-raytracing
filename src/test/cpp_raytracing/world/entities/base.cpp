@@ -7,7 +7,7 @@
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;
 
-class Dummy : public ray::Entity {
+class Dummy : public ray::Entity3D {
 
     ray::HitRecord hit_record(const ray::Geometry&, const ray::RaySegment3D&,
                               const ray::Scalar) const override {

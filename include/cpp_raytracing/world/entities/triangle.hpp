@@ -17,7 +17,7 @@ namespace cpp_raytracing {
  * @brief triangular object
  * @note The face is filled via bilinear coordinate interpolation.
  */
-class Triangle : public Entity {
+class Triangle3D : public Entity3D {
   public:
     /** @brief face corners */
     std::array<Vec3, 3> points;
@@ -25,21 +25,21 @@ class Triangle : public Entity {
     std::shared_ptr<Material> material;
 
     /** @brief default constructor */
-    Triangle() = default;
+    Triangle3D() = default;
 
     /** @brief copy constructor */
-    Triangle(const Triangle&) = delete;
+    Triangle3D(const Triangle3D&) = delete;
 
     /** @brief move constructor */
-    Triangle(Triangle&&) = default;
+    Triangle3D(Triangle3D&&) = default;
 
     /** @brief copy assignment */
-    Triangle& operator=(const Triangle&) = delete;
+    Triangle3D& operator=(const Triangle3D&) = delete;
 
     /** @brief move assignment */
-    Triangle& operator=(Triangle&&) = default;
+    Triangle3D& operator=(Triangle3D&&) = default;
 
-    ~Triangle() override = default;
+    ~Triangle3D() override = default;
 
     HitRecord hit_record(const Geometry& geometry,
                          const RaySegment3D& ray_segment,
@@ -70,9 +70,9 @@ class Triangle : public Entity {
     }
 };
 
-HitRecord Triangle::hit_record(const Geometry& geometry,
-                               const RaySegment3D& ray_segment,
-                               const Scalar t_min) const {
+HitRecord Triangle3D::hit_record(const Geometry& geometry,
+                                 const RaySegment3D& ray_segment,
+                                 const Scalar t_min) const {
     using namespace tensor;
 
     // basis for span
@@ -128,7 +128,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry,
     return record;
 }
 
-std::optional<AxisAlignedBoundingBox3D> Triangle::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Triangle3D::bounding_box() const {
 
     constexpr Scalar epsilon = 1e-8;
 

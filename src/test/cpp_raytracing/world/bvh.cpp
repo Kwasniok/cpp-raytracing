@@ -26,11 +26,11 @@ struct BVHFixture {
     ~BVHFixture() = default;
 
     const ray::EuclideanGeometry geometry{};
-    std::vector<std::unique_ptr<ray::Entity>> entities{};
+    std::vector<std::unique_ptr<ray::Entity3D>> entities{};
 };
 
 BOOST_FIXTURE_TEST_CASE(size, BVHFixture, *but::tolerance(epsilon)) {
-    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+    ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     BOOST_CHECK(bvh_tree.size_bounded() == entities.size());
     BOOST_CHECK(bvh_tree.size_unbounded() == 0ul);
@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_CASE(size, BVHFixture, *but::tolerance(epsilon)) {
 }
 
 BOOST_FIXTURE_TEST_CASE(bounds, BVHFixture, *but::tolerance(epsilon)) {
-    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+    ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     constexpr ray::Vec3 min{-0.5, -0.5, -0.5};
     constexpr ray::Vec3 max{1.5, 1.5, 1.5};
@@ -49,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(bounds, BVHFixture, *but::tolerance(epsilon)) {
 }
 
 BOOST_FIXTURE_TEST_CASE(hits, BVHFixture, *but::tolerance(epsilon)) {
-    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+    ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     {
         constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(hits, BVHFixture, *but::tolerance(epsilon)) {
 }
 
 BOOST_FIXTURE_TEST_CASE(misses, BVHFixture, *but::tolerance(epsilon)) {
-    ray::BVHTree bvh_tree = ray::BVHTree(entities);
+    ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     {
         constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},

@@ -42,7 +42,7 @@ class Scene {
          * @note Since a scene might not have a valid active camera, an explicit
          *       reference is required.
          */
-        FreezeGuard(Scene& scene, const Camera& active_camera,
+        FreezeGuard(Scene& scene, const Camera3D& active_camera,
                     const Scalar time);
 
       public:
@@ -72,7 +72,7 @@ class Scene {
 
       public:
         /** @brief active camera of the frozen scene */
-        const Camera& active_camera;
+        const Camera3D& active_camera;
         /**
          * @brief (optional) active background of the frozen scene
          * @note Backgrounds do not interact with hit_record().
@@ -89,7 +89,7 @@ class Scene {
      * @brief active camera of the scene used for rendering
      * @note An active camera is required for rendering a scene.
      */
-    std::shared_ptr<Camera> active_camera;
+    std::shared_ptr<Camera3D> active_camera;
     /**
      * @brief active background of the scene used for rendering
      * @note An active background is optional but recommended for rendering a
@@ -98,7 +98,7 @@ class Scene {
     std::shared_ptr<Background> active_background;
 
     /** @brief initialize with an active camera */
-    Scene(std::shared_ptr<Camera> active_camera)
+    Scene(std::shared_ptr<Camera3D> active_camera)
         : active_camera(active_camera){};
 
     /** @brief copy constructor */
@@ -130,7 +130,7 @@ class Scene {
      * @note Not thread-safe.
      * @note Nested scenes are not permitted.
      */
-    inline void add(std::shared_ptr<Entity>&& entity) {
+    inline void add(std::shared_ptr<Entity3D>&& entity) {
         if (is_frozen()) {
             throw std::runtime_error(
                 "Cannot add entity to scene while frozen.");
@@ -157,7 +157,7 @@ class Scene {
 
   private:
     /** @brief collection of entites with BVH optimization */
-    BVHCollection _collection;
+    BVHCollection3D _collection;
     /**
      * @brief true iff scene is frozen
      * @see freeze_for_time, FreezeGuard
@@ -166,7 +166,7 @@ class Scene {
 };
 
 inline Scene::FreezeGuard::FreezeGuard(Scene& scene,
-                                       const Camera& active_camera,
+                                       const Camera3D& active_camera,
                                        const Scalar time)
     : active_camera(active_camera), _scene(scene) {
     active_background = _scene.active_background.get();
@@ -191,7 +191,7 @@ inline const Scene::FreezeGuard Scene::freeze_for_time(const Scalar time) {
         throw std::runtime_error(
             "Cannot freeze scene more than once concurrently.");
     }
-    const Camera* const camera = active_camera.get();
+    const Camera3D* const camera = active_camera.get();
     if (camera == nullptr) {
         throw std::runtime_error(
             "Cannot freeze scene without an active camera.");

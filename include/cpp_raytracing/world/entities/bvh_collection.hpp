@@ -22,24 +22,24 @@ namespace cpp_raytracing {
  * @brief collection of entities with BVH optimization
  * @see BVHTree
  */
-class BVHCollection : public Entity {
+class BVHCollection3D : public Entity3D {
   public:
     /** @brief initialize with active camera */
-    BVHCollection() = default;
+    BVHCollection3D() = default;
 
     /** @brief copy constructor */
-    BVHCollection(const BVHCollection&) = delete;
+    BVHCollection3D(const BVHCollection3D&) = delete;
 
     /** @brief move constructor */
-    BVHCollection(BVHCollection&&) = default;
+    BVHCollection3D(BVHCollection3D&&) = default;
 
     /** @brief copy assignment */
-    BVHCollection& operator=(const BVHCollection&) = delete;
+    BVHCollection3D& operator=(const BVHCollection3D&) = delete;
 
     /** @brief move assignment */
-    BVHCollection& operator=(BVHCollection&&) = default;
+    BVHCollection3D& operator=(BVHCollection3D&&) = default;
 
-    ~BVHCollection() override = default;
+    ~BVHCollection3D() override = default;
 
     /**
      * @brief remove all entities.
@@ -54,8 +54,8 @@ class BVHCollection : public Entity {
      * @note Not thread-safe.
      * @note Nested collections are not permitted.
      */
-    inline void add(std::shared_ptr<Entity>&& entity) {
-        if (is_instanceof<BVHCollection>(entity.get())) {
+    inline void add(std::shared_ptr<Entity3D>&& entity) {
+        if (is_instanceof<BVHCollection3D>(entity.get())) {
             throw std::runtime_error("Nested collections are not supported.");
         }
         invalidate_cache();
@@ -114,8 +114,8 @@ class BVHCollection : public Entity {
     }
 
   private:
-    std::vector<std::shared_ptr<Entity>> _entities;
-    std::optional<BVHTree> _bvh_tree{std::nullopt};
+    std::vector<std::shared_ptr<Entity3D>> _entities;
+    std::optional<BVHTree3D> _bvh_tree{std::nullopt};
 
   private:
     /** @brief like sourrounding_box but for optional values */
@@ -129,16 +129,16 @@ class BVHCollection : public Entity {
     }
 };
 
-void BVHCollection::set_time(const Scalar time) {
+void BVHCollection3D::set_time(const Scalar time) {
     invalidate_cache();
     for (const auto& entity : _entities) {
         entity->set_time(time);
     }
 }
 
-HitRecord BVHCollection::hit_record(const Geometry& geometry,
-                                    const RaySegment3D& ray_segment,
-                                    const Scalar t_min) const {
+HitRecord BVHCollection3D::hit_record(const Geometry& geometry,
+                                      const RaySegment3D& ray_segment,
+                                      const Scalar t_min) const {
     if (_bvh_tree) {
         return _bvh_tree->hit_record(geometry, ray_segment, t_min);
     } else {
@@ -147,11 +147,11 @@ HitRecord BVHCollection::hit_record(const Geometry& geometry,
     }
 }
 
-void BVHCollection::generate_cache() {
-    _bvh_tree = BVHTree(_entities);
+void BVHCollection3D::generate_cache() {
+    _bvh_tree = BVHTree3D(_entities);
 }
 
-std::optional<AxisAlignedBoundingBox3D> BVHCollection::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> BVHCollection3D::bounding_box() const {
     if (_bvh_tree) {
         return _bvh_tree->bounding_box();
     } else {

@@ -20,7 +20,7 @@ Scene make_scene() {
 
     const Vec3 camera_position = 1.1 * Vec3{20, 12, 12};
     const Vec3 pinhole_position = 1.1 * Vec3{15, 8.4, 9};
-    auto camera = std::make_shared<PinholeCamera>(cartesian_pinhole_camera(
+    auto camera = std::make_shared<PinholeCamera3D>(cartesian_pinhole_camera(
         camera_position, pinhole_position, {0.0, 1.0, 0.0}, 30.0, 16.0 / 9.0));
     Scene scene(camera);
 
@@ -43,7 +43,7 @@ Scene make_scene() {
         auto cube = make_cube(1.0, Vec3{0.0, 0.0, 0.0});
         cube->material = diffuse_red;
         // animation
-        auto anim = std::make_unique<SinusoidalMotionMeshAnimator>();
+        auto anim = std::make_unique<SinusoidalMotionMeshAnimator3D>();
         anim->start_points = cube->points;
         anim->amplitude = {5.0, 0.0, 2.0};
         anim->frequency = pi;

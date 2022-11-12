@@ -18,7 +18,7 @@ namespace cpp_raytracing {
 /**
  * @brief represents camera interface
  */
-class Camera : public Entity {
+class Camera3D : public Entity3D {
   public:
     /**
      * @brief calculates ray for canvas coordinates
@@ -39,7 +39,7 @@ class Camera : public Entity {
 /**
  * @brief represents a pinhole camera
  */
-class PinholeCamera : public Camera {
+class PinholeCamera3D : public Camera3D {
   public:
     /**
      * @brief representation of detector surface as a char
@@ -58,7 +58,7 @@ class PinholeCamera : public Camera {
      * @param surface_arg used to forward initialize detector_surface
      */
     template <class T>
-    PinholeCamera(const Vec3& pinhole, T surface_arg)
+    PinholeCamera3D(const Vec3& pinhole, T surface_arg)
         : detector_surface(std::forward<T>(surface_arg)), pinhole(pinhole) {}
 
     std::unique_ptr<Ray> ray_for_coords(const Geometry& geometry,
@@ -75,11 +75,9 @@ class PinholeCamera : public Camera {
  * @note For convenience, the image is flipped vertically unlike real pinhole
  *       images.
  */
-PinholeCamera cartesian_pinhole_camera(const Vec3 detector_origin,
-                                       const Vec3 pinhole,
-                                       const Vec3 up_direction,
-                                       const Scalar vertical_field_of_view_deg,
-                                       const Scalar aspect_ratio) {
+PinholeCamera3D cartesian_pinhole_camera(
+    const Vec3 detector_origin, const Vec3 pinhole, const Vec3 up_direction,
+    const Scalar vertical_field_of_view_deg, const Scalar aspect_ratio) {
     using namespace tensor;
 
     const auto theta = rad_from_deg(vertical_field_of_view_deg);

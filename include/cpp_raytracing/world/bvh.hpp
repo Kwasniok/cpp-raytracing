@@ -24,14 +24,15 @@ namespace cpp_raytracing {
  * @note BVHTree takes non-owning references to the entities and is immediately
  *       invalidated if any of the entities is changed.
  */
+template <Dimension DIMENSION>
 class BVHTree {
   private:
     /** @brief node of BVH tree for bounded entities only */
     struct Node {
-        using Iter = std::vector<const Entity*>::iterator;
+        using Iter = std::vector<const Entity<DIMENSION>*>::iterator;
 
         /** @note might be nullptr  */
-        const Entity* value = nullptr;
+        const Entity<DIMENSION>* value = nullptr;
         /** @brief left branch*/
         std::unique_ptr<Node> left;
         /** @brief right branch */
@@ -140,7 +141,7 @@ class BVHTree {
      */
     template <typename Container>
     BVHTree(const Container& container) {
-        std::vector<const Entity*> bounded_entities;
+        std::vector<const Entity<DIMENSION>*> bounded_entities;
 
         for (const auto& e : container) {
             if (e->is_bounded()) {
@@ -206,8 +207,9 @@ class BVHTree {
      * @note entities must not be nullptr and bounded
      * @note strict weak ordering (required by std::sort)
      */
-    static bool pseudo_comparator(const std::size_t axis, const Entity* e1,
-                                  const Entity* e2) {
+    static bool pseudo_comparator(const std::size_t axis,
+                                  const Entity<DIMENSION>* e1,
+                                  const Entity<DIMENSION>* e2) {
         auto const b1 = e1->bounding_box();
         auto const b2 = e2->bounding_box();
         if (b1 && b2) {
@@ -217,27 +219,33 @@ class BVHTree {
     }
 
     /** @note entities must not be nullptr and bounded */
-    static bool pseudo_comparator_x(const Entity* e1, const Entity* e2) {
+    static bool pseudo_comparator_x(const Entity<DIMENSION>* e1,
+                                    const Entity<DIMENSION>* e2) {
         return pseudo_comparator(0, e1, e2);
     }
     /** @note entities must not be nullptr and bounded */
-    static bool pseudo_comparator_y(const Entity* e1, const Entity* e2) {
+    static bool pseudo_comparator_y(const Entity<DIMENSION>* e1,
+                                    const Entity<DIMENSION>* e2) {
         return pseudo_comparator(1, e1, e2);
     }
     /** @note entities must not be nullptr and bounded */
-    static bool pseudo_comparator_z(const Entity* e1, const Entity* e2) {
+    static bool pseudo_comparator_z(const Entity<DIMENSION>* e1,
+                                    const Entity<DIMENSION>* e2) {
         return pseudo_comparator(2, e1, e2);
     }
 
-    using pseudo_cmp_t = bool(const Entity* e1, const Entity* e2);
+    using pseudo_cmp_t = bool(const Entity<DIMENSION>* e1,
+                              const Entity<DIMENSION>* e2);
     /** @note entities must not be nullptr and bounded */
     static constexpr std::array<pseudo_cmp_t*, 3> pseudo_comparators = {
         pseudo_comparator_x, pseudo_comparator_y, pseudo_comparator_z};
 
   private:
-    std::vector<const Entity*> _unbounded_entities;
+    std::vector<const Entity<DIMENSION>*> _unbounded_entities;
     Node _root;
 };
+
+using BVHTree3D = BVHTree<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

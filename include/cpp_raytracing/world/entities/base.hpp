@@ -12,6 +12,7 @@
 #include "../../geometry/base.hpp"
 #include "../../values/identifier.hpp"
 #include "../../values/scalar.hpp"
+#include "../../values/tensor.hpp"
 #include "../animators/base.hpp"
 #include "../bounding_volume.hpp"
 #include "../hit_record.hpp"
@@ -21,6 +22,7 @@ namespace cpp_raytracing {
 /**
  * @brief represents an entity
  */
+template <Dimension DIMENSION>
 class Entity {
   public:
     /** @brief unique entity identifier */
@@ -47,11 +49,11 @@ class Entity {
      * @brief sets the animator
      * @note none removes the animator and means the entity is static
      */
-    virtual void set_animator(std::unique_ptr<Animator>&& animator) {
+    virtual void set_animator(std::unique_ptr<Animator<DIMENSION>>&& animator) {
         _animator = std::move(animator);
     }
     /** @brief returns the animator of the entity */
-    virtual Animator& animator() { return *_animator; }
+    virtual Animator<DIMENSION>& animator() { return *_animator; }
 
     /**
      * @brief requests entity to take its appearence for the given time
@@ -69,7 +71,7 @@ class Entity {
      * ::infinity
      */
     virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment3D& ray_segment,
+                                 const RaySegment<DIMENSION>& ray_segment,
                                  const Scalar t_min = 0.0) const = 0;
 
     /**
@@ -93,15 +95,17 @@ class Entity {
      * @brief animator of the entity (optional)
      * @note none means the entity is static.
      */
-    std::unique_ptr<Animator> _animator;
+    std::unique_ptr<Animator<DIMENSION>> _animator;
 };
 
 /** @brief default identifier for entitys */
-template <>
-struct default_identifier<Entity> {
+template <Dimension DIMENSION>
+struct default_identifier<Entity<DIMENSION>> {
     /** @brief default identifier for entitys */
     static constexpr const char* value = "entity";
 };
+
+using Entity3D = Entity<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

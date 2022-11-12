@@ -19,36 +19,36 @@ namespace cpp_raytracing {
  * @brief mesh object
  * @note Each face is filled via bilinear coordinate interpolation.
  */
-class Mesh : public Entity {
+class Mesh3D : public Entity3D {
   public:
     /** @brief point index type */
     using Index = std::vector<Vec3>::size_type;
     /** @brief face type (triplet of point indices)*/
-    using Face = std::array<Index, 3>;
+    using Face3D = std::array<Index, 3>;
 
     /** @brief face corners */
     std::vector<Vec3> points;
     /** @brief faces */
-    std::vector<Face> faces;
+    std::vector<Face3D> faces;
     /** @brief material of the plane */
     std::shared_ptr<Material> material;
 
     /** @brief default constructor */
-    Mesh() = default;
+    Mesh3D() = default;
 
     /** @brief copy constructor */
-    Mesh(const Mesh&) = delete;
+    Mesh3D(const Mesh3D&) = delete;
 
     /** @brief move constructor */
-    Mesh(Mesh&&) = default;
+    Mesh3D(Mesh3D&&) = default;
 
     /** @brief copy assignment */
-    Mesh& operator=(const Mesh&) = delete;
+    Mesh3D& operator=(const Mesh3D&) = delete;
 
     /** @brief move assignment */
-    Mesh& operator=(Mesh&&) = default;
+    Mesh3D& operator=(Mesh3D&&) = default;
 
-    ~Mesh() override = default;
+    ~Mesh3D() override = default;
 
     void set_time(const Scalar time) override;
 
@@ -177,14 +177,14 @@ class Mesh : public Entity {
  * @brief face type (triplet of point indices)
  * @see Mesh
  */
-using Face = Mesh::Face;
+using Face3D = Mesh3D::Face3D;
 
-void Mesh::set_time(const Scalar time) {
-    Entity::set_time(time);
+void Mesh3D::set_time(const Scalar time) {
+    Entity3D::set_time(time);
     generate_cache();
 }
 
-HitRecord Mesh::hit_record(const Geometry& geometry,
+HitRecord Mesh3D::hit_record(const Geometry& geometry,
                            const RaySegment3D& ray_segment,
                            const Scalar t_min) const {
     HitRecord record = {.t = infinity};
@@ -199,7 +199,7 @@ HitRecord Mesh::hit_record(const Geometry& geometry,
     return record;
 }
 
-std::optional<AxisAlignedBoundingBox3D> Mesh::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Mesh3D::bounding_box() const {
     return {_bounds};
 }
 

@@ -18,7 +18,7 @@ using namespace cpp_raytracing::examples;
  */
 Scene make_scene() {
 
-    auto camera = std::make_shared<PinholeCamera>(cartesian_pinhole_camera(
+    auto camera = std::make_shared<PinholeCamera3D>(cartesian_pinhole_camera(
         {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
     Scene scene(camera);
 
@@ -42,7 +42,7 @@ Scene make_scene() {
         auto cube = make_cube(1.0, Vec3{0.0, 0.0, 0.0});
         cube->material = diffuse_red;
         // animation
-        auto anim = std::make_unique<SinusoidalMotionMeshAnimator>();
+        auto anim = std::make_unique<SinusoidalMotionMeshAnimator3D>();
         anim->start_points = cube->points;
         anim->amplitude = {5.0, 0.0, 2.0};
         anim->frequency = pi;
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
         .help("save progress every n samples")
         .scan<'d', unsigned long>();
     parser.add_argument("--ray_depth")
-        .default_value<unsigned long>(100)// NOLINT
+        .default_value<unsigned long>(100) // NOLINT
         .help("depth per ray (amount of ray segments and scatterings)")
         .scan<'d', unsigned long>();
     parser.add_argument("--time")
