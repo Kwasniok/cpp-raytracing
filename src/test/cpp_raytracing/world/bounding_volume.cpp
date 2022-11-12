@@ -16,14 +16,14 @@ BOOST_AUTO_TEST_CASE(constructor, *but::tolerance(epsilon)) {
     constexpr ray::Vec3 min{1.0, 2.0, 3.0};
     constexpr ray::Vec3 max{4.0, 5.0, 6.0};
     {
-        const ray::AxisAlignedBoundingBox box{min, max};
+        const ray::AxisAlignedBoundingBox3D box{min, max};
 
         TEST_EQUAL_RANGES(box.min(), min);
         TEST_EQUAL_RANGES(box.max(), max);
     }
     {
         // max <-> min
-        const ray::AxisAlignedBoundingBox box{max, min};
+        const ray::AxisAlignedBoundingBox3D box{max, min};
 
         TEST_EQUAL_RANGES(box.min(), min);
         TEST_EQUAL_RANGES(box.max(), max);
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
     constexpr ray::Vec3 min{1.0, 2.0, 3.0};
     constexpr ray::Vec3 max{4.0, 5.0, 6.0};
     constexpr ray::Vec3 mid{2.5, 3.5, 4.5};
-    const ray::AxisAlignedBoundingBox box{min, max};
+    const ray::AxisAlignedBoundingBox3D box{min, max};
 
     // start inside
     {
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
 BOOST_AUTO_TEST_CASE(hit_corner_cases, *but::tolerance(epsilon)) {
     constexpr ray::Vec3 min{1.0, 2.0, 3.0};
     constexpr ray::Vec3 max{4.0, 5.0, 6.0};
-    const ray::AxisAlignedBoundingBox box{min, max};
+    const ray::AxisAlignedBoundingBox3D box{min, max};
 
     {
         const ray::RaySegment3D ray{ray::Vec3{ray::infinity, 3.5, 4.5},
@@ -147,10 +147,10 @@ BOOST_AUTO_TEST_CASE(hit_corner_cases, *but::tolerance(epsilon)) {
 BOOST_AUTO_TEST_CASE(surrounding_box, *but::tolerance(epsilon)) {
     constexpr ray::Vec3 min{1.0, 2.0, 3.0};
     constexpr ray::Vec3 max{4.0, 5.0, 6.0};
-    const ray::AxisAlignedBoundingBox box1{ray::Vec3{1.0, 2.5, 5.0},
-                                           ray::Vec3{1.5, 3.0, 6.0}};
-    const ray::AxisAlignedBoundingBox box2{ray::Vec3{2.0, 2.0, 3.0},
-                                           ray::Vec3{4.0, 5.0, 5.0}};
+    const ray::AxisAlignedBoundingBox3D box1{ray::Vec3{1.0, 2.5, 5.0},
+                                             ray::Vec3{1.5, 3.0, 6.0}};
+    const ray::AxisAlignedBoundingBox3D box2{ray::Vec3{2.0, 2.0, 3.0},
+                                             ray::Vec3{4.0, 5.0, 5.0}};
 
     const auto box = ray::surrounding_box(box1, box2);
 
@@ -159,24 +159,24 @@ BOOST_AUTO_TEST_CASE(surrounding_box, *but::tolerance(epsilon)) {
 }
 
 BOOST_AUTO_TEST_CASE(arithmetic, *but::tolerance(epsilon)) {
-    const ray::AxisAlignedBoundingBox box{
+    const ray::AxisAlignedBoundingBox3D box{
         ray::Vec3{1.0, 2.0, 3.0},
         ray::Vec3{4.0, 5.0, 6.0},
     };
     constexpr ray::Vec3 vec{7.0, 8.0, 9.0};
 
     // addition
-    const ray::AxisAlignedBoundingBox expected{
+    const ray::AxisAlignedBoundingBox3D expected{
         ray::Vec3{8.0, 10.0, 12.0},
         ray::Vec3{11.0, 13.0, 15.0},
     };
     {
-        const ray::AxisAlignedBoundingBox res = box + vec;
+        const ray::AxisAlignedBoundingBox3D res = box + vec;
         TEST_EQUAL_RANGES(res.min(), expected.min());
         TEST_EQUAL_RANGES(res.max(), expected.max());
     }
     {
-        ray::AxisAlignedBoundingBox res = box;
+        ray::AxisAlignedBoundingBox3D res = box;
         res += vec;
         TEST_EQUAL_RANGES(res.min(), expected.min());
         TEST_EQUAL_RANGES(res.max(), expected.max());

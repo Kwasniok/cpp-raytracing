@@ -56,7 +56,7 @@ class Mesh : public Entity {
                          const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
-    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
   private:
     /**
@@ -167,7 +167,7 @@ class Mesh : public Entity {
 
   private:
     // note: initial value is irrelevant
-    AxisAlignedBoundingBox _bounds = {
+    AxisAlignedBoundingBox3D _bounds = {
         tensor::zero_vec<3_D>,
         tensor::zero_vec<3_D>,
     };
@@ -199,7 +199,7 @@ HitRecord Mesh::hit_record(const Geometry& geometry,
     return record;
 }
 
-std::optional<AxisAlignedBoundingBox> Mesh::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Mesh::bounding_box() const {
     return {_bounds};
 }
 

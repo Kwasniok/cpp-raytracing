@@ -77,7 +77,7 @@ class Entity {
      * @note If none, the entity might be infinitely large or have no appreance
      *       at all.
      */
-    virtual std::optional<AxisAlignedBoundingBox> bounding_box() const {
+    virtual std::optional<AxisAlignedBoundingBox3D> bounding_box() const {
         return std::nullopt;
     }
 

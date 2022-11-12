@@ -40,7 +40,7 @@ class BVHTree {
          * @brief boundary of both branches and the value
          * @note MUST be finite at all times!
          */
-        AxisAlignedBoundingBox bounds{Vec3{}, Vec3{}};
+        AxisAlignedBoundingBox3D bounds{Vec3{}, Vec3{}};
 
         Node() = default;
         Node(const Iter first, const Iter last) {
@@ -179,7 +179,7 @@ class BVHTree {
     }
 
     /** @brief returns a boundaring box off all entities */
-    std::optional<AxisAlignedBoundingBox> bounding_box() const {
+    std::optional<AxisAlignedBoundingBox3D> bounding_box() const {
         if (_unbounded_entities.size() > 0) {
             return std::nullopt;
         }

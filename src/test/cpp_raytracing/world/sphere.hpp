@@ -44,7 +44,7 @@ class Sphere : public Entity {
                          const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
-    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
   private:
     /**
@@ -113,9 +113,9 @@ HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
     return record;
 }
 
-std::optional<AxisAlignedBoundingBox> Sphere::bounding_box() const {
-    return AxisAlignedBoundingBox{-Vec3{radius, radius, radius},
-                                  Vec3{radius, radius, radius}};
+std::optional<AxisAlignedBoundingBox3D> Sphere::bounding_box() const {
+    return AxisAlignedBoundingBox3D{-Vec3{radius, radius, radius},
+                                    Vec3{radius, radius, radius}};
 }
 
 /** @brief make a 3D sphere */

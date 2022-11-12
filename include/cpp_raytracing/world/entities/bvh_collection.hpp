@@ -80,7 +80,7 @@ class BVHCollection : public Entity {
      * @note Requires valid cache.
      * @note Thread-safe.
      */
-    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
   public:
     /**
@@ -119,9 +119,9 @@ class BVHCollection : public Entity {
 
   private:
     /** @brief like sourrounding_box but for optional values */
-    static std::optional<AxisAlignedBoundingBox>
-    surrounding_opt_box(const std::optional<AxisAlignedBoundingBox>& box1,
-                        const std::optional<AxisAlignedBoundingBox>& box2) {
+    static std::optional<AxisAlignedBoundingBox3D>
+    surrounding_opt_box(const std::optional<AxisAlignedBoundingBox3D>& box1,
+                        const std::optional<AxisAlignedBoundingBox3D>& box2) {
         if (box1 && box2) {
             return surrounding_opt_box(*box1, *box2);
         }
@@ -151,7 +151,7 @@ void BVHCollection::generate_cache() {
     _bvh_tree = BVHTree(_entities);
 }
 
-std::optional<AxisAlignedBoundingBox> BVHCollection::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> BVHCollection::bounding_box() const {
     if (_bvh_tree) {
         return _bvh_tree->bounding_box();
     } else {

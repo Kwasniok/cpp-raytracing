@@ -15,33 +15,51 @@
 
 namespace cpp_raytracing {
 
+template <Dimension DIMENSION>
+class AxisAlignedBoundingBox;
+
+template <Dimension DIMENSION>
+constexpr AxisAlignedBoundingBox<DIMENSION>
+surrounding_box(const AxisAlignedBoundingBox<DIMENSION>& box1,
+                const AxisAlignedBoundingBox<DIMENSION>& box2);
+
+template <Dimension DIMENSION>
+constexpr AxisAlignedBoundingBox<DIMENSION>
+operator+(const AxisAlignedBoundingBox<DIMENSION>& box,
+          const Vec<DIMENSION>& vec);
+
 /**
  * @brief represents a bounding volume
  * @see BVHTree
  */
+template <Dimension DIMENSION>
 class AxisAlignedBoundingBox {
 
   public:
+    /** @brief vector type */
+    using VecType = Vec<DIMENSION>;
+
     /** @brief construct box from two arbitrary corners */
-    constexpr AxisAlignedBoundingBox(const Vec3 corner1, const Vec3 corner2) {
-        const auto [x_min, x_max] = minmax(corner1[0], corner2[0]);
-        const auto [y_min, y_max] = minmax(corner1[1], corner2[1]);
-        const auto [z_min, z_max] = minmax(corner1[2], corner2[2]);
-        _min = {x_min, y_min, z_min};
-        _max = {x_max, y_max, z_max};
+    constexpr AxisAlignedBoundingBox(const VecType corner1,
+                                     const VecType corner2) {
+        for (Dimension i = {0}; i < DIMENSION; ++i) {
+            const auto [low, high] = minmax(corner1[i], corner2[i]);
+            _min[i] = low;
+            _max[i] = high;
+        }
     }
 
     /** @brief corner of the ox with smallest coefficients */
-    constexpr Vec3 min() const { return _min; }
+    constexpr VecType min() const { return _min; }
     /** @brief corner of the ox with largest coefficients */
-    constexpr Vec3 max() const { return _max; }
+    constexpr VecType max() const { return _max; }
 
     /** @brief tests if ray hits any section of the volume within the box */
-    constexpr bool hit(const RaySegment3D ray, Scalar t_min,
+    constexpr bool hit(const RaySegment<DIMENSION> ray, Scalar t_min,
                        Scalar t_max) const {
 
         // note: mind branch prediction and reduce
-        for (unsigned int i = 0; i < 3; ++i) {
+        for (unsigned int i = 0; i < DIMENSION; ++i) {
 
             if (ray.direction()[i] == 0.0) [[unlikely]] {
                 if (ray.start()[i] < _min[i] || ray.start()[i] > _max[i]) {
@@ -71,7 +89,7 @@ class AxisAlignedBoundingBox {
     }
 
     /** @brief shifts the box by the given vector */
-    constexpr AxisAlignedBoundingBox& operator+=(const Vec3& vec) {
+    constexpr AxisAlignedBoundingBox& operator+=(const VecType& vec) {
         _min += vec;
         _max += vec;
         return *this;
@@ -79,10 +97,12 @@ class AxisAlignedBoundingBox {
 
   private:
     friend constexpr AxisAlignedBoundingBox
-    surrounding_box(const AxisAlignedBoundingBox& box1,
-                    const AxisAlignedBoundingBox& box2);
+    surrounding_box<>(const AxisAlignedBoundingBox& box1,
+                      const AxisAlignedBoundingBox& box2);
+    // clang-format off
     friend constexpr AxisAlignedBoundingBox
-    operator+(const AxisAlignedBoundingBox& box, const Vec3& vec);
+    operator+<>(const AxisAlignedBoundingBox& box, const VecType& vec);
+    // clang-format on
 
     /** @brief dummy type to indicate internal trusted calls */
     struct Trusted {};
@@ -92,42 +112,41 @@ class AxisAlignedBoundingBox {
      * @param min MUST be corner with minimal coefficients
      * @param max MUST be corner with maximal coefficients
      */
-    constexpr AxisAlignedBoundingBox(const Vec3 min, const Vec3 max, Trusted)
+    constexpr AxisAlignedBoundingBox(const VecType min, const VecType max,
+                                     Trusted)
         : _min(min), _max(max) {}
 
   private:
-    Vec3 _min;
-    Vec3 _max;
+    VecType _min;
+    VecType _max;
 };
 
 /** @brief construct smallest box containing both boxes */
-constexpr AxisAlignedBoundingBox
-surrounding_box(const AxisAlignedBoundingBox& box1,
-                const AxisAlignedBoundingBox& box2) {
-    const Vec3 min1 = box1.min();
-    const Vec3 min2 = box2.min();
-    const auto x_min = std::min(min1[0], min2[0]);
-    const auto y_min = std::min(min1[1], min2[1]);
-    const auto z_min = std::min(min1[2], min2[2]);
-    const Vec3 max1 = box1.max();
-    const Vec3 max2 = box2.max();
-    const auto x_max = std::max(max1[0], max2[0]);
-    const auto y_max = std::max(max1[1], max2[1]);
-    const auto z_max = std::max(max1[2], max2[2]);
-    return AxisAlignedBoundingBox{Vec3{x_min, y_min, z_min},
-                                  Vec3{x_max, y_max, z_max},
-                                  AxisAlignedBoundingBox::Trusted{}};
+template <Dimension DIMENSION>
+constexpr AxisAlignedBoundingBox<DIMENSION>
+surrounding_box(const AxisAlignedBoundingBox<DIMENSION>& box1,
+                const AxisAlignedBoundingBox<DIMENSION>& box2) {
+    return {
+        box1.min().elementwise(min, box2.min()),
+        box1.max().elementwise(max, box2.max()),
+        typename AxisAlignedBoundingBox<DIMENSION>::Trusted{},
+    };
 }
 
 /** @brief shifts the box by the given vector */
-constexpr AxisAlignedBoundingBox operator+(const AxisAlignedBoundingBox& box,
-                                           const Vec3& vec) {
-    return AxisAlignedBoundingBox{
+template <Dimension DIMENSION>
+constexpr AxisAlignedBoundingBox<DIMENSION>
+operator+(const AxisAlignedBoundingBox<DIMENSION>& box,
+          const Vec<DIMENSION>& vec) {
+    return {
         box.min() + vec,
         box.max() + vec,
-        AxisAlignedBoundingBox::Trusted{},
+        typename AxisAlignedBoundingBox<DIMENSION>::Trusted{},
     };
 }
+
+/** @brief 3D axis aligned bounding box */
+using AxisAlignedBoundingBox3D = AxisAlignedBoundingBox<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

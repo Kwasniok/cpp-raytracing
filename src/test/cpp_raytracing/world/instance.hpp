@@ -57,7 +57,7 @@ class Instance : public Entity {
                          const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
-    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
     /**
      * @brief clone an instanc
@@ -133,7 +133,7 @@ HitRecord Instance::hit_record(const Geometry& geometry,
     }
 }
 
-std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Instance::bounding_box() const {
     using namespace tensor;
 
     if (entity) {
@@ -166,7 +166,7 @@ std::optional<AxisAlignedBoundingBox> Instance::bounding_box() const {
             }
 
             // complete affine transformation via translation
-            return AxisAlignedBoundingBox{low + position, high + position};
+            return AxisAlignedBoundingBox3D{low + position, high + position};
         }
     }
     return std::nullopt;

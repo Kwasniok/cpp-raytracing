@@ -45,7 +45,7 @@ class Triangle : public Entity {
                          const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
-    std::optional<AxisAlignedBoundingBox> bounding_box() const override;
+    std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
   private:
     /**
@@ -128,7 +128,7 @@ HitRecord Triangle::hit_record(const Geometry& geometry,
     return record;
 }
 
-std::optional<AxisAlignedBoundingBox> Triangle::bounding_box() const {
+std::optional<AxisAlignedBoundingBox3D> Triangle::bounding_box() const {
 
     constexpr Scalar epsilon = 1e-8;
 
@@ -144,7 +144,7 @@ std::optional<AxisAlignedBoundingBox> Triangle::bounding_box() const {
     low -= low.elementwise(abs) * epsilon;
     high += high.elementwise(abs) * epsilon;
 
-    return AxisAlignedBoundingBox{low, high};
+    return AxisAlignedBoundingBox3D{low, high};
 }
 
 } // namespace cpp_raytracing
