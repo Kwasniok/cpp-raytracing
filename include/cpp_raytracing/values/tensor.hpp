@@ -57,9 +57,9 @@ using Vec3 = Vec<3_D>;
 /** @brief 6D vector */
 using Vec6 = Vec<6_D>;
 
-/** @brief generic (square) matrix  */
-template <Dimension DIMENSION>
-using Mat = gttl::Tensor<Scalar, 2, Dimensions<2>{DIMENSION, DIMENSION}>;
+/** @brief generic matrix */
+template <Dimension DIMENSION1, Dimension DIMENSION2 = DIMENSION1>
+using Mat = gttl::Tensor<Scalar, 2, Dimensions<2>{DIMENSION1, DIMENSION2}>;
 
 /** @brief 3x3 matrix */
 using Mat3x3 = Mat<3_D>;
