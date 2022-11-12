@@ -118,6 +118,7 @@ std::optional<AxisAlignedBoundingBox> Sphere::bounding_box() const {
                                   Vec3{radius, radius, radius}};
 }
 
+/** @brief make a 3D sphere */
 std::unique_ptr<Instance> make_sphere(const Vec3 position,
                                       const Scalar radius) {
     auto sphere = std::make_shared<Sphere>();
