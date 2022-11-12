@@ -14,7 +14,7 @@
 namespace cpp_raytracing {
 
 /**
- * @brief triangular object
+ * @brief triangular object in 3D
  * @note The face is filled via bilinear coordinate interpolation.
  */
 class Triangle3D : public Entity3D {

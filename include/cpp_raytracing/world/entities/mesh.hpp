@@ -16,7 +16,7 @@
 namespace cpp_raytracing {
 
 /**
- * @brief mesh object
+ * @brief mesh object in 3D
  * @note Each face is filled via bilinear coordinate interpolation.
  */
 class Mesh3D : public Entity3D {

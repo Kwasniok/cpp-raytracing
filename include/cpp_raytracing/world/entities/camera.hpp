@@ -16,7 +16,7 @@
 namespace cpp_raytracing {
 
 /**
- * @brief represents camera interface
+ * @brief represents camera interface in 3D
  */
 class Camera3D : public Entity3D {
   public:
@@ -37,7 +37,7 @@ class Camera3D : public Entity3D {
 };
 
 /**
- * @brief represents a pinhole camera
+ * @brief represents a pinhole camera in 3D
  */
 class PinholeCamera3D : public Camera3D {
   public:
