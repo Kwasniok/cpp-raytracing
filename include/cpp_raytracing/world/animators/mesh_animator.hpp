@@ -34,6 +34,7 @@ class MeshAnimator3D : public Animator3D {
 
     ~MeshAnimator3D() override = default;
 
+    /** @see Entity::update_for_time */
     void update_for_time(const Scalar time, Entity3D* entity) override;
 
   protected:

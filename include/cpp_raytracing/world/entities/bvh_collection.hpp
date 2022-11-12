@@ -169,6 +169,7 @@ BVHCollection<DIMENSION>::bounding_box() const {
     }
 }
 
+/** @brief 3D BVH collection entity */
 using BVHCollection3D = BVHCollection<Dimension{3}>;
 
 } // namespace cpp_raytracing

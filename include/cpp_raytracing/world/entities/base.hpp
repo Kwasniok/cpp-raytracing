@@ -105,6 +105,7 @@ struct default_identifier<Entity<DIMENSION>> {
     static constexpr const char* value = "entity";
 };
 
+/** @brief 3D entity interface */
 using Entity3D = Entity<Dimension{3}>;
 
 } // namespace cpp_raytracing

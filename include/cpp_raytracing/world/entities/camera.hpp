@@ -47,6 +47,7 @@ using Camera3D = Camera<Dimension{3}>;
 template <Dimension DIMENSION>
 class PinholeCamera : public Camera<DIMENSION> {
   public:
+    /** @brief vector type */
     using VecType = Vec<DIMENSION>;
     /**
      * @brief representation of detector surface as a char

@@ -55,7 +55,7 @@ class Animator {
         throw std::runtime_error(std::move(msg).str());
     }
 };
-
+/** @brief 3D entity animator interface */
 using Animator3D = Animator<Dimension{3}>;
 
 } // namespace cpp_raytracing
