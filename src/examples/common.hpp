@@ -145,7 +145,7 @@ class SkyBackground : public Background {
     ~SkyBackground() override = default;
 
     Color value([[maybe_unused]] const Geometry& geometry,
-                const RaySegment& ray_segment) const override {
+                const RaySegment3D& ray_segment) const override {
 
         using namespace tensor;
 

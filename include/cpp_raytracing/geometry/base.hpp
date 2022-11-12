@@ -40,7 +40,7 @@ class Ray {
      * @brief returns next ray segment or nothing
      * @note A ray may end prematurely due to technical limitations.
      */
-    virtual std::optional<RaySegment> next_ray_segment() = 0;
+    virtual std::optional<RaySegment3D> next_ray_segment() = 0;
 };
 
 /**

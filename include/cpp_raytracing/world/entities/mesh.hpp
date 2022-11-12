@@ -53,7 +53,7 @@ class Mesh : public Entity {
     void set_time(const Scalar time) override;
 
     HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment& ray_segment,
+                         const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
     std::optional<AxisAlignedBoundingBox> bounding_box() const override;
@@ -81,9 +81,9 @@ class Mesh : public Entity {
     }
 
     HitRecord face_hit_record(const Geometry& geometry,
-                              const RaySegment& ray_segment, const Scalar t_min,
-                              const Vec3& point0, const Vec3& point1,
-                              const Vec3& point2) const {
+                              const RaySegment3D& ray_segment,
+                              const Scalar t_min, const Vec3& point0,
+                              const Vec3& point1, const Vec3& point2) const {
 
         using namespace tensor;
         // basis for span
@@ -185,7 +185,7 @@ void Mesh::set_time(const Scalar time) {
 }
 
 HitRecord Mesh::hit_record(const Geometry& geometry,
-                           const RaySegment& ray_segment,
+                           const RaySegment3D& ray_segment,
                            const Scalar t_min) const {
     HitRecord record = {.t = infinity};
     for (const auto& face : faces) {

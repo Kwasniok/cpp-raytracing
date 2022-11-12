@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
 
     // start inside
     {
-        constexpr ray::RaySegment ray{mid, {7.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray{mid, {7.0, 0.0, 0.0}};
         BOOST_CHECK(box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
         BOOST_CHECK(box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        constexpr ray::RaySegment ray{mid, {0.0, 7.0, 0.0}};
+        constexpr ray::RaySegment3D ray{mid, {0.0, 7.0, 0.0}};
         BOOST_CHECK(box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
         BOOST_CHECK(box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        constexpr ray::RaySegment ray{mid, {0.0, 0.0, 7.0}};
+        constexpr ray::RaySegment3D ray{mid, {0.0, 0.0, 7.0}};
         BOOST_CHECK(box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -64,8 +64,8 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
 
     // start outside 'left'
     {
-        constexpr ray::RaySegment ray{ray::Vec3{0.5, 3.5, 4.5},
-                                      {7.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray{ray::Vec3{0.5, 3.5, 4.5},
+                                        {7.0, 0.0, 0.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
         BOOST_CHECK(!box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        constexpr ray::RaySegment ray{ray::Vec3{2.5, 1.5, 4.5},
-                                      {0.0, 7.0, 0.0}};
+        constexpr ray::RaySegment3D ray{ray::Vec3{2.5, 1.5, 4.5},
+                                        {0.0, 7.0, 0.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
         BOOST_CHECK(!box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        constexpr ray::RaySegment ray{ray::Vec3{2.5, 3.5, 2.5},
-                                      {0.0, 0.0, 7.0}};
+        constexpr ray::RaySegment3D ray{ray::Vec3{2.5, 3.5, 2.5},
+                                        {0.0, 0.0, 7.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -93,8 +93,8 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
 
     // start outside 'right'
     {
-        constexpr ray::RaySegment ray{ray::Vec3{4.5, 3.5, 4.5},
-                                      {-7.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray{ray::Vec3{4.5, 3.5, 4.5},
+                                        {-7.0, 0.0, 0.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -102,8 +102,8 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
         BOOST_CHECK(!box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        constexpr ray::RaySegment ray{ray::Vec3{2.5, 5.5, 4.5},
-                                      {0.0, -0.7, 0.0}};
+        constexpr ray::RaySegment3D ray{ray::Vec3{2.5, 5.5, 4.5},
+                                        {0.0, -0.7, 0.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE(hit, *but::tolerance(epsilon)) {
         BOOST_CHECK(!box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        constexpr ray::RaySegment ray{ray::Vec3{2.5, 3.5, 6.5},
-                                      {0.0, 0.0, -7.0}};
+        constexpr ray::RaySegment3D ray{ray::Vec3{2.5, 3.5, 6.5},
+                                        {0.0, 0.0, -7.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 0.001));
         BOOST_CHECK(box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(box.hit(ray, 0.0, ray::infinity));
@@ -127,16 +127,16 @@ BOOST_AUTO_TEST_CASE(hit_corner_cases, *but::tolerance(epsilon)) {
     const ray::AxisAlignedBoundingBox box{min, max};
 
     {
-        const ray::RaySegment ray{ray::Vec3{ray::infinity, 3.5, 4.5},
-                                  {0.7, 0.0, 0.0}};
+        const ray::RaySegment3D ray{ray::Vec3{ray::infinity, 3.5, 4.5},
+                                    {0.7, 0.0, 0.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(!box.hit(ray, 0.0, ray::infinity));
         BOOST_CHECK(!box.hit(ray, -100.0, 0.0));
         BOOST_CHECK(!box.hit(ray, -ray::infinity, 0.0));
     }
     {
-        const ray::RaySegment ray{ray::Vec3{2.5, ray::infinity, 4.5},
-                                  {0.7, 0.0, 0.0}};
+        const ray::RaySegment3D ray{ray::Vec3{2.5, ray::infinity, 4.5},
+                                    {0.7, 0.0, 0.0}};
         BOOST_CHECK(!box.hit(ray, 0.0, 100.0));
         BOOST_CHECK(!box.hit(ray, 0.0, ray::infinity));
         BOOST_CHECK(!box.hit(ray, -100.0, 0.0));

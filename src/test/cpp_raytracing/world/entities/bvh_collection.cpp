@@ -48,8 +48,8 @@ BOOST_FIXTURE_TEST_CASE(bounding_box, BVHCollectionFixture,
 }
 
 BOOST_FIXTURE_TEST_CASE(hit_record_cache, BVHCollectionFixture) {
-    constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                          ray::Vec3{1.0, 0.0, 0.0}};
+    constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                            ray::Vec3{1.0, 0.0, 0.0}};
 
     BOOST_CHECK_THROW(collection.hit_record(geometry, ray_segment, 0.0),
                       std::runtime_error);
@@ -61,20 +61,20 @@ BOOST_FIXTURE_TEST_CASE(hit_record_hits, BVHCollectionFixture,
                         *but::tolerance(epsilon)) {
     collection.generate_cache();
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{1.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, 1.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, 1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, 0.0, 1.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, 0.0, 1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(record.hits());
     }
@@ -84,20 +84,20 @@ BOOST_FIXTURE_TEST_CASE(hit_record_misses, BVHCollectionFixture,
                         *but::tolerance(epsilon)) {
     collection.generate_cache();
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{-1.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{-1.0, 0.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(!record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, -1.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, -1.0, 0.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(!record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, 0.0, -1.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, 0.0, -1.0}};
         auto record = collection.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(!record.hits());
     }

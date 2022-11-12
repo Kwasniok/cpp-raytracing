@@ -73,7 +73,7 @@ class BVHCollection : public Entity {
      * @note Thread-safe.
      */
     HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment& ray_segment,
+                         const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
     /**
@@ -137,7 +137,7 @@ void BVHCollection::set_time(const Scalar time) {
 }
 
 HitRecord BVHCollection::hit_record(const Geometry& geometry,
-                                    const RaySegment& ray_segment,
+                                    const RaySegment3D& ray_segment,
                                     const Scalar t_min) const {
     if (_bvh_tree) {
         return _bvh_tree->hit_record(geometry, ray_segment, t_min);

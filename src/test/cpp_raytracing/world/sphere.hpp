@@ -41,7 +41,7 @@ class Sphere : public Entity {
     ~Sphere() override = default;
 
     HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment& ray_segment,
+                         const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const override;
 
     std::optional<AxisAlignedBoundingBox> bounding_box() const override;
@@ -63,7 +63,7 @@ class Sphere : public Entity {
 };
 
 HitRecord Sphere::hit_record([[maybe_unused]] const Geometry& geometry,
-                             const RaySegment& ray_segment,
+                             const RaySegment3D& ray_segment,
                              const Scalar t_min) const {
     using namespace tensor;
 

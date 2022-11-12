@@ -60,20 +60,20 @@ BOOST_FIXTURE_TEST_CASE(hits, SceneFixture) {
     const ray::Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
 
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{1.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{1.0, 0.0, 0.0}};
         auto record = guard.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, 1.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, 1.0, 0.0}};
         auto record = guard.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, 0.0, 1.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, 0.0, 1.0}};
         auto record = guard.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(record.hits());
     }
@@ -82,20 +82,20 @@ BOOST_FIXTURE_TEST_CASE(hits, SceneFixture) {
 BOOST_FIXTURE_TEST_CASE(misses, SceneFixture) {
     const ray::Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{-1.0, 0.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{-1.0, 0.0, 0.0}};
         auto record = guard.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(!record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, -1.0, 0.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, -1.0, 0.0}};
         auto record = guard.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(!record.hits());
     }
     {
-        constexpr ray::RaySegment ray_segment{ray::Vec3{0.0, 0.0, 0.0},
-                                              ray::Vec3{0.0, 0.0, -1.0}};
+        constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
+                                                ray::Vec3{0.0, 0.0, -1.0}};
         auto record = guard.hit_record(geometry, ray_segment, 0.0);
         BOOST_CHECK(!record.hits());
     }

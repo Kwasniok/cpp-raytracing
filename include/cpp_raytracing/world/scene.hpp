@@ -67,7 +67,7 @@ class Scene {
          * @see Entity::hit_record
          */
         inline HitRecord hit_record(const Geometry& geometry,
-                                    const RaySegment& ray_segment,
+                                    const RaySegment3D& ray_segment,
                                     const Scalar t_min = 0.0) const;
 
       public:
@@ -181,7 +181,7 @@ inline Scene::FreezeGuard::~FreezeGuard() {
 }
 
 inline HitRecord Scene::FreezeGuard::hit_record(const Geometry& geometry,
-                                                const RaySegment& ray_segment,
+                                                const RaySegment3D& ray_segment,
                                                 const Scalar t_min) const {
     return _scene._collection.hit_record(geometry, ray_segment, t_min);
 }

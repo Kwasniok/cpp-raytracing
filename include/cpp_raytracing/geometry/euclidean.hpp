@@ -35,10 +35,10 @@ class EuclideanRay : public Ray {
 
     ~EuclideanRay() override = default;
 
-    std::optional<RaySegment> next_ray_segment() override {
+    std::optional<RaySegment3D> next_ray_segment() override {
         if (_has_next) {
             _has_next = false;
-            return RaySegment{_start, _direction};
+            return RaySegment3D{_start, _direction};
         }
         return std::nullopt;
     };

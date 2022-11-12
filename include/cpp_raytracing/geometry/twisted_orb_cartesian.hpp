@@ -84,7 +84,7 @@ class TwistedOrbCartesianRay : public Ray {
 
     ~TwistedOrbCartesianRay() override = default;
 
-    std::optional<RaySegment> next_ray_segment() override;
+    std::optional<RaySegment3D> next_ray_segment() override;
 
     /** @brief returns current phase (position, velocity) */
     const Vec6& phase() const { return _phase; }
@@ -250,7 +250,7 @@ TwistedOrbCartesianRay::TwistedOrbCartesianRay(
       _geometry{geometry},
       _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
-std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
+std::optional<RaySegment3D> TwistedOrbCartesianRay::next_ray_segment() {
     using namespace tensor;
 
     const auto& [phase_start, time] = *_phase_iterator;
@@ -279,7 +279,7 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
     if (R / _geometry._twist_radius > 5.0 && outwards) {
         // far away from origin and point away from origin
         // -> conventional infinite ray segment
-        return RaySegment{position, velocity, infinity};
+        return RaySegment3D{position, velocity, infinity};
     }
 
     // update state
@@ -293,7 +293,7 @@ std::optional<RaySegment> TwistedOrbCartesianRay::next_ray_segment() {
         (time_end - time_start) * _geometry._ray_segment_length_factor;
     // note: direction is approximately constant for small segments
     // note: use initial position and velocity
-    const RaySegment segment = {position, velocity, delta_t};
+    const RaySegment3D segment = {position, velocity, delta_t};
 
     return segment;
 };

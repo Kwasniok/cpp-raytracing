@@ -65,7 +65,7 @@ class SwirlCartesianRay : public Ray {
 
     ~SwirlCartesianRay() override = default;
 
-    std::optional<RaySegment> next_ray_segment() override;
+    std::optional<RaySegment3D> next_ray_segment() override;
 
   private:
     /** @brief returns current phase (position, velocity) */
@@ -216,7 +216,7 @@ SwirlCartesianRay::SwirlCartesianRay(const SwirlCartesianGeometry& geometry,
       _geometry{geometry},
       _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
-std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
+std::optional<RaySegment3D> SwirlCartesianRay::next_ray_segment() {
 
     using namespace tensor;
 
@@ -250,7 +250,7 @@ std::optional<RaySegment> SwirlCartesianRay::next_ray_segment() {
         (time_end - time_start) * _geometry._ray_segment_length_factor;
     // note: direction is approximately constant for small segments
     // note: use initial position and velocity
-    const RaySegment segment = {position, velocity, delta_t};
+    const RaySegment3D segment = {position, velocity, delta_t};
 
     return segment;
 };

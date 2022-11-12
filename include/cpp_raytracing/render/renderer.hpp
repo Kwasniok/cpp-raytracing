@@ -171,7 +171,7 @@ class Renderer {
         using namespace tensor;
 
         // propagate ray
-        const std::optional<RaySegment> current_opt_segment =
+        const std::optional<RaySegment3D> current_opt_segment =
             ray->next_ray_segment();
 
         // extract next segment
@@ -180,7 +180,7 @@ class Renderer {
             return ray_color_if_ray_ended;
         }
         // has next segment
-        const RaySegment& current_segment = current_opt_segment.value();
+        const RaySegment3D& current_segment = current_opt_segment.value();
 
         // check depth limit
         if (depth == 0) {
@@ -247,7 +247,7 @@ class Renderer {
     /** @brief returns background color for ray segment */
     inline Color background_color(const Geometry& geometry,
                                   const Scene::FreezeGuard& frozen_scene,
-                                  const RaySegment& ray_segment) const {
+                                  const RaySegment3D& ray_segment) const {
         if (frozen_scene.active_background == nullptr) {
             return ray_color_if_no_background;
         }

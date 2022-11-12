@@ -36,7 +36,7 @@ struct HitRecord {
     Vec2 uv_coordinates{};
     /** @brief material of the object */
     const Material* material = nullptr;
-    /** @brief RaySegment parameter of #point */
+    /** @brief RaySegment3D parameter of #point */
     Scalar t = 0.0;
     /** @brief ray his surface from the outside */
     bool front_face = false;

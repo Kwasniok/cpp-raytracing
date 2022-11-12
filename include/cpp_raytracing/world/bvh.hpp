@@ -91,8 +91,9 @@ class BVHTree {
          * @note The interface is changed in comparison to Entity::hit_record in
          *       order to optimize throughput.
          */
-        void hit_record(const Geometry& geometry, const RaySegment& ray_segment,
-                        const Scalar t_min, HitRecord& closest_record) const {
+        void hit_record(const Geometry& geometry,
+                        const RaySegment3D& ray_segment, const Scalar t_min,
+                        HitRecord& closest_record) const {
             if (bounds.hit(ray_segment, t_min, ray_segment.t_max())) {
                 if (value) {
                     HitRecord record =
@@ -163,7 +164,7 @@ class BVHTree {
      * @see Entity::hit_record
      */
     HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment& ray_segment,
+                         const RaySegment3D& ray_segment,
                          const Scalar t_min = 0.0) const {
         HitRecord closest_record = {.t = infinity};
         _root.hit_record(geometry, ray_segment, t_min, closest_record);

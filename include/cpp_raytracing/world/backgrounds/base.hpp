@@ -44,7 +44,7 @@ class Background {
      * @param ray_segment last segment of ray which was simulated
      */
     virtual Color value(const Geometry& geometry,
-                        const RaySegment& ray_segment) const = 0;
+                        const RaySegment3D& ray_segment) const = 0;
 };
 
 /** @brief default identifier for backgrounds */
