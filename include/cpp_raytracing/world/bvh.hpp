@@ -29,7 +29,7 @@ class BVHTree {
   private:
     /** @brief node of BVH tree for bounded entities only */
     struct Node {
-        using Iter = std::vector<const Entity<DIMENSION>*>::iterator;
+        using Iter = typename std::vector<const Entity<DIMENSION>*>::iterator;
 
         /** @note might be nullptr  */
         const Entity<DIMENSION>* value = nullptr;
