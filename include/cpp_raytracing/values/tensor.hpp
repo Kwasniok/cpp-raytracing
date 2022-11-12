@@ -20,9 +20,35 @@ namespace cpp_raytracing {
 
 using gttl::literals::operator"" _D;
 
+/**
+ * @brief dimension of vector space
+ * @note forward alias from gttl for dependecy inversion
+ */
+using Dimension = gttl::Dimension;
+
+namespace literals {
+
+/**
+ * @brief literal suffix for Dimension
+ * @note forward alias from gttl for dependecy inversion
+ */
+constexpr Dimension operator"" _D(unsigned long long value) {
+    return static_cast<Dimension>(value);
+}
+
+} // namespace literals
+
+/**
+ * @brief dimensions of tensor space
+ * @tparam RANK amount of vector spaces constituting the tensor product space
+ * @note forward alias from gttl for dependecy inversion
+ */
+template <std::size_t RANK>
+using Dimensions = gttl::Dimensions<RANK>;
+
 /** @brief generic vector */
-template <gttl::Dimension DIMENSION>
-using Vec = gttl::Tensor<Scalar, 1, gttl::Dimensions<1>{DIMENSION}>;
+template <Dimension DIMENSION>
+using Vec = gttl::Tensor<Scalar, 1, Dimensions<1>{DIMENSION}>;
 
 /** @brief 2D vector */
 using Vec2 = Vec<2_D>;
@@ -32,17 +58,16 @@ using Vec3 = Vec<3_D>;
 using Vec6 = Vec<6_D>;
 
 /** @brief generic (square) matrix  */
-template <gttl::Dimension DIMENSION>
-using Mat = gttl::Tensor<Scalar, 2, gttl::Dimensions<2>{DIMENSION, DIMENSION}>;
+template <Dimension DIMENSION>
+using Mat = gttl::Tensor<Scalar, 2, Dimensions<2>{DIMENSION, DIMENSION}>;
 
 /** @brief 3x3 matrix */
 using Mat3x3 = Mat<3_D>;
 
 /** @brief generic (Christoffel's symbols-like) rank3 tensor  */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 using TenR3 =
-    gttl::Tensor<Scalar, 3,
-                 gttl::Dimensions<3>{DIMENSION, DIMENSION, DIMENSION}>;
+    gttl::Tensor<Scalar, 3, Dimensions<3>{DIMENSION, DIMENSION, DIMENSION}>;
 
 /** @brief 3x3x3 rank3 tensor */
 using Ten3x3x3 = TenR3<3_D>;
@@ -124,11 +149,11 @@ unit_vector(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
 }
 
 /** @brief zero vector */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 constexpr Vec<DIMENSION> zero_vec{};
 
 /** @brief random vector where each element is in the given range */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 inline Vec<DIMENSION> random_vec(const Scalar min, const Scalar max) {
     Vec<DIMENSION> vec;
     for (auto& x : vec) {
@@ -138,7 +163,7 @@ inline Vec<DIMENSION> random_vec(const Scalar min, const Scalar max) {
 }
 
 /** @brief random vector where each element is in the given range */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 inline Vec<DIMENSION> random_unit_vec(const Scalar min, const Scalar max) {
     Vec<DIMENSION> vec;
     for (auto& x : vec) {
@@ -148,7 +173,7 @@ inline Vec<DIMENSION> random_unit_vec(const Scalar min, const Scalar max) {
 }
 
 /** @brief random vector of at most unit length (uniform distribution) */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 inline Vec<DIMENSION> random_vec_inside_unit_sphere() {
     // rejection based and uniform
     // note: inefficient for large dimensions but okay for <=3D
@@ -161,7 +186,7 @@ inline Vec<DIMENSION> random_vec_inside_unit_sphere() {
 }
 
 /** @brief random vector on surface of unit sphere (uniform distribution) */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 inline Vec<DIMENSION> random_unit_vec() {
     return unit_vector(random_vec_inside_unit_sphere<DIMENSION>());
 }
@@ -247,7 +272,7 @@ inline Mat3x3 inverse_rotation_mat(const Vec3& axis) {
 /**
  * @brief returns identity matrix
  */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 inline Mat<DIMENSION> make_identity_mat() {
     Mat<DIMENSION> mat{}; // zero-initialization is required
     for (std::size_t i = 0; i < DIMENSION; ++i) {
@@ -259,14 +284,14 @@ inline Mat<DIMENSION> make_identity_mat() {
 /**
  * @brief returns identity matrix
  */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 const Mat<DIMENSION> identity_mat = make_identity_mat<DIMENSION>();
 
 /**
  * @brief returns scaling matrix for given scale coefficients
  * @see inverse_scaling_mat
  */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 constexpr Mat<DIMENSION> scaling_mat(const Vec<DIMENSION>& vec) {
     Mat<DIMENSION> mat{}; // zero-initialization is required
     for (std::size_t i = 0; i < DIMENSION; ++i) {
@@ -279,7 +304,7 @@ constexpr Mat<DIMENSION> scaling_mat(const Vec<DIMENSION>& vec) {
  * @brief returns inverse scaling matrix for given scale coefficients
  * @see scaling_mat
  */
-template <gttl::Dimension DIMENSION>
+template <Dimension DIMENSION>
 constexpr Mat<DIMENSION> inverse_scaling_mat(const Vec<DIMENSION>& vec) {
     Mat<DIMENSION> mat{}; // zero-initialization is required
     for (std::size_t i = 0; i < DIMENSION; ++i) {
