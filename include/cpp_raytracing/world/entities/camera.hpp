@@ -31,8 +31,9 @@ class Camera : public Entity<DIMENSION> {
                                                 const Scalar x,
                                                 const Scalar y) const = 0;
 
-    HitRecord hit_record(const Geometry&, const RaySegment<DIMENSION>&,
-                         const Scalar) const override {
+    HitRecord<DIMENSION> hit_record(const Geometry&,
+                                    const RaySegment<DIMENSION>&,
+                                    const Scalar) const override {
         return {.t = infinity};
     };
 };

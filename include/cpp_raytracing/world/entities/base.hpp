@@ -70,9 +70,10 @@ class Entity {
      * @returns eihter a defned HitRecord or sets HitRecord::t to
      * ::infinity
      */
-    virtual HitRecord hit_record(const Geometry& geometry,
-                                 const RaySegment<DIMENSION>& ray_segment,
-                                 const Scalar t_min = 0.0) const = 0;
+    virtual HitRecord<DIMENSION>
+    hit_record(const Geometry& geometry,
+               const RaySegment<DIMENSION>& ray_segment,
+               const Scalar t_min = 0.0) const = 0;
 
     /**
      * @brief might return a boundaring box if the entity is bounded

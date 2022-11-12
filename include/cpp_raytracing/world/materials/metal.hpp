@@ -42,7 +42,7 @@ class Metal : public Material {
 
     ~Metal() override = default;
 
-    std::pair<Vec3, Color> scatter(const HitRecord& record,
+    std::pair<Vec3, Color> scatter(const HitRecord3D& record,
                                    const Vec3& ray_direction) const override {
         using namespace tensor;
 

@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(diffuse, *but::tolerance(epsilon)) {
         diffuse->color = std::move(texture);
         mat = std::move(diffuse);
     }
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),

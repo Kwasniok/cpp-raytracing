@@ -188,8 +188,8 @@ class Renderer {
         }
 
         // collect hit record
-        HitRecord record = frozen_scene.hit_record(geometry, current_segment,
-                                                   minimal_ray_length);
+        HitRecord3D record = frozen_scene.hit_record(geometry, current_segment,
+                                                     minimal_ray_length);
 
         // check for hit with entity within current segment
         if (!record.hits()) {

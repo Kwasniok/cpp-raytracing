@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(dielectric_air, *but::tolerance(epsilon)) {
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(dielectric_into_glass, *but::tolerance(epsilon)) {
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(dielectric_total_reflection, *but::tolerance(epsilon)) {
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),

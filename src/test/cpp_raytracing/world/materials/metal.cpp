@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(metal_no_roughness, *but::tolerance(epsilon)) {
         mat = std::move(metal);
     }
     const ray::Vec3 normal{-1.0, 0.0, 0.0};
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(metal_with_roughness, *but::tolerance(epsilon)) {
         mat = std::move(metal);
     }
     const ray::Vec3 normal{-1.0, 0.0, 0.0};
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = normal,
         .material = mat.get(),

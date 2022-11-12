@@ -74,9 +74,9 @@ class BVHCollection : public Entity<DIMENSION> {
      * @note Requires valid cache.
      * @note Thread-safe.
      */
-    HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment<DIMENSION>& ray_segment,
-                         const Scalar t_min = 0.0) const override;
+    HitRecord<DIMENSION> hit_record(const Geometry& geometry,
+                                    const RaySegment<DIMENSION>& ray_segment,
+                                    const Scalar t_min = 0.0) const override;
 
     /**
      * @note Requires valid cache.
@@ -141,7 +141,7 @@ void BVHCollection<DIMENSION>::set_time(const Scalar time) {
 }
 
 template <Dimension DIMENSION>
-HitRecord
+HitRecord<DIMENSION>
 BVHCollection<DIMENSION>::hit_record(const Geometry& geometry,
                                      const RaySegment<DIMENSION>& ray_segment,
                                      const Scalar t_min) const {

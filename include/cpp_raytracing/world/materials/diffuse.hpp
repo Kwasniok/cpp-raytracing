@@ -40,7 +40,7 @@ class Diffuse : public Material {
     ~Diffuse() override = default;
 
     std::pair<Vec3, Color>
-    scatter(const HitRecord& record,
+    scatter(const HitRecord3D& record,
             [[maybe_unused]] const Vec3& ray_direction) const override {
 
         using namespace tensor;

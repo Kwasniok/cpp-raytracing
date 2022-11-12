@@ -52,9 +52,10 @@ class Mesh3D : public Entity3D {
 
     void set_time(const Scalar time) override;
 
-    HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment3D& ray_segment,
-                         const Scalar t_min = 0.0) const override;
+    /** @see Entity::hit_record */
+    HitRecord3D hit_record(const Geometry& geometry,
+                           const RaySegment3D& ray_segment,
+                           const Scalar t_min = 0.0) const override;
 
     std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
@@ -80,10 +81,10 @@ class Mesh3D : public Entity3D {
         return {u, v};
     }
 
-    HitRecord face_hit_record(const Geometry& geometry,
-                              const RaySegment3D& ray_segment,
-                              const Scalar t_min, const Vec3& point0,
-                              const Vec3& point1, const Vec3& point2) const {
+    HitRecord3D face_hit_record(const Geometry& geometry,
+                                const RaySegment3D& ray_segment,
+                                const Scalar t_min, const Vec3& point0,
+                                const Vec3& point1, const Vec3& point2) const {
 
         using namespace tensor;
         // basis for span
@@ -127,7 +128,7 @@ class Mesh3D : public Entity3D {
         const Mat3x3 metric = geometry.metric(point);
         const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(point);
 
-        HitRecord record;
+        HitRecord3D record;
         record.t = t;
         record.point = point;
         record.uv_coordinates = {u, v};
@@ -184,12 +185,12 @@ void Mesh3D::set_time(const Scalar time) {
     generate_cache();
 }
 
-HitRecord Mesh3D::hit_record(const Geometry& geometry,
-                           const RaySegment3D& ray_segment,
-                           const Scalar t_min) const {
-    HitRecord record = {.t = infinity};
+HitRecord3D Mesh3D::hit_record(const Geometry& geometry,
+                               const RaySegment3D& ray_segment,
+                               const Scalar t_min) const {
+    HitRecord3D record = {.t = infinity};
     for (const auto& face : faces) {
-        HitRecord rec =
+        HitRecord3D rec =
             face_hit_record(geometry, ray_segment, t_min, points[face[0]],
                             points[face[1]], points[face[2]]);
         if (rec.t < record.t) {

@@ -50,7 +50,7 @@ class Material {
      *       (The tangential space of a surface is flat.)
      * @see zero_vec<3_D>
      */
-    virtual std::pair<Vec3, Color> scatter(const HitRecord& record,
+    virtual std::pair<Vec3, Color> scatter(const HitRecord3D& record,
                                            const Vec3& ray_direction) const = 0;
 };
 

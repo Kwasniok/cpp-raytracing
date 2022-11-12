@@ -66,9 +66,9 @@ class Scene {
          *        of the scene
          * @see Entity::hit_record
          */
-        inline HitRecord hit_record(const Geometry& geometry,
-                                    const RaySegment3D& ray_segment,
-                                    const Scalar t_min = 0.0) const;
+        inline HitRecord3D hit_record(const Geometry& geometry,
+                                      const RaySegment3D& ray_segment,
+                                      const Scalar t_min = 0.0) const;
 
       public:
         /** @brief active camera of the frozen scene */
@@ -180,9 +180,10 @@ inline Scene::FreezeGuard::~FreezeGuard() {
     _scene._frozen = false;
 }
 
-inline HitRecord Scene::FreezeGuard::hit_record(const Geometry& geometry,
-                                                const RaySegment3D& ray_segment,
-                                                const Scalar t_min) const {
+inline HitRecord3D
+Scene::FreezeGuard::hit_record(const Geometry& geometry,
+                               const RaySegment3D& ray_segment,
+                               const Scalar t_min) const {
     return _scene._collection.hit_record(geometry, ray_segment, t_min);
 }
 

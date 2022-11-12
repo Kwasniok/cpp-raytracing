@@ -53,9 +53,10 @@ class Instance3D : public Entity3D {
 
     void set_time(const Scalar time) override;
 
-    HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment3D& ray_segment,
-                         const Scalar t_min = 0.0) const override;
+    /** @see Entity::hit_record */
+    HitRecord3D hit_record(const Geometry& geometry,
+                           const RaySegment3D& ray_segment,
+                           const Scalar t_min = 0.0) const override;
 
     std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
@@ -102,9 +103,9 @@ void Instance3D::set_time(const Scalar time) {
     }
 }
 
-HitRecord Instance3D::hit_record(const Geometry& geometry,
-                                 const RaySegment3D& ray_segment,
-                                 const Scalar t_min) const {
+HitRecord3D Instance3D::hit_record(const Geometry& geometry,
+                                   const RaySegment3D& ray_segment,
+                                   const Scalar t_min) const {
 
     using namespace tensor;
 
@@ -118,7 +119,7 @@ HitRecord Instance3D::hit_record(const Geometry& geometry,
         // linear
         const Vec3 direction = _inv_transformation * ray_segment.direction();
 
-        HitRecord record = entity->hit_record(
+        HitRecord3D record = entity->hit_record(
             geometry, RaySegment3D{start, direction, ray_segment.t_max()},
             t_min);
 

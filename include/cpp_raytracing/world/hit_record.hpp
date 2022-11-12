@@ -22,9 +22,21 @@ class Material;
  * @brief records all information of a ray hitting (part of) an object
  * @note mediates between hittables and materials
  */
-struct HitRecord {
+template <Dimension DIMENSION>
+requires(DIMENSION >= 3) struct HitRecord {
+
+    /** @brief space ector type */
+    using VolumeVec = Vec<DIMENSION>;
+
+    /** @brief Jacobian type for to ONB conversions */
+    using ToONBJac = Mat<Dimension{3}, DIMENSION>;
+    /** @brief Jacobian type for from ONB conversions */
+    using FromONBJac = Mat<DIMENSION, Dimension{3}>;
+    /** @brief metric type  */
+    using Metric = Mat<Dimension{3}, Dimension{3}>;
+
     /** @brief intersection point of ray and object */
-    Vec3 point{};
+    VolumeVec point{};
     /**
      * @brief surface normal pointing towards 'exterior' relative to
      *        othronormal basis
@@ -50,8 +62,9 @@ struct HitRecord {
      * @note face_normal will be converted to the local ortho-normal space
      *        when stored as #normal.
      */
-    void set_face_normal(const Mat3x3& to_onb_jacobian, const Mat3x3& metric,
-                         const Vec3& ray_direction, const Vec3& face_normal) {
+    void set_face_normal(const ToONBJac& to_onb_jacobian, const Metric& metric,
+                         const VolumeVec& ray_direction,
+                         const VolumeVec& face_normal) {
         using namespace tensor;
 
         front_face = dot(face_normal, metric * ray_direction) < 0.0;
@@ -65,6 +78,9 @@ struct HitRecord {
      */
     bool hits() const { return t < infinity; }
 };
+
+/** @brief 3D hit record */
+using HitRecord3D = HitRecord<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

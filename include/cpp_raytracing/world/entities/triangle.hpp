@@ -41,9 +41,10 @@ class Triangle3D : public Entity3D {
 
     ~Triangle3D() override = default;
 
-    HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment3D& ray_segment,
-                         const Scalar t_min = 0.0) const override;
+    /** @see Entity::hit_record */
+    HitRecord3D hit_record(const Geometry& geometry,
+                           const RaySegment3D& ray_segment,
+                           const Scalar t_min = 0.0) const override;
 
     std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
@@ -70,9 +71,9 @@ class Triangle3D : public Entity3D {
     }
 };
 
-HitRecord Triangle3D::hit_record(const Geometry& geometry,
-                                 const RaySegment3D& ray_segment,
-                                 const Scalar t_min) const {
+HitRecord3D Triangle3D::hit_record(const Geometry& geometry,
+                                   const RaySegment3D& ray_segment,
+                                   const Scalar t_min) const {
     using namespace tensor;
 
     // basis for span
@@ -115,7 +116,7 @@ HitRecord Triangle3D::hit_record(const Geometry& geometry,
     const Mat3x3 metric = geometry.metric(point);
     const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(point);
 
-    HitRecord record;
+    HitRecord3D record;
     record.t = t;
     record.point = point;
     record.uv_coordinates = {u, v};

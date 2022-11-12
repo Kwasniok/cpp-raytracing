@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(emitter, *but::tolerance(epsilon)) {
         emitter->color = std::move(texture);
         mat = std::move(emitter);
     }
-    const ray::HitRecord record{
+    const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),

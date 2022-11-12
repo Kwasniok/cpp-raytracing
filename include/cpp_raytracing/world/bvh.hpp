@@ -41,7 +41,7 @@ class BVHTree {
          * @brief boundary of both branches and the value
          * @note MUST be finite at all times!
          */
-        AxisAlignedBoundingBox3D bounds{Vec3{}, Vec3{}};
+        AxisAlignedBoundingBox<DIMENSION> bounds{Vec3{}, Vec3{}};
 
         Node() = default;
         Node(const Iter first, const Iter last) {
@@ -93,11 +93,12 @@ class BVHTree {
          *       order to optimize throughput.
          */
         void hit_record(const Geometry& geometry,
-                        const RaySegment3D& ray_segment, const Scalar t_min,
-                        HitRecord& closest_record) const {
+                        const RaySegment<DIMENSION>& ray_segment,
+                        const Scalar t_min,
+                        HitRecord<DIMENSION>& closest_record) const {
             if (bounds.hit(ray_segment, t_min, ray_segment.t_max())) {
                 if (value) {
-                    HitRecord record =
+                    HitRecord<DIMENSION> record =
                         value->hit_record(geometry, ray_segment, t_min);
                     if (record.t < closest_record.t) {
                         closest_record = record;
@@ -164,13 +165,13 @@ class BVHTree {
      * @returns eihter a defned HitRecord or sets HitRecord::t to
      * @see Entity::hit_record
      */
-    HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment3D& ray_segment,
-                         const Scalar t_min = 0.0) const {
-        HitRecord closest_record = {.t = infinity};
+    HitRecord<DIMENSION> hit_record(const Geometry& geometry,
+                                    const RaySegment<DIMENSION>& ray_segment,
+                                    const Scalar t_min = 0.0) const {
+        HitRecord<DIMENSION> closest_record = {.t = infinity};
         _root.hit_record(geometry, ray_segment, t_min, closest_record);
         for (auto& unbounded_entity : _unbounded_entities) {
-            HitRecord record =
+            HitRecord<DIMENSION> record =
                 unbounded_entity->hit_record(geometry, ray_segment, t_min);
             if (record.t < closest_record.t) {
                 closest_record = record;
@@ -180,7 +181,7 @@ class BVHTree {
     }
 
     /** @brief returns a boundaring box off all entities */
-    std::optional<AxisAlignedBoundingBox3D> bounding_box() const {
+    std::optional<AxisAlignedBoundingBox<DIMENSION>> bounding_box() const {
         if (_unbounded_entities.size() > 0) {
             return std::nullopt;
         }
@@ -245,6 +246,7 @@ class BVHTree {
     Node _root;
 };
 
+/** @brief 3D BVH tree */
 using BVHTree3D = BVHTree<Dimension{3}>;
 
 } // namespace cpp_raytracing

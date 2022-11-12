@@ -40,9 +40,10 @@ class Sphere3D : public Entity3D {
 
     ~Sphere3D() override = default;
 
-    HitRecord hit_record(const Geometry& geometry,
-                         const RaySegment3D& ray_segment,
-                         const Scalar t_min = 0.0) const override;
+    /** @see Entity::hit_record */
+    HitRecord3D hit_record(const Geometry& geometry,
+                           const RaySegment3D& ray_segment,
+                           const Scalar t_min = 0.0) const override;
 
     std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
@@ -62,9 +63,9 @@ class Sphere3D : public Entity3D {
     }
 };
 
-HitRecord Sphere3D::hit_record([[maybe_unused]] const Geometry& geometry,
-                               const RaySegment3D& ray_segment,
-                               const Scalar t_min) const {
+HitRecord3D Sphere3D::hit_record([[maybe_unused]] const Geometry& geometry,
+                                 const RaySegment3D& ray_segment,
+                                 const Scalar t_min) const {
     using namespace tensor;
 
     // analytical geometry: line hits sphere
@@ -80,7 +81,7 @@ HitRecord Sphere3D::hit_record([[maybe_unused]] const Geometry& geometry,
     const auto discriminant = b_half * b_half - a * c;
     if (discriminant < 0.0) {
         // no real solution
-        return HitRecord{.t = infinity};
+        return HitRecord3D{.t = infinity};
     }
 
     // select minimal sloution in given range
@@ -96,14 +97,14 @@ HitRecord Sphere3D::hit_record([[maybe_unused]] const Geometry& geometry,
         t = (-b_half + sqrt(discriminant)) / a;
         if (t < t_min || t > ray_segment.t_max()) {
             // no soltion in range
-            return HitRecord{.t = infinity};
+            return HitRecord3D{.t = infinity};
         }
     }
 
     // found solution in range
     const Vec3 point = ray_segment.at(t);
     const Vec3 normal = point * (Scalar{1} / radius);
-    HitRecord record;
+    HitRecord3D record;
     record.t = t;
     record.point = point;
     record.set_face_normal(tensor::identity_mat<3_D>, tensor::identity_mat<3_D>,
