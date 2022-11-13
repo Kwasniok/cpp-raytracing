@@ -147,15 +147,20 @@ class SwirlCartesianGeometry3D : public Geometry3D {
 
     ~SwirlCartesianGeometry3D() override = default;
 
+    /** @see Geometry::ray_from */
     std::unique_ptr<Ray3D> ray_from(const Vec3& start,
                                     const Vec3& direction) const override;
 
+    /** @see Geometry::ray_passing_through */
     std::unique_ptr<Ray3D>
     ray_passing_through(const Vec3& start, const Vec3& target) const override;
 
+    /** @see Geometry::to_onb_jacobian */
     Mat3x3 to_onb_jacobian(const Vec3& position) const override;
+    /** @see Geometry::from_onb_jacobian */
     Mat3x3 from_onb_jacobian(const Vec3& position) const override;
 
+    /** @see Geometry::metric */
     Mat3x3 metric(const Vec3& position) const override;
 
   public:

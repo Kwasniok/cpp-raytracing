@@ -71,24 +71,29 @@ class EuclideanGeometry3D : public Geometry3D {
 
     ~EuclideanGeometry3D() override = default;
 
+    /** @see Geometry::ray_from */
     std::unique_ptr<Ray3D> ray_from(const Vec3& start,
                                     const Vec3& direction) const override {
         return std::make_unique<EuclideanRay3D>(start, direction);
     }
 
+    /** @see Geometry::ray_passing_through */
     std::unique_ptr<Ray3D>
     ray_passing_through(const Vec3& start, const Vec3& target) const override {
         return std::make_unique<EuclideanRay3D>(
             start, tensor::unit_vector(target - start));
     }
 
+    /** @see Geometry::to_onb_jacobian */
     Mat3x3 to_onb_jacobian(const Vec3&) const override {
         return tensor::identity_mat<3_D>;
     }
+    /** @see Geometry::from_onb_jacobian */
     Mat3x3 from_onb_jacobian(const Vec3&) const override {
         return tensor::identity_mat<3_D>;
     }
 
+    /** @see Geometry::metric */
     Mat3x3 metric(const Vec3&) const override {
         return tensor::identity_mat<3_D>;
     }

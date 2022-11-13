@@ -146,6 +146,7 @@ class SkyBackground3D : public Background3D {
 
     ~SkyBackground3D() override = default;
 
+    /** @see Background::value */
     Color value([[maybe_unused]] const Geometry3D& geometry,
                 const RaySegment3D& ray_segment) const override {
 
