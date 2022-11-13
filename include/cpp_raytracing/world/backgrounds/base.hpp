@@ -9,6 +9,7 @@
 #include "../../geometry/base.hpp"
 #include "../../values/color.hpp"
 #include "../../values/identifier.hpp"
+#include "../../values/tensor.hpp"
 #include "../ray_segment.hpp"
 
 namespace cpp_raytracing {
@@ -16,6 +17,7 @@ namespace cpp_raytracing {
 /**
  * @brief background interface
  */
+template <Dimension DIMENSION>
 class Background {
   public:
     /** @brief unique background identifier */
@@ -44,12 +46,15 @@ class Background {
      * @param ray_segment last segment of ray which was simulated
      */
     virtual Color value(const Geometry& geometry,
-                        const RaySegment3D& ray_segment) const = 0;
+                        const RaySegment<DIMENSION>& ray_segment) const = 0;
 };
 
+/** @brief background interface for 3D manifolds */
+using Background3D = Background<Dimension{3}>;
+
 /** @brief default identifier for backgrounds */
-template <>
-struct default_identifier<Background> {
+template <Dimension DIMENSION>
+struct default_identifier<Background<DIMENSION>> {
     /** @brief default identifier for backgrounds */
     static constexpr const char* value = "background";
 };

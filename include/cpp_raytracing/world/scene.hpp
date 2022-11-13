@@ -77,7 +77,7 @@ class Scene {
          * @brief (optional) active background of the frozen scene
          * @note Backgrounds do not interact with hit_record().
          */
-        const Background* active_background;
+        const Background3D* active_background;
 
       private:
         /** @brief frozen scene */
@@ -95,7 +95,7 @@ class Scene {
      * @note An active background is optional but recommended for rendering a
      *       scene.
      */
-    std::shared_ptr<Background> active_background;
+    std::shared_ptr<Background3D> active_background;
 
     /** @brief initialize with an active camera */
     Scene(std::shared_ptr<Camera3D> active_camera)

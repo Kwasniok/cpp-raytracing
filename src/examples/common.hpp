@@ -122,7 +122,7 @@ void SinusoidalMotionMeshAnimator3D::update_for_time_hook(const Scalar time,
 /**
  * @brief simple sky background (requires Cartesian coorinates)
  */
-class SkyBackground : public Background {
+class SkyBackground3D : public Background3D {
   public:
     /** @brief color near horizon */
     Color color1 = Colors::WHITE;
@@ -130,21 +130,21 @@ class SkyBackground : public Background {
     Color color2 = {0.5, 0.7, 1.0};
 
     /** @brief default constructor */
-    SkyBackground() = default;
+    SkyBackground3D() = default;
 
     /** @brief copy constructor */
-    SkyBackground(const SkyBackground&) = delete;
+    SkyBackground3D(const SkyBackground3D&) = delete;
 
     /** @brief move constructor */
-    SkyBackground(SkyBackground&&) = default;
+    SkyBackground3D(SkyBackground3D&&) = default;
 
     /** @brief copy assignment */
-    SkyBackground& operator=(const SkyBackground&) = delete;
+    SkyBackground3D& operator=(const SkyBackground3D&) = delete;
 
     /** @brief move assignment */
-    SkyBackground& operator=(SkyBackground&&) = default;
+    SkyBackground3D& operator=(SkyBackground3D&&) = default;
 
-    ~SkyBackground() override = default;
+    ~SkyBackground3D() override = default;
 
     Color value([[maybe_unused]] const Geometry& geometry,
                 const RaySegment3D& ray_segment) const override {

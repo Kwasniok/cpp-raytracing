@@ -7,6 +7,6 @@
 #define CPP_RAYTRACING_BACKGROUNDS_HPP
 
 #include "backgrounds/base.hpp"
-#include "backgrounds/constant.hpp"
+#include "backgrounds/constant_background.hpp"
 
 #endif

@@ -13,7 +13,8 @@ namespace cpp_raytracing {
 /**
  * @brief constant background (global illumination)
  */
-class ConstantBackground : public Background {
+template <Dimension DIMENSION>
+class ConstantBackground : public Background<DIMENSION> {
   public:
     /** @brief color of the background */
     Color color = Colors::WHITE;
@@ -35,12 +36,15 @@ class ConstantBackground : public Background {
 
     ~ConstantBackground() override = default;
 
-    Color
-    value([[maybe_unused]] const Geometry& geometry,
-          [[maybe_unused]] const RaySegment3D& ray_segment) const override {
+    Color value([[maybe_unused]] const Geometry& geometry,
+                [[maybe_unused]] const RaySegment<DIMENSION>& ray_segment)
+        const override {
         return color;
     };
 };
+
+/** @brief constant background (global illumination) for 3D manifolds */
+using ConstantBackground3D = ConstantBackground<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

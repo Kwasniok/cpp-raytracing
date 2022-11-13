@@ -7,7 +7,7 @@
 
 #include <cpp_raytracing/geometry/euclidean.hpp>
 #include <cpp_raytracing/render/renderer.hpp>
-#include <cpp_raytracing/world/backgrounds/constant.hpp>
+#include <cpp_raytracing/world/backgrounds/constant_background.hpp>
 #include <cpp_raytracing/world/entities/mesh.hpp>
 #include <cpp_raytracing/world/materials/emitter.hpp>
 #include <cpp_raytracing/world/materials/metal.hpp>
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background,
     // background (global illumination)
     const ray::Color background_color = {0.2, 0.3, 0.0};
     {
-        auto background = std::make_shared<ray::ConstantBackground>();
+        auto background = std::make_shared<ray::ConstantBackground3D>();
         background->color = background_color;
         scene.active_background = std::move(background);
     }
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter,
 
     // background (no global illumination)
     {
-        auto background = std::make_shared<ray::ConstantBackground>();
+        auto background = std::make_shared<ray::ConstantBackground3D>();
         background->color = ray::Colors::BLACK;
         scene.active_background = std::move(background);
     }
