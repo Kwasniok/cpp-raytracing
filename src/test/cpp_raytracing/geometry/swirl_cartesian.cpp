@@ -18,11 +18,11 @@ const ray::Scalar ray_max_length = 1e+8;
 const ray::Scalar ray_segment_length_factor = 1.1;
 const ray::Scalar a = 1.0 / 17.0;
 
-struct SwirlCartesianGeometryFixture {
-    SwirlCartesianGeometryFixture() {}
-    ~SwirlCartesianGeometryFixture() = default;
+struct SwirlCartesianGeometry3DFixture {
+    SwirlCartesianGeometry3DFixture() {}
+    ~SwirlCartesianGeometry3DFixture() = default;
 
-    ray::SwirlCartesianGeometry geometry{
+    ray::SwirlCartesianGeometry3D geometry{
         a,
         ray_initial_step_size,
         ray_error_abs,
@@ -32,7 +32,7 @@ struct SwirlCartesianGeometryFixture {
     };
 };
 
-BOOST_FIXTURE_TEST_CASE(ray_passing_through, SwirlCartesianGeometryFixture,
+BOOST_FIXTURE_TEST_CASE(ray_passing_through, SwirlCartesianGeometry3DFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 
@@ -63,7 +63,7 @@ BOOST_FIXTURE_TEST_CASE(ray_passing_through, SwirlCartesianGeometryFixture,
     TEST_EQUAL_RANGES(segment->direction(), direction);
 }
 
-BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, SwirlCartesianGeometryFixture,
+BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, SwirlCartesianGeometry3DFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, SwirlCartesianGeometryFixture,
     TEST_EQUAL_RANGES(jacobian, to_onb_jacobian);
 }
 
-BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, SwirlCartesianGeometryFixture,
+BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, SwirlCartesianGeometry3DFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 
@@ -127,7 +127,7 @@ BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, SwirlCartesianGeometryFixture,
     TEST_EQUAL_RANGES(jacobian, from_onb_jacobian);
 }
 
-BOOST_FIXTURE_TEST_CASE(metric, SwirlCartesianGeometryFixture,
+BOOST_FIXTURE_TEST_CASE(metric, SwirlCartesianGeometry3DFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 

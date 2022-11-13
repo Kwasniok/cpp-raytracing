@@ -121,7 +121,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    SwirlCartesianGeometry geometry{
+    SwirlCartesianGeometry3D geometry{
         config.swirl_strength, config.ray_initial_step_size,
         config.ray_error_abs,  config.ray_error_rel,
         config.ray_max_length, config.ray_segment_length_factor,

@@ -71,7 +71,7 @@ class Entity {
      * ::infinity
      */
     virtual HitRecord<DIMENSION>
-    hit_record(const Geometry& geometry,
+    hit_record(const Geometry<DIMENSION>& geometry,
                const RaySegment<DIMENSION>& ray_segment,
                const Scalar t_min = 0.0) const = 0;
 

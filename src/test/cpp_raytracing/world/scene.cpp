@@ -36,7 +36,7 @@ struct SceneFixture {
     SceneFixture() : scene{make_scene()} {}
     ~SceneFixture() = default;
 
-    const ray::EuclideanGeometry geometry{};
+    const ray::EuclideanGeometry3D geometry{};
     ray::Scene scene;
 };
 

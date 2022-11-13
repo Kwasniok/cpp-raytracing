@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background,
                      *but::tolerance(epsilon)) {
     // ray hits reflective surface and scatters into background
 
-    ray::EuclideanGeometry geometry;
+    ray::EuclideanGeometry3D geometry;
 
     // test scene
     auto dummy_camera =
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter,
                      *but::tolerance(epsilon)) {
     // ray hits reflective surface and scatters into emitter
 
-    ray::EuclideanGeometry geometry;
+    ray::EuclideanGeometry3D geometry;
 
     // test scene
     auto dummy_camera =

@@ -38,16 +38,16 @@
 
 namespace cpp_raytracing {
 
-class TwistedOrbCartesianRay;
-class TwistedOrbCartesianGeometry;
+class TwistedOrbCartesianRay3D;
+class TwistedOrbCartesianGeometry3D;
 
 /**
  * @brief functional object for solving integral of ray propagation
- * @see TwistedOrbCartesianRay, TwistedOrbCartesianGeometry
+ * @see TwistedOrbCartesianRay3D, TwistedOrbCartesianGeometry3D
  */
-struct TwistedOrbCartesianRayDifferential {
+struct TwistedOrbCartesianRay3DDifferential {
     /** @brief linked geometry */
-    const TwistedOrbCartesianGeometry& geometry;
+    const TwistedOrbCartesianGeometry3D& geometry;
 
     /** @brief call */
     void operator()(const Vec6& p, Vec6& dpdt, Scalar t);
@@ -57,9 +57,9 @@ struct TwistedOrbCartesianRayDifferential {
  * @brief ray for non-Euclidean twisted orb geometry with Cartesian-like
  * coordinates
  * @note vectors are with respect to the tangential space
- * @see TwistedOrbCartesianGeometry
+ * @see TwistedOrbCartesianGeometry3D
  */
-class TwistedOrbCartesianRay : public Ray {
+class TwistedOrbCartesianRay3D : public Ray3D {
   public:
     /**
      * @brief construct new ray
@@ -67,22 +67,23 @@ class TwistedOrbCartesianRay : public Ray {
      * @param start origin of ray
      * @param direction normalized direction  tangential vector
      */
-    TwistedOrbCartesianRay(const TwistedOrbCartesianGeometry& geometry,
-                           const Vec3& start, const Vec3& direction);
+    TwistedOrbCartesianRay3D(const TwistedOrbCartesianGeometry3D& geometry,
+                             const Vec3& start, const Vec3& direction);
 
     /** @brief copy constructor */
-    TwistedOrbCartesianRay(const TwistedOrbCartesianRay&) = default;
+    TwistedOrbCartesianRay3D(const TwistedOrbCartesianRay3D&) = default;
 
     /** @brief move constructor */
-    TwistedOrbCartesianRay(TwistedOrbCartesianRay&&) = default;
+    TwistedOrbCartesianRay3D(TwistedOrbCartesianRay3D&&) = default;
 
     /** @brief copy assignment */
-    TwistedOrbCartesianRay& operator=(const TwistedOrbCartesianRay&) = delete;
+    TwistedOrbCartesianRay3D&
+    operator=(const TwistedOrbCartesianRay3D&) = delete;
 
     /** @brief move assignment */
-    TwistedOrbCartesianRay& operator=(TwistedOrbCartesianRay&&) = delete;
+    TwistedOrbCartesianRay3D& operator=(TwistedOrbCartesianRay3D&&) = delete;
 
-    ~TwistedOrbCartesianRay() override = default;
+    ~TwistedOrbCartesianRay3D() override = default;
 
     std::optional<RaySegment3D> next_ray_segment() override;
 
@@ -97,25 +98,25 @@ class TwistedOrbCartesianRay : public Ray {
     using ControlledStepper =
         typename boost::numeric::odeint::result_of::make_controlled<
             Stepper>::type;
-    using System = TwistedOrbCartesianRayDifferential;
+    using System = TwistedOrbCartesianRay3DDifferential;
     using Iterator =
         boost::numeric::odeint::adaptive_time_iterator<ControlledStepper,
                                                        System, State>;
 
     static Iterator
-    make_phase_iterator(TwistedOrbCartesianRay& ray,
-                        const TwistedOrbCartesianGeometry& geometry);
+    make_phase_iterator(TwistedOrbCartesianRay3D& ray,
+                        const TwistedOrbCartesianGeometry3D& geometry);
 
   private:
     Vec6 _phase;
-    const TwistedOrbCartesianGeometry& _geometry;
+    const TwistedOrbCartesianGeometry3D& _geometry;
     Iterator _phase_iterator;
 };
 
 /**
  * @brief non-Euclidean twisted orb geometry with Cartesian-like coordinates
  * @note vectors are with respect to the tangential space
- * @see TwistedOrbCartesianRay
+ * @see TwistedOrbCartesianRay3D
  * @note The geometry is defined by the transformation form Carthesian space
  *       `(x,y,z)` to *twisted orb* coordinates:
  *       \code
@@ -134,43 +135,44 @@ class TwistedOrbCartesianRay : public Ray {
  *        (r,alpha,z) = (r, phi - psi * exp(-sqrt(x^2 + y^2 + z^2) / rho), z)
  *       \endcode
  */
-class TwistedOrbCartesianGeometry : public Geometry {
+class TwistedOrbCartesianGeometry3D : public Geometry3D {
 
-    friend class TwistedOrbCartesianRay;
+    friend class TwistedOrbCartesianRay3D;
 
   public:
     /**
      * @brief construct new geometry
      */
-    TwistedOrbCartesianGeometry(const Scalar twist_angle,
-                                const Scalar twist_radius,
-                                const Scalar ray_initial_step_size,
-                                const Scalar ray_error_abs,
-                                const Scalar ray_error_rel,
-                                const Scalar ray_max_length,
-                                const Scalar _ray_segment_length_factor);
+    TwistedOrbCartesianGeometry3D(const Scalar twist_angle,
+                                  const Scalar twist_radius,
+                                  const Scalar ray_initial_step_size,
+                                  const Scalar ray_error_abs,
+                                  const Scalar ray_error_rel,
+                                  const Scalar ray_max_length,
+                                  const Scalar _ray_segment_length_factor);
 
     /** @brief copy constructor */
-    TwistedOrbCartesianGeometry(const TwistedOrbCartesianGeometry&) = default;
+    TwistedOrbCartesianGeometry3D(const TwistedOrbCartesianGeometry3D&) =
+        default;
 
     /** @brief move constructor */
-    TwistedOrbCartesianGeometry(TwistedOrbCartesianGeometry&&) = default;
+    TwistedOrbCartesianGeometry3D(TwistedOrbCartesianGeometry3D&&) = default;
 
     /** @brief copy assignment */
-    TwistedOrbCartesianGeometry&
-    operator=(const TwistedOrbCartesianGeometry&) = delete;
+    TwistedOrbCartesianGeometry3D&
+    operator=(const TwistedOrbCartesianGeometry3D&) = delete;
 
     /** @brief move assignment */
-    TwistedOrbCartesianGeometry&
-    operator=(TwistedOrbCartesianGeometry&&) = delete;
+    TwistedOrbCartesianGeometry3D&
+    operator=(TwistedOrbCartesianGeometry3D&&) = delete;
 
-    ~TwistedOrbCartesianGeometry() override = default;
+    ~TwistedOrbCartesianGeometry3D() override = default;
 
-    std::unique_ptr<Ray> ray_from(const Vec3& start,
-                                  const Vec3& direction) const override;
+    std::unique_ptr<Ray3D> ray_from(const Vec3& start,
+                                    const Vec3& direction) const override;
 
-    std::unique_ptr<Ray> ray_passing_through(const Vec3& start,
-                                             const Vec3& target) const override;
+    std::unique_ptr<Ray3D>
+    ray_passing_through(const Vec3& start, const Vec3& target) const override;
 
     Mat3x3 to_onb_jacobian(const Vec3& position) const override;
     Mat3x3 from_onb_jacobian(const Vec3& position) const override;
@@ -230,11 +232,11 @@ class TwistedOrbCartesianGeometry : public Geometry {
     Scalar _ray_segment_length_factor;
 
     /** @brief differential equation for phase velocity */
-    const TwistedOrbCartesianRayDifferential _phase_derivative_func;
+    const TwistedOrbCartesianRay3DDifferential _phase_derivative_func;
 };
 
-void TwistedOrbCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
-                                                    [[maybe_unused]] Scalar t) {
+void TwistedOrbCartesianRay3DDifferential::operator()(
+    const Vec6& p, Vec6& dpdt, [[maybe_unused]] Scalar t) {
     using namespace tensor;
 
     const auto [pos, dir] = split(p);
@@ -243,14 +245,14 @@ void TwistedOrbCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
                               gttl::contraction<1, 3>(chris_2, dir), -dir));
 }
 
-TwistedOrbCartesianRay::TwistedOrbCartesianRay(
-    const TwistedOrbCartesianGeometry& geometry, const Vec3& start,
+TwistedOrbCartesianRay3D::TwistedOrbCartesianRay3D(
+    const TwistedOrbCartesianGeometry3D& geometry, const Vec3& start,
     const Vec3& direction)
     : _phase{tensor::outer_sum(start, direction)},
       _geometry{geometry},
       _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
-std::optional<RaySegment3D> TwistedOrbCartesianRay::next_ray_segment() {
+std::optional<RaySegment3D> TwistedOrbCartesianRay3D::next_ray_segment() {
     using namespace tensor;
 
     const auto& [phase_start, time] = *_phase_iterator;
@@ -298,8 +300,10 @@ std::optional<RaySegment3D> TwistedOrbCartesianRay::next_ray_segment() {
     return segment;
 };
 
-TwistedOrbCartesianRay::Iterator TwistedOrbCartesianRay::make_phase_iterator(
-    TwistedOrbCartesianRay& ray, const TwistedOrbCartesianGeometry& geometry) {
+TwistedOrbCartesianRay3D::Iterator
+TwistedOrbCartesianRay3D::make_phase_iterator(
+    TwistedOrbCartesianRay3D& ray,
+    const TwistedOrbCartesianGeometry3D& geometry) {
     using namespace boost::numeric::odeint;
 
     const Scalar initial_dt = geometry._ray_initial_step_size;
@@ -314,7 +318,7 @@ TwistedOrbCartesianRay::Iterator TwistedOrbCartesianRay::make_phase_iterator(
         geometry._ray_max_length, initial_dt);
 }
 
-TwistedOrbCartesianGeometry::TwistedOrbCartesianGeometry(
+TwistedOrbCartesianGeometry3D::TwistedOrbCartesianGeometry3D(
     const Scalar twist_angle, const Scalar twist_radius,
     const Scalar ray_initial_step_size, const Scalar ray_error_abs,
     const Scalar ray_error_rel, const Scalar ray_max_length,
@@ -329,15 +333,15 @@ TwistedOrbCartesianGeometry::TwistedOrbCartesianGeometry(
       // note: store derivative function once per geometry
       _phase_derivative_func{*this} {}
 
-std::unique_ptr<Ray>
-TwistedOrbCartesianGeometry::ray_from(const Vec3& start,
-                                      const Vec3& direction) const {
-    return std::make_unique<TwistedOrbCartesianRay>(*this, start, direction);
+std::unique_ptr<Ray3D>
+TwistedOrbCartesianGeometry3D::ray_from(const Vec3& start,
+                                        const Vec3& direction) const {
+    return std::make_unique<TwistedOrbCartesianRay3D>(*this, start, direction);
 }
 
-std::unique_ptr<Ray>
-TwistedOrbCartesianGeometry::ray_passing_through(const Vec3& start,
-                                                 const Vec3& target) const {
+std::unique_ptr<Ray3D>
+TwistedOrbCartesianGeometry3D::ray_passing_through(const Vec3& start,
+                                                   const Vec3& target) const {
     using namespace tensor;
 
     // convert positions to flat space
@@ -352,11 +356,11 @@ TwistedOrbCartesianGeometry::ray_passing_through(const Vec3& start,
     // note: direction is still normalized after transfomration
     const Vec3 direction = jacobian * direction_cart;
 
-    return std::make_unique<TwistedOrbCartesianRay>(*this, start, direction);
+    return std::make_unique<TwistedOrbCartesianRay3D>(*this, start, direction);
 }
 
 Mat3x3
-TwistedOrbCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
+TwistedOrbCartesianGeometry3D::to_onb_jacobian(const Vec3& position) const {
     const Scalar psi = _twist_angle;
     const Scalar rho = _twist_radius;
     const Scalar u = position[0];
@@ -386,7 +390,7 @@ TwistedOrbCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
 }
 
 Mat3x3
-TwistedOrbCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
+TwistedOrbCartesianGeometry3D::from_onb_jacobian(const Vec3& position) const {
     const Scalar psi = _twist_angle;
     const Scalar rho = _twist_radius;
     const Scalar u = position[0];
@@ -419,7 +423,7 @@ TwistedOrbCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
     };
 }
 
-Mat3x3 TwistedOrbCartesianGeometry::metric(const Vec3& position) const {
+Mat3x3 TwistedOrbCartesianGeometry3D::metric(const Vec3& position) const {
     const Scalar psi = _twist_angle;
     const Scalar rho = _twist_radius;
     const Scalar rho2 = rho * rho;
@@ -454,14 +458,14 @@ Mat3x3 TwistedOrbCartesianGeometry::metric(const Vec3& position) const {
     };
 }
 
-Vec3 TwistedOrbCartesianGeometry::normalize(const Vec3& position,
-                                            const Vec3& vec) const {
+Vec3 TwistedOrbCartesianGeometry3D::normalize(const Vec3& position,
+                                              const Vec3& vec) const {
     using namespace tensor;
 
     return vec * (Scalar{1} / std::sqrt(dot(vec, metric(position) * vec)));
 }
 
-Vec3 TwistedOrbCartesianGeometry::to_cartesian_coords(
+Vec3 TwistedOrbCartesianGeometry3D::to_cartesian_coords(
     const Vec3& position) const {
     const Scalar psi = _twist_angle;
     const Scalar rho = _twist_radius;
@@ -474,7 +478,8 @@ Vec3 TwistedOrbCartesianGeometry::to_cartesian_coords(
     return {r * std::cos(phi), r * std::sin(phi), z};
 }
 
-Mat3x3 TwistedOrbCartesianGeometry::inverse_metric(const Vec3& position) const {
+Mat3x3
+TwistedOrbCartesianGeometry3D::inverse_metric(const Vec3& position) const {
     const Scalar psi = _twist_angle;
     const Scalar rho = _twist_radius;
     const Scalar rho2 = rho * rho;
@@ -506,7 +511,7 @@ Mat3x3 TwistedOrbCartesianGeometry::inverse_metric(const Vec3& position) const {
 }
 
 Ten3x3x3
-TwistedOrbCartesianGeometry::christoffel_1(const Vec3& position) const {
+TwistedOrbCartesianGeometry3D::christoffel_1(const Vec3& position) const {
     const Scalar psi = _twist_angle;
     const Scalar rho = _twist_radius;
     const Scalar rho2 = rho * rho;
@@ -675,7 +680,7 @@ TwistedOrbCartesianGeometry::christoffel_1(const Vec3& position) const {
 }
 
 Ten3x3x3
-TwistedOrbCartesianGeometry::christoffel_2(const Vec3& position) const {
+TwistedOrbCartesianGeometry3D::christoffel_2(const Vec3& position) const {
     const Mat3x3 inv_metric = inverse_metric(position);
     const Ten3x3x3 chris_1 = christoffel_1(position);
 

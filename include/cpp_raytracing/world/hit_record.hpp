@@ -25,7 +25,7 @@ class Material;
 template <Dimension DIMENSION>
 requires(DIMENSION >= 3) struct HitRecord {
 
-    /** @brief space ector type */
+    /** @brief space vector type */
     using VolumeVec = Vec<DIMENSION>;
 
     /** @brief Jacobian type for to ONB conversions */

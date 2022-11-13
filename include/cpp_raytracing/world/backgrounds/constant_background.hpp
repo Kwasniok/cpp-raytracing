@@ -36,7 +36,7 @@ class ConstantBackground : public Background<DIMENSION> {
 
     ~ConstantBackground() override = default;
 
-    Color value([[maybe_unused]] const Geometry& geometry,
+    Color value([[maybe_unused]] const Geometry<DIMENSION>& geometry,
                 [[maybe_unused]] const RaySegment<DIMENSION>& ray_segment)
         const override {
         return color;

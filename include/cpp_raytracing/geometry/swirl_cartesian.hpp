@@ -20,16 +20,16 @@
 
 namespace cpp_raytracing {
 
-class SwirlCartesianRay;
-class SwirlCartesianGeometry;
+class SwirlCartesianRay3D;
+class SwirlCartesianGeometry3D;
 
 /**
  * @brief functional object for solving integral of ray propagation
- * @see SwirlCartesianRay, SwirlCartesianGeometry
+ * @see SwirlCartesianRay3D, SwirlCartesianGeometry3D
  */
-struct SwirlCartesianRayDifferential {
+struct SwirlCartesianRay3DDifferential {
     /** @brief linked geometry */
-    const SwirlCartesianGeometry& geometry;
+    const SwirlCartesianGeometry3D& geometry;
 
     /** @brief call */
     void operator()(const Vec6& p, Vec6& dpdt, Scalar t);
@@ -38,9 +38,9 @@ struct SwirlCartesianRayDifferential {
 /**
  * @brief ray for non-Euclidean swirl geometry with Cartesian-like coordinates
  * @note vectors are with respect to the tangential space
- * @see SwirlCartesianGeometry
+ * @see SwirlCartesianGeometry3D
  */
-class SwirlCartesianRay : public Ray {
+class SwirlCartesianRay3D : public Ray3D {
   public:
     /**
      * @brief construct new ray
@@ -48,22 +48,22 @@ class SwirlCartesianRay : public Ray {
      * @param start origin of ray
      * @param direction normalized direction  tangential vector
      */
-    SwirlCartesianRay(const SwirlCartesianGeometry& geometry, const Vec3& start,
-                      const Vec3& direction);
+    SwirlCartesianRay3D(const SwirlCartesianGeometry3D& geometry,
+                        const Vec3& start, const Vec3& direction);
 
     /** @brief copy constructor */
-    SwirlCartesianRay(const SwirlCartesianRay&) = default;
+    SwirlCartesianRay3D(const SwirlCartesianRay3D&) = default;
 
     /** @brief move constructor */
-    SwirlCartesianRay(SwirlCartesianRay&&) = default;
+    SwirlCartesianRay3D(SwirlCartesianRay3D&&) = default;
 
     /** @brief copy assignment */
-    SwirlCartesianRay& operator=(const SwirlCartesianRay&) = delete;
+    SwirlCartesianRay3D& operator=(const SwirlCartesianRay3D&) = delete;
 
     /** @brief move assignment */
-    SwirlCartesianRay& operator=(SwirlCartesianRay&&) = delete;
+    SwirlCartesianRay3D& operator=(SwirlCartesianRay3D&&) = delete;
 
-    ~SwirlCartesianRay() override = default;
+    ~SwirlCartesianRay3D() override = default;
 
     std::optional<RaySegment3D> next_ray_segment() override;
 
@@ -79,25 +79,26 @@ class SwirlCartesianRay : public Ray {
     using ControlledStepper =
         typename boost::numeric::odeint::result_of::make_controlled<
             Stepper>::type;
-    using System = SwirlCartesianRayDifferential;
+    using System = SwirlCartesianRay3DDifferential;
     using Iterator =
         boost::numeric::odeint::adaptive_time_iterator<ControlledStepper,
                                                        System, State>;
 
-    static Iterator make_phase_iterator(SwirlCartesianRay& ray,
-                                        const SwirlCartesianGeometry& geometry);
+    static Iterator
+    make_phase_iterator(SwirlCartesianRay3D& ray,
+                        const SwirlCartesianGeometry3D& geometry);
 
   private:
     /** @brief returns current phase (position, velocity)*/
     Vec6 _phase;
-    const SwirlCartesianGeometry& _geometry;
+    const SwirlCartesianGeometry3D& _geometry;
     Iterator _phase_iterator;
 };
 
 /**
  * @brief non-Euclidean swirl geometry with Cartesian-like coordinates
  * @note vectors are with respect to the tangential space
- * @see SwirlCartesianRay
+ * @see SwirlCartesianRay3D
  * @note The geometry is defined by the transformation form Carthesian space
  *       `(x,y,z)` to *swirl* coordinates:
  *       \code
@@ -115,41 +116,42 @@ class SwirlCartesianRay : public Ray {
  *        (r,alpha,z) = (r, phi - a * r * z, z)
  *       \endcode
  */
-class SwirlCartesianGeometry : public Geometry {
+class SwirlCartesianGeometry3D : public Geometry3D {
 
-    friend class SwirlCartesianRay;
+    friend class SwirlCartesianRay3D;
 
   public:
     /**
      * @brief construct new geometry
      * @note `swirl_strength = 0.0` is equivalent to Euclidean space.
      */
-    SwirlCartesianGeometry(const Scalar swirl_strength,
-                           const Scalar ray_initial_step_size,
-                           const Scalar ray_error_abs,
-                           const Scalar ray_error_rel,
-                           const Scalar ray_max_length,
-                           const Scalar _ray_segment_length_factor);
+    SwirlCartesianGeometry3D(const Scalar swirl_strength,
+                             const Scalar ray_initial_step_size,
+                             const Scalar ray_error_abs,
+                             const Scalar ray_error_rel,
+                             const Scalar ray_max_length,
+                             const Scalar _ray_segment_length_factor);
 
     /** @brief copy constructor */
-    SwirlCartesianGeometry(const SwirlCartesianGeometry&) = default;
+    SwirlCartesianGeometry3D(const SwirlCartesianGeometry3D&) = default;
 
     /** @brief move constructor */
-    SwirlCartesianGeometry(SwirlCartesianGeometry&&) = default;
+    SwirlCartesianGeometry3D(SwirlCartesianGeometry3D&&) = default;
 
     /** @brief copy assignment */
-    SwirlCartesianGeometry& operator=(const SwirlCartesianGeometry&) = delete;
+    SwirlCartesianGeometry3D&
+    operator=(const SwirlCartesianGeometry3D&) = delete;
 
     /** @brief move assignment */
-    SwirlCartesianGeometry& operator=(SwirlCartesianGeometry&&) = delete;
+    SwirlCartesianGeometry3D& operator=(SwirlCartesianGeometry3D&&) = delete;
 
-    ~SwirlCartesianGeometry() override = default;
+    ~SwirlCartesianGeometry3D() override = default;
 
-    std::unique_ptr<Ray> ray_from(const Vec3& start,
-                                  const Vec3& direction) const override;
+    std::unique_ptr<Ray3D> ray_from(const Vec3& start,
+                                    const Vec3& direction) const override;
 
-    std::unique_ptr<Ray> ray_passing_through(const Vec3& start,
-                                             const Vec3& target) const override;
+    std::unique_ptr<Ray3D>
+    ray_passing_through(const Vec3& start, const Vec3& target) const override;
 
     Mat3x3 to_onb_jacobian(const Vec3& position) const override;
     Mat3x3 from_onb_jacobian(const Vec3& position) const override;
@@ -197,11 +199,11 @@ class SwirlCartesianGeometry : public Geometry {
     Scalar _ray_segment_length_factor;
 
     /** @brief differential equation for phase velocity */
-    const SwirlCartesianRayDifferential _phase_derivative_func;
+    const SwirlCartesianRay3DDifferential _phase_derivative_func;
 };
 
-void SwirlCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
-                                               [[maybe_unused]] Scalar t) {
+void SwirlCartesianRay3DDifferential::operator()(const Vec6& p, Vec6& dpdt,
+                                                 [[maybe_unused]] Scalar t) {
     using namespace tensor;
 
     const auto [pos, dir] = split(p);
@@ -210,13 +212,14 @@ void SwirlCartesianRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
                               gttl::contraction<1, 3>(chris_2, dir), -dir));
 }
 
-SwirlCartesianRay::SwirlCartesianRay(const SwirlCartesianGeometry& geometry,
-                                     const Vec3& start, const Vec3& direction)
+SwirlCartesianRay3D::SwirlCartesianRay3D(
+    const SwirlCartesianGeometry3D& geometry, const Vec3& start,
+    const Vec3& direction)
     : _phase{tensor::outer_sum(start, direction)},
       _geometry{geometry},
       _phase_iterator{make_phase_iterator(*this, geometry)} {}
 
-std::optional<RaySegment3D> SwirlCartesianRay::next_ray_segment() {
+std::optional<RaySegment3D> SwirlCartesianRay3D::next_ray_segment() {
 
     using namespace tensor;
 
@@ -255,9 +258,8 @@ std::optional<RaySegment3D> SwirlCartesianRay::next_ray_segment() {
     return segment;
 };
 
-SwirlCartesianRay::Iterator
-SwirlCartesianRay::make_phase_iterator(SwirlCartesianRay& ray,
-                                       const SwirlCartesianGeometry& geometry) {
+SwirlCartesianRay3D::Iterator SwirlCartesianRay3D::make_phase_iterator(
+    SwirlCartesianRay3D& ray, const SwirlCartesianGeometry3D& geometry) {
     using namespace boost::numeric::odeint;
 
     const Scalar initial_dt = geometry._ray_initial_step_size;
@@ -272,7 +274,7 @@ SwirlCartesianRay::make_phase_iterator(SwirlCartesianRay& ray,
         geometry._ray_max_length, initial_dt);
 }
 
-SwirlCartesianGeometry::SwirlCartesianGeometry(
+SwirlCartesianGeometry3D::SwirlCartesianGeometry3D(
     const Scalar swirl_strength, const Scalar ray_initial_step_size,
     const Scalar ray_error_abs, const Scalar ray_error_rel,
     const Scalar ray_max_length, const Scalar ray_segment_length_factor)
@@ -285,15 +287,15 @@ SwirlCartesianGeometry::SwirlCartesianGeometry(
       // note: store derivative function once per geometry
       _phase_derivative_func{*this} {}
 
-std::unique_ptr<Ray>
-SwirlCartesianGeometry::ray_from(const Vec3& start,
-                                 const Vec3& direction) const {
-    return std::make_unique<SwirlCartesianRay>(*this, start, direction);
+std::unique_ptr<Ray3D>
+SwirlCartesianGeometry3D::ray_from(const Vec3& start,
+                                   const Vec3& direction) const {
+    return std::make_unique<SwirlCartesianRay3D>(*this, start, direction);
 }
 
-std::unique_ptr<Ray>
-SwirlCartesianGeometry::ray_passing_through(const Vec3& start,
-                                            const Vec3& target) const {
+std::unique_ptr<Ray3D>
+SwirlCartesianGeometry3D::ray_passing_through(const Vec3& start,
+                                              const Vec3& target) const {
 
     const Scalar a = _swirl_strength;
 
@@ -325,11 +327,11 @@ SwirlCartesianGeometry::ray_passing_through(const Vec3& start,
         z1 - z0,
     };
 
-    return std::make_unique<SwirlCartesianRay>(*this, start,
-                                               normalize(start, direction));
+    return std::make_unique<SwirlCartesianRay3D>(*this, start,
+                                                 normalize(start, direction));
 }
 
-Mat3x3 SwirlCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
+Mat3x3 SwirlCartesianGeometry3D::to_onb_jacobian(const Vec3& position) const {
     const Scalar a = _swirl_strength;
     const Scalar u = position[0];
     const Scalar v = position[1];
@@ -355,7 +357,7 @@ Mat3x3 SwirlCartesianGeometry::to_onb_jacobian(const Vec3& position) const {
     };
 }
 
-Mat3x3 SwirlCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
+Mat3x3 SwirlCartesianGeometry3D::from_onb_jacobian(const Vec3& position) const {
     const Scalar a = _swirl_strength;
     const Scalar u = position[0];
     const Scalar v = position[1];
@@ -381,7 +383,7 @@ Mat3x3 SwirlCartesianGeometry::from_onb_jacobian(const Vec3& position) const {
     };
 }
 
-Mat3x3 SwirlCartesianGeometry::metric(const Vec3& position) const {
+Mat3x3 SwirlCartesianGeometry3D::metric(const Vec3& position) const {
     const Scalar a = _swirl_strength;
     const Scalar u = position[0];
     const Scalar v = position[1];
@@ -405,14 +407,14 @@ Mat3x3 SwirlCartesianGeometry::metric(const Vec3& position) const {
     };
 }
 
-Vec3 SwirlCartesianGeometry::normalize(const Vec3& position,
-                                       const Vec3& vec) const {
+Vec3 SwirlCartesianGeometry3D::normalize(const Vec3& position,
+                                         const Vec3& vec) const {
     using namespace tensor;
 
     return vec * (Scalar{1} / std::sqrt(dot(vec, metric(position) * vec)));
 }
 
-Mat3x3 SwirlCartesianGeometry::inverse_metric(const Vec3& position) const {
+Mat3x3 SwirlCartesianGeometry3D::inverse_metric(const Vec3& position) const {
     const Scalar a = _swirl_strength;
     const Scalar u = position[0];
     const Scalar v = position[1];
@@ -438,7 +440,7 @@ Mat3x3 SwirlCartesianGeometry::inverse_metric(const Vec3& position) const {
     };
 }
 
-Ten3x3x3 SwirlCartesianGeometry::christoffel_1(const Vec3& position) const {
+Ten3x3x3 SwirlCartesianGeometry3D::christoffel_1(const Vec3& position) const {
 
     const Scalar a = _swirl_strength;
     const Scalar u = position[0];
@@ -508,7 +510,7 @@ Ten3x3x3 SwirlCartesianGeometry::christoffel_1(const Vec3& position) const {
     };
 }
 
-Ten3x3x3 SwirlCartesianGeometry::christoffel_2(const Vec3& position) const {
+Ten3x3x3 SwirlCartesianGeometry3D::christoffel_2(const Vec3& position) const {
     const Mat3x3 inv_metric = inverse_metric(position);
     const Ten3x3x3 chris_1 = christoffel_1(position);
 

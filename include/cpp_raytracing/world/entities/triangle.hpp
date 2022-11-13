@@ -42,7 +42,7 @@ class Triangle3D : public Entity3D {
     ~Triangle3D() override = default;
 
     /** @see Entity::hit_record */
-    HitRecord3D hit_record(const Geometry& geometry,
+    HitRecord3D hit_record(const Geometry3D& geometry,
                            const RaySegment3D& ray_segment,
                            const Scalar t_min = 0.0) const override;
 
@@ -71,7 +71,7 @@ class Triangle3D : public Entity3D {
     }
 };
 
-HitRecord3D Triangle3D::hit_record(const Geometry& geometry,
+HitRecord3D Triangle3D::hit_record(const Geometry3D& geometry,
                                    const RaySegment3D& ray_segment,
                                    const Scalar t_min) const {
     using namespace tensor;

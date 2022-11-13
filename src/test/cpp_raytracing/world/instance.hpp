@@ -20,7 +20,7 @@ namespace cpp_raytracing {
  *       performed in order: scaling, rotation, translation. All parameters
  *       (position, rotation, scale) describe these transformations in this
  *       direction.
- * @note Asserts Euclidean Geometry and ignores geometry parameter.
+ * @note Asserts Euclidean 3D Geometry and ignores geometry parameter.
  */
 class Instance3D : public Entity3D {
   public:
@@ -54,7 +54,7 @@ class Instance3D : public Entity3D {
     void set_time(const Scalar time) override;
 
     /** @see Entity::hit_record */
-    HitRecord3D hit_record(const Geometry& geometry,
+    HitRecord3D hit_record(const Geometry3D& geometry,
                            const RaySegment3D& ray_segment,
                            const Scalar t_min = 0.0) const override;
 
@@ -103,7 +103,7 @@ void Instance3D::set_time(const Scalar time) {
     }
 }
 
-HitRecord3D Instance3D::hit_record(const Geometry& geometry,
+HitRecord3D Instance3D::hit_record(const Geometry3D& geometry,
                                    const RaySegment3D& ray_segment,
                                    const Scalar t_min) const {
 

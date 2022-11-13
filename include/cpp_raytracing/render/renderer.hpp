@@ -161,11 +161,11 @@ class Renderer {
     virtual ~Renderer() = default;
 
     /** @brief render Scene as RawImage */
-    virtual RawImage render(const Geometry& geometry, Scene& scene) = 0;
+    virtual RawImage render(const Geometry3D& geometry, Scene& scene) = 0;
 
     /** @brief calculates color of light ray */
-    Color ray_color(const Geometry& geometry,
-                    const Scene::FreezeGuard& frozen_scene, Ray* ray,
+    Color ray_color(const Geometry3D& geometry,
+                    const Scene::FreezeGuard& frozen_scene, Ray3D* ray,
                     const unsigned long depth) const {
 
         using namespace tensor;
@@ -235,7 +235,7 @@ class Renderer {
                 geometry.from_onb_jacobian(record.point);
             const Vec3 scattered_direction =
                 from_onb_jacobian * onb_scatter_direction;
-            std::unique_ptr<Ray> scattered_ray =
+            std::unique_ptr<Ray3D> scattered_ray =
                 geometry.ray_from(record.point, scattered_direction);
 
             return color * ray_color(geometry, frozen_scene,
@@ -245,7 +245,7 @@ class Renderer {
 
   protected:
     /** @brief returns background color for ray segment */
-    inline Color background_color(const Geometry& geometry,
+    inline Color background_color(const Geometry3D& geometry,
                                   const Scene::FreezeGuard& frozen_scene,
                                   const RaySegment3D& ray_segment) const {
         if (frozen_scene.active_background == nullptr) {
@@ -257,7 +257,7 @@ class Renderer {
     /** @brief render a single sample for a single pixel */
     inline void render_pixel_sample(const unsigned long i,
                                     const unsigned long j,
-                                    const Geometry& geometry,
+                                    const Geometry3D& geometry,
                                     const Scene::FreezeGuard& frozen_scene,
                                     RawImage& buffer) const {
         // random sub-pixel offset for antialiasing
@@ -267,7 +267,7 @@ class Renderer {
         x = (2.0 * x / static_cast<Scalar>(canvas.width) - 1.0);
         y = (2.0 * y / static_cast<Scalar>(canvas.height) - 1.0);
 
-        std::unique_ptr<Ray> ray =
+        std::unique_ptr<Ray3D> ray =
             frozen_scene.active_camera.ray_for_coords(geometry, x, y);
         const Color pixel_color =
             ray_color(geometry, frozen_scene, ray.get(), ray_depth);
@@ -303,7 +303,7 @@ class GlobalShutterRenderer : public Renderer {
 
     ~GlobalShutterRenderer() override = default;
 
-    RawImage render(const Geometry& geometry, Scene& scene) override {
+    RawImage render(const Geometry3D& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
@@ -337,7 +337,7 @@ class GlobalShutterRenderer : public Renderer {
   private:
     /** @brief render with global shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              const Geometry& geometry,
+                              const Geometry3D& geometry,
                               const Scene::FreezeGuard& frozen_scene) {
 
 // note: Mind the memory layout of image buffer and data acces!
@@ -396,7 +396,7 @@ class RollingShutterRenderer : public Renderer {
 
     ~RollingShutterRenderer() override = default;
 
-    RawImage render(const Geometry& geometry, Scene& scene) override {
+    RawImage render(const Geometry3D& geometry, Scene& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
@@ -411,7 +411,7 @@ class RollingShutterRenderer : public Renderer {
   private:
     /** @brief render with rolling shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              const Geometry& geometry, Scene& scene) const {
+                              const Geometry3D& geometry, Scene& scene) const {
 
         for (unsigned long j = 0; j < canvas.height; ++j) {
 

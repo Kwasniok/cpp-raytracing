@@ -124,7 +124,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    TwistedOrbCartesianGeometry geometry{
+    TwistedOrbCartesianGeometry3D geometry{
         config.twist_angle,
         config.twist_radius,
         config.ray_initial_step_size,

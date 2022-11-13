@@ -25,7 +25,7 @@ struct BVHTree3DFixture {
     }
     ~BVHTree3DFixture() = default;
 
-    const ray::EuclideanGeometry geometry{};
+    const ray::EuclideanGeometry3D geometry{};
     std::vector<std::unique_ptr<ray::Entity3D>> entities{};
 };
 

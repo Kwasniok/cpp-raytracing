@@ -53,7 +53,7 @@ class Mesh3D : public Entity3D {
     void set_time(const Scalar time) override;
 
     /** @see Entity::hit_record */
-    HitRecord3D hit_record(const Geometry& geometry,
+    HitRecord3D hit_record(const Geometry3D& geometry,
                            const RaySegment3D& ray_segment,
                            const Scalar t_min = 0.0) const override;
 
@@ -81,7 +81,7 @@ class Mesh3D : public Entity3D {
         return {u, v};
     }
 
-    HitRecord3D face_hit_record(const Geometry& geometry,
+    HitRecord3D face_hit_record(const Geometry3D& geometry,
                                 const RaySegment3D& ray_segment,
                                 const Scalar t_min, const Vec3& point0,
                                 const Vec3& point1, const Vec3& point2) const {
@@ -185,7 +185,7 @@ void Mesh3D::set_time(const Scalar time) {
     generate_cache();
 }
 
-HitRecord3D Mesh3D::hit_record(const Geometry& geometry,
+HitRecord3D Mesh3D::hit_record(const Geometry3D& geometry,
                                const RaySegment3D& ray_segment,
                                const Scalar t_min) const {
     HitRecord3D record = {.t = infinity};

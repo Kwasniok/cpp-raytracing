@@ -25,7 +25,7 @@ struct BVHCollection3DFixture {
     }
     ~BVHCollection3DFixture() = default;
 
-    const ray::EuclideanGeometry geometry{};
+    const ray::EuclideanGeometry3D geometry{};
     ray::BVHCollection3D collection;
 };
 
