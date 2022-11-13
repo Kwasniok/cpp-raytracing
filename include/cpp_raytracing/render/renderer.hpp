@@ -161,11 +161,11 @@ class Renderer {
     virtual ~Renderer() = default;
 
     /** @brief render Scene as RawImage */
-    virtual RawImage render(const Geometry3D& geometry, Scene& scene) = 0;
+    virtual RawImage render(const Geometry3D& geometry, Scene3D& scene) = 0;
 
     /** @brief calculates color of light ray */
     Color ray_color(const Geometry3D& geometry,
-                    const Scene::FreezeGuard& frozen_scene, Ray3D* ray,
+                    const Scene3D::FreezeGuard& frozen_scene, Ray3D* ray,
                     const unsigned long depth) const {
 
         using namespace tensor;
@@ -246,7 +246,7 @@ class Renderer {
   protected:
     /** @brief returns background color for ray segment */
     inline Color background_color(const Geometry3D& geometry,
-                                  const Scene::FreezeGuard& frozen_scene,
+                                  const Scene3D::FreezeGuard& frozen_scene,
                                   const RaySegment3D& ray_segment) const {
         if (frozen_scene.active_background == nullptr) {
             return ray_color_if_no_background;
@@ -258,7 +258,7 @@ class Renderer {
     inline void render_pixel_sample(const unsigned long i,
                                     const unsigned long j,
                                     const Geometry3D& geometry,
-                                    const Scene::FreezeGuard& frozen_scene,
+                                    const Scene3D::FreezeGuard& frozen_scene,
                                     RawImage& buffer) const {
         // random sub-pixel offset for antialiasing
         Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
@@ -303,7 +303,7 @@ class GlobalShutterRenderer : public Renderer {
 
     ~GlobalShutterRenderer() override = default;
 
-    RawImage render(const Geometry3D& geometry, Scene& scene) override {
+    RawImage render(const Geometry3D& geometry, Scene3D& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
@@ -311,7 +311,7 @@ class GlobalShutterRenderer : public Renderer {
         if (exposure_time == 0.0) {
             // note: ideal image: no motion blur -> no nned for repeated
             //       temporal updates
-            const Scene::FreezeGuard& frozen_scene = scene.freeze_for_time(
+            const Scene3D::FreezeGuard& frozen_scene = scene.freeze_for_time(
                 random_scalar(time, time + exposure_time));
 
             for (unsigned long s = 1; s < samples + 1; ++s) {
@@ -323,8 +323,9 @@ class GlobalShutterRenderer : public Renderer {
             for (unsigned long s = 1; s < samples + 1; ++s) {
 
                 // scene for random time in exposure window
-                const Scene::FreezeGuard& frozen_scene = scene.freeze_for_time(
-                    random_scalar(time, time + exposure_time));
+                const Scene3D::FreezeGuard& frozen_scene =
+                    scene.freeze_for_time(
+                        random_scalar(time, time + exposure_time));
 
                 render_sample(s, buffer, geometry, frozen_scene);
             }
@@ -338,7 +339,7 @@ class GlobalShutterRenderer : public Renderer {
     /** @brief render with global shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
                               const Geometry3D& geometry,
-                              const Scene::FreezeGuard& frozen_scene) {
+                              const Scene3D::FreezeGuard& frozen_scene) {
 
 // note: Mind the memory layout of image buffer and data acces!
 //       Static schedule with small chunksize seems to be optimal.
@@ -395,8 +396,7 @@ class RollingShutterRenderer : public Renderer {
     RollingShutterRenderer& operator=(RollingShutterRenderer&&) = default;
 
     ~RollingShutterRenderer() override = default;
-
-    RawImage render(const Geometry3D& geometry, Scene& scene) override {
+    RawImage render(const Geometry3D& geometry, Scene3D& scene) override {
 
         RawImage buffer{canvas.width, canvas.height};
 
@@ -411,12 +411,13 @@ class RollingShutterRenderer : public Renderer {
   private:
     /** @brief render with rolling shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              const Geometry3D& geometry, Scene& scene) const {
+                              const Geometry3D& geometry,
+                              Scene3D& scene) const {
 
         for (unsigned long j = 0; j < canvas.height; ++j) {
 
-            // update scene per line (rolling shutter + motion blur)
-            const Scene::FreezeGuard& frozen_scene =
+            // update per line (rolling shutter + motion blur)
+            const Scene3D::FreezeGuard& frozen_scene =
                 scene.freeze_for_time(mid_frame_time(j));
 
 // note: Mind the memory layout of image buffer and data acces!

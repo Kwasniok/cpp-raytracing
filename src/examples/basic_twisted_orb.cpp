@@ -16,13 +16,13 @@ using namespace cpp_raytracing::examples;
 /**
  * @brief generate an example scene
  */
-Scene make_scene() {
+Scene3D make_scene() {
 
     const Vec3 camera_position = 1.1 * Vec3{20, 12, 12};
     const Vec3 pinhole_position = 1.1 * Vec3{15, 8.4, 9};
     auto camera = std::make_shared<PinholeCamera3D>(cartesian_pinhole_camera3D(
         camera_position, pinhole_position, {0.0, 1.0, 0.0}, 30.0, 16.0 / 9.0));
-    Scene scene(camera);
+    Scene3D scene(camera);
 
     // background (global illumination)
     {
@@ -133,7 +133,7 @@ void render_ppm(const RenderConfig& config) {
         config.ray_max_length,
         config.ray_segment_length_factor,
     };
-    Scene scene = make_scene();
+    Scene3D scene = make_scene();
 
     std::unique_ptr<Renderer> renderer;
 

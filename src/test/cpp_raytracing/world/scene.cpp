@@ -17,7 +17,7 @@ namespace ray = cpp_raytracing;
 
 using ray::operator"" _D;
 
-ray::Scene make_scene() {
+ray::Scene3D make_scene() {
     using ray::tensor::zero_vec;
 
     auto dummy_camera = std::make_shared<ray::PinholeCamera3D>(
@@ -25,26 +25,26 @@ ray::Scene make_scene() {
             return ray::Vec3{x, y, 0.0};
         });
 
-    ray::Scene scene(dummy_camera);
+    ray::Scene3D scene(dummy_camera);
     scene.add(ray::make_sphere(ray::Vec3{1.0, 0.0, 0.0}, 0.5));
     scene.add(ray::make_sphere(ray::Vec3{0.0, 1.0, 0.0}, 0.5));
     scene.add(ray::make_sphere(ray::Vec3{0.0, 0.0, 1.0}, 0.5));
     return scene;
 }
 
-struct SceneFixture {
-    SceneFixture() : scene{make_scene()} {}
-    ~SceneFixture() = default;
+struct Scene3DFixture {
+    Scene3DFixture() : scene{make_scene()} {}
+    ~Scene3DFixture() = default;
 
     const ray::EuclideanGeometry3D geometry{};
-    ray::Scene scene;
+    ray::Scene3D scene;
 };
 
-BOOST_FIXTURE_TEST_CASE(freeze, SceneFixture) {
+BOOST_FIXTURE_TEST_CASE(freeze, Scene3DFixture) {
     BOOST_CHECK(!scene.is_frozen());
 
     {
-        const ray::Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
+        const ray::Scene3D::FreezeGuard guard = scene.freeze_for_time(1.23);
 
         // frozen (= no modifications allowed)
         BOOST_CHECK(scene.is_frozen());
@@ -56,8 +56,8 @@ BOOST_FIXTURE_TEST_CASE(freeze, SceneFixture) {
     BOOST_CHECK(!scene.is_frozen());
 }
 
-BOOST_FIXTURE_TEST_CASE(hits, SceneFixture) {
-    const ray::Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
+BOOST_FIXTURE_TEST_CASE(hits, Scene3DFixture) {
+    const ray::Scene3D::FreezeGuard guard = scene.freeze_for_time(1.23);
 
     {
         constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
@@ -79,8 +79,8 @@ BOOST_FIXTURE_TEST_CASE(hits, SceneFixture) {
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(misses, SceneFixture) {
-    const ray::Scene::FreezeGuard guard = scene.freeze_for_time(1.23);
+BOOST_FIXTURE_TEST_CASE(misses, Scene3DFixture) {
+    const ray::Scene3D::FreezeGuard guard = scene.freeze_for_time(1.23);
     {
         constexpr ray::RaySegment3D ray_segment{ray::Vec3{0.0, 0.0, 0.0},
                                                 ray::Vec3{-1.0, 0.0, 0.0}};

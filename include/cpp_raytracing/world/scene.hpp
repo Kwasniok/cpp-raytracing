@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../util.hpp"
+#include "../values/tensor.hpp"
 #include "backgrounds/base.hpp"
 #include "bvh.hpp"
 #include "entities/base.hpp"
@@ -23,6 +24,7 @@ namespace cpp_raytracing {
 /**
  * @brief collection of entities and a camera.
  */
+template <Dimension DIMENSION>
 class Scene {
 
   public:
@@ -42,7 +44,7 @@ class Scene {
          * @note Since a scene might not have a valid active camera, an explicit
          *       reference is required.
          */
-        FreezeGuard(Scene& scene, const Camera3D& active_camera,
+        FreezeGuard(Scene& scene, const Camera<DIMENSION>& active_camera,
                     const Scalar time);
 
       public:
@@ -66,18 +68,19 @@ class Scene {
          *        of the scene
          * @see Entity::hit_record
          */
-        inline HitRecord3D hit_record(const Geometry3D& geometry,
-                                      const RaySegment3D& ray_segment,
-                                      const Scalar t_min = 0.0) const;
+        inline HitRecord<DIMENSION>
+        hit_record(const Geometry<DIMENSION>& geometry,
+                   const RaySegment<DIMENSION>& ray_segment,
+                   const Scalar t_min = 0.0) const;
 
       public:
         /** @brief active camera of the frozen scene */
-        const Camera3D& active_camera;
+        const Camera<DIMENSION>& active_camera;
         /**
          * @brief (optional) active background of the frozen scene
          * @note Backgrounds do not interact with hit_record().
          */
-        const Background3D* active_background;
+        const Background<DIMENSION>* active_background;
 
       private:
         /** @brief frozen scene */
@@ -89,16 +92,16 @@ class Scene {
      * @brief active camera of the scene used for rendering
      * @note An active camera is required for rendering a scene.
      */
-    std::shared_ptr<Camera3D> active_camera;
+    std::shared_ptr<Camera<DIMENSION>> active_camera;
     /**
      * @brief active background of the scene used for rendering
      * @note An active background is optional but recommended for rendering a
      *       scene.
      */
-    std::shared_ptr<Background3D> active_background;
+    std::shared_ptr<Background<DIMENSION>> active_background;
 
     /** @brief initialize with an active camera */
-    Scene(std::shared_ptr<Camera3D> active_camera)
+    Scene(std::shared_ptr<Camera<DIMENSION>> active_camera)
         : active_camera(active_camera){};
 
     /** @brief copy constructor */
@@ -130,7 +133,7 @@ class Scene {
      * @note Not thread-safe.
      * @note Nested scenes are not permitted.
      */
-    inline void add(std::shared_ptr<Entity3D>&& entity) {
+    inline void add(std::shared_ptr<Entity<DIMENSION>>&& entity) {
         if (is_frozen()) {
             throw std::runtime_error(
                 "Cannot add entity to scene while frozen.");
@@ -157,7 +160,7 @@ class Scene {
 
   private:
     /** @brief collection of entites with BVH optimization */
-    BVHCollection3D _collection;
+    BVHCollection<DIMENSION> _collection;
     /**
      * @brief true iff scene is frozen
      * @see freeze_for_time, FreezeGuard
@@ -165,9 +168,9 @@ class Scene {
     bool _frozen = false;
 };
 
-inline Scene::FreezeGuard::FreezeGuard(Scene& scene,
-                                       const Camera3D& active_camera,
-                                       const Scalar time)
+template <Dimension DIMENSION>
+inline Scene<DIMENSION>::FreezeGuard::FreezeGuard(
+    Scene& scene, const Camera<DIMENSION>& active_camera, const Scalar time)
     : active_camera(active_camera), _scene(scene) {
     active_background = _scene.active_background.get();
     scene.active_camera->set_time(time);
@@ -176,29 +179,35 @@ inline Scene::FreezeGuard::FreezeGuard(Scene& scene,
     scene._frozen = true;
 }
 
-inline Scene::FreezeGuard::~FreezeGuard() {
+template <Dimension DIMENSION>
+inline Scene<DIMENSION>::FreezeGuard::~FreezeGuard() {
     _scene._frozen = false;
 }
 
-inline HitRecord3D
-Scene::FreezeGuard::hit_record(const Geometry3D& geometry,
-                               const RaySegment3D& ray_segment,
-                               const Scalar t_min) const {
+template <Dimension DIMENSION>
+inline HitRecord<DIMENSION> Scene<DIMENSION>::FreezeGuard::hit_record(
+    const Geometry<DIMENSION>& geometry,
+    const RaySegment<DIMENSION>& ray_segment, const Scalar t_min) const {
     return _scene._collection.hit_record(geometry, ray_segment, t_min);
 }
 
-inline const Scene::FreezeGuard Scene::freeze_for_time(const Scalar time) {
+template <Dimension DIMENSION>
+inline const Scene<DIMENSION>::FreezeGuard
+Scene<DIMENSION>::freeze_for_time(const Scalar time) {
     if (is_frozen()) {
         throw std::runtime_error(
             "Cannot freeze scene more than once concurrently.");
     }
-    const Camera3D* const camera = active_camera.get();
+    const Camera<DIMENSION>* const camera = active_camera.get();
     if (camera == nullptr) {
         throw std::runtime_error(
             "Cannot freeze scene without an active camera.");
     }
     return FreezeGuard(*this, *camera, time);
 }
+
+/** @brief scene in a 3D manifold */
+using Scene3D = Scene<Dimension{3}>;
 
 } // namespace cpp_raytracing
 
