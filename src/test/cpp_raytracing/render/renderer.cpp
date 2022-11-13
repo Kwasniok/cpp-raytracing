@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background,
 
     {
         // renderer
-        ray::GlobalShutterRenderer renderer;
+        ray::GlobalShutterRenderer3D renderer;
         ray::Color color_out =
             renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter,
 
     {
         // renderer
-        ray::GlobalShutterRenderer renderer;
+        ray::GlobalShutterRenderer3D renderer;
         ray::Color color_out =
             renderer.ray_color(geometry, frozen_scene, ray.get(), 2);
         // expect reflection + hit emitter

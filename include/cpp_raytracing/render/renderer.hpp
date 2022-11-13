@@ -14,6 +14,7 @@
 #include "../geometry/base.hpp"
 #include "../util.hpp"
 #include "../values/color.hpp"
+#include "../values/tensor.hpp"
 #include "../world/entities/base.hpp"
 #include "../world/materials/base.hpp"
 #include "../world/ray_segment.hpp"
@@ -26,6 +27,7 @@ namespace cpp_raytracing {
 /**
  * @brief image renderer
  */
+template <Dimension DIMENSION>
 class Renderer {
 
   public:
@@ -161,17 +163,18 @@ class Renderer {
     virtual ~Renderer() = default;
 
     /** @brief render Scene as RawImage */
-    virtual RawImage render(const Geometry3D& geometry, Scene3D& scene) = 0;
+    virtual RawImage render(const Geometry<DIMENSION>& geometry,
+                            Scene<DIMENSION>& scene) = 0;
 
     /** @brief calculates color of light ray */
-    Color ray_color(const Geometry3D& geometry,
-                    const Scene3D::FreezeGuard& frozen_scene, Ray3D* ray,
-                    const unsigned long depth) const {
+    Color ray_color(const Geometry<DIMENSION>& geometry,
+                    const Scene<DIMENSION>::FreezeGuard& frozen_scene,
+                    Ray<DIMENSION>* ray, const unsigned long depth) const {
 
         using namespace tensor;
 
         // propagate ray
-        const std::optional<RaySegment3D> current_opt_segment =
+        const std::optional<RaySegment<DIMENSION>> current_opt_segment =
             ray->next_ray_segment();
 
         // extract next segment
@@ -180,7 +183,8 @@ class Renderer {
             return ray_color_if_ray_ended;
         }
         // has next segment
-        const RaySegment3D& current_segment = current_opt_segment.value();
+        const RaySegment<DIMENSION>& current_segment =
+            current_opt_segment.value();
 
         // check depth limit
         if (depth == 0) {
@@ -188,8 +192,8 @@ class Renderer {
         }
 
         // collect hit record
-        HitRecord3D record = frozen_scene.hit_record(geometry, current_segment,
-                                                     minimal_ray_length);
+        HitRecord<DIMENSION> record = frozen_scene.hit_record(
+            geometry, current_segment, minimal_ray_length);
 
         // check for hit with entity within current segment
         if (!record.hits()) {
@@ -235,7 +239,7 @@ class Renderer {
                 geometry.from_onb_jacobian(record.point);
             const Vec3 scattered_direction =
                 from_onb_jacobian * onb_scatter_direction;
-            std::unique_ptr<Ray3D> scattered_ray =
+            std::unique_ptr<Ray<DIMENSION>> scattered_ray =
                 geometry.ray_from(record.point, scattered_direction);
 
             return color * ray_color(geometry, frozen_scene,
@@ -245,9 +249,10 @@ class Renderer {
 
   protected:
     /** @brief returns background color for ray segment */
-    inline Color background_color(const Geometry3D& geometry,
-                                  const Scene3D::FreezeGuard& frozen_scene,
-                                  const RaySegment3D& ray_segment) const {
+    inline Color
+    background_color(const Geometry<DIMENSION>& geometry,
+                     const Scene<DIMENSION>::FreezeGuard& frozen_scene,
+                     const RaySegment<DIMENSION>& ray_segment) const {
         if (frozen_scene.active_background == nullptr) {
             return ray_color_if_no_background;
         }
@@ -255,11 +260,11 @@ class Renderer {
     }
 
     /** @brief render a single sample for a single pixel */
-    inline void render_pixel_sample(const unsigned long i,
-                                    const unsigned long j,
-                                    const Geometry3D& geometry,
-                                    const Scene3D::FreezeGuard& frozen_scene,
-                                    RawImage& buffer) const {
+    inline void
+    render_pixel_sample(const unsigned long i, const unsigned long j,
+                        const Geometry<DIMENSION>& geometry,
+                        const Scene<DIMENSION>::FreezeGuard& frozen_scene,
+                        RawImage& buffer) const {
         // random sub-pixel offset for antialiasing
         Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
         Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
@@ -267,7 +272,7 @@ class Renderer {
         x = (2.0 * x / static_cast<Scalar>(canvas.width) - 1.0);
         y = (2.0 * y / static_cast<Scalar>(canvas.height) - 1.0);
 
-        std::unique_ptr<Ray3D> ray =
+        std::unique_ptr<Ray<DIMENSION>> ray =
             frozen_scene.active_camera.ray_for_coords(geometry, x, y);
         const Color pixel_color =
             ray_color(geometry, frozen_scene, ray.get(), ray_depth);
@@ -275,8 +280,12 @@ class Renderer {
     }
 };
 
+/** @brief render interface for 3D manifolds */
+using Renderer3D = Renderer<Dimension{3}>;
+
 /** @brief renderer with global shutter and motion blur */
-class GlobalShutterRenderer : public Renderer {
+template <Dimension DIMENSION>
+class GlobalShutterRenderer : public Renderer<DIMENSION> {
   public:
     /**
      * @brief total duration of the frame's exposure
@@ -303,65 +312,74 @@ class GlobalShutterRenderer : public Renderer {
 
     ~GlobalShutterRenderer() override = default;
 
-    RawImage render(const Geometry3D& geometry, Scene3D& scene) override {
+    RawImage render(const Geometry<DIMENSION>& geometry,
+                    Scene<DIMENSION>& scene) override {
 
-        RawImage buffer{canvas.width, canvas.height};
+        RawImage buffer{this->canvas.width, this->canvas.height};
 
         // optimization: reduce cache generation if possible
-        if (exposure_time == 0.0) {
+        if (this->exposure_time == 0.0) {
             // note: ideal image: no motion blur -> no nned for repeated
             //       temporal updates
-            const Scene3D::FreezeGuard& frozen_scene = scene.freeze_for_time(
-                random_scalar(time, time + exposure_time));
+            const typename Scene<DIMENSION>::FreezeGuard& frozen_scene =
+                scene.freeze_for_time(random_scalar(
+                    this->time, this->time + this->exposure_time));
 
-            for (unsigned long s = 1; s < samples + 1; ++s) {
+            for (unsigned long s = 1; s < this->samples + 1; ++s) {
                 render_sample(s, buffer, geometry, frozen_scene);
             }
 
         } else {
             // with motion blur
-            for (unsigned long s = 1; s < samples + 1; ++s) {
+            for (unsigned long s = 1; s < this->samples + 1; ++s) {
 
                 // scene for random time in exposure window
-                const Scene3D::FreezeGuard& frozen_scene =
-                    scene.freeze_for_time(
-                        random_scalar(time, time + exposure_time));
+                const typename Scene<DIMENSION>::FreezeGuard& frozen_scene =
+                    scene.freeze_for_time(random_scalar(
+                        this->time, this->time + this->exposure_time));
 
-                render_sample(s, buffer, geometry, frozen_scene);
+                this->render_sample(s, buffer, geometry, frozen_scene);
             }
         }
 
-        buffer *= 1 / (Scalar(samples));
+        buffer *= 1 / (Scalar(this->samples));
         return buffer;
     }
 
   private:
     /** @brief render with global shutter and motion blur */
-    inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              const Geometry3D& geometry,
-                              const Scene3D::FreezeGuard& frozen_scene) {
+    inline void
+    render_sample(const unsigned long sample, RawImage& buffer,
+                  const Geometry<DIMENSION>& geometry,
+                  const Scene<DIMENSION>::FreezeGuard& frozen_scene) {
 
 // note: Mind the memory layout of image buffer and data acces!
 //       Static schedule with small chunksize seems to be optimal.
 #pragma omp parallel for shared(buffer) schedule(static, 1)
-        for (unsigned long j = 0; j < canvas.height; ++j) {
-            for (unsigned long i = 0; i < canvas.width; ++i) {
-                render_pixel_sample(i, j, geometry, frozen_scene, buffer);
+        for (unsigned long j = 0; j < this->canvas.height; ++j) {
+            for (unsigned long i = 0; i < this->canvas.width; ++i) {
+                this->render_pixel_sample(i, j, geometry, frozen_scene, buffer);
             }
         }
 
-        if (frequent_render_callback) {
-            frequent_render_callback(State{buffer, sample});
+        if (this->frequent_render_callback) {
+            this->frequent_render_callback(
+                typename Renderer<DIMENSION>::State{buffer, sample});
         }
-        if (infrequent_render_callback &&
-            (sample % infrequent_callback_frequency == 0)) {
-            infrequent_render_callback(State{buffer, sample});
+        if (this->infrequent_render_callback &&
+            (sample % this->infrequent_callback_frequency == 0)) {
+            this->infrequent_render_callback(
+                typename Renderer<DIMENSION>::State{buffer, sample});
         }
     }
 };
 
+/** @brief global shutter render for 3D manifolds */
+using GlobalShutterRenderer3D = GlobalShutterRenderer<Dimension{3}>;
+
 /** @brief renderer with rolling shutter and motion blur */
-class RollingShutterRenderer : public Renderer {
+template <Dimension DIMENSION>
+class RollingShutterRenderer : public Renderer<DIMENSION> {
   public:
     /**
      * @brief total duration of the frame's exposure
@@ -396,45 +414,48 @@ class RollingShutterRenderer : public Renderer {
     RollingShutterRenderer& operator=(RollingShutterRenderer&&) = default;
 
     ~RollingShutterRenderer() override = default;
-    RawImage render(const Geometry3D& geometry, Scene3D& scene) override {
+    RawImage render(const Geometry<DIMENSION>& geometry,
+                    Scene<DIMENSION>& scene) override {
 
-        RawImage buffer{canvas.width, canvas.height};
+        RawImage buffer{this->canvas.width, this->canvas.height};
 
-        for (unsigned long s = 1; s < samples + 1; ++s) {
-            render_sample(s, buffer, geometry, scene);
+        for (unsigned long s = 1; s < this->samples + 1; ++s) {
+            this->render_sample(s, buffer, geometry, scene);
         }
 
-        buffer *= 1 / (Scalar(samples));
+        buffer *= 1 / (Scalar(this->samples));
         return buffer;
     }
 
   private:
     /** @brief render with rolling shutter and motion blur */
     inline void render_sample(const unsigned long sample, RawImage& buffer,
-                              const Geometry3D& geometry,
-                              Scene3D& scene) const {
+                              const Geometry<DIMENSION>& geometry,
+                              Scene<DIMENSION>& scene) const {
 
-        for (unsigned long j = 0; j < canvas.height; ++j) {
+        for (unsigned long j = 0; j < this->canvas.height; ++j) {
 
             // update per line (rolling shutter + motion blur)
-            const Scene3D::FreezeGuard& frozen_scene =
+            const typename Scene<DIMENSION>::FreezeGuard& frozen_scene =
                 scene.freeze_for_time(mid_frame_time(j));
 
 // note: Mind the memory layout of image buffer and data acces!
 //       Static schedule with small chunksize seems to be
 //       optimal.
 #pragma omp parallel for shared(buffer) schedule(static, 1)
-            for (unsigned long i = 0; i < canvas.width; ++i) {
-                render_pixel_sample(i, j, geometry, frozen_scene, buffer);
+            for (unsigned long i = 0; i < this->canvas.width; ++i) {
+                this->render_pixel_sample(i, j, geometry, frozen_scene, buffer);
             }
         }
 
-        if (frequent_render_callback) {
-            frequent_render_callback(State{buffer, sample});
+        if (this->frequent_render_callback) {
+            this->frequent_render_callback(
+                typename Renderer<DIMENSION>::State{buffer, sample});
         }
-        if (infrequent_render_callback &&
-            (sample % infrequent_callback_frequency == 0)) {
-            infrequent_render_callback(State{buffer, sample});
+        if (this->infrequent_render_callback &&
+            (sample % this->infrequent_callback_frequency == 0)) {
+            this->infrequent_render_callback(
+                typename Renderer<DIMENSION>::State{buffer, sample});
         }
     }
 
@@ -443,15 +464,18 @@ class RollingShutterRenderer : public Renderer {
      * @note Realizes rolling shutter and motion blur.
      */
     inline Scalar mid_frame_time(const unsigned horizonal_line) const {
-        auto res = time;
+        auto res = this->time;
         // time shift linear with line position
-        res += frame_exposure_time *
-               (Scalar(horizonal_line) / Scalar(canvas.height));
+        res += this->frame_exposure_time *
+               (Scalar(horizonal_line) / Scalar(this->canvas.height));
         // random shift for motion blur
-        res += random_scalar(0.0, total_line_exposure_time);
+        res += random_scalar(0.0, this->total_line_exposure_time);
         return res;
     }
 };
+
+/** @brief rolling shutter render for 3D manifolds */
+using RollingShutterRenderer3D = RollingShutterRenderer<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

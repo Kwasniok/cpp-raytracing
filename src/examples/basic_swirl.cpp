@@ -128,15 +128,15 @@ void render_ppm(const RenderConfig& config) {
     };
     Scene3D scene = make_scene();
 
-    std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<Renderer3D> renderer;
 
     if (config.shutter_mode == SHUTTER_MODE_GLOBAL) {
-        auto rendr = std::make_unique<GlobalShutterRenderer>();
+        auto rendr = std::make_unique<GlobalShutterRenderer3D>();
         rendr->exposure_time = config.exposure_time;
         renderer = std::move(rendr);
     }
     if (config.shutter_mode == SHUTTER_MODE_ROLLING) {
-        auto rendr = std::make_unique<RollingShutterRenderer>();
+        auto rendr = std::make_unique<RollingShutterRenderer3D>();
         rendr->frame_exposure_time = config.exposure_time;
         rendr->total_line_exposure_time = config.total_line_exposure_time;
         renderer = std::move(rendr);
@@ -153,12 +153,12 @@ void render_ppm(const RenderConfig& config) {
                                            : Color{0.0, 0.0, 0.0};
 
     renderer->frequent_render_callback =
-        [](const Renderer::State& current_state) {
+        [](const Renderer3D::State& current_state) {
             cout << "samples: " << current_state.samples << endl;
         };
 
     renderer->infrequent_render_callback =
-        [&config](const Renderer::State& current_state) {
+        [&config](const Renderer3D::State& current_state) {
             cerr << "save current ..." << endl;
             write_image(config.path + ".current", current_state.image,
                         1.0 / ColorScalar(current_state.samples), config.gamma);
