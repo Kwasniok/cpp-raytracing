@@ -17,19 +17,19 @@ namespace ray = cpp_raytracing;
 
 constexpr ray::Scalar epsilon = 1e-16;
 
-struct BVHFixture {
-    BVHFixture() {
+struct BVHTree3DFixture {
+    BVHTree3DFixture() {
         entities.push_back(ray::make_sphere(ray::Vec3{1.0, 0.0, 0.0}, 0.5));
         entities.push_back(ray::make_sphere(ray::Vec3{0.0, 1.0, 0.0}, 0.5));
         entities.push_back(ray::make_sphere(ray::Vec3{0.0, 0.0, 1.0}, 0.5));
     }
-    ~BVHFixture() = default;
+    ~BVHTree3DFixture() = default;
 
     const ray::EuclideanGeometry geometry{};
     std::vector<std::unique_ptr<ray::Entity3D>> entities{};
 };
 
-BOOST_FIXTURE_TEST_CASE(size, BVHFixture, *but::tolerance(epsilon)) {
+BOOST_FIXTURE_TEST_CASE(size, BVHTree3DFixture, *but::tolerance(epsilon)) {
     ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     BOOST_CHECK(bvh_tree.size_bounded() == entities.size());
@@ -37,7 +37,7 @@ BOOST_FIXTURE_TEST_CASE(size, BVHFixture, *but::tolerance(epsilon)) {
     BOOST_CHECK(bvh_tree.size() == entities.size());
 }
 
-BOOST_FIXTURE_TEST_CASE(bounds, BVHFixture, *but::tolerance(epsilon)) {
+BOOST_FIXTURE_TEST_CASE(bounds, BVHTree3DFixture, *but::tolerance(epsilon)) {
     ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     constexpr ray::Vec3 min{-0.5, -0.5, -0.5};
@@ -48,7 +48,7 @@ BOOST_FIXTURE_TEST_CASE(bounds, BVHFixture, *but::tolerance(epsilon)) {
     TEST_EQUAL_RANGES(bounds->max(), max);
 }
 
-BOOST_FIXTURE_TEST_CASE(hits, BVHFixture, *but::tolerance(epsilon)) {
+BOOST_FIXTURE_TEST_CASE(hits, BVHTree3DFixture, *but::tolerance(epsilon)) {
     ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     {
@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(hits, BVHFixture, *but::tolerance(epsilon)) {
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(misses, BVHFixture, *but::tolerance(epsilon)) {
+BOOST_FIXTURE_TEST_CASE(misses, BVHTree3DFixture, *but::tolerance(epsilon)) {
     ray::BVHTree3D bvh_tree = ray::BVHTree3D(entities);
 
     {
