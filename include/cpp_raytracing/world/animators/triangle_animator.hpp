@@ -15,44 +15,52 @@ namespace cpp_raytracing {
  * @brief animators update the current state of a triangle entity based on a
  *        given time
  */
-class TriangleAnimator3D : public Animator3D {
+template <Dimension DIMENSION>
+class TriangleAnimator : public Animator<DIMENSION> {
   public:
     /** @brief default constructor */
-    TriangleAnimator3D() = default;
+    TriangleAnimator() = default;
 
     /** @brief copy constructor */
-    TriangleAnimator3D(const TriangleAnimator3D&) = default;
+    TriangleAnimator(const TriangleAnimator&) = default;
 
     /** @brief move constructor */
-    TriangleAnimator3D(TriangleAnimator3D&&) = default;
+    TriangleAnimator(TriangleAnimator&&) = default;
 
     /** @brief copy assignment */
-    TriangleAnimator3D& operator=(const TriangleAnimator3D&) = default;
+    TriangleAnimator& operator=(const TriangleAnimator&) = default;
 
     /** @brief move assignment */
-    TriangleAnimator3D& operator=(TriangleAnimator3D&&) = default;
+    TriangleAnimator& operator=(TriangleAnimator&&) = default;
 
-    ~TriangleAnimator3D() override = default;
+    ~TriangleAnimator() override = default;
 
     /** @brief invoke update of entity for given time */
-    void update_for_time(const Scalar time, Entity3D* entity) override;
+    void update_for_time(const Scalar time, Entity<DIMENSION>* entity) override;
 
   protected:
     /** @brief hook for update_for_time */
     virtual void update_for_time_hook(const Scalar time,
-                                      Triangle3D* object) = 0;
+                                      Triangle<DIMENSION>* object) = 0;
 };
 
-void TriangleAnimator3D::update_for_time(const Scalar time, Entity3D* entity) {
+void TriangleAnimator::update_for_time(const Scalar time,
+                                       Entity<DIMENSION>* entity) {
     if (entity == nullptr)
         return;
-    Triangle3D* tri = dynamic_cast<Triangle3D*>(entity);
+    Triangle<DIMENSION>* tri = dynamic_cast<Triangle<DIMENSION>*>(entity);
     if (tri) {
         update_for_time_hook(time, tri);
     } else {
         throw_bad_entity_type("Triangle", entity->id);
     }
 }
+
+/**
+ * @brief animator for triangle entities in a 3D maifold
+ * @see TriangleAnimator
+ */
+using TriangleAnimator3D = TriangleAnimator<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

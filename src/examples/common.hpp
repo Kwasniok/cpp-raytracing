@@ -57,6 +57,7 @@ class LinearMotionMeshAnimator3D : public MeshAnimator3D {
     ~LinearMotionMeshAnimator3D() override = default;
 
   protected:
+    /** @see MeshAnimator3D::update_for_time_hook */
     void update_for_time_hook(const Scalar time, Mesh3D* mesh) override;
 };
 
@@ -105,6 +106,7 @@ class SinusoidalMotionMeshAnimator3D : public MeshAnimator3D {
     ~SinusoidalMotionMeshAnimator3D() override = default;
 
   protected:
+    /** @see MeshAnimator3D::update_for_time_hook */
     void update_for_time_hook(const Scalar time, Mesh3D* mesh) override;
 };
 

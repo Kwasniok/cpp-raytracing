@@ -15,43 +15,53 @@ namespace cpp_raytracing {
  * @brief animators update the current state of a mesh entity based on a
  *        given time
  */
-class MeshAnimator3D : public Animator3D {
+template <Dimension DIMENSION>
+class MeshAnimator : public Animator<DIMENSION> {
   public:
     /** @brief default constructor */
-    MeshAnimator3D() = default;
+    MeshAnimator() = default;
 
     /** @brief copy constructor */
-    MeshAnimator3D(const MeshAnimator3D&) = default;
+    MeshAnimator(const MeshAnimator&) = default;
 
     /** @brief move constructor */
-    MeshAnimator3D(MeshAnimator3D&&) = default;
+    MeshAnimator(MeshAnimator&&) = default;
 
     /** @brief copy assignment */
-    MeshAnimator3D& operator=(const MeshAnimator3D&) = default;
+    MeshAnimator& operator=(const MeshAnimator&) = default;
 
     /** @brief move assignment */
-    MeshAnimator3D& operator=(MeshAnimator3D&&) = default;
+    MeshAnimator& operator=(MeshAnimator&&) = default;
 
-    ~MeshAnimator3D() override = default;
+    ~MeshAnimator() override = default;
 
     /** @see Entity::update_for_time */
-    void update_for_time(const Scalar time, Entity3D* entity) override;
+    void update_for_time(const Scalar time, Entity<DIMENSION>* entity) override;
 
   protected:
     /** @brief hook for update_for_time */
-    virtual void update_for_time_hook(const Scalar time, Mesh3D* mesh) = 0;
+    virtual void update_for_time_hook(const Scalar time,
+                                      Mesh<DIMENSION>* mesh) = 0;
 };
 
-void MeshAnimator3D::update_for_time(const Scalar time, Entity3D* entity) {
+template <Dimension DIMENSION>
+void MeshAnimator::update_for_time(const Scalar time,
+                                   Entity<DIMENSION>* entity) {
     if (entity == nullptr)
         return;
-    Mesh3D* mesh = dynamic_cast<Mesh3D*>(entity);
+    Mesh<DIMENSION>* mesh = dynamic_cast<Mesh<DIMENSION>*>(entity);
     if (mesh) {
         update_for_time_hook(time, mesh);
     } else {
         throw_bad_entity_type("Mesh", mesh->id);
     }
 }
+
+/**
+ * @brief animator for mesh entities in a 3D maifold
+ * @see MeshAnimator
+ */
+using MeshAnimator3D = MeshAnimator<Dimension{3}>;
 
 } // namespace cpp_raytracing
 
