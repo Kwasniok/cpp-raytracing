@@ -5,6 +5,7 @@
 #include <array>
 #include <sstream>
 
+#include <cpp_raytracing/geometry/cartesian_3d/camera.hpp>
 #include <cpp_raytracing/geometry/cartesian_3d/euclidean.hpp>
 #include <cpp_raytracing/render/renderer.hpp>
 #include <cpp_raytracing/world/backgrounds/constant_background.hpp>
@@ -66,8 +67,8 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_background,
     ray::EuclideanCartesianGeometry3D geometry;
 
     // test scene
-    auto dummy_camera =
-        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera3D(
+    auto dummy_camera = std::make_shared<ray::PinholeCamera3D>(
+        ray::make_pinhole_camera_cartesian_euclidean_3d(
             {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, 90.0, 1.0));
     ray::Scene3D scene(dummy_camera);
 
@@ -119,8 +120,8 @@ BOOST_AUTO_TEST_CASE(ray_color_euclidean_metal_reflection_emitter,
     ray::EuclideanCartesianGeometry3D geometry;
 
     // test scene
-    auto dummy_camera =
-        std::make_shared<ray::PinholeCamera3D>(ray::cartesian_pinhole_camera3D(
+    auto dummy_camera = std::make_shared<ray::PinholeCamera3D>(
+        ray::make_pinhole_camera_cartesian_euclidean_3d(
             {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 1.0, 0.0}, 90.0, 1.0));
     ray::Scene3D scene(dummy_camera);
 

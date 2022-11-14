@@ -18,8 +18,10 @@ using namespace cpp_raytracing::examples;
  */
 Scene3D make_scene() {
 
-    auto camera = std::make_shared<PinholeCamera3D>(cartesian_pinhole_camera3D(
-        {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
+    auto camera = std::make_shared<PinholeCamera3D>(
+        make_pinhole_camera_cartesian_euclidean_3d(
+            {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0,
+            16.0 / 9.0));
     Scene3D scene(camera);
 
     // background (global illumination)

@@ -14,16 +14,73 @@
 namespace cpp_raytracing {
 
 /**
- * @brief triangular object in 3D
+ * @brief triangular object
  * @note The face is filled via bilinear coordinate interpolation.
+ * @note Triangle exists mostly for debugging and reference purposes. Consider
+ *       using Mesh before using Triangle.
  */
-class Triangle3D : public Entity3D {
+template <Dimension DIMENSION>
+class Triangle : public Entity<DIMENSION> {
   public:
+    /** @brief position vector type */
+    using VolumeVec = Vec<DIMENSION>;
+
     /** @brief face corners */
-    std::array<Vec3, 3> points;
+    std::array<VolumeVec, 3> points;
     /** @brief material of the plane */
     std::shared_ptr<Material> material;
 
+    /** @brief default constructor */
+    Triangle() = default;
+
+    /** @brief copy constructor */
+    Triangle(const Triangle&) = delete;
+
+    /** @brief move constructor */
+    Triangle(Triangle&&) = default;
+
+    /** @brief copy assignment */
+    Triangle& operator=(const Triangle&) = delete;
+
+    /** @brief move assignment */
+    Triangle& operator=(Triangle&&) = default;
+
+    ~Triangle() override = default;
+
+    /** @see Entity::bounding_box */
+    std::optional<AxisAlignedBoundingBox<DIMENSION>>
+    bounding_box() const override;
+};
+
+template <Dimension DIMENSION>
+std::optional<AxisAlignedBoundingBox<DIMENSION>>
+Triangle<DIMENSION>::bounding_box() const {
+
+    constexpr Scalar epsilon = 1e-8;
+
+    Vec<DIMENSION> low = {+infinity, +infinity, +infinity};
+    Vec<DIMENSION> high = {-infinity, -infinity, -infinity};
+
+    for (const auto& point : points) {
+        low.inplace_elementwise(min, point);
+        high.inplace_elementwise(max, point);
+    }
+
+    // padding to guarantee non-zero volume
+    low -= low.elementwise(abs) * epsilon;
+    high += high.elementwise(abs) * epsilon;
+
+    return AxisAlignedBoundingBox<DIMENSION>{low, high};
+}
+
+/**
+ * @brief represents a single triangle in 3D
+ * @see Triangle
+ * @note Works for 'small' triangles only - i.e. there MUST NOT be any
+ *       significant curvature across the entire triangle.
+ */
+class Triangle3D : public Triangle<Dimension{3}> {
+  public:
     /** @brief default constructor */
     Triangle3D() = default;
 
@@ -45,8 +102,6 @@ class Triangle3D : public Entity3D {
     HitRecord3D hit_record(const Geometry3D& geometry,
                            const RaySegment3D& ray_segment,
                            const Scalar t_min = 0.0) const override;
-
-    std::optional<AxisAlignedBoundingBox3D> bounding_box() const override;
 
   private:
     /**
@@ -77,8 +132,8 @@ HitRecord3D Triangle3D::hit_record(const Geometry3D& geometry,
     using namespace tensor;
 
     // basis for span
-    const Vec3 b1 = points[1] - points[0];
-    const Vec3 b2 = points[2] - points[0];
+    const Vec3 b1 = this->points[1] - this->points[0];
+    const Vec3 b2 = this->points[2] - this->points[0];
     // pseudo-normal (NOT the face normal)
     const Vec3 n = unit_vector(cross(b1, b2));
     // level parameter
@@ -121,31 +176,20 @@ HitRecord3D Triangle3D::hit_record(const Geometry3D& geometry,
     record.point = point;
     record.uv_coordinates = {u, v};
     // note: The normal is position dependent since the tri might be curved.
+    // note: Calculating a face normal from the cross product of two
+    //       coordinate deltas (as given here) works only, if the curvature
+    //       deltas are approximately the same as the local tangent vectors
+    //       in the sme direction. This is only true, if the CURVATURE AROSS
+    //       THE SURFACE is NOT SIGNIFICANT!
+    //       In general, the local tangential vectors t1 and t2 are the
+    //       local tangents of the two geodesics running through the hit
+    //       point and `point1` and `pont2` respectively.
     Vec3 normal = cross(metric * b1, metric * b2);
     // normalize
     normal *= Scalar{1} / std::sqrt(dot(normal, metric * normal));
     record.set_face_normal(to_onb_jacobian, metric, d, normal);
-    record.material = material.get();
+    record.material = this->material.get();
     return record;
-}
-
-std::optional<AxisAlignedBoundingBox3D> Triangle3D::bounding_box() const {
-
-    constexpr Scalar epsilon = 1e-8;
-
-    Vec3 low = {+infinity, +infinity, +infinity};
-    Vec3 high = {-infinity, -infinity, -infinity};
-
-    for (const auto& point : points) {
-        low.inplace_elementwise(min, point);
-        high.inplace_elementwise(max, point);
-    }
-
-    // padding to guarantee non-zero volume
-    low -= low.elementwise(abs) * epsilon;
-    high += high.elementwise(abs) * epsilon;
-
-    return AxisAlignedBoundingBox3D{low, high};
 }
 
 } // namespace cpp_raytracing
