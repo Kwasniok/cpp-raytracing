@@ -103,7 +103,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    EuclideanGeometry3D geometry;
+    EuclideanCartesianGeometry3D geometry;
     Scene3D scene = make_scene();
 
     std::unique_ptr<Renderer3D> renderer;

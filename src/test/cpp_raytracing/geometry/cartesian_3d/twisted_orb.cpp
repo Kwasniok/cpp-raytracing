@@ -1,11 +1,11 @@
 #define BOOST_TEST_MODULE cpp_raytracing::geometry::twisted_orb_cartesian
 
-#include "../../common.hpp"
+#include "../../../common.hpp"
 
 #include <utility>
 #include <vector>
 
-#include <cpp_raytracing/geometry/twisted_orb_cartesian.hpp>
+#include <cpp_raytracing/geometry/cartesian_3d/twisted_orb.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;

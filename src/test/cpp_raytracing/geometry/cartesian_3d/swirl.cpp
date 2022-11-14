@@ -1,11 +1,11 @@
 #define BOOST_TEST_MODULE cpp_raytracing::geometry::swirl_cartesian
 
-#include "../../common.hpp"
+#include "../../../common.hpp"
 
 #include <utility>
 #include <vector>
 
-#include <cpp_raytracing/geometry/swirl_cartesian.hpp>
+#include <cpp_raytracing/geometry/cartesian_3d/swirl.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;

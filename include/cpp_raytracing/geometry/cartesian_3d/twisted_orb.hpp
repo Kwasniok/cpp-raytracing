@@ -20,8 +20,8 @@
  *       \endcode
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_TWISTED_ORB_CARTESIAN_HPP
-#define CPP_RAYTRACING_GEOMETRY_TWISTED_ORB_CARTESIAN_HPP
+#ifndef CPP_RAYTRACING_GEOMETRY_CARTESIAN_3D_TWISTED_ORB_HPP
+#define CPP_RAYTRACING_GEOMETRY_CARTESIAN_3D_TWISTED_ORB_HPP
 
 #include <cmath>
 // note specific imports for speed and to avoid warnings for unrelated code
@@ -32,9 +32,9 @@
 #include <boost/numeric/odeint/stepper/generation/make_controlled.hpp>
 #include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
 
-#include "../values/tensor_boost_numeric_odeint.hpp"
-#include "../world/ray_segment.hpp"
-#include "base.hpp"
+#include "../../values/tensor_boost_numeric_odeint.hpp"
+#include "../../world/ray_segment.hpp"
+#include "../base.hpp"
 
 namespace cpp_raytracing {
 
