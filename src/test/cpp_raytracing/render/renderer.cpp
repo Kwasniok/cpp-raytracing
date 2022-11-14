@@ -9,7 +9,7 @@
 #include <cpp_raytracing/geometry/cartesian_3d/euclidean.hpp>
 #include <cpp_raytracing/render/renderer.hpp>
 #include <cpp_raytracing/world/backgrounds/constant_background.hpp>
-#include <cpp_raytracing/world/entities/mesh.hpp>
+#include <cpp_raytracing/world/entities/small_triangle_mesh_3d.hpp>
 #include <cpp_raytracing/world/materials/emitter.hpp>
 #include <cpp_raytracing/world/materials/metal.hpp>
 #include <cpp_raytracing/world/textures/constant_color.hpp>
@@ -25,7 +25,7 @@ constexpr ray::ColorScalar epsilon = 1.0e-12;
 std::shared_ptr<ray::Mesh3D> make_triange_mesh(const ray::Vec3& point0,
                                                const ray::Vec3& point1,
                                                const ray::Vec3& point2) {
-    auto mesh = std::make_shared<ray::Mesh3D>();
+    auto mesh = std::make_shared<ray::SmallTriangleMesh3D>();
     mesh->id.change("triangle mesh");
     mesh->points = {point0, point1, point2};
     mesh->faces = {ray::Face3D{0, 1, 2}};

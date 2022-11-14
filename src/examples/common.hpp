@@ -164,7 +164,7 @@ class SkyBackground3D : public Background3D {
  * @note Uses Cartesian coordinates.
  */
 std::shared_ptr<Mesh3D> make_cube(const Scalar scale, const Vec3& position) {
-    auto mesh = std::make_shared<Mesh3D>();
+    auto mesh = std::make_shared<SmallTriangleMesh3D>();
     mesh->id.change("cube");
     mesh->points = {
         scale * Vec3{-1.0, -1.0, -1.0} + position, // 0
@@ -194,7 +194,7 @@ std::shared_ptr<Mesh3D> make_cube(const Scalar scale, const Vec3& position) {
  */
 std::shared_ptr<Mesh3D> make_xz_plane(const Scalar scale,
                                       const Vec3& position) {
-    auto mesh = std::make_shared<Mesh3D>();
+    auto mesh = std::make_shared<SmallTriangleMesh3D>();
     mesh->id.change("plane");
     mesh->points = {
         scale * Vec3{-1.0, 0.0, -1.0} + position, // 0
