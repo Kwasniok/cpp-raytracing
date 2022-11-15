@@ -147,18 +147,30 @@ run_examples: $(EXAMPLES);
 		#--verbose \
 	done
 
-
-ALL_SOURCE_FILES = $(shell find $(SRC) $(INC) -iname *.hpp -o -iname *.cpp)
+ALL_INCLUDE_FILES = $(shell find $(INC) -iname *.hpp -o -iname *.cpp)
+ALL_SOURCE_FILES = $(shell find $(SRC) -iname *.hpp -o -iname *.cpp)
 
 ### CLANG-TIDY ###
-.PHONY: check_tidy
-check_tidy:
-	clang-tidy \
+
+CLANG_TIDY_ARGS=\
 	--warnings-as-errors="*" \
-	$(ALL_SOURCE_FILES) \
-	-- \
+
+CLANG_TIDY_COMPILER_ARGS=\
 	-std=c++20 \
 	$(INCLUDES) \
-	$(INCLUDES_TEST) \
+
+.PHONY: run_clang_tidy
+run_clang_tidy:
+	clang-tidy \
+	$(CLANG_TIDY_ARGS) \
+	$(ALL_INCLUDE_FILES) \
+	-- \
+	$(CLANG_TIDY_COMPILER_ARGS) \
+
+	clang-tidy \
+	$(CLANG_TIDY_ARGS) \
+	$(ALL_SOURCE_FILES) \
+	-- \
+	$(CLANG_TIDY_COMPILER_ARGS) \
 
  
