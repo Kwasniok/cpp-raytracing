@@ -34,9 +34,9 @@ class BVHTree {
         /** @note might be nullptr  */
         const Entity<DIMENSION>* value = nullptr;
         /** @brief left branch*/
-        std::unique_ptr<Node> left;
+        std::unique_ptr<Node> left{};
         /** @brief right branch */
-        std::unique_ptr<Node> right;
+        std::unique_ptr<Node> right{};
         /**
          * @brief boundary of both branches and the value
          * @note MUST be finite at all times!
@@ -142,7 +142,7 @@ class BVHTree {
      */
     template <typename Container>
     BVHTree(const Container& container) {
-        std::vector<const Entity<DIMENSION>*> bounded_entities;
+        std::vector<const Entity<DIMENSION>*> bounded_entities{};
 
         for (const auto& e : container) {
             if (e->is_bounded()) {
@@ -242,7 +242,7 @@ class BVHTree {
         pseudo_comparator_x, pseudo_comparator_y, pseudo_comparator_z};
 
   private:
-    std::vector<const Entity<DIMENSION>*> _unbounded_entities;
+    std::vector<const Entity<DIMENSION>*> _unbounded_entities{};
     Node _root;
 };
 
