@@ -44,15 +44,16 @@ class TriangleAnimator : public Animator<DIMENSION> {
                                       Triangle<DIMENSION>* object) = 0;
 };
 
-void TriangleAnimator::update_for_time(const Scalar time,
-                                       Entity<DIMENSION>* entity) {
+template <Dimension DIMENSION>
+void TriangleAnimator<DIMENSION>::update_for_time(const Scalar time,
+                                                  Entity<DIMENSION>* entity) {
     if (entity == nullptr)
         return;
     Triangle<DIMENSION>* tri = dynamic_cast<Triangle<DIMENSION>*>(entity);
     if (tri) {
         update_for_time_hook(time, tri);
     } else {
-        throw_bad_entity_type("Triangle", entity->id);
+        this->throw_bad_entity_type("Triangle", entity->id);
     }
 }
 

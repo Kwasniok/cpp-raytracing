@@ -45,15 +45,15 @@ class MeshAnimator : public Animator<DIMENSION> {
 };
 
 template <Dimension DIMENSION>
-void MeshAnimator::update_for_time(const Scalar time,
-                                   Entity<DIMENSION>* entity) {
+void MeshAnimator<DIMENSION>::update_for_time(const Scalar time,
+                                              Entity<DIMENSION>* entity) {
     if (entity == nullptr)
         return;
     Mesh<DIMENSION>* mesh = dynamic_cast<Mesh<DIMENSION>*>(entity);
     if (mesh) {
         update_for_time_hook(time, mesh);
     } else {
-        throw_bad_entity_type("Mesh", mesh->id);
+        this->throw_bad_entity_type("Mesh", mesh->id);
     }
 }
 

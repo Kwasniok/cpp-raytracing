@@ -23,6 +23,9 @@ class Entity;
 template <Dimension DIMENSION>
 class Animator {
   public:
+    /** @brief unique animator identifier */
+    Identifier<class Animator> id;
+
     /** @brief default constructor */
     Animator() = default;
 
@@ -55,8 +58,16 @@ class Animator {
         throw std::runtime_error(std::move(msg).str());
     }
 };
+
 /** @brief 3D entity animator interface */
 using Animator3D = Animator<Dimension{3}>;
+
+/** @brief default identifier for animators */
+template <Dimension DIMENSION>
+struct default_identifier<Animator<DIMENSION>> {
+    /** @brief default identifier for animators */
+    static constexpr const char* value = "animator";
+};
 
 } // namespace cpp_raytracing
 
