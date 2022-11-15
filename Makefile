@@ -13,7 +13,7 @@ INCLUDES= \
 
 # includes for tests only
 INCLUDES_TEST = \
-	-isystem third_party/doctest \
+	
 
 # GCC
 CPP=g++
