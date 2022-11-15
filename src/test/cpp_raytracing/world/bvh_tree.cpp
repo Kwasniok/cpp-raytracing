@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <cpp_raytracing/geometry/cartesian_3d/euclidean.hpp>
-#include <cpp_raytracing/world/bvh.hpp>
+#include <cpp_raytracing/world/bvh_tree.hpp>
 #include <cpp_raytracing/world/ray_segment.hpp>
 
 #include "instance.hpp"

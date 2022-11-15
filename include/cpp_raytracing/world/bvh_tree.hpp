@@ -1,10 +1,10 @@
 /**
  * @file
- * @brief bounding volume hierachy
+ * @brief bounding volume hierachy tree
  */
 
-#ifndef CPP_RAYTRACING_BVH_HPP
-#define CPP_RAYTRACING_BVH_HPP
+#ifndef CPP_RAYTRACING_BVH_TREE_HPP
+#define CPP_RAYTRACING_BVH_TREE_HPP
 
 #include <algorithm>
 #include <array>

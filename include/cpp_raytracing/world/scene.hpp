@@ -14,7 +14,7 @@
 #include "../util.hpp"
 #include "../values/tensor.hpp"
 #include "backgrounds/base.hpp"
-#include "bvh.hpp"
+#include "bvh_tree.hpp"
 #include "entities/base.hpp"
 #include "entities/bvh_collection.hpp"
 #include "entities/camera.hpp"

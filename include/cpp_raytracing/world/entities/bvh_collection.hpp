@@ -13,7 +13,7 @@
 
 #include "../../util.hpp"
 #include "../../values/tensor.hpp"
-#include "../bvh.hpp"
+#include "../bvh_tree.hpp"
 #include "base.hpp"
 #include "camera.hpp"
 
