@@ -1,10 +1,10 @@
 /**
  * @file
- * @brief bounding volume
+ * @brief axis aligned bounding box/volume
  */
 
-#ifndef CPP_RAYTRACING_BOUNDING_VOLUME_HPP
-#define CPP_RAYTRACING_BOUNDING_VOLUME_HPP
+#ifndef CPP_RAYTRACING_AXIS_ALIGNED_BOUNDING_BOX_HPP
+#define CPP_RAYTRACING_AXIS_ALIGNED_BOUNDING_BOX_HPP
 
 #include <algorithm>
 #include <cmath>

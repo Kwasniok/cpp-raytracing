@@ -5,7 +5,7 @@
 #include <limits>
 
 #include <cpp_raytracing/values/tensor.hpp>
-#include <cpp_raytracing/world/bounding_volume.hpp>
+#include <cpp_raytracing/world/axis_aligned_bounding_box.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;

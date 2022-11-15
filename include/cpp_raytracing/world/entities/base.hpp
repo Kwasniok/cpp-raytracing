@@ -14,7 +14,7 @@
 #include "../../values/scalar.hpp"
 #include "../../values/tensor.hpp"
 #include "../animators/base.hpp"
-#include "../bounding_volume.hpp"
+#include "../axis_aligned_bounding_box.hpp"
 #include "../hit_record.hpp"
 
 namespace cpp_raytracing {

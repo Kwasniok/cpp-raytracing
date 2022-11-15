@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-#include "bounding_volume.hpp"
+#include "axis_aligned_bounding_box.hpp"
 #include "entities/base.hpp"
 
 namespace cpp_raytracing {
