@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(int_from_color_scalar, *but::tolerance(epsilon)) {
     auto quiet_NaN = std::numeric_limits<ray::ColorScalar>::quiet_NaN();
     auto signaling_NaN = std::numeric_limits<ray::ColorScalar>::signaling_NaN();
 
-    ray::ColorIntegral res;
+    ray::ColorIntegral res{};
 
     res = ray::int_from_color_scalar(ray::ColorScalar{0.0});
     BOOST_CHECK(res == ray::ColorIntegral{0});
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(int_from_color_scalar, *but::tolerance(epsilon)) {
 
 BOOST_AUTO_TEST_CASE(color_constants, *but::tolerance(epsilon)) {
     ray::Color color;
-    std::array<ray::ColorScalar, 3> elems;
+    std::array<ray::ColorScalar, 3> elems{};
 
     color = ray::Colors::BLACK;
     elems = {0.0, 0.0, 0.0};
