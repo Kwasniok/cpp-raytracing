@@ -8,6 +8,7 @@
 
 #include <cmath>
 
+#include "instance.hpp"
 #include <cpp_raytracing/world/entities/base.hpp>
 
 namespace cpp_raytracing {
