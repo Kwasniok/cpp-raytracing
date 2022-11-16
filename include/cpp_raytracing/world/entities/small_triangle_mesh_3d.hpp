@@ -18,7 +18,7 @@ namespace cpp_raytracing {
  *       tangential vectors are approxiately proportional within each
  *       individual triangle.
  */
-class SmallTriangleMesh3D : public Mesh<Dimension{3}> {
+class SmallTriangleMesh3D : public Mesh3D {
   public:
     /** @brief default constructor */
     SmallTriangleMesh3D() = default;
