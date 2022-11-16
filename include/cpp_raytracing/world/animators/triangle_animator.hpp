@@ -16,6 +16,8 @@ namespace cpp_raytracing {
  *        given time
  */
 template <Dimension DIMENSION>
+// clang-tidy false-positive: https://github.com/llvm/llvm-project/issues/59032
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class TriangleAnimator : public Animator<DIMENSION> {
   public:
     /** @brief default constructor */
