@@ -49,7 +49,8 @@ class Metal : public Material<DIMENSION> {
             const Vec3& onb_ray_direction) const override {
         using namespace tensor;
 
-        const Vec3 para = dot(record.normal, onb_ray_direction) * record.normal;
+        const Vec3 para =
+            dot(record.onb_normal, onb_ray_direction) * record.onb_normal;
         const Vec3 ortho = onb_ray_direction - para;
         const Vec3 direction = reflect(ortho, para, roughness);
 

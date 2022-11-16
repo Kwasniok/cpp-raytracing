@@ -58,9 +58,9 @@ class Dielectric : public Material<DIMENSION> {
                                             ? (1.0 / index_of_refraction)
                                             : index_of_refraction;
         const Vec3 unit_direction = unit_vector(onb_ray_direction);
-        const auto cos_theta = -dot(record.normal, unit_direction);
+        const auto cos_theta = -dot(record.onb_normal, unit_direction);
         const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
-        Vec3 para = -cos_theta * record.normal;
+        Vec3 para = -cos_theta * record.onb_normal;
         Vec3 ortho = unit_direction - para;
 
         Vec3 direction;
@@ -74,7 +74,7 @@ class Dielectric : public Material<DIMENSION> {
         if (ray_reflects) {
             direction = reflect(ortho, para);
         } else {
-            direction = refract(ortho, record.normal, refraction_ratio);
+            direction = refract(ortho, record.onb_normal, refraction_ratio);
         }
 
         const Color color_value =

@@ -47,11 +47,11 @@ class Diffuse : public Material<DIMENSION> {
 
         using namespace tensor;
 
-        Vec3 direction = record.normal + random_unit_vec<3_D>();
+        Vec3 direction = record.onb_normal + random_unit_vec<3_D>();
         if (tensor::near_zero(direction, epsilon)) {
             // in case of normal and random vector beeing antiparallel
             // use normal instead
-            direction = record.normal;
+            direction = record.onb_normal;
         }
 
         const Color color_value =

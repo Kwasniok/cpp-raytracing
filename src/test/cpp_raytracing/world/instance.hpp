@@ -126,7 +126,8 @@ HitRecord3D Instance3D::hit_record(const Geometry3D& geometry,
         if (record.t < infinity) {
 
             record.point = _transformation * record.point + position;
-            record.normal = unit_vector(_transformation * record.normal);
+            record.onb_normal =
+                unit_vector(_transformation * record.onb_normal);
         }
         return record;
     } else {

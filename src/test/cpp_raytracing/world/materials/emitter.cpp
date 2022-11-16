@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(emitter, *but::tolerance(epsilon)) {
     }
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
-        .normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,

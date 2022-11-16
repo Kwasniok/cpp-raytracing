@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(diffuse, *but::tolerance(epsilon)) {
     }
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
-        .normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(diffuse, *but::tolerance(epsilon)) {
         auto [direction_out, ray_col] = mat->scatter(record, direction_in);
         TEST_EQUAL_RANGES(ray_col, mat_col);
         BOOST_CHECK(!near_zero(direction_out, ray::Diffuse3D::epsilon));
-        const ray::Vec3 vec = direction_out - record.normal;
+        const ray::Vec3 vec = direction_out - record.onb_normal;
         CHECK_IN_BOUNDS(length(vec), 0.0, 1.0);
     }
 }
