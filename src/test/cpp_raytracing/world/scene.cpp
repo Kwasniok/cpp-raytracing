@@ -32,6 +32,7 @@ ray::Scene3D make_scene() {
     return scene;
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 struct Scene3DFixture {
     Scene3DFixture() : scene{make_scene()} {}
     ~Scene3DFixture() = default;

@@ -17,6 +17,7 @@ namespace ray = cpp_raytracing;
 
 constexpr ray::Scalar epsilon = 1e-16;
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 struct BVHCollection3DFixture {
     BVHCollection3DFixture() {
         collection.add(ray::make_sphere(ray::Vec3{1.0, 0.0, 0.0}, 0.5));

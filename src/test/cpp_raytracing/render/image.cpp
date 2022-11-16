@@ -39,6 +39,7 @@ BOOST_AUTO_TEST_CASE(operator_bracket_mut, *but::tolerance(epsilon)) {
     TEST_EQUAL_RANGES(image[std::pair(1, 2)], color);
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 struct RawImageArithmeticFixture {
 
     RawImageArithmeticFixture() {

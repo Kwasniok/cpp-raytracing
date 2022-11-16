@@ -18,6 +18,7 @@ const ray::Scalar ray_max_length = 1e+8;
 const ray::Scalar ray_segment_length_factor = 1.1;
 const ray::Scalar a = 1.0 / 17.0;
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 struct SwirlCartesianGeometry3DFixture {
     SwirlCartesianGeometry3DFixture() {}
     ~SwirlCartesianGeometry3DFixture() = default;

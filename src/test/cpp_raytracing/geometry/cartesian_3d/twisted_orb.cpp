@@ -19,6 +19,7 @@ const ray::Scalar ray_segment_length_factor = 1.1;
 const ray::Scalar psi = ray::pi / 8.0;
 const ray::Scalar rho = 17.0;
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 struct TwistedOrbCartesianGeometry3DFixture {
     TwistedOrbCartesianGeometry3DFixture() {}
     ~TwistedOrbCartesianGeometry3DFixture() = default;
