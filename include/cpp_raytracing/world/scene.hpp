@@ -192,7 +192,7 @@ inline HitRecord<DIMENSION> Scene<DIMENSION>::FreezeGuard::hit_record(
 }
 
 template <Dimension DIMENSION>
-inline const Scene<DIMENSION>::FreezeGuard
+inline const typename Scene<DIMENSION>::FreezeGuard
 Scene<DIMENSION>::freeze_for_time(const Scalar time) {
     if (is_frozen()) {
         throw std::runtime_error(

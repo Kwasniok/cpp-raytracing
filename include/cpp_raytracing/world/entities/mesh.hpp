@@ -25,7 +25,7 @@ class Mesh : public Entity<DIMENSION> {
     /** @brief position vector type */
     using VolumeVec = Vec<DIMENSION>;
     /** @brief point index type */
-    using Index = std::vector<VolumeVec>::size_type;
+    using Index = typename std::vector<VolumeVec>::size_type;
     /** @brief face type (triplet of point indices)*/
     using Face = std::array<Index, 3>;
 

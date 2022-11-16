@@ -168,7 +168,7 @@ class Renderer {
 
     /** @brief calculates color of light ray */
     Color ray_color(const Geometry<DIMENSION>& geometry,
-                    const Scene<DIMENSION>::FreezeGuard& frozen_scene,
+                    const typename Scene<DIMENSION>::FreezeGuard& frozen_scene,
                     Ray<DIMENSION>* ray, const unsigned long depth) const {
 
         using namespace tensor;
@@ -251,7 +251,7 @@ class Renderer {
     /** @brief returns background color for ray segment */
     inline Color
     background_color(const Geometry<DIMENSION>& geometry,
-                     const Scene<DIMENSION>::FreezeGuard& frozen_scene,
+                     const typename Scene<DIMENSION>::FreezeGuard& frozen_scene,
                      const RaySegment<DIMENSION>& ray_segment) const {
         if (frozen_scene.active_background == nullptr) {
             return ray_color_if_no_background;
@@ -263,7 +263,7 @@ class Renderer {
     inline void
     render_pixel_sample(const unsigned long i, const unsigned long j,
                         const Geometry<DIMENSION>& geometry,
-                        const Scene<DIMENSION>::FreezeGuard& frozen_scene,
+                        const typename Scene<DIMENSION>::FreezeGuard& frozen_scene,
                         RawImage& buffer) const {
         // random sub-pixel offset for antialiasing
         Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
@@ -351,7 +351,7 @@ class GlobalShutterRenderer : public Renderer<DIMENSION> {
     inline void
     render_sample(const unsigned long sample, RawImage& buffer,
                   const Geometry<DIMENSION>& geometry,
-                  const Scene<DIMENSION>::FreezeGuard& frozen_scene) {
+                  const typename Scene<DIMENSION>::FreezeGuard& frozen_scene) {
 
 // note: Mind the memory layout of image buffer and data acces!
 //       Static schedule with small chunksize seems to be optimal.
