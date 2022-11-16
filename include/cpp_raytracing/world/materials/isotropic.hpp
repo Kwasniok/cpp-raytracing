@@ -40,8 +40,7 @@ class Isotropic : public Material<DIMENSION> {
 
     /** @see Material::scatter */
     std::pair<Vec3, Color>
-    scatter(const HitRecord<DIMENSION>& record,
-            [[maybe_unused]] const Vec3& onb_ray_direction) const override {
+    scatter(const HitRecord<DIMENSION>& record) const override {
 
         using namespace tensor;
 

@@ -47,8 +47,7 @@ class Dielectric : public Material<DIMENSION> {
 
     /** @see Material::scatter */
     std::pair<Vec3, Color>
-    scatter(const HitRecord<DIMENSION>& record,
-            const Vec3& onb_ray_direction) const override {
+    scatter(const HitRecord<DIMENSION>& record) const override {
         using namespace tensor;
 
         // note: This algorithm assumes vacuum to medium transitions and
@@ -57,7 +56,7 @@ class Dielectric : public Material<DIMENSION> {
         const Scalar refraction_ratio = record.front_face
                                             ? (1.0 / index_of_refraction)
                                             : index_of_refraction;
-        const Vec3 unit_direction = unit_vector(onb_ray_direction);
+        const Vec3 unit_direction = unit_vector(record.onb_ray_direction);
         const auto cos_theta = -dot(record.onb_normal, unit_direction);
         const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
         Vec3 para = -cos_theta * record.onb_normal;

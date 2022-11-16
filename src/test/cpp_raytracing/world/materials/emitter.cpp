@@ -38,16 +38,17 @@ BOOST_AUTO_TEST_CASE(emitter, *but::tolerance(epsilon)) {
         emitter->color = std::move(texture);
         mat = std::move(emitter);
     }
+    const ray::Vec3 direction_in = {1.0, 0.0, 0.0};
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = {1.0, 0.0, 0.0};
     {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
 
         TEST_EQUAL_RANGES(ray_col, mat_col);
         TEST_EQUAL_RANGES(direction_out, v0);

@@ -223,22 +223,15 @@ class Renderer {
         }
         // has material
 
-        // cast secondary ray or emitter
-        const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(record.point);
-
-        const Vec3 onb_ray_direction =
-            to_onb_jacobian * current_segment.direction();
         const auto [onb_scatter_direction, color] =
-            record.material->scatter(record, onb_ray_direction);
+            record.material->scatter(record);
         if (is_zero(onb_scatter_direction)) {
             // is emitter
             return color;
         } else {
             // cast secondary ray
-            const Mat3x3 from_onb_jacobian =
-                geometry.from_onb_jacobian(record.point);
             const Vec3 scattered_direction =
-                from_onb_jacobian * onb_scatter_direction;
+                record.from_onb_jacobian * onb_scatter_direction;
             std::unique_ptr<Ray<DIMENSION>> scattered_ray =
                 geometry.ray_from(record.point, scattered_direction);
 
@@ -260,11 +253,11 @@ class Renderer {
     }
 
     /** @brief render a single sample for a single pixel */
-    inline void
-    render_pixel_sample(const unsigned long i, const unsigned long j,
-                        const Geometry<DIMENSION>& geometry,
-                        const typename Scene<DIMENSION>::FreezeGuard& frozen_scene,
-                        RawImage& buffer) const {
+    inline void render_pixel_sample(
+        const unsigned long i, const unsigned long j,
+        const Geometry<DIMENSION>& geometry,
+        const typename Scene<DIMENSION>::FreezeGuard& frozen_scene,
+        RawImage& buffer) const {
         // random sub-pixel offset for antialiasing
         Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
         Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);

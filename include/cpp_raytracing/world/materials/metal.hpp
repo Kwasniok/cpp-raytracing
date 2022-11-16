@@ -45,13 +45,12 @@ class Metal : public Material<DIMENSION> {
 
     /** @see Material::scatter */
     std::pair<Vec3, Color>
-    scatter(const HitRecord<DIMENSION>& record,
-            const Vec3& onb_ray_direction) const override {
+    scatter(const HitRecord<DIMENSION>& record) const override {
         using namespace tensor;
 
-        const Vec3 para =
-            dot(record.onb_normal, onb_ray_direction) * record.onb_normal;
-        const Vec3 ortho = onb_ray_direction - para;
+        const Vec3 para = dot(record.onb_normal, record.onb_ray_direction) *
+                          record.onb_normal;
+        const Vec3 ortho = record.onb_ray_direction - para;
         const Vec3 direction = reflect(ortho, para, roughness);
 
         const Color color_value =

@@ -39,16 +39,17 @@ BOOST_AUTO_TEST_CASE(diffuse, *but::tolerance(epsilon)) {
         diffuse->color = std::move(texture);
         mat = std::move(diffuse);
     }
+    const ray::Vec3 direction_in = {1.0, 0.0, 0.0};
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = {1.0, 0.0, 0.0};
     for (int counter = 0; counter < 10; ++counter) {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
         TEST_EQUAL_RANGES(ray_col, mat_col);
         BOOST_CHECK(!near_zero(direction_out, ray::Diffuse3D::epsilon));
         const ray::Vec3 vec = direction_out - record.onb_normal;

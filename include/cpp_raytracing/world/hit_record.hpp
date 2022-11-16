@@ -57,19 +57,28 @@ requires(DIMENSION >= 3) struct HitRecord {
      * @note The tangential space is that of point.
      */
     ToONBJac from_onb_jacobian{};
+
     /**
-     * @brief surface normal pointing towards 'exterior' relative to
-     *        othronormal basis
-     * @note For independence of the specific geometry all directions must be
-     *       converted to a flat space via the local Jacobian at #point.
+     * @brief surface normal pointing towards 'exterior' relative to local 3D
+     *        ONB tangental space of point
      */
     Vec3 onb_normal{};
+
+    /**
+     * @brief direction of incoming ray relative to local 3D ONB tangental space
+     *        of point
+     */
+    Vec3 onb_ray_direction{};
+
     /** @brief texture coordinates */
     Vec2 uv_coordinates{};
+
     /** @brief material of the object */
     const Material<DIMENSION>* material = nullptr;
+
     /** @brief RaySegment3D parameter of #point */
     Scalar t = 0.0;
+
     /** @brief ray his surface from the outside */
     bool front_face = false;
 
@@ -94,8 +103,10 @@ requires(DIMENSION >= 3) struct HitRecord {
         this->to_onb_jacobian = to_onb_jacobian;
         this->from_onb_jacobian = from_onb_jacobian;
 
-        front_face = dot(face_normal, metric * ray_direction) < 0.0;
+        onb_ray_direction = to_onb_jacobian * ray_direction;
         onb_normal = to_onb_jacobian * face_normal;
+
+        front_face = dot(onb_normal, onb_ray_direction) < 0.0;
         onb_normal = front_face ? onb_normal : -onb_normal;
     }
 

@@ -43,16 +43,17 @@ BOOST_AUTO_TEST_CASE(metal_no_roughness, *but::tolerance(epsilon)) {
         mat = std::move(metal);
     }
     const ray::Vec3 normal{-1.0, 0.0, 0.0};
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = normal,
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
         TEST_EQUAL_RANGES(ray_col, mat_col);
         // parallel to normal
         BOOST_CHECK(dot(normal, direction_out) == -dot(normal, direction_in));
@@ -94,16 +95,17 @@ BOOST_AUTO_TEST_CASE(metal_with_roughness, *but::tolerance(epsilon)) {
         mat = std::move(metal);
     }
     const ray::Vec3 normal{-1.0, 0.0, 0.0};
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = normal,
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
         TEST_EQUAL_RANGES(ray_col, mat_col);
         const ray::Vec3 in_para = normal * dot(normal, direction_in);
         const ray::Vec3 in_ortho = direction_in - in_para;

@@ -46,16 +46,17 @@ BOOST_AUTO_TEST_CASE(dielectric_air, *but::tolerance(epsilon)) {
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     for (int counter = 0; counter < 10; ++counter) {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
         TEST_EQUAL_RANGES(ray_col, mat_col);
         TEST_EQUAL_RANGES(direction_out, direction_in);
     }
@@ -95,14 +96,15 @@ BOOST_AUTO_TEST_CASE(dielectric_into_glass, *but::tolerance(epsilon)) {
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::Vec3 direction_reflection =
         unit_vector(ray::Vec3{-1.0, 1.0, 0.0});
     // Snell's law for 45°
@@ -117,7 +119,7 @@ BOOST_AUTO_TEST_CASE(dielectric_into_glass, *but::tolerance(epsilon)) {
     int reflections = 0; // ideal: ~5%
     int total = 100000;  // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
         TEST_EQUAL_RANGES(ray_col, mat_col);
 
         if (length(direction_out - direction_refraction) < epsilon) {
@@ -169,19 +171,20 @@ BOOST_AUTO_TEST_CASE(dielectric_total_reflection, *but::tolerance(epsilon)) {
         dielectric->index_of_refraction = ior;
         mat = std::move(dielectric);
     }
+    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::HitRecord3D record{
         .point = ray::Vec3{1.0, 0.0, 0.0},
         .onb_normal = ray::Vec3{-1.0, 0.0, 0.0},
+        .onb_ray_direction = direction_in,
         .material = mat.get(),
         .t = 1.0,
         .front_face = true,
     };
-    const ray::Vec3 direction_in = unit_vector(ray::Vec3{1.0, 1.0, 0.0});
     const ray::Vec3 direction_reflection =
         unit_vector(ray::Vec3{-1.0, 1.0, 0.0});
     int total = 1000000; // must be >= 1000 // NOLINT
     for (int counter = 0; counter < total; ++counter) {
-        auto [direction_out, ray_col] = mat->scatter(record, direction_in);
+        auto [direction_out, ray_col] = mat->scatter(record);
         TEST_EQUAL_RANGES(ray_col, mat_col);
         // reflection only
         TEST_EQUAL_RANGES(direction_out, direction_reflection);

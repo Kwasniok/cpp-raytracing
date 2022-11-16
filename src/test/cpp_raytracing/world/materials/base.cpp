@@ -10,9 +10,8 @@ namespace ray = cpp_raytracing;
 class Dummy : public ray::Material3D {
 
     std::pair<ray::Vec3, ray::Color>
-    scatter([[maybe_unused]] const ray::HitRecord3D& record,
-            const ray::Vec3& ray_direction) const override {
-        return {ray_direction, ray::Colors::WHITE};
+    scatter([[maybe_unused]] const ray::HitRecord3D& record) const override {
+        return {record.onb_ray_direction, ray::Colors::WHITE};
     }
 };
 

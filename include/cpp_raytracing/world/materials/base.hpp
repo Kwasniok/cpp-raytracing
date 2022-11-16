@@ -18,6 +18,13 @@ namespace cpp_raytracing {
 
 /**
  * @brief object material interface
+ * @note Materials are mostly agnostic of the geometry - including the
+ *       dimensionality of the manifold.
+ *       Exceptions the scattering point and textures (which might depend
+ *       on the scattering point).
+ *       All relevant geometrical information is transformed into vectors of a
+ *       tangential space with an orthonormal basis.
+ * @see HitRecord
  */
 template <Dimension DIMENSION>
 class Material {
@@ -53,8 +60,7 @@ class Material {
      * @see zero_vec
      */
     virtual std::pair<Vec3, Color>
-    scatter(const HitRecord<DIMENSION>& record,
-            const Vec3& onb_ray_direction) const = 0;
+    scatter(const HitRecord<DIMENSION>& record) const = 0;
 };
 
 /** @brief material for entities in a 3D mnifold */
