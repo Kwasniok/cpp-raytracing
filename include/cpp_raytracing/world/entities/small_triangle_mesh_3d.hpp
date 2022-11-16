@@ -114,7 +114,6 @@ class SmallTriangleMesh3D : public Mesh3D {
         const Vec3 point = ray_segment.at(t);
         const Mat3x3 metric = geometry.metric(point);
         const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(point);
-        const Mat3x3 from_onb_jacobian = geometry.from_onb_jacobian(point);
 
         HitRecord3D record;
         record.t = t;
@@ -132,8 +131,8 @@ class SmallTriangleMesh3D : public Mesh3D {
         Vec3 normal = cross(metric * b1, metric * b2);
         // normalize
         normal *= Scalar{1} / std::sqrt((dot(normal, metric * normal)));
-        record.set_local_geometry(metric, to_onb_jacobian, from_onb_jacobian, d,
-                                  normal);
+        record.set_local_geometry(to_onb_jacobian * d,
+                                  to_onb_jacobian * normal);
         record.material = this->material.get();
         return record;
     }

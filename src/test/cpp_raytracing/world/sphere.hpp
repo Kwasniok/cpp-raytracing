@@ -109,9 +109,7 @@ HitRecord3D Sphere3D::hit_record([[maybe_unused]] const Geometry3D& geometry,
     HitRecord3D record;
     record.t = t;
     record.point = point;
-    record.set_local_geometry(
-        tensor::identity_mat<3_D>, tensor::identity_mat<3_D>,
-        tensor::identity_mat<3_D>, ray_segment.direction(), normal);
+    record.set_local_geometry(ray_segment.direction(), normal);
     record.uv_coordinates = uv_coordinates(normal);
     record.material = material.get();
     return record;

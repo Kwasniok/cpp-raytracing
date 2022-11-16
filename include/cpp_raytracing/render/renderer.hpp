@@ -230,8 +230,10 @@ class Renderer {
             return color;
         } else {
             // cast secondary ray
+            const Mat3x3 from_onb_jacobian =
+                geometry.from_onb_jacobian(record.point);
             const Vec3 scattered_direction =
-                record.from_onb_jacobian * onb_scatter_direction;
+                from_onb_jacobian * onb_scatter_direction;
             std::unique_ptr<Ray<DIMENSION>> scattered_ray =
                 geometry.ray_from(record.point, scattered_direction);
 
