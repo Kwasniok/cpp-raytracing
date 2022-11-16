@@ -16,11 +16,12 @@ namespace cpp_raytracing {
 /**
  * @brief colored translucent dielectric material
  */
-class Dielectric : public Material {
+template <Dimension DIMENSION>
+class Dielectric : public Material<DIMENSION> {
 
   public:
     /** @brief color of the dielectric */
-    std::shared_ptr<Texture3D> color;
+    std::shared_ptr<Texture<DIMENSION>> color;
     /**
      * @brief index of refraction
      * @note 1.0=air, >1.0=typical, <1.0=atypical
@@ -44,8 +45,10 @@ class Dielectric : public Material {
 
     ~Dielectric() override = default;
 
-    std::pair<Vec3, Color> scatter(const HitRecord3D& record,
-                                   const Vec3& ray_direction) const override {
+    /** @see Material::scatter */
+    std::pair<Vec3, Color>
+    scatter(const HitRecord<DIMENSION>& record,
+            const Vec3& onb_ray_direction) const override {
         using namespace tensor;
 
         // note: This algorithm assumes vacuum to medium transitions and
@@ -54,7 +57,7 @@ class Dielectric : public Material {
         const Scalar refraction_ratio = record.front_face
                                             ? (1.0 / index_of_refraction)
                                             : index_of_refraction;
-        const Vec3 unit_direction = unit_vector(ray_direction);
+        const Vec3 unit_direction = unit_vector(onb_ray_direction);
         const auto cos_theta = -dot(record.normal, unit_direction);
         const auto sin_theta_squared = std::abs(1.0 - std::pow(cos_theta, 2));
         Vec3 para = -cos_theta * record.normal;
@@ -107,6 +110,10 @@ class Dielectric : public Material {
         return x + (1.0 - x) * std::pow(1 - cos_theta, 5);
     }
 };
+
+/** @brief dielectric material for entities in a 3D mnifold */
+using Dielectric3D = Dielectric<Dimension{3}>;
+
 } // namespace cpp_raytracing
 
 #endif

@@ -16,6 +16,7 @@
 
 namespace cpp_raytracing {
 
+template<Dimension DIMENSION>
 class Material;
 
 /**
@@ -47,7 +48,7 @@ requires(DIMENSION >= 3) struct HitRecord {
     /** @brief texture coordinates */
     Vec2 uv_coordinates{};
     /** @brief material of the object */
-    const Material* material = nullptr;
+    const Material<DIMENSION>* material = nullptr;
     /** @brief RaySegment3D parameter of #point */
     Scalar t = 0.0;
     /** @brief ray his surface from the outside */

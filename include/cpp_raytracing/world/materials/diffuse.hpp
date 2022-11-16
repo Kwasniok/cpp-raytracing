@@ -14,13 +14,14 @@ namespace cpp_raytracing {
 /**
  * @brief simple Lambertian colored diffuse material
  */
-class Diffuse : public Material {
+template <Dimension DIMENSION>
+class Diffuse : public Material<DIMENSION> {
   public:
     /** @brief Scalars below this threshold are considered to be zero.*/
     constexpr static Scalar epsilon = 1.0e-12;
 
     /** @brief color of the diffuse surface */
-    std::shared_ptr<Texture3D> color;
+    std::shared_ptr<Texture<DIMENSION>> color;
 
     /** @brief default construct with default idenfifier root */
     Diffuse() = default;
@@ -39,9 +40,10 @@ class Diffuse : public Material {
 
     ~Diffuse() override = default;
 
+    /** @see Material::scatter */
     std::pair<Vec3, Color>
-    scatter(const HitRecord3D& record,
-            [[maybe_unused]] const Vec3& ray_direction) const override {
+    scatter(const HitRecord<DIMENSION>& record,
+            [[maybe_unused]] const Vec3& onb_ray_direction) const override {
 
         using namespace tensor;
 
@@ -54,12 +56,15 @@ class Diffuse : public Material {
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
-                  : Texture3D::value_for_missing_texture(record.uv_coordinates,
-                                                         record.point);
+                  : Texture<DIMENSION>::value_for_missing_texture(
+                        record.uv_coordinates, record.point);
 
         return {direction, color_value};
     }
 };
+
+/** @brief diffuse material for entities in a 3D mnifold */
+using Diffuse3D = Diffuse<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

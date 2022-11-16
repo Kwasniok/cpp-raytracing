@@ -30,9 +30,9 @@ BOOST_AUTO_TEST_CASE(emitter, *but::tolerance(epsilon)) {
      */
     const ray::Color mat_col{0.0, 0.5, 1.0};
     const ray::Vec3 v0 = ray::tensor::zero_vec<3_D>;
-    std::shared_ptr<ray::Material> mat;
+    std::shared_ptr<ray::Material3D> mat;
     {
-        auto emitter = std::make_unique<ray::Emitter>();
+        auto emitter = std::make_unique<ray::Emitter3D>();
         auto texture = std::make_shared<ray::ConstantColor3D>();
         texture->color = mat_col;
         emitter->color = std::move(texture);

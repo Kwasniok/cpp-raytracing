@@ -41,9 +41,9 @@ std::shared_ptr<ray::Texture3D> make_color_texture(const ray::Color& color) {
 }
 
 /** @brief returns metal material */
-std::shared_ptr<ray::Material>
+std::shared_ptr<ray::Material3D>
 make_metal_material(const ray::Color& color, const ray::ColorScalar roughness) {
-    auto mat = std::make_shared<ray::Metal>();
+    auto mat = std::make_shared<ray::Metal3D>();
     mat->id.change("metal");
     mat->color = make_color_texture(color);
     mat->roughness = roughness;
@@ -51,10 +51,10 @@ make_metal_material(const ray::Color& color, const ray::ColorScalar roughness) {
 }
 
 /** @brief returns emitter material */
-std::shared_ptr<ray::Material>
+std::shared_ptr<ray::Material3D>
 make_emitter_material(const ray::Color& color,
                       const ray::ColorScalar strength = 1.0) {
-    auto mat = std::make_shared<ray::Emitter>();
+    auto mat = std::make_shared<ray::Emitter3D>();
     mat->id.change("emitter");
     mat->color = make_color_texture(color * strength);
     return mat;

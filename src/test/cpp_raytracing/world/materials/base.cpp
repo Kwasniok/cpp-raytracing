@@ -7,7 +7,7 @@
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;
 
-class Dummy : public ray::Material {
+class Dummy : public ray::Material3D {
 
     std::pair<ray::Vec3, ray::Color>
     scatter([[maybe_unused]] const ray::HitRecord3D& record,

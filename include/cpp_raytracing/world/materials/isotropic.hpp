@@ -15,10 +15,11 @@ namespace cpp_raytracing {
  * @brief simple isotropic material (e.g. for volumes)
  * @note Suitable for volume materials.
  */
-class Isotropic : public Material {
+template <Dimension DIMENSION>
+class Isotropic : public Material<DIMENSION> {
   public:
     /** @brief color of the isotropic 'surface' */
-    std::shared_ptr<Texture3D> color;
+    std::shared_ptr<Texture<DIMENSION>> color;
 
     /** @brief default construct with default idenfifier root */
     Isotropic() = default;
@@ -37,20 +38,24 @@ class Isotropic : public Material {
 
     ~Isotropic() override = default;
 
+    /** @see Material::scatter */
     std::pair<Vec3, Color>
-    scatter(const HitRecord3D& record,
-            [[maybe_unused]] const Vec3& ray_direction) const override {
+    scatter(const HitRecord<DIMENSION>& record,
+            [[maybe_unused]] const Vec3& onb_ray_direction) const override {
 
         using namespace tensor;
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
-                  : Texture3D::value_for_missing_texture(record.uv_coordinates,
-                                                         record.point);
+                  : Texture<DIMENSION>::value_for_missing_texture(
+                        record.uv_coordinates, record.point);
 
         return {random_vec_inside_unit_sphere<3_D>(), color_value};
     }
 };
+
+/** @brief iostropic material for entities in a 3D mnifold */
+using Isotropic3D = Isotropic<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

@@ -14,10 +14,11 @@ namespace cpp_raytracing {
 /**
  * @brief simple colored emitter material
  */
-class Emitter : public Material {
+template <Dimension DIMENSION>
+class Emitter : public Material<DIMENSION> {
   public:
     /** @brief color of the emitting surface */
-    std::shared_ptr<Texture3D> color;
+    std::shared_ptr<Texture<DIMENSION>> color;
 
     /** @brief default construct with default idenfifier root */
     Emitter() = default;
@@ -36,21 +37,25 @@ class Emitter : public Material {
 
     ~Emitter() override = default;
 
+    /** @see Material::scatter */
     std::pair<Vec3, Color>
-    scatter(const HitRecord3D& record,
-            [[maybe_unused]] const Vec3& ray_direction) const override {
+    scatter(const HitRecord<DIMENSION>& record,
+            [[maybe_unused]] const Vec3& onb_ray_direction) const override {
         using namespace tensor;
 
         const Vec3 direction = zero_vec<3_D>; // emissive
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
-                  : Texture3D::value_for_missing_texture(record.uv_coordinates,
-                                                         record.point);
+                  : Texture<DIMENSION>::value_for_missing_texture(
+                        record.uv_coordinates, record.point);
 
         return {direction, color_value};
     }
 };
+
+/** @brief emitter material for entities in a 3D mnifold */
+using Emitter3D = Emitter<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

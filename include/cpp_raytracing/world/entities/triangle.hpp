@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "../../values/tensor.hpp"
+#include "../materials/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -28,7 +29,7 @@ class Triangle : public Entity<DIMENSION> {
     /** @brief face corners */
     std::array<VolumeVec, 3> points;
     /** @brief material of the plane */
-    std::shared_ptr<Material> material;
+    std::shared_ptr<Material<DIMENSION>> material;
 
     /** @brief default constructor */
     Triangle() = default;

@@ -10,6 +10,7 @@
 
 #include "instance.hpp"
 #include <cpp_raytracing/world/entities/base.hpp>
+#include <cpp_raytracing/world/materials/base.hpp>
 
 namespace cpp_raytracing {
 
@@ -26,7 +27,7 @@ class Sphere3D : public Entity3D {
      */
     Scalar radius = 1.0;
     /** @brief material of the sphere */
-    std::shared_ptr<Material> material;
+    std::shared_ptr<Material3D> material;
 
     /** @brief default construct with default idenfifier root */
     Sphere3D() = default;

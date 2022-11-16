@@ -14,11 +14,12 @@ namespace cpp_raytracing {
 /**
  * @brief simple colored metal material
  */
-class Metal : public Material {
+template <Dimension DIMENSION>
+class Metal : public Material<DIMENSION> {
 
   public:
     /** @brief color of the metal surface */
-    std::shared_ptr<Texture3D> color;
+    std::shared_ptr<Texture<DIMENSION>> color;
     /**
      * @brief roughness of the diffuse surface
      * note: `roughness=0.0...1.0`
@@ -42,18 +43,20 @@ class Metal : public Material {
 
     ~Metal() override = default;
 
-    std::pair<Vec3, Color> scatter(const HitRecord3D& record,
-                                   const Vec3& ray_direction) const override {
+    /** @see Material::scatter */
+    std::pair<Vec3, Color>
+    scatter(const HitRecord<DIMENSION>& record,
+            const Vec3& onb_ray_direction) const override {
         using namespace tensor;
 
-        const Vec3 para = dot(record.normal, ray_direction) * record.normal;
-        const Vec3 ortho = ray_direction - para;
+        const Vec3 para = dot(record.normal, onb_ray_direction) * record.normal;
+        const Vec3 ortho = onb_ray_direction - para;
         const Vec3 direction = reflect(ortho, para, roughness);
 
         const Color color_value =
             color ? color->value(record.uv_coordinates, record.point)
-                  : Texture3D::value_for_missing_texture(record.uv_coordinates,
-                                                         record.point);
+                  : Texture<DIMENSION>::value_for_missing_texture(
+                        record.uv_coordinates, record.point);
 
         return {direction, color_value};
     }
@@ -67,6 +70,9 @@ class Metal : public Material {
         return ortho - para + roughness * random_vec_inside_unit_sphere<3_D>();
     }
 };
+
+/** @brief metal material for entities in a 3D mnifold */
+using Metal3D = Metal<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

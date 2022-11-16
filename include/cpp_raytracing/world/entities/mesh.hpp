@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "../../values/tensor.hpp"
+#include "../materials/base.hpp"
 #include "base.hpp"
 
 namespace cpp_raytracing {
@@ -34,7 +35,7 @@ class Mesh : public Entity<DIMENSION> {
     /** @brief faces */
     std::vector<Face> faces;
     /** @brief material of the plane */
-    std::shared_ptr<Material> material;
+    std::shared_ptr<Material<DIMENSION>> material;
 
     /** @brief default constructor */
     Mesh() = default;

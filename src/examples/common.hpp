@@ -230,46 +230,46 @@ make_checker_3d_texture(const Color& color1, const Color& color2,
 }
 
 /** @brief returns diffuse material */
-std::shared_ptr<Material> make_diffuse_material(const Color& color) {
-    auto mat = std::make_shared<Diffuse>();
+std::shared_ptr<Material3D> make_diffuse_material(const Color& color) {
+    auto mat = std::make_shared<Diffuse3D>();
     auto texture = std::make_shared<ConstantColor3D>();
     mat->color = make_color_texture(color);
     return mat;
 }
 
 /** @brief returns diffuse 3D checker board material */
-std::shared_ptr<Material>
+std::shared_ptr<Material3D>
 make_diffuse_3d_checker_material(const Color& color1, const Color& color2,
                                  const Scalar scale = 1.0,
                                  const Vec3& offset = {0.0, 0.0, 0.0}) {
-    auto mat = std::make_shared<Diffuse>();
+    auto mat = std::make_shared<Diffuse3D>();
     mat->color = make_checker_3d_texture(color1, color2, scale, offset);
     return mat;
 }
 
 /** @brief returns metal material */
-std::shared_ptr<Material>
+std::shared_ptr<Material3D>
 make_metal_material(const Color& color, const ColorScalar roughness = 0.0) {
-    auto mat = std::make_shared<Metal>();
+    auto mat = std::make_shared<Metal3D>();
     mat->color = make_color_texture(color);
     mat->roughness = roughness;
     return mat;
 }
 
 /** @brief returns metal 3D checker board material */
-std::shared_ptr<Material> make_metal_3d_checker_material(
+std::shared_ptr<Material3D> make_metal_3d_checker_material(
     const Color& color1, const Color& color2, const Scalar roughness = 0.0,
     const Scalar scale = 1.0, const Vec3& offset = {0.0, 0.0, 0.0}) {
-    auto mat = std::make_shared<Metal>();
+    auto mat = std::make_shared<Metal3D>();
     mat->color = make_checker_3d_texture(color1, color2, scale, offset);
     mat->roughness = roughness;
     return mat;
 }
 
 /** @brief returns light emitting material */
-std::shared_ptr<Material>
+std::shared_ptr<Material3D>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
-    auto mat = std::make_shared<Emitter>();
+    auto mat = std::make_shared<Emitter3D>();
     mat->color = make_color_texture(strength * color);
     return mat;
 }
