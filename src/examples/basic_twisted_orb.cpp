@@ -28,7 +28,7 @@ Scene3D make_scene() {
 
     // background (global illumination)
     {
-        auto background = std::make_shared<SkyBackground3D>();
+        auto background = std::make_shared<CartesianSkyBackground3D>();
         scene.active_background = std::move(background);
     }
 

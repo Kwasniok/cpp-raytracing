@@ -12,6 +12,7 @@
 
 #include <cpp_raytracing.hpp>
 
+#include "cartesian_sky_background.hpp"
 #include "linear_motion_mesh_animator.hpp"
 #include "sinusoidal_motion_mesh_animator.hpp"
 
@@ -27,46 +28,6 @@ const auto SHUTTER_MODES = std::to_array({
     SHUTTER_MODE_GLOBAL,
     SHUTTER_MODE_ROLLING,
 });
-
-/**
- * @brief simple sky background (requires Cartesian coorinates)
- */
-class SkyBackground3D : public Background3D {
-  public:
-    /** @brief color near horizon */
-    Color color1 = Colors::WHITE;
-    /** @brief color near horizon */
-    Color color2 = {0.5, 0.7, 1.0};
-
-    /** @brief default constructor */
-    SkyBackground3D() = default;
-
-    /** @brief copy constructor */
-    SkyBackground3D(const SkyBackground3D&) = delete;
-
-    /** @brief move constructor */
-    SkyBackground3D(SkyBackground3D&&) = default;
-
-    /** @brief copy assignment */
-    SkyBackground3D& operator=(const SkyBackground3D&) = delete;
-
-    /** @brief move assignment */
-    SkyBackground3D& operator=(SkyBackground3D&&) = default;
-
-    ~SkyBackground3D() override = default;
-
-    /** @see Background::value */
-    Color value([[maybe_unused]] const Geometry3D& geometry,
-                const RaySegment3D& ray_segment) const override {
-
-        using namespace tensor;
-
-        const Vec3 direction = unit_vector(ray_segment.direction());
-        const auto t = 0.5 * (std::abs(direction[1]) + 1.0);
-        const Color color = (1.0 - t) * color1 + t * color2;
-        return color;
-    };
-};
 
 /**
  * @brief returns a cube as mesh entity
