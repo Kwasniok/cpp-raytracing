@@ -206,10 +206,45 @@ BOOST_AUTO_TEST_CASE(mat_vec_mult, *but::tolerance(epsilon)) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(embeded_vector_middle, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<3_D> vec{1.1, 2.2, 3.3};
+    ray::Vec<5_D> expect{0.0, 1.1, 2.2, 3.3, 0.0};
+
+    ray::Vec<5_D> res = embeded_vector<5, 1, 3>(vec);
+    TEST_EQUAL_RANGES(res, expect);
+}
+
+BOOST_AUTO_TEST_CASE(embeded_vector_left, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<3_D> vec{1.1, 2.2, 3.3};
+    ray::Vec<5_D> expect{1.1, 2.2, 3.3, 0.0, 0.0};
+
+    ray::Vec<5_D> res = embeded_vector<5, 0, 3>(vec);
+    TEST_EQUAL_RANGES(res, expect);
+}
+
+BOOST_AUTO_TEST_CASE(embeded_vector_right, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<3_D> vec{1.1, 2.2, 3.3};
+    ray::Vec<5_D> expect{0.0, 0.0, 1.1, 2.2, 3.3};
+
+    ray::Vec<5_D> res = embeded_vector<5, 2, 3>(vec);
+    TEST_EQUAL_RANGES(res, expect);
+}
+
+BOOST_AUTO_TEST_CASE(embedded_vector_exact, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<3_D> vec{1.1, 2.2, 3.3};
+
+    ray::Vec<3_D> res = embeded_vector<3, 0, 3>(vec);
+    TEST_EQUAL_RANGES(res, vec);
+}
+
 BOOST_AUTO_TEST_CASE(embeded_matrix_middle, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
-    const ray::Mat3x3 mat{
+    const ray::Mat<3_D, 3_D> mat{
         // clang-format off
         1.1, 2.2, 3.3,
         4.4, 5.5, 6.6,
@@ -217,7 +252,7 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_middle, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<5, 5> expect{
+    ray::Mat<5_D, 5_D> expect{
         // clang-format off
         0.0, 0.0, 0.0, 0.0, 0.0,
         0.0, 1.1, 2.2, 3.3, 0.0,
@@ -227,14 +262,14 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_middle, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<5, 5> res = embeded_matrix<5, 5, 1, 1, 3, 3>(mat);
+    ray::Mat<5_D, 5_D> res = embeded_matrix<5, 5, 1, 1, 3, 3>(mat);
     TEST_EQUAL_RANGES(res, expect);
 }
 
 BOOST_AUTO_TEST_CASE(embeded_matrix_left, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
-    const ray::Mat3x3 mat{
+    const ray::Mat<3_D, 3_D> mat{
         // clang-format off
         1.1, 2.2, 3.3,
         4.4, 5.5, 6.6,
@@ -242,7 +277,7 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_left, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<5, 5> expect{
+    ray::Mat<5_D, 5_D> expect{
         // clang-format off
         0.0, 0.0, 0.0, 0.0, 0.0,
         1.1, 2.2, 3.3, 0.0, 0.0,
@@ -252,14 +287,14 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_left, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<5, 5> res = embeded_matrix<5, 5, 1, 0, 3, 3>(mat);
+    ray::Mat<5_D, 5_D> res = embeded_matrix<5, 5, 1, 0, 3, 3>(mat);
     TEST_EQUAL_RANGES(res, expect);
 }
 
 BOOST_AUTO_TEST_CASE(embeded_matrix_exact, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
-    const ray::Mat3x3 mat{
+    const ray::Mat<3_D, 3_D> mat{
         // clang-format off
         1.1, 2.2, 3.3,
         4.4, 5.5, 6.6,
@@ -267,14 +302,14 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_exact, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<3, 3> res = embeded_matrix<3, 3, 0, 0, 3, 3>(mat);
+    ray::Mat<3_D, 3_D> res = embeded_matrix<3, 3, 0, 0, 3, 3>(mat);
     TEST_EQUAL_RANGES(res, mat);
 }
 
 BOOST_AUTO_TEST_CASE(embeded_matrix_left_upper, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
-    const ray::Mat3x3 mat{
+    const ray::Mat<3_D, 3_D> mat{
         // clang-format off
         1.1, 2.2, 3.3,
         4.4, 5.5, 6.6,
@@ -282,7 +317,7 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_left_upper, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<5, 5> expect{
+    ray::Mat<5_D, 5_D> expect{
         // clang-format off
         1.1, 2.2, 3.3, 0.0, 0.0,
         4.4, 5.5, 6.6, 0.0, 0.0,
@@ -292,7 +327,7 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_left_upper, *but::tolerance(epsilon)) {
         // clang-format on
     };
 
-    ray::Mat<5, 5> res = embeded_matrix<5, 5, 0, 0, 3, 3>(mat);
+    ray::Mat<5_D, 5_D> res = embeded_matrix<5, 5, 0, 0, 3, 3>(mat);
     TEST_EQUAL_RANGES(res, expect);
 }
 

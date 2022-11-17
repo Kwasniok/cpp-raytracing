@@ -225,6 +225,21 @@ operator*(const gttl::Tensor<Scalar, RANK1, DIMENSIONS1, Traits>& lhs,
 /**
  * @brief returns a matrix with the submatrix embeded and zero elsewere
  */
+template <Dimension DIMENSION, Dimension POSITION, Dimension SUBDIMENSION>
+inline Vec<DIMENSION>
+embeded_vector(const Vec<SUBDIMENSION>& subvector) requires(
+    (DIMENSION >= SUBDIMENSION) && (POSITION <= DIMENSION - SUBDIMENSION)) {
+    // zero-initialization is required
+    Vec<DIMENSION> vec{};
+    for (Dimension i{0}; i < SUBDIMENSION; ++i) {
+        vec[i + POSITION] = subvector[i];
+    }
+    return vec;
+}
+
+/**
+ * @brief returns a matrix with the submatrix embeded and zero elsewere
+ */
 template <Dimension MAT_DIMENSION0, Dimension MAT_DIMENSION1,
           Dimension POSITION0, Dimension POSITION1, Dimension SUBMAT_DIMENSION0,
           Dimension SUBMAT_DIMENSION1>
