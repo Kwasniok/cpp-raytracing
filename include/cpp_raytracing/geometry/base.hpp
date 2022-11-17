@@ -60,8 +60,8 @@ class Geometry {
     using ToONBJac = Mat<Dimension{3}, DIMENSION>;
     /** @brief Jacobian type for from ONB conversions */
     using FromONBJac = Mat<DIMENSION, Dimension{3}>;
-    /** @brief metric type  */
-    using Metric = Mat<Dimension{3}, Dimension{3}>;
+    /** @brief metric type for tangential space of manifold */
+    using Metric = Mat<DIMENSION, DIMENSION>;
 
     /** @brief default constructor */
     Geometry() = default;
