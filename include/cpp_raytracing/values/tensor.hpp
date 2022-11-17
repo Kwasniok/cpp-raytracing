@@ -223,6 +223,28 @@ operator*(const gttl::Tensor<Scalar, RANK1, DIMENSIONS1, Traits>& lhs,
 }
 
 /**
+ * @brief returns a matrix with the submatrix embeded and zero elsewere
+ */
+template <Dimension MAT_DIMENSION0, Dimension MAT_DIMENSION1,
+          Dimension POSITION0, Dimension POSITION1, Dimension SUBMAT_DIMENSION0,
+          Dimension SUBMAT_DIMENSION1>
+inline Mat<MAT_DIMENSION0, MAT_DIMENSION1> embeded_matrix(
+    const Mat<SUBMAT_DIMENSION0, SUBMAT_DIMENSION1>&
+        submatrix) requires((MAT_DIMENSION0 >= SUBMAT_DIMENSION0) &&
+                            (MAT_DIMENSION1 >= SUBMAT_DIMENSION1) &&
+                            (POSITION0 < MAT_DIMENSION0 - SUBMAT_DIMENSION0) &&
+                            (POSITION1 < MAT_DIMENSION1 - SUBMAT_DIMENSION1)) {
+    // zero-initialization is required
+    Mat<MAT_DIMENSION0, MAT_DIMENSION1> mat{};
+    for (Dimension i{0}; i < SUBMAT_DIMENSION0; ++i) {
+        for (Dimension j{0}; j < SUBMAT_DIMENSION1; ++j) {
+            mat[i + POSITION0][j + POSITION1] = submatrix[i][j];
+        }
+    }
+    return mat;
+}
+
+/**
  * @brief returns identity matrix
  */
 template <Dimension DIMENSION>
