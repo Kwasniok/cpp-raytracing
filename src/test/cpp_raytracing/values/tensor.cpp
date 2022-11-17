@@ -256,6 +256,21 @@ BOOST_AUTO_TEST_CASE(embeded_matrix_left, *but::tolerance(epsilon)) {
     TEST_EQUAL_RANGES(res, expect);
 }
 
+BOOST_AUTO_TEST_CASE(embeded_matrix_exact, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    // row first
+    const ray::Mat3x3 mat{
+        // clang-format off
+        1.1, 2.2, 3.3,
+        4.4, 5.5, 6.6,
+        7.7, 8.8, 9.9
+        // clang-format on
+    };
+
+    ray::Mat<3, 3> res = embeded_matrix<3, 3, 0, 0, 3, 3>(mat);
+    TEST_EQUAL_RANGES(res, mat);
+}
+
 BOOST_AUTO_TEST_CASE(embeded_matrix_left_upper, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first

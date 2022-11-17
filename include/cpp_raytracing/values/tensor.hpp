@@ -232,8 +232,8 @@ inline Mat<MAT_DIMENSION0, MAT_DIMENSION1> embeded_matrix(
     const Mat<SUBMAT_DIMENSION0, SUBMAT_DIMENSION1>&
         submatrix) requires((MAT_DIMENSION0 >= SUBMAT_DIMENSION0) &&
                             (MAT_DIMENSION1 >= SUBMAT_DIMENSION1) &&
-                            (POSITION0 < MAT_DIMENSION0 - SUBMAT_DIMENSION0) &&
-                            (POSITION1 < MAT_DIMENSION1 - SUBMAT_DIMENSION1)) {
+                            (POSITION0 <= MAT_DIMENSION0 - SUBMAT_DIMENSION0) &&
+                            (POSITION1 <= MAT_DIMENSION1 - SUBMAT_DIMENSION1)) {
     // zero-initialization is required
     Mat<MAT_DIMENSION0, MAT_DIMENSION1> mat{};
     for (Dimension i{0}; i < SUBMAT_DIMENSION0; ++i) {
