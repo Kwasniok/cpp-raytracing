@@ -83,6 +83,10 @@ clean:
 	rm -rf build/*
 	rm -rf doc/*
 
+.PHONY: delete_dependency_files
+delete_dependency_files:
+	find $(BLD) -name '*.d' -delete
+
 ### DOCUMENTATION ###
 .PHONY: doc
 doc:
@@ -110,8 +114,8 @@ $(TESTS): $(BLD)/%: $(SRC)/%.cpp $(BLD)/%.d
 	@mkdir -p $(@D) # provide parent directory of target
 	$(CPP) $(CPP_FLAGS_TEST) -o $@ $<
 
-# import dependencies for all target binaries
-include $(TEST_DEPENDS)
+# import dependencies for all target binaries (if possible)
+-include $(TEST_DEPENDS)
 
 
 ### EXAMPLES ###
@@ -129,8 +133,8 @@ $(EXAMPLES): $(BLD)/%: $(SRC)/%.cpp $(BLD)/%.d
 	@mkdir -p $(@D) # provide parent directory of target
 	$(CPP) $(CPP_FLAGS) -o $@ $<
 
-# import dependencies for all example binaries
-include $(EXAMPLE_DEPENDS)
+# import dependencies for all example binaries (if possible)
+-include $(EXAMPLE_DEPENDS)
 
 
 .PHONY: examples
