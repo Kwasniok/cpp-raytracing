@@ -223,6 +223,24 @@ operator*(const gttl::Tensor<Scalar, RANK1, DIMENSIONS1, Traits>& lhs,
 }
 
 /**
+ * @brief returns identity matrix
+ */
+template <Dimension DIMENSION>
+inline Mat<DIMENSION> make_identity_mat() {
+    Mat<DIMENSION> mat{}; // zero-initialization is required
+    for (std::size_t i = 0; i < DIMENSION; ++i) {
+        mat[i][i] = Scalar{1};
+    }
+    return mat;
+}
+
+/**
+ * @brief returns identity matrix
+ */
+template <Dimension DIMENSION>
+const Mat<DIMENSION> identity_mat = make_identity_mat<DIMENSION>();
+
+/**
  * @brief returns rotational matrix for given axis and amplitude
  * @note Rotations are performed around each axis separately in the order:
  *       `R_x`, `R_y`, `R_z` (roll, pitch, yaw, Trait-Bryan angles).
@@ -268,24 +286,6 @@ inline Mat3x3 inverse_rotation_mat(const Vec3& axis) {
         // clang-format on
     };
 }
-
-/**
- * @brief returns identity matrix
- */
-template <Dimension DIMENSION>
-inline Mat<DIMENSION> make_identity_mat() {
-    Mat<DIMENSION> mat{}; // zero-initialization is required
-    for (std::size_t i = 0; i < DIMENSION; ++i) {
-        mat[i][i] = Scalar{1};
-    }
-    return mat;
-}
-
-/**
- * @brief returns identity matrix
- */
-template <Dimension DIMENSION>
-const Mat<DIMENSION> identity_mat = make_identity_mat<DIMENSION>();
 
 /**
  * @brief returns scaling matrix for given scale coefficients
