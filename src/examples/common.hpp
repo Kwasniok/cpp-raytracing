@@ -12,6 +12,9 @@
 
 #include <cpp_raytracing.hpp>
 
+#include "linear_motion_mesh_animator.hpp"
+#include "sinusoidal_motion_mesh_animator.hpp"
+
 namespace cpp_raytracing::examples {
 
 /** @brief global shutter mode constant */
@@ -24,102 +27,6 @@ const auto SHUTTER_MODES = std::to_array({
     SHUTTER_MODE_GLOBAL,
     SHUTTER_MODE_ROLLING,
 });
-
-/**
- * @brief linear motion based mesh entity animator
- */
-class LinearMotionMeshAnimator3D : public MeshAnimator3D {
-  public:
-    /** @brief start position for `time = time_offset` of all points */
-    std::vector<Vec3> start_points;
-    /** @brief constant velocity */
-    Vec3 velocity;
-    /** @brief time for which `position = start` */
-    Scalar time_offset = 0.0;
-
-    /** @brief default constructor */
-    LinearMotionMeshAnimator3D() = default;
-
-    /** @brief copy constructor */
-    LinearMotionMeshAnimator3D(const LinearMotionMeshAnimator3D&) = delete;
-
-    /** @brief move constructor */
-    LinearMotionMeshAnimator3D(LinearMotionMeshAnimator3D&&) = default;
-
-    /** @brief copy assignment */
-    LinearMotionMeshAnimator3D&
-    operator=(const LinearMotionMeshAnimator3D&) = delete;
-
-    /** @brief move assignment */
-    LinearMotionMeshAnimator3D&
-    operator=(LinearMotionMeshAnimator3D&&) = default;
-
-    ~LinearMotionMeshAnimator3D() override = default;
-
-  protected:
-    /** @see MeshAnimator3D::update_for_time_hook */
-    void update_for_time_hook(const Scalar time, Mesh3D* mesh) override;
-};
-
-void LinearMotionMeshAnimator3D::update_for_time_hook(const Scalar time,
-                                                      Mesh3D* mesh) {
-    if (mesh == nullptr)
-        return;
-    mesh->points = start_points;
-    for (auto& point : mesh->points) {
-        point = point + velocity * (time - time_offset);
-    }
-}
-
-/**
- * @brief sinusoidal motion based mesh entity animator
- */
-class SinusoidalMotionMeshAnimator3D : public MeshAnimator3D {
-  public:
-    /** @brief start position for `time = time_offset` of all points */
-    std::vector<Vec3> start_points;
-    /** @brief oscillator amplitude */
-    Vec3 amplitude;
-    /** @brief frequency of motion in radians */
-    Scalar frequency = 0.0;
-    /** @brief time for which `position = start` */
-    Scalar time_offset = 0.0;
-
-    /** @brief default constructor */
-    SinusoidalMotionMeshAnimator3D() = default;
-
-    /** @brief copy constructor */
-    SinusoidalMotionMeshAnimator3D(const SinusoidalMotionMeshAnimator3D&) =
-        delete;
-
-    /** @brief move constructor */
-    SinusoidalMotionMeshAnimator3D(SinusoidalMotionMeshAnimator3D&&) = default;
-
-    /** @brief copy assignment */
-    SinusoidalMotionMeshAnimator3D&
-    operator=(const SinusoidalMotionMeshAnimator3D&) = delete;
-
-    /** @brief move assignment */
-    SinusoidalMotionMeshAnimator3D&
-    operator=(SinusoidalMotionMeshAnimator3D&&) = default;
-
-    ~SinusoidalMotionMeshAnimator3D() override = default;
-
-  protected:
-    /** @see MeshAnimator3D::update_for_time_hook */
-    void update_for_time_hook(const Scalar time, Mesh3D* mesh) override;
-};
-
-void SinusoidalMotionMeshAnimator3D::update_for_time_hook(const Scalar time,
-                                                          Mesh3D* mesh) {
-    if (mesh == nullptr)
-        return;
-
-    mesh->points = start_points;
-    for (auto& point : mesh->points) {
-        point = point + std::sin(frequency * (time - time_offset)) * amplitude;
-    }
-}
 
 /**
  * @brief simple sky background (requires Cartesian coorinates)
