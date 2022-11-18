@@ -37,7 +37,7 @@ class ConstantColor : public Texture<DIMENSION> {
 
     /** @see Texture::value */
     Color value([[maybe_unused]] const Vec2& coordinates,
-                [[maybe_unused]] const Vec3& point) const override {
+                [[maybe_unused]] const Vec<DIMENSION>& point) const override {
         return color;
     }
 };

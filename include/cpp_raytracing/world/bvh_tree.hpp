@@ -41,7 +41,8 @@ class BVHTree {
          * @brief boundary of both branches and the value
          * @note MUST be finite at all times!
          */
-        AxisAlignedBoundingBox<DIMENSION> bounds{Vec3{}, Vec3{}};
+        AxisAlignedBoundingBox<DIMENSION> bounds{Vec<DIMENSION>{},
+                                                 Vec<DIMENSION>{}};
 
         Node() = default;
         Node(const Iter first, const Iter last) {

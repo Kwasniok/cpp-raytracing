@@ -20,17 +20,15 @@ namespace cpp_raytracing {
 template <Dimension DIMENSION>
 class VolumeChecker : public Texture<DIMENSION> {
   public:
-    /** @brief volume vector type */
-    using VolumeVec = Vec<DIMENSION>;
-
     /** @brief primary color of the surface */
     Color color1 = Colors::WHITE;
     /** @brief secondary color of the surface */
     Color color2 = Colors::BLACK;
     /** @brief offset */
-    Vec3 offset = Vec3{0.0, 0.0, 0.0};
+    Vec<DIMENSION> offset{};
     /** @brief size of each box in uv coordinates */
     Scalar scale = 1.0;
+
     /** @brief default construct with default idenfifier root */
     VolumeChecker() = default;
 
@@ -50,10 +48,10 @@ class VolumeChecker : public Texture<DIMENSION> {
 
     /** @see Texture::value */
     Color value([[maybe_unused]] const Vec2& uv_coordinates,
-                const VolumeVec& point) const override {
+                const Vec<DIMENSION>& point) const override {
 
-        const VolumeVec p = (point - offset) * (pi / scale);
-        const VolumeVec sins =
+        const auto p = (point - offset) * (pi / scale);
+        const auto sins =
             p.elementwise([](const Scalar x) { return std::sin(x); });
 
         const auto val = std::accumulate(std::begin(sins), std::end(sins),

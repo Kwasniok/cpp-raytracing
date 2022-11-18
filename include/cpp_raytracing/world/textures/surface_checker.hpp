@@ -18,9 +18,6 @@ namespace cpp_raytracing {
 template <Dimension DIMENSION>
 class SurfaceChecker : public Texture<DIMENSION> {
   public:
-    /** @brief volume vector type */
-    using VolumeVec = Vec<DIMENSION>;
-
     /** @brief primary color of the surface */
     Color color1 = Colors::WHITE;
     /** @brief secondary color of the surface */
@@ -49,7 +46,7 @@ class SurfaceChecker : public Texture<DIMENSION> {
 
     /** @see Texture::value */
     Color value(const Vec2& uv_coordinates,
-                [[maybe_unused]] const VolumeVec& point) const override {
+                [[maybe_unused]] const Vec<DIMENSION>& point) const override {
 
         const Vec2 c = (uv_coordinates - offset) * (pi / scale);
         const auto val = std::sin(c[0]) * std::sin(c[1]);

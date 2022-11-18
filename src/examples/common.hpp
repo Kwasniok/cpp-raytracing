@@ -30,8 +30,9 @@ const auto SHUTTER_MODES = std::to_array({
 });
 
 /** @brief returns constant color texture */
-std::shared_ptr<Texture3D> make_color_texture(const Color& color) {
-    auto texture = std::make_shared<ConstantColor3D>();
+template <Dimension DIMENSION>
+std::shared_ptr<Texture<DIMENSION>> make_color_texture(const Color& color) {
+    auto texture = std::make_shared<ConstantColor<DIMENSION>>();
     texture->color = color;
     return texture;
 }
@@ -55,7 +56,7 @@ template <Dimension DIMENSION>
 std::shared_ptr<Material<DIMENSION>> make_diffuse_material(const Color& color) {
     auto mat = std::make_shared<Diffuse<DIMENSION>>();
     auto texture = std::make_shared<ConstantColor<DIMENSION>>();
-    mat->color = make_color_texture(color);
+    mat->color = make_color_texture<DIMENSION>(color);
     return mat;
 }
 
@@ -76,7 +77,7 @@ template <Dimension DIMENSION>
 std::shared_ptr<Material<DIMENSION>>
 make_metal_material(const Color& color, const ColorScalar roughness = 0.0) {
     auto mat = std::make_shared<Metal<DIMENSION>>();
-    mat->color = make_color_texture(color);
+    mat->color = make_color_texture<DIMENSION>(color);
     mat->roughness = roughness;
     return mat;
 }
@@ -98,7 +99,7 @@ template <Dimension DIMENSION>
 std::shared_ptr<Material<DIMENSION>>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
     auto mat = std::make_shared<Emitter<DIMENSION>>();
-    mat->color = make_color_texture(strength * color);
+    mat->color = make_color_texture<DIMENSION>(strength * color);
     return mat;
 }
 
