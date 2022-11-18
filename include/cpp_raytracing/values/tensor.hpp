@@ -191,6 +191,34 @@ inline Vec<DIMENSION> random_unit_vec() {
     return unit_vector(random_vec_inside_unit_sphere<DIMENSION>());
 }
 
+/**
+ * @brief returns coordinates of x projected into the subspace spanned by two
+ *        basis vectors at the origin
+ * @note `x = u * basis_vec1 + v * basis_vec2 + w * normal` where `w` is unknown
+ *        and `normal` is the plane's normal vector.
+ * @note Can be used to calculate the u-v coordinates of a point in a plane.
+ * @note The result is undefined if the basis vectors are parallel.
+ */
+template <Dimension DIMENSION>
+constexpr Vec<Dimension{2}>
+get_coords_in_plane(const Vec<DIMENSION>& basis_vec1,
+                    const Vec<DIMENSION>& basis_vec2, const Vec<DIMENSION>& x) {
+    using namespace tensor;
+
+    const Vec<DIMENSION> b1 = basis_vec1;
+    const Vec<DIMENSION> b2 = basis_vec2;
+
+    const Scalar b1b1 = dot(b1, b1);
+    const Scalar b1b2 = dot(b1, b2);
+    const Scalar b2b2 = dot(b2, b2);
+    const Scalar D = b1b1 * b2b2 - b1b2 * b1b2;
+    const Scalar b1x = dot(b1, x);
+    const Scalar b2x = dot(b2, x);
+    const Scalar u = (b2b2 * b1x - b1b2 * b2x) / D;
+    const Scalar v = (b1b1 * b2x - b1b2 * b1x) / D;
+    return {u, v};
+}
+
 /** @brief matrix-vector multiplication */
 template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
 constexpr gttl::Tensor<Scalar, 1, DIMENSIONS, Traits> operator*(

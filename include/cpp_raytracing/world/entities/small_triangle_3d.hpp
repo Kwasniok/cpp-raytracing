@@ -46,28 +46,6 @@ class SmallTriangle3D : public Triangle3D {
     HitRecord3D hit_record(const Geometry3D& geometry,
                            const RaySegment3D& ray_segment,
                            const Scalar t_min = 0.0) const override;
-
-  private:
-    /**
-     * @brief returns u-v coordinates of x in plane spanned by b1 and b2
-     * @note It is asserted that x is in the plane spanned by b1 and b2.
-     * @note `x = u * b1 + v * b2`
-     * @note This is solving for linear coefficients.
-     */
-    static constexpr std::pair<Scalar, Scalar>
-    uv_tri_coords(const Vec3& b1, const Vec3& b2, const Vec3& x) {
-        using namespace tensor;
-
-        const Scalar b1b1 = dot(b1, b1);
-        const Scalar b1b2 = dot(b1, b2);
-        const Scalar b2b2 = dot(b2, b2);
-        const Scalar D = b1b1 * b2b2 - b1b2 * b1b2;
-        const Scalar b1x = dot(b1, x);
-        const Scalar b2x = dot(b2, x);
-        const Scalar u = (b1b1 * b2x - b1b2 * b1x) / D;
-        const Scalar v = (b2b2 * b1x - b1b2 * b2x) / D;
-        return {u, v};
-    }
 };
 
 HitRecord3D SmallTriangle3D::hit_record(const Geometry3D& geometry,
@@ -103,7 +81,8 @@ HitRecord3D SmallTriangle3D::hit_record(const Geometry3D& geometry,
         return {.t = infinity};
     }
 
-    const auto [u, v] = uv_tri_coords(b1, b2, (s + t * d) - points[0]);
+    const auto [u, v] =
+        get_coords_in_plane<3_D>(b1, b2, (s + t * d) - points[0]).coefficients;
 
     if (u < 0.0 || v < 0.0 || u + v > 1.0) {
         // outside of triangle region

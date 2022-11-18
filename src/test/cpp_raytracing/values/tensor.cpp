@@ -170,6 +170,32 @@ BOOST_AUTO_TEST_CASE(random_unit_vec_vec3, *but::tolerance(epsilon)) {
     CHECK_IN_BOUNDS(length(avg), 0.0, 0.05);
 }
 
+BOOST_AUTO_TEST_CASE(get_coords_in_plane_2d, *but::tolerance(epsilon)) {
+    using ray::tensor::get_coords_in_plane;
+
+    const std::vector<
+        std::tuple<ray::Vec<2_D>, ray::Vec<2_D>, ray::Vec<2_D>, ray::Vec<2_D>>>
+        args_and_expects{
+            {
+                {1.0, 0.0},
+                {0.0, 1.0},
+                {1.0, 2.0},
+                {1.0, 2.0},
+            },
+            {
+                {2.0, 3.0},
+                {-5.0, 7.0},
+                {11.0, 13.0},
+                {142.0 / 29.0, -7.0 / 29.0},
+            },
+        };
+
+    for (const auto& [vec1, vec2, point, expect] : args_and_expects) {
+        ray::Vec<2_D> res = get_coords_in_plane<2>(vec1, vec2, point);
+        TEST_EQUAL_RANGES(res, expect);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(mat_vec_mult, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
