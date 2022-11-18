@@ -42,7 +42,7 @@ Scene3D make_scene() {
 
     // cube
     {
-        auto cube = make_cube(1.0, Vec3{0.0, 0.0, 0.0});
+        auto cube = make_cube_3d(1.0, Vec3{0.0, 0.0, 0.0});
         cube->material = diffuse_red;
         // animation
         auto anim = std::make_unique<SinusoidalMotionMeshAnimator3D>();

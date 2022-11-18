@@ -30,10 +30,10 @@ const auto SHUTTER_MODES = std::to_array({
 });
 
 /**
- * @brief returns a cube as mesh entity
+ * @brief returns a 3D cube as mesh entity
  * @note Uses Cartesian coordinates.
  */
-std::shared_ptr<Mesh3D> make_cube(const Scalar scale, const Vec3& position) {
+std::shared_ptr<Mesh3D> make_cube_3d(const Scalar scale, const Vec3& position) {
     auto mesh = std::make_shared<SmallTriangleMesh3D>();
     mesh->id.change("cube");
     mesh->points = {
