@@ -29,54 +29,6 @@ const auto SHUTTER_MODES = std::to_array({
     SHUTTER_MODE_ROLLING,
 });
 
-/**
- * @brief returns a 3D cube as mesh entity
- * @note Uses Cartesian coordinates.
- */
-std::shared_ptr<Mesh3D> make_cube_3d(const Scalar scale, const Vec3& position) {
-    auto mesh = std::make_shared<SmallTriangleMesh3D>();
-    mesh->id.change("cube");
-    mesh->points = {
-        scale * Vec3{-1.0, -1.0, -1.0} + position, // 0
-        scale * Vec3{-1.0, -1.0, +1.0} + position, // 1
-        scale * Vec3{-1.0, +1.0, -1.0} + position, // 2
-        scale * Vec3{-1.0, +1.0, +1.0} + position, // 3
-        scale * Vec3{+1.0, -1.0, -1.0} + position, // 4
-        scale * Vec3{+1.0, -1.0, +1.0} + position, // 5
-        scale * Vec3{+1.0, +1.0, -1.0} + position, // 6
-        scale * Vec3{+1.0, +1.0, +1.0} + position, // 7
-    };
-    mesh->faces = {
-        Face3D{0, 1, 3}, Face3D{3, 2, 0}, // -x
-        Face3D{5, 4, 6}, Face3D{6, 7, 5}, // +x
-        Face3D{1, 0, 4}, Face3D{4, 5, 1}, // -y
-        Face3D{2, 3, 7}, Face3D{7, 6, 2}, // +y
-        Face3D{4, 0, 2}, Face3D{2, 6, 4}, // -z
-        Face3D{1, 5, 7}, Face3D{7, 3, 1}, // +z
-    };
-
-    return mesh;
-}
-
-/**
- * @brief returns a bounded x-z plane as mesh entity
- * @note Uses Cartesian coordinates.
- */
-std::shared_ptr<Mesh3D> make_xz_plane(const Scalar scale,
-                                      const Vec3& position) {
-    auto mesh = std::make_shared<SmallTriangleMesh3D>();
-    mesh->id.change("plane");
-    mesh->points = {
-        scale * Vec3{-1.0, 0.0, -1.0} + position, // 0
-        scale * Vec3{-1.0, 0.0, +1.0} + position, // 1
-        scale * Vec3{+1.0, 0.0, -1.0} + position, // 2
-        scale * Vec3{+1.0, 0.0, +1.0} + position, // 3
-    };
-    mesh->faces = {Face3D{0, 1, 3}, Face3D{3, 2, 0}};
-
-    return mesh;
-}
-
 /** @brief returns constant color texture */
 std::shared_ptr<Texture3D> make_color_texture(const Color& color) {
     auto texture = std::make_shared<ConstantColor3D>();
@@ -84,12 +36,13 @@ std::shared_ptr<Texture3D> make_color_texture(const Color& color) {
     return texture;
 }
 
-/** @brief returns texture with 3D checker board pattern */
-std::shared_ptr<Texture3D>
-make_checker_3d_texture(const Color& color1, const Color& color2,
-                        const Scalar scale = 1.0,
-                        const Vec3& offset = {0.0, 0.0, 0.0}) {
-    auto texture = std::make_shared<VolumeChecker3D>();
+/** @brief returns texture with volume checker board pattern */
+template <Dimension DIMENSION>
+std::shared_ptr<Texture<DIMENSION>>
+make_volume_checker_texture(const Color& color1, const Color& color2,
+                            const Scalar scale = 1.0,
+                            const Vec<DIMENSION>& offset = {}) {
+    auto texture = std::make_shared<VolumeChecker<DIMENSION>>();
     texture->color1 = color1;
     texture->color2 = color2;
     texture->scale = scale;
@@ -98,46 +51,53 @@ make_checker_3d_texture(const Color& color1, const Color& color2,
 }
 
 /** @brief returns diffuse material */
-std::shared_ptr<Material3D> make_diffuse_material(const Color& color) {
-    auto mat = std::make_shared<Diffuse3D>();
-    auto texture = std::make_shared<ConstantColor3D>();
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>> make_diffuse_material(const Color& color) {
+    auto mat = std::make_shared<Diffuse<DIMENSION>>();
+    auto texture = std::make_shared<ConstantColor<DIMENSION>>();
     mat->color = make_color_texture(color);
     return mat;
 }
 
-/** @brief returns diffuse 3D checker board material */
-std::shared_ptr<Material3D>
-make_diffuse_3d_checker_material(const Color& color1, const Color& color2,
-                                 const Scalar scale = 1.0,
-                                 const Vec3& offset = {0.0, 0.0, 0.0}) {
-    auto mat = std::make_shared<Diffuse3D>();
-    mat->color = make_checker_3d_texture(color1, color2, scale, offset);
+/** @brief returns diffuse volume checker board material */
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>>
+make_diffuse_volume_checker_material(const Color& color1, const Color& color2,
+                                     const Scalar scale = 1.0,
+                                     const Vec<DIMENSION>& offset = {}) {
+    auto mat = std::make_shared<Diffuse<DIMENSION>>();
+    mat->color =
+        make_volume_checker_texture<DIMENSION>(color1, color2, scale, offset);
     return mat;
 }
 
 /** @brief returns metal material */
-std::shared_ptr<Material3D>
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>>
 make_metal_material(const Color& color, const ColorScalar roughness = 0.0) {
-    auto mat = std::make_shared<Metal3D>();
+    auto mat = std::make_shared<Metal<DIMENSION>>();
     mat->color = make_color_texture(color);
     mat->roughness = roughness;
     return mat;
 }
 
-/** @brief returns metal 3D checker board material */
-std::shared_ptr<Material3D> make_metal_3d_checker_material(
+/** @brief returns metal volume checker board material */
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>> make_metal_volume_checker_material(
     const Color& color1, const Color& color2, const Scalar roughness = 0.0,
-    const Scalar scale = 1.0, const Vec3& offset = {0.0, 0.0, 0.0}) {
-    auto mat = std::make_shared<Metal3D>();
-    mat->color = make_checker_3d_texture(color1, color2, scale, offset);
+    const Scalar scale = 1.0, const Vec<DIMENSION>& offset = {}) {
+    auto mat = std::make_shared<Metal<DIMENSION>>();
+    mat->color =
+        make_volume_checker_texture<DIMENSION>(color1, color2, scale, offset);
     mat->roughness = roughness;
     return mat;
 }
 
 /** @brief returns light emitting material */
-std::shared_ptr<Material3D>
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
-    auto mat = std::make_shared<Emitter3D>();
+    auto mat = std::make_shared<Emitter<DIMENSION>>();
     mat->color = make_color_texture(strength * color);
     return mat;
 }

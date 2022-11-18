@@ -7,7 +7,7 @@
 #include <iostream>
 #include <memory>
 
-#include "common.hpp"
+#include "common_cartesian_3d.hpp"
 
 using namespace std;
 using namespace cpp_raytracing;
@@ -33,11 +33,11 @@ Scene3D make_scene() {
     }
 
     // materials
-    auto metal_gray = make_metal_3d_checker_material(Color{0.45, 0.45, 0.45},
-                                                     Color{0.55, 0.55, 0.55});
+    auto metal_gray = make_metal_volume_checker_material<3_D>(
+        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
     metal_gray->id.change("metal gray");
 
-    auto diffuse_red = make_diffuse_material(Color{0.75, 0.5, 0.5});
+    auto diffuse_red = make_diffuse_material<3_D>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
     // cube
