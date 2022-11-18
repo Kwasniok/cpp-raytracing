@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(get_coords_in_plane_2d, *but::tolerance(epsilon)) {
     }
 }
 
-BOOST_AUTO_TEST_CASE(mat_vec_mult, *but::tolerance(epsilon)) {
+BOOST_AUTO_TEST_CASE(square_mat_vec_mult, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
     const ray::Mat3x3 mat{
@@ -230,6 +230,51 @@ BOOST_AUTO_TEST_CASE(mat_vec_mult, *but::tolerance(epsilon)) {
         expect = {7.7, 8.8, 9.9};
         TEST_EQUAL_RANGES(z * mat, expect);
     }
+}
+
+BOOST_AUTO_TEST_CASE(non_square_mat_vec_mult, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    // row first
+    const ray::Mat<2_D, 3_D> mat{
+        // clang-format off
+        1.1, 2.2, 3.3,
+        4.4, 5.5, 6.6,
+        // clang-format on
+    };
+    const ray::Vec<3_D> x{1.0, 0.0, 0.0};
+    const ray::Vec<3_D> y{0.0, 1.0, 0.0};
+    const ray::Vec<3_D> z{0.0, 0.0, 1.0};
+
+    ray::Vec<2_D> expect;
+    expect = {1.1, 4.4};
+    TEST_EQUAL_RANGES(mat * x, expect);
+    expect = {2.2, 5.5};
+    TEST_EQUAL_RANGES(mat * y, expect);
+    expect = {3.3, 6.6};
+    TEST_EQUAL_RANGES(mat * z, expect);
+}
+
+BOOST_AUTO_TEST_CASE(vec_non_square_mat_mult, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    // row first
+    const ray::Mat<3_D, 2_D> mat{
+        // clang-format off
+        1.1, 2.2,
+        4.4, 5.5,
+        7.7, 8.8,
+        // clang-format on
+    };
+    const ray::Vec<3_D> x{1.0, 0.0, 0.0};
+    const ray::Vec<3_D> y{0.0, 1.0, 0.0};
+    const ray::Vec<3_D> z{0.0, 0.0, 1.0};
+
+    ray::Vec<2_D> expect;
+    expect = {1.1, 2.2};
+    TEST_EQUAL_RANGES(x * mat, expect);
+    expect = {4.4, 5.5};
+    TEST_EQUAL_RANGES(y * mat, expect);
+    expect = {7.7, 8.8};
+    TEST_EQUAL_RANGES(z * mat, expect);
 }
 
 BOOST_AUTO_TEST_CASE(embeded_vector_middle, *but::tolerance(epsilon)) {

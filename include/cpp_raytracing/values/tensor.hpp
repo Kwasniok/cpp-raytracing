@@ -220,33 +220,29 @@ get_coords_in_plane(const Vec<DIMENSION>& basis_vec1,
 }
 
 /** @brief matrix-vector multiplication */
-template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
-constexpr gttl::Tensor<Scalar, 1, DIMENSIONS, Traits> operator*(
-    const gttl::Tensor<Scalar, 2,
-                       gttl::cexpr::array::concatenate(DIMENSIONS, DIMENSIONS),
-                       Traits>& mat,
-    const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
+template <typename Scalar, gttl::Dimensions<2> DIMENSIONS_MAT,
+          gttl::Dimensions<1> DIMENSIONS_VEC, typename Traits>
+constexpr auto
+operator*(const gttl::Tensor<Scalar, 2, DIMENSIONS_MAT, Traits>& mat,
+          const gttl::Tensor<Scalar, 1, DIMENSIONS_VEC, Traits>& vec) {
     return gttl::contraction<1, 2>(mat, vec);
 }
 
 /** @brief vector-matrix multiplication */
-template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
-constexpr gttl::Tensor<Scalar, 1, DIMENSIONS, Traits> operator*(
-    const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec,
-    const gttl::Tensor<Scalar, 2,
-                       gttl::cexpr::array::concatenate(DIMENSIONS, DIMENSIONS),
-                       Traits>& mat) {
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS_VEC,
+          gttl::Dimensions<2> DIMENSIONS_MAT, typename Traits>
+constexpr auto
+operator*(const gttl::Tensor<Scalar, 1, DIMENSIONS_VEC, Traits>& vec,
+          const gttl::Tensor<Scalar, 2, DIMENSIONS_MAT, Traits>& mat) {
     return gttl::contraction<0, 1>(vec, mat);
 }
 
 /** @brief matrix-matrix multiplication */
-template <typename Scalar, std::size_t RANK1, std::size_t RANK2,
-          gttl::Dimensions<RANK1> DIMENSIONS1,
-          gttl::Dimensions<RANK2> DIMENSIONS2, typename Traits>
+template <typename Scalar, gttl::Dimensions<2> DIMENSIONS1,
+          gttl::Dimensions<2> DIMENSIONS2, typename Traits>
 constexpr auto
-operator*(const gttl::Tensor<Scalar, RANK1, DIMENSIONS1, Traits>& lhs,
-          const gttl::Tensor<Scalar, RANK2, DIMENSIONS2, Traits>&
-              rhs) requires((RANK1 == 2) && (RANK2 == 2)) {
+operator*(const gttl::Tensor<Scalar, 2, DIMENSIONS1, Traits>& lhs,
+          const gttl::Tensor<Scalar, 2, DIMENSIONS2, Traits>& rhs) {
     return gttl::contraction<1, 2>(lhs, rhs);
 }
 
