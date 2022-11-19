@@ -54,7 +54,7 @@ Scene3D make_scene() {
 
     // floor
     {
-        auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0, 0.0});
+        auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0- 1e-8, 0.0});
         plane->id.change("floor");
         plane->material = diffuse_gray;
         scene.add(std::move(plane));

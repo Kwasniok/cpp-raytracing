@@ -6,6 +6,7 @@
 #ifndef CPP_RAYTRACING_TEXTURES_CHECKER_2D_HPP
 #define CPP_RAYTRACING_TEXTURES_CHECKER_2D_HPP
 
+#include <algorithm>
 #include <cmath>
 
 #include "base.hpp"
@@ -14,6 +15,7 @@ namespace cpp_raytracing {
 
 /**
  * @brief simple UV coordinates-based checker texture
+ * @note The value at the edges of each cell is undefined.
  */
 template <Dimension DIMENSION>
 class SurfaceChecker : public Texture<DIMENSION> {
@@ -48,10 +50,13 @@ class SurfaceChecker : public Texture<DIMENSION> {
     Color value(const Vec2& uv_coordinates,
                 [[maybe_unused]] const Vec<DIMENSION>& point) const override {
 
-        const Vec2 c = (uv_coordinates - offset) * (pi / scale);
-        const auto val = std::sin(c[0]) * std::sin(c[1]);
+        const Vec2 coords = (uv_coordinates - offset) * (Scalar{1} / scale);
 
-        const bool is_primary = val < 0.0;
+        const auto flip = [](const bool b, const Scalar x) {
+            return b ^ (x < 0) ^ (std::fmod(std::abs(x), 2.0) > 1.0);
+        };
+        const bool is_primary =
+            std::accumulate(std::begin(coords), std::end(coords), true, flip);
 
         return is_primary ? color1 : color2;
     }

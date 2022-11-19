@@ -16,6 +16,7 @@ namespace cpp_raytracing {
 
 /**
  * @brief simple manifold coordinates-based checker texture
+ * @note The value at the edges of each cell is undefined.
  */
 template <Dimension DIMENSION>
 class VolumeChecker : public Texture<DIMENSION> {
@@ -50,14 +51,13 @@ class VolumeChecker : public Texture<DIMENSION> {
     Color value([[maybe_unused]] const Vec2& uv_coordinates,
                 const Vec<DIMENSION>& point) const override {
 
-        const auto p = (point - offset) * (pi / scale);
-        const auto sins =
-            p.elementwise([](const Scalar x) { return std::sin(x); });
+        const auto pos = (point - offset) * (Scalar{1} / scale);
 
-        const auto val = std::accumulate(std::begin(sins), std::end(sins),
-                                         Scalar{1}, std::multiplies{});
-
-        const bool is_primary = val < 0.0;
+        const auto flip = [](const bool b, const Scalar x) {
+            return b ^ (x < 0) ^ (std::fmod(std::abs(x), 2.0) > 1.0);
+        };
+        const bool is_primary =
+            std::accumulate(std::begin(pos), std::end(pos), true, flip);
 
         return is_primary ? color1 : color2;
     }
