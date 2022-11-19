@@ -152,6 +152,15 @@ unit_vector(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) {
 template <Dimension DIMENSION>
 constexpr Vec<DIMENSION> zero_vec{};
 
+/** @brief unit/canonical basis vector */
+template <Dimension DIMENSION, std::size_t N>
+requires(N < DIMENSION) constexpr Vec<DIMENSION> base_vec = []() constexpr {
+    Vec<DIMENSION> vec{};
+    vec.coefficients[N] = 1;
+    return vec;
+}
+();
+
 /** @brief random vector where each element is in the given range */
 template <Dimension DIMENSION>
 inline Vec<DIMENSION> random_vec(const Scalar min, const Scalar max) {

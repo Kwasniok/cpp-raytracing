@@ -113,6 +113,18 @@ BOOST_AUTO_TEST_CASE(unit_vector_vec3, *but::tolerance(epsilon)) {
     TEST_EQUAL_RANGES(unit_vector(v4), expect);
 }
 
+BOOST_AUTO_TEST_CASE(base_vec_vec3, *but::tolerance(epsilon)) {
+    using ray::tensor::base_vec;
+
+    const ray::Vec3 v0{1.0, 0.0, 0.0};
+    const ray::Vec3 v1{0.0, 1.0, 0.0};
+    const ray::Vec3 v2{0.0, 0.0, 1.0};
+
+    TEST_EQUAL_RANGES((base_vec<3_D, 0>), v0);
+    TEST_EQUAL_RANGES((base_vec<3_D, 1>), v1);
+    TEST_EQUAL_RANGES((base_vec<3_D, 2>), v2);
+}
+
 BOOST_AUTO_TEST_CASE(random_vec_vec3, *but::tolerance(epsilon)) {
     using ray::tensor::random_vec;
     const auto min = -1.1;
