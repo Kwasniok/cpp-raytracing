@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief basic example executable of 3D Euclidean space embedded in 5D
+ * @brief basic example executable of 3D Euclidean space embedded in 4D
  * @note This example is for testing and debugging.
  */
 
