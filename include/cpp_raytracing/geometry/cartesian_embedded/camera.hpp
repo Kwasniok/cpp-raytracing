@@ -35,19 +35,21 @@ PinholeCamera<DIMENSION> make_pinhole_camera_cartesian_embedded_euclidean(
     const Scalar focus_distance = length(pinhole - detector_origin);
 
     // clang-format off
-    const auto x = embeded_vector<5, 0, 3>(
+    const auto x = embeded_vector<DIMENSION, 0, 3>(
         focus_distance * (viewport_width / 2.0) * u
         );
-    const auto y = embeded_vector<5, 0, 3>(
+    const auto y = embeded_vector<DIMENSION, 0, 3>(
         focus_distance * (viewport_height / 2.0) * v
         );
     // clang-format on
-    const auto z = embeded_vector<5, 0, 3>(focus_distance * w);
+    const auto z = embeded_vector<DIMENSION, 0, 3>(focus_distance * w);
 
     return {
-        embeded_vector<5, 0, 3>(detector_origin) + z,
-        [origin = embeded_vector<5, 0, 3>(detector_origin), x = x, y = y](
-            const Scalar u, const Scalar v) { return origin + u * x + v * y; },
+        embeded_vector<DIMENSION, 0, 3>(detector_origin) + z,
+        [origin = embeded_vector<DIMENSION, 0, 3>(detector_origin), x = x,
+         y = y](const Scalar u, const Scalar v) {
+            return origin + u * x + v * y;
+        },
     };
 }
 

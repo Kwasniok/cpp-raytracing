@@ -62,7 +62,7 @@ class CartesianEmbeddedEuclideanRay : public Ray<DIMENSION> {
  * @note To be used for testing and debugging.
  */
 template <Dimension DIMENSION>
-requires(DIMENSION > 3) class CartesianEmbeddedEuclideanGeometry
+requires(DIMENSION >= 3) class CartesianEmbeddedEuclideanGeometry
     : public Geometry<DIMENSION> {
   public:
     /** @brief default constructor */
