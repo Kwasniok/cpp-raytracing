@@ -45,21 +45,29 @@ using Camera3D = Camera<Dimension{3}>;
 /**
  * @brief represents a pinhole camera
  */
-template <Dimension DIMENSION>
-class PinholeCamera : public Camera<DIMENSION> {
+template <Dimension GEO_DIMENSION, Dimension PINHOLE_DIMENSION = GEO_DIMENSION>
+requires(GEO_DIMENSION >= PINHOLE_DIMENSION) class PinholeCamera
+    : public Camera<GEO_DIMENSION> {
   public:
-    /** @brief vector type */
-    using VecType = Vec<DIMENSION>;
     /**
-     * @brief representation of detector surface as a char
+     * @brief representation of detector surface as a chart of 2D coordinates
+     *        with an additional time parameter
      * @see ray_for_coords
      */
-    using DetectorSurface = std::function<VecType(const Scalar, const Scalar)>;
+    using DetectorSurface = std::function<Vec<GEO_DIMENSION>(
+        const Scalar, const Scalar, const Scalar)>;
 
     /** @brief manifold for detector surface */
     DetectorSurface detector_surface;
-    /** @brief position of pinhole */
-    VecType pinhole;
+    /**
+     *@brief position of pinhole
+     *@note The pinhole might be defined with respect to a submanifold. This
+     *      allows for more flexibility of e.g. including or excluding a time
+     *      dimension.
+     */
+    Vec<PINHOLE_DIMENSION> pinhole;
+    /** @brief time */
+    Scalar time = 0;
 
     /**
      * @brief construct pinhole camera
@@ -67,13 +75,18 @@ class PinholeCamera : public Camera<DIMENSION> {
      * @param surface_arg used to forward initialize detector_surface
      */
     template <class T>
-    PinholeCamera(const VecType& pinhole, T surface_arg)
+    PinholeCamera(const Vec<PINHOLE_DIMENSION>& pinhole, T surface_arg)
         : detector_surface(std::forward<T>(surface_arg)), pinhole(pinhole) {}
 
-    std::unique_ptr<Ray<DIMENSION>>
-    ray_for_coords(const Geometry<DIMENSION>& geometry, const Scalar x,
+    /** @see Entity::set_time   */
+    void set_time(const Scalar time) override {
+        Camera<GEO_DIMENSION>::set_time(time);
+    }
+
+    std::unique_ptr<Ray<GEO_DIMENSION>>
+    ray_for_coords(const Geometry<GEO_DIMENSION>& geometry, const Scalar x,
                    const Scalar y) const override {
-        const VecType start = detector_surface(x, y);
+        const Vec<GEO_DIMENSION> start = detector_surface(x, y, time);
         return geometry.ray_passing_through(start, pinhole);
     }
 };

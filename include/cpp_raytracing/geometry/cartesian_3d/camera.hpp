@@ -35,10 +35,19 @@ PinholeCamera3D make_pinhole_camera_cartesian_euclidean_3d(
     const auto y = focus_distance * (viewport_height / 2.0) * v;
     const auto z = focus_distance * w;
 
-    return {detector_origin + z, [origin = detector_origin, x = x,
-                                  y = y](const Scalar u, const Scalar v) {
-                return origin + u * x + v * y;
-            }};
+    return {
+        detector_origin + z,
+        // clang-format off
+        [
+            origin = detector_origin,
+            x = x,
+            y = y
+        ]
+        // clang-format on
+        (const Scalar u, const Scalar v, [[maybe_unused]] const Scalar time) {
+            return origin + u * x + v * y;
+        },
+    };
 }
 
 } // namespace cpp_raytracing

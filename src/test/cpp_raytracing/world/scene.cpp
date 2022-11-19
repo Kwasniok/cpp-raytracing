@@ -21,7 +21,8 @@ ray::Scene3D make_scene() {
     using ray::tensor::zero_vec;
 
     auto dummy_camera = std::make_shared<ray::PinholeCamera3D>(
-        zero_vec<3_D>, [](const ray::Scalar x, const ray::Scalar y) {
+        zero_vec<3_D>, [](const ray::Scalar x, const ray::Scalar y,
+                          [[maybe_unused]] const ray::Scalar time) {
             return ray::Vec3{x, y, 0.0};
         });
 

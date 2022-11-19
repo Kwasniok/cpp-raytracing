@@ -22,7 +22,8 @@ namespace cpp_raytracing {
 template <Dimension DIMENSION>
 PinholeCamera<DIMENSION> make_pinhole_camera_cartesian_embedded_euclidean(
     const Vec3 detector_origin, const Vec3 pinhole, const Vec3 up_direction,
-    const Scalar vertical_field_of_view_deg, const Scalar aspect_ratio) {
+    const Scalar vertical_field_of_view_deg, const Scalar aspect_ratio,
+    const Vec<DIMENSION> time_direction = {}) {
     using namespace tensor;
 
     const auto theta = rad_from_deg(vertical_field_of_view_deg);
@@ -34,21 +35,22 @@ PinholeCamera<DIMENSION> make_pinhole_camera_cartesian_embedded_euclidean(
     const auto v = cross(u, w);
     const Scalar focus_distance = length(pinhole - detector_origin);
 
-    // clang-format off
-    const auto x = embeded_vector<DIMENSION, 0, 3>(
-        focus_distance * (viewport_width / 2.0) * u
-        );
-    const auto y = embeded_vector<DIMENSION, 0, 3>(
-        focus_distance * (viewport_height / 2.0) * v
-        );
-    // clang-format on
-    const auto z = embeded_vector<DIMENSION, 0, 3>(focus_distance * w);
+    const auto x = focus_distance * (viewport_width / 2.0) * u;
+    const auto y = focus_distance * (viewport_height / 2.0) * v;
+    const auto z = focus_distance * w;
 
     return {
-        embeded_vector<DIMENSION, 0, 3>(detector_origin) + z,
-        [origin = embeded_vector<DIMENSION, 0, 3>(detector_origin), x = x,
-         y = y](const Scalar u, const Scalar v) {
-            return origin + u * x + v * y;
+        embeded_vector<DIMENSION, 0, 3>(detector_origin + z),
+        // clang-format off
+        [
+            origin = embeded_vector<DIMENSION, 0, 3>(detector_origin),
+            x = embeded_vector<DIMENSION, 0, 3>(x),
+            y = embeded_vector<DIMENSION, 0, 3>(y),
+            time_direction = time_direction
+        ]
+        // clang-format on
+        (const Scalar u, const Scalar v, const Scalar time) {
+            return origin + u * x + v * y + time * time_direction;
         },
     };
 }
