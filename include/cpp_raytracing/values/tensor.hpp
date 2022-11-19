@@ -256,18 +256,35 @@ operator*(const gttl::Tensor<Scalar, 2, DIMENSIONS1, Traits>& lhs,
 }
 
 /**
- * @brief returns a matrix with the submatrix embeded and zero elsewere
+ * @brief returns a vector with the subvector embeded and zero elsewere
+ * @see projected_vector
  */
 template <Dimension DIMENSION, Dimension POSITION, Dimension SUBDIMENSION>
-inline Vec<DIMENSION>
+constexpr Vec<DIMENSION>
 embeded_vector(const Vec<SUBDIMENSION>& subvector) requires(
     (DIMENSION >= SUBDIMENSION) && (POSITION <= DIMENSION - SUBDIMENSION)) {
     // zero-initialization is required
     Vec<DIMENSION> vec{};
     for (Dimension i{0}; i < SUBDIMENSION; ++i) {
-        vec[i + POSITION] = subvector[i];
+        vec.coefficients[i + POSITION] = subvector.coefficients[i];
     }
     return vec;
+}
+
+/**
+ * @brief returns a subvector projected from the vector
+ * @see embeded_vector
+ */
+template <Dimension SUBDIMENSION, Dimension POSITION, Dimension DIMENSION>
+constexpr Vec<SUBDIMENSION>
+projected_vector(const Vec<DIMENSION>& vector) requires(
+    (DIMENSION >= SUBDIMENSION) && (POSITION <= DIMENSION - SUBDIMENSION)) {
+    // zero-initialization is required
+    Vec<SUBDIMENSION> subvec{};
+    for (Dimension i{0}; i < SUBDIMENSION; ++i) {
+        subvec.coefficients[i] = vector.coefficients[i + POSITION];
+    }
+    return subvec;
 }
 
 /**

@@ -324,6 +324,41 @@ BOOST_AUTO_TEST_CASE(embedded_vector_exact, *but::tolerance(epsilon)) {
     TEST_EQUAL_RANGES(res, vec);
 }
 
+BOOST_AUTO_TEST_CASE(projected_vector_middle, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<5_D> vec{1.1, 2.2, 3.3, 4.4, 5.5};
+    ray::Vec<3_D> expect{2.2, 3.3, 4.4};
+
+    ray::Vec<3_D> res = projected_vector<3, 1, 5>(vec);
+    TEST_EQUAL_RANGES(res, expect);
+}
+
+BOOST_AUTO_TEST_CASE(projected_vector_left, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<5_D> vec{1.1, 2.2, 3.3, 4.4, 5.5};
+    ray::Vec<3_D> expect{1.1, 2.2, 3.3};
+
+    ray::Vec<3_D> res = projected_vector<3, 0, 5>(vec);
+    TEST_EQUAL_RANGES(res, expect);
+}
+
+BOOST_AUTO_TEST_CASE(projected_vector_right, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<5_D> vec{1.1, 2.2, 3.3, 4.4, 5.5};
+    ray::Vec<3_D> expect{3.3, 4.4, 5.5};
+
+    ray::Vec<3_D> res = projected_vector<3, 2, 5>(vec);
+    TEST_EQUAL_RANGES(res, expect);
+}
+
+BOOST_AUTO_TEST_CASE(projected_vector_exact, *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+    const ray::Vec<3_D> vec{1.1, 2.2, 3.3};
+
+    ray::Vec<3_D> res = projected_vector<3, 0, 3>(vec);
+    TEST_EQUAL_RANGES(res, vec);
+}
+
 BOOST_AUTO_TEST_CASE(embeded_matrix_middle, *but::tolerance(epsilon)) {
     using namespace ray::tensor;
     // row first
