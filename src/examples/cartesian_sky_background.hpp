@@ -44,7 +44,9 @@ class CartesianSkyBackground : public Background<DIMENSION> {
 
         using namespace tensor;
 
-        const auto direction = unit_vector(ray_segment.direction());
+        // extract first 3 dimensions
+        const auto direction = unit_vector(
+            projected_vector<3, 0, DIMENSION>(ray_segment.direction()));
         const auto t = 0.5 * (std::abs(direction[1]) + 1.0);
         const Color color = (1.0 - t) * color1 + t * color2;
         return color;
