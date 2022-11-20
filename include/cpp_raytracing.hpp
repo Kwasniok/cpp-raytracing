@@ -11,4 +11,11 @@
 #include "cpp_raytracing/values.hpp"
 #include "cpp_raytracing/world.hpp"
 
+/**
+ * @brief namespace for all cpp-raytracing objects
+ */
+namespace cpp_raytracing {
+
+} // namespace cpp_raytracing
+
 #endif
