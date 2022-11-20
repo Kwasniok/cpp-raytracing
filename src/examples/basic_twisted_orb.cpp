@@ -9,9 +9,12 @@
 
 #include "common_cartesian_3d.hpp"
 
+#include <cpp_raytracing/geometries/cartesian_3d/twisted_orb.hpp>
+
 using namespace std;
 using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
+namespace cartesian_3d = cpp_raytracing::cartesian_3d;
 
 /**
  * @brief generate an example scene
@@ -21,9 +24,8 @@ Scene3D make_scene() {
     const Vec3 camera_position = 1.1 * Vec3{20, 12, 12};
     const Vec3 pinhole_position = 1.1 * Vec3{15, 8.4, 9};
     auto camera = std::make_shared<PinholeCamera3D>(
-        make_pinhole_camera_cartesian_euclidean_3d(
-            camera_position, pinhole_position, {0.0, 1.0, 0.0}, 30.0,
-            16.0 / 9.0));
+        cartesian_3d::make_pinhole_camera(camera_position, pinhole_position,
+                                          {0.0, 1.0, 0.0}, 30.0, 16.0 / 9.0));
     Scene3D scene(camera);
 
     // background (global illumination)
@@ -126,7 +128,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    TwistedOrbCartesianGeometry3D geometry{
+    cartesian_3d::TwistedOrbGeometry geometry{
         config.twist_angle,
         config.twist_radius,
         config.ray_initial_step_size,

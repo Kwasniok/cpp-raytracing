@@ -3,38 +3,37 @@
  * @brief standard Euclidean geometry with Cartesian coordinates
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_CARTESIAN_3D_EUCLIDEAN_HPP
-#define CPP_RAYTRACING_GEOMETRY_CARTESIAN_3D_EUCLIDEAN_HPP
+#ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_EUCLIDEAN_GEOMETRY_HPP
+#define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_EUCLIDEAN_GEOMETRY_HPP
 
-#include "../../world/ray_segment.hpp"
-#include "../base.hpp"
+#include "../../../geometry/base.hpp"
+#include "../../../world/ray_segment.hpp"
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace cartesian_3d {
 
 /**
  * @brief Euclidean geometry ray
  * @note Has only one infinitely long segment.
  */
-class EuclideanCartesianRay3D : public Ray3D {
+class EuclideanRay : public Ray3D {
   public:
     /** @brief constructs a new infinitely long straight ray  */
-    EuclideanCartesianRay3D(const Vec3& start, const Vec3& direction)
+    EuclideanRay(const Vec3& start, const Vec3& direction)
         : _start(start), _direction(direction){};
 
     /** @brief copy constructor */
-    EuclideanCartesianRay3D(const EuclideanCartesianRay3D&) = default;
+    EuclideanRay(const EuclideanRay&) = default;
 
     /** @brief move constructor */
-    EuclideanCartesianRay3D(EuclideanCartesianRay3D&&) = default;
+    EuclideanRay(EuclideanRay&&) = default;
 
     /** @brief copy assignment */
-    EuclideanCartesianRay3D&
-    operator=(const EuclideanCartesianRay3D&) = default;
+    EuclideanRay& operator=(const EuclideanRay&) = default;
 
     /** @brief move assignment */
-    EuclideanCartesianRay3D& operator=(EuclideanCartesianRay3D&&) = default;
+    EuclideanRay& operator=(EuclideanRay&&) = default;
 
-    ~EuclideanCartesianRay3D() override = default;
+    ~EuclideanRay() override = default;
 
     std::optional<RaySegment3D> next_ray_segment() override {
         if (_has_next) {
@@ -53,37 +52,35 @@ class EuclideanCartesianRay3D : public Ray3D {
 /**
  * @brief Euclidean geometry with Cartesian coordinates
  */
-class EuclideanCartesianGeometry3D : public Geometry3D {
+class EuclideanGeometry : public Geometry3D {
   public:
     /** @brief default constructor */
-    EuclideanCartesianGeometry3D() = default;
+    EuclideanGeometry() = default;
 
     /** @brief copy constructor */
-    EuclideanCartesianGeometry3D(const EuclideanCartesianGeometry3D&) = default;
+    EuclideanGeometry(const EuclideanGeometry&) = default;
 
     /** @brief move constructor */
-    EuclideanCartesianGeometry3D(EuclideanCartesianGeometry3D&&) = default;
+    EuclideanGeometry(EuclideanGeometry&&) = default;
 
     /** @brief copy assignment */
-    EuclideanCartesianGeometry3D&
-    operator=(const EuclideanCartesianGeometry3D&) = default;
+    EuclideanGeometry& operator=(const EuclideanGeometry&) = default;
 
     /** @brief move assignment */
-    EuclideanCartesianGeometry3D&
-    operator=(EuclideanCartesianGeometry3D&&) = default;
+    EuclideanGeometry& operator=(EuclideanGeometry&&) = default;
 
-    ~EuclideanCartesianGeometry3D() override = default;
+    ~EuclideanGeometry() override = default;
 
     /** @see Geometry::ray_from */
     std::unique_ptr<Ray3D> ray_from(const Vec3& start,
                                     const Vec3& direction) const override {
-        return std::make_unique<EuclideanCartesianRay3D>(start, direction);
+        return std::make_unique<EuclideanRay>(start, direction);
     }
 
     /** @see Geometry::ray_passing_through */
     std::unique_ptr<Ray3D>
     ray_passing_through(const Vec3& start, const Vec3& target) const override {
-        return std::make_unique<EuclideanCartesianRay3D>(
+        return std::make_unique<EuclideanRay>(
             start, tensor::unit_vector(target - start));
     }
 
@@ -102,6 +99,6 @@ class EuclideanCartesianGeometry3D : public Geometry3D {
     }
 };
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::cartesian_3d
 
 #endif

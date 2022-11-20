@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include <cpp_raytracing/geometry/cartesian_3d/swirl.hpp>
+#include <cpp_raytracing/geometries/cartesian_3d/swirl/geometry.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;
@@ -19,11 +19,11 @@ const ray::Scalar ray_segment_length_factor = 1.1;
 const ray::Scalar a = 1.0 / 17.0;
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
-struct SwirlCartesianGeometry3DFixture {
-    SwirlCartesianGeometry3DFixture() {}
-    ~SwirlCartesianGeometry3DFixture() = default;
+struct SwirlGeometryFixture {
+    SwirlGeometryFixture() {}
+    ~SwirlGeometryFixture() = default;
 
-    ray::SwirlCartesianGeometry3D geometry{
+    ray::cartesian_3d::SwirlGeometry geometry{
         a,
         ray_initial_step_size,
         ray_error_abs,
@@ -33,7 +33,7 @@ struct SwirlCartesianGeometry3DFixture {
     };
 };
 
-BOOST_FIXTURE_TEST_CASE(ray_passing_through, SwirlCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(ray_passing_through, SwirlGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(ray_passing_through, SwirlCartesianGeometry3DFixture,
     TEST_EQUAL_RANGES(segment->direction(), direction);
 }
 
-BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, SwirlCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, SwirlGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 
@@ -96,7 +96,7 @@ BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, SwirlCartesianGeometry3DFixture,
     TEST_EQUAL_RANGES(jacobian, to_onb_jacobian);
 }
 
-BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, SwirlCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, SwirlGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 
@@ -128,7 +128,7 @@ BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, SwirlCartesianGeometry3DFixture,
     TEST_EQUAL_RANGES(jacobian, from_onb_jacobian);
 }
 
-BOOST_FIXTURE_TEST_CASE(metric, SwirlCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(metric, SwirlGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::sqrt, std::cos, std::sin, std::atan, std::atan2;
 

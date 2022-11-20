@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include <cpp_raytracing/geometry/cartesian_3d/euclidean.hpp>
+#include <cpp_raytracing/geometries/cartesian_3d/euclidean.hpp>
 #include <cpp_raytracing/world/ray_segment.hpp>
 #include <cpp_raytracing/world/scene.hpp>
 
@@ -38,7 +38,7 @@ struct Scene3DFixture {
     Scene3DFixture() : scene{make_scene()} {}
     ~Scene3DFixture() = default;
 
-    const ray::EuclideanCartesianGeometry3D geometry{};
+    const ray::cartesian_3d::EuclideanGeometry geometry{};
     ray::Scene3D scene;
 };
 

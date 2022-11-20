@@ -5,13 +5,13 @@
  * @note To be used for testing and debugging.
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_CARTESIAN_EMBEDDED_EUCLIDEAN_HPP
-#define CPP_RAYTRACING_GEOMETRY_CARTESIAN_EMBEDDED_EUCLIDEAN_HPP
+#ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_EMBEDDED_EUCLIDEAN_HPP
+#define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_EMBEDDED_EUCLIDEAN_HPP
 
+#include "../../geometry/base.hpp"
 #include "../../world/ray_segment.hpp"
-#include "../base.hpp"
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace cartesian_embedded {
 
 /**
  * @brief Euclidean 3D geometry ray with additional discarded dimensions
@@ -19,29 +19,25 @@ namespace cpp_raytracing {
  * @note To be used for testing and debugging.
  */
 template <Dimension DIMENSION>
-class CartesianEmbeddedEuclideanRay : public Ray<DIMENSION> {
+class EuclideanRay : public Ray<DIMENSION> {
   public:
     /** @brief constructs a new infinitely long straight ray  */
-    CartesianEmbeddedEuclideanRay(const Vec<DIMENSION>& start,
-                                  const Vec<DIMENSION>& direction)
+    EuclideanRay(const Vec<DIMENSION>& start, const Vec<DIMENSION>& direction)
         : _start(start), _direction(direction){};
 
     /** @brief copy constructor */
-    CartesianEmbeddedEuclideanRay(const CartesianEmbeddedEuclideanRay&) =
-        default;
+    EuclideanRay(const EuclideanRay&) = default;
 
     /** @brief move constructor */
-    CartesianEmbeddedEuclideanRay(CartesianEmbeddedEuclideanRay&&) = default;
+    EuclideanRay(EuclideanRay&&) = default;
 
     /** @brief copy assignment */
-    CartesianEmbeddedEuclideanRay&
-    operator=(const CartesianEmbeddedEuclideanRay&) = default;
+    EuclideanRay& operator=(const EuclideanRay&) = default;
 
     /** @brief move assignment */
-    CartesianEmbeddedEuclideanRay&
-    operator=(CartesianEmbeddedEuclideanRay&&) = default;
+    EuclideanRay& operator=(EuclideanRay&&) = default;
 
-    ~CartesianEmbeddedEuclideanRay() override = default;
+    ~EuclideanRay() override = default;
 
     std::optional<RaySegment<DIMENSION>> next_ray_segment() override {
         if (_has_next) {
@@ -62,43 +58,37 @@ class CartesianEmbeddedEuclideanRay : public Ray<DIMENSION> {
  * @note To be used for testing and debugging.
  */
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3) class CartesianEmbeddedEuclideanGeometry
-    : public Geometry<DIMENSION> {
+requires(DIMENSION >= 3) class EuclideanGeometry : public Geometry<DIMENSION> {
   public:
     /** @brief default constructor */
-    CartesianEmbeddedEuclideanGeometry() = default;
+    EuclideanGeometry() = default;
 
     /** @brief copy constructor */
-    CartesianEmbeddedEuclideanGeometry(
-        const CartesianEmbeddedEuclideanGeometry&) = default;
+    EuclideanGeometry(const EuclideanGeometry&) = default;
 
     /** @brief move constructor */
-    CartesianEmbeddedEuclideanGeometry(CartesianEmbeddedEuclideanGeometry&&) =
-        default;
+    EuclideanGeometry(EuclideanGeometry&&) = default;
 
     /** @brief copy assignment */
-    CartesianEmbeddedEuclideanGeometry&
-    operator=(const CartesianEmbeddedEuclideanGeometry&) = default;
+    EuclideanGeometry& operator=(const EuclideanGeometry&) = default;
 
     /** @brief move assignment */
-    CartesianEmbeddedEuclideanGeometry&
-    operator=(CartesianEmbeddedEuclideanGeometry&&) = default;
+    EuclideanGeometry& operator=(EuclideanGeometry&&) = default;
 
-    ~CartesianEmbeddedEuclideanGeometry() override = default;
+    ~EuclideanGeometry() override = default;
 
     /** @see Geometry::ray_from */
     std::unique_ptr<Ray<DIMENSION>>
     ray_from(const Vec<DIMENSION>& start,
              const Vec<DIMENSION>& direction) const override {
-        return std::make_unique<CartesianEmbeddedEuclideanRay<DIMENSION>>(
-            start, direction);
+        return std::make_unique<EuclideanRay<DIMENSION>>(start, direction);
     }
 
     /** @see Geometry::ray_passing_through */
     std::unique_ptr<Ray<DIMENSION>>
     ray_passing_through(const Vec<DIMENSION>& start,
                         const Vec<DIMENSION>& target) const override {
-        return std::make_unique<CartesianEmbeddedEuclideanRay<DIMENSION>>(
+        return std::make_unique<EuclideanRay<DIMENSION>>(
             start, tensor::unit_vector(target - start));
     }
 
@@ -126,6 +116,6 @@ requires(DIMENSION >= 3) class CartesianEmbeddedEuclideanGeometry
     }
 };
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::cartesian_embedded
 
 #endif

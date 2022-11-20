@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include <cpp_raytracing/geometry/cartesian_3d/twisted_orb.hpp>
+#include <cpp_raytracing/geometries/cartesian_3d/twisted_orb/geometry.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;
@@ -20,11 +20,11 @@ const ray::Scalar psi = ray::pi / 8.0;
 const ray::Scalar rho = 17.0;
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
-struct TwistedOrbCartesianGeometry3DFixture {
-    TwistedOrbCartesianGeometry3DFixture() {}
-    ~TwistedOrbCartesianGeometry3DFixture() = default;
+struct TwistedOrbGeometryFixture {
+    TwistedOrbGeometryFixture() {}
+    ~TwistedOrbGeometryFixture() = default;
 
-    ray::TwistedOrbCartesianGeometry3D geometry{
+    ray::cartesian_3d::TwistedOrbGeometry geometry{
         psi,
         rho,
         ray_initial_step_size,
@@ -35,8 +35,7 @@ struct TwistedOrbCartesianGeometry3DFixture {
     };
 };
 
-BOOST_FIXTURE_TEST_CASE(ray_passing_through,
-                        TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(ray_passing_through, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 
@@ -66,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(ray_passing_through,
     TEST_EQUAL_RANGES(segment->direction(), direction);
 }
 
-BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 
@@ -103,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, TwistedOrbCartesianGeometry3DFixture,
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 
@@ -140,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, TwistedOrbCartesianGeometry3DFixture,
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(metric, TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(metric, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 
@@ -195,8 +194,7 @@ BOOST_FIXTURE_TEST_CASE(metric, TwistedOrbCartesianGeometry3DFixture,
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(to_cartesian_coords,
-                        TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(to_cartesian_coords, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 
@@ -210,7 +208,7 @@ BOOST_FIXTURE_TEST_CASE(to_cartesian_coords,
     TEST_EQUAL_RANGES(geometry.to_cartesian_coords(position), position_cart);
 }
 
-BOOST_FIXTURE_TEST_CASE(inverse_metric, TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(inverse_metric, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 
@@ -248,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE(inverse_metric, TwistedOrbCartesianGeometry3DFixture,
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(christoffel_1, TwistedOrbCartesianGeometry3DFixture,
+BOOST_FIXTURE_TEST_CASE(christoffel_1, TwistedOrbGeometryFixture,
                         *but::tolerance(epsilon)) {
     using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
 

@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include <cpp_raytracing/geometry/cartesian_3d/euclidean.hpp>
+#include <cpp_raytracing/geometries/cartesian_3d/euclidean.hpp>
 #include <cpp_raytracing/world/bvh_tree.hpp>
 #include <cpp_raytracing/world/ray_segment.hpp>
 
@@ -26,7 +26,7 @@ struct BVHTree3DFixture {
     }
     ~BVHTree3DFixture() = default;
 
-    const ray::EuclideanCartesianGeometry3D geometry{};
+    const ray::cartesian_3d::EuclideanGeometry geometry{};
     std::vector<std::unique_ptr<ray::Entity3D>> entities{};
 };
 

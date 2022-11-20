@@ -11,18 +11,21 @@
 
 #include "common.hpp"
 
+#include <cpp_raytracing/geometries/cartesian_embedded.hpp>
+
 using namespace std;
 using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
+namespace cartesian_embedded = cpp_raytracing::cartesian_embedded;
 
 /**@brief dimension of the embedding Cartesian manifold */
 constexpr Dimension EMBEDDING_MANIFOLD_DIMENSION = 4_D;
 
 /** @brief make an n-dimensional sphere */
 template <Dimension DIMENSION>
-std::shared_ptr<CartesianEmbeddedSphere<DIMENSION>>
+std::shared_ptr<cartesian_embedded::Sphere<DIMENSION>>
 make_sphere(const Scalar radius, const Vec<DIMENSION> position = {}) {
-    auto sphere = std::make_shared<CartesianEmbeddedSphere<DIMENSION>>();
+    auto sphere = std::make_shared<cartesian_embedded::Sphere<DIMENSION>>();
     sphere->radius = radius;
     sphere->position = position;
 
@@ -36,7 +39,7 @@ template <Dimension DIMENSION>
 Scene<DIMENSION> make_scene() {
 
     auto camera = std::make_shared<PinholeCamera<DIMENSION>>(
-        make_pinhole_camera_cartesian_embedded_euclidean<DIMENSION>(
+        cartesian_embedded::make_pinhole_camera<DIMENSION>(
             {0.0, 1.75, 5.0}, {0.0, 1.65, 4.5}, {0.0, 1.0, 0.0}, 60.0,
             16.0 / 9.0));
     Scene<DIMENSION> scene(camera);
@@ -134,7 +137,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    CartesianEmbeddedEuclideanGeometry<DIMENSION> geometry;
+    cartesian_embedded::EuclideanGeometry<DIMENSION> geometry;
     Scene<DIMENSION> scene = make_scene<DIMENSION>();
 
     std::unique_ptr<Renderer<DIMENSION>> renderer;

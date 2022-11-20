@@ -4,12 +4,12 @@
  * @note To be used in (alomst) flat regions of the geometry only-
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_CARTESIAN_3D_CAMERA_HPP
-#define CPP_RAYTRACING_GEOMETRY_CARTESIAN_3D_CAMERA_HPP
+#ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_CAMERA_HPP
+#define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_CAMERA_HPP
 
 #include "../../world/entities/camera.hpp"
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace cartesian_3d {
 
 /**
  * @brief pinhole camera from conventional camera parameters for a 3D cartesian
@@ -17,9 +17,10 @@ namespace cpp_raytracing {
  * @note For convenience, the image is flipped vertically unlike real pinhole
  *       images.
  */
-PinholeCamera3D make_pinhole_camera_cartesian_euclidean_3d(
-    const Vec3 detector_origin, const Vec3 pinhole, const Vec3 up_direction,
-    const Scalar vertical_field_of_view_deg, const Scalar aspect_ratio) {
+PinholeCamera3D make_pinhole_camera(const Vec3 detector_origin,
+                                    const Vec3 pinhole, const Vec3 up_direction,
+                                    const Scalar vertical_field_of_view_deg,
+                                    const Scalar aspect_ratio) {
     using namespace tensor;
 
     const auto theta = rad_from_deg(vertical_field_of_view_deg);
@@ -50,6 +51,6 @@ PinholeCamera3D make_pinhole_camera_cartesian_euclidean_3d(
     };
 }
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::cartesian_3d
 
 #endif

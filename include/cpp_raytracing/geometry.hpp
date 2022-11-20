@@ -7,7 +7,5 @@
 #define CPP_RAYTRACING_GEOMETRY_HPP
 
 #include "geometry/base.hpp"
-#include "geometry/cartesian_3d.hpp"
-#include "geometry/cartesian_embedded.hpp"
 
 #endif

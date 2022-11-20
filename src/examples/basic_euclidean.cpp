@@ -9,9 +9,12 @@
 
 #include "common_cartesian_3d.hpp"
 
+#include <cpp_raytracing/geometries/cartesian_3d/euclidean.hpp>
+
 using namespace std;
 using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
+namespace cartesian_3d = cpp_raytracing::cartesian_3d;
 
 /**
  * @brief generate an example scene
@@ -19,9 +22,8 @@ using namespace cpp_raytracing::examples;
 Scene3D make_scene() {
 
     auto camera = std::make_shared<PinholeCamera3D>(
-        make_pinhole_camera_cartesian_euclidean_3d(
-            {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0,
-            16.0 / 9.0));
+        cartesian_3d::make_pinhole_camera({1.5, 2.0, 2.5}, {1.0, 1.5, 2.0},
+                                          {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
     Scene3D scene(camera);
 
     // background (global illumination)
@@ -105,7 +107,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    EuclideanCartesianGeometry3D geometry;
+    cartesian_3d::EuclideanGeometry geometry;
     Scene3D scene = make_scene();
 
     std::unique_ptr<Renderer3D> renderer;

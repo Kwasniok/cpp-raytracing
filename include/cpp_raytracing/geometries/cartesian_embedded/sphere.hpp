@@ -1,25 +1,24 @@
 /**
  * @file
- * @brief hittable n-dimensional sphere
+ * @brief hittable n-dimensional Cartesian sphere
  */
 
-#ifndef CPP_RAYTRACING_EGEOMETRY_CARTESIAN_EMBEDDED_SPHERE_HPP
-#define CPP_RAYTRACING_EGEOMETRY_CARTESIAN_EMBEDDED_SPHERE_HPP
+#ifndef CPP_RAYTRACING_EGEOMETRIES_CARTESIAN_EMBEDDED_SPHERE_HPP
+#define CPP_RAYTRACING_EGEOMETRIES_CARTESIAN_EMBEDDED_SPHERE_HPP
 
 #include <algorithm>
 
 #include "../../world/entities/mesh.hpp"
 #include "../../world/entities/small_triangle_util.hpp"
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace cartesian_embedded {
 
 /**
  * @brief n-dimensional sphere (projected into first three dimensions)
  * @note Asserts n-dimensinal Euclidean geometry
  */
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3) class CartesianEmbeddedSphere
-    : public Entity<DIMENSION> {
+requires(DIMENSION >= 3) class Sphere : public Entity<DIMENSION> {
   public:
     /** @brief origin of the sphere */
     Vec<DIMENSION> position{};
@@ -33,19 +32,17 @@ requires(DIMENSION >= 3) class CartesianEmbeddedSphere
     std::shared_ptr<Material<DIMENSION>> material;
 
     /** @brief default construct with default idenfifier root */
-    CartesianEmbeddedSphere() = default;
+    Sphere() = default;
     /** @brief copy constructor */
-    CartesianEmbeddedSphere(const CartesianEmbeddedSphere& other) = delete;
+    Sphere(const Sphere& other) = delete;
     /** @brief move constructor */
-    CartesianEmbeddedSphere(CartesianEmbeddedSphere&& other) = default;
+    Sphere(Sphere&& other) = default;
     /** @brief copy assignment */
-    CartesianEmbeddedSphere&
-    operator=(const CartesianEmbeddedSphere& other) = delete;
+    Sphere& operator=(const Sphere& other) = delete;
     /** @brief move assignment */
-    CartesianEmbeddedSphere&
-    operator=(CartesianEmbeddedSphere&& other) = default;
+    Sphere& operator=(Sphere&& other) = default;
 
-    ~CartesianEmbeddedSphere() override = default;
+    ~Sphere() override = default;
 
     /** @see Entity::hit_record */
     HitRecord<DIMENSION> hit_record(const Geometry<DIMENSION>& geometry,
@@ -57,10 +54,9 @@ requires(DIMENSION >= 3) class CartesianEmbeddedSphere
 };
 
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3)
-    HitRecord<DIMENSION> CartesianEmbeddedSphere<DIMENSION>::hit_record(
-        const Geometry<DIMENSION>& geometry,
-        const RaySegment<DIMENSION>& ray_segment, const Scalar t_min)
+requires(DIMENSION >= 3) HitRecord<DIMENSION> Sphere<DIMENSION>::hit_record(
+    const Geometry<DIMENSION>& geometry,
+    const RaySegment<DIMENSION>& ray_segment, const Scalar t_min)
 const {
     using namespace tensor;
 
@@ -114,9 +110,8 @@ const {
 }
 
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3)
-    std::optional<AxisAlignedBoundingBox<DIMENSION>> CartesianEmbeddedSphere<
-        DIMENSION>::bounding_box()
+requires(DIMENSION >= 3) std::optional<
+    AxisAlignedBoundingBox<DIMENSION>> Sphere<DIMENSION>::bounding_box()
 const {
     Vec<DIMENSION> corner{};
     std::ranges::fill(corner.coefficients, radius);
@@ -124,6 +119,6 @@ const {
                                              position + corner};
 }
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::cartesian_embedded
 
 #endif

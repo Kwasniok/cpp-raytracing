@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include <cpp_raytracing/geometry/cartesian_embedded/euclidean.hpp>
+#include <cpp_raytracing/geometries/cartesian_embedded/euclidean.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;
@@ -16,15 +16,14 @@ using ray::operator"" _D;
 const ray::Scalar epsilon = 1e-12;
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
-struct CartesianEmbeddedEuclideanGeometry5DFixture {
-    CartesianEmbeddedEuclideanGeometry5DFixture() {}
-    ~CartesianEmbeddedEuclideanGeometry5DFixture() = default;
+struct EuclideanGeometry5DFixture {
+    EuclideanGeometry5DFixture() {}
+    ~EuclideanGeometry5DFixture() = default;
 
-    ray::CartesianEmbeddedEuclideanGeometry<5_D> geometry{};
+    ray::cartesian_embedded::EuclideanGeometry<5_D> geometry{};
 };
 
-BOOST_FIXTURE_TEST_CASE(ray_passing_through,
-                        CartesianEmbeddedEuclideanGeometry5DFixture,
+BOOST_FIXTURE_TEST_CASE(ray_passing_through, EuclideanGeometry5DFixture,
                         *but::tolerance(epsilon)) {
     using namespace ray::tensor;
 
@@ -43,8 +42,7 @@ BOOST_FIXTURE_TEST_CASE(ray_passing_through,
     TEST_EQUAL_RANGES(segment->direction(), direction);
 }
 
-BOOST_FIXTURE_TEST_CASE(to_onb_jacobian,
-                        CartesianEmbeddedEuclideanGeometry5DFixture,
+BOOST_FIXTURE_TEST_CASE(to_onb_jacobian, EuclideanGeometry5DFixture,
                         *but::tolerance(epsilon)) {
     using namespace ray::tensor;
 
@@ -68,8 +66,7 @@ BOOST_FIXTURE_TEST_CASE(to_onb_jacobian,
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(from_onb_jacobian,
-                        CartesianEmbeddedEuclideanGeometry5DFixture,
+BOOST_FIXTURE_TEST_CASE(from_onb_jacobian, EuclideanGeometry5DFixture,
                         *but::tolerance(epsilon)) {
     using namespace ray::tensor;
 
@@ -95,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE(from_onb_jacobian,
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(metric, CartesianEmbeddedEuclideanGeometry5DFixture,
+BOOST_FIXTURE_TEST_CASE(metric, EuclideanGeometry5DFixture,
                         *but::tolerance(epsilon)) {
     using namespace ray::tensor;
 

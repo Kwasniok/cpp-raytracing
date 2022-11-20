@@ -4,12 +4,12 @@
  * @note To be used for testing and debugging.
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_CARTESIAN_EMBEDDED_CAMERA_HPP
-#define CPP_RAYTRACING_GEOMETRY_CARTESIAN_EMBEDDED_CAMERA_HPP
+#ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_EMBEDDED_CAMERA_HPP
+#define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_EMBEDDED_CAMERA_HPP
 
 #include "../../world/entities/camera.hpp"
 
-namespace cpp_raytracing {
+namespace cpp_raytracing { namespace cartesian_embedded {
 
 /**
  * @brief pinhole camera from conventional camera parameters for an
@@ -20,7 +20,7 @@ namespace cpp_raytracing {
  * @note To be used for testing and debugging.
  */
 template <Dimension DIMENSION>
-PinholeCamera<DIMENSION> make_pinhole_camera_cartesian_embedded_euclidean(
+PinholeCamera<DIMENSION> make_pinhole_camera(
     const Vec3 detector_origin, const Vec3 pinhole, const Vec3 up_direction,
     const Scalar vertical_field_of_view_deg, const Scalar aspect_ratio,
     const Vec<DIMENSION> time_direction = {}) {
@@ -55,6 +55,6 @@ PinholeCamera<DIMENSION> make_pinhole_camera_cartesian_embedded_euclidean(
     };
 }
 
-} // namespace cpp_raytracing
+}} // namespace cpp_raytracing::cartesian_embedded
 
 #endif

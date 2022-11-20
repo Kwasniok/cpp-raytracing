@@ -9,9 +9,12 @@
 
 #include "common_cartesian_3d.hpp"
 
+#include <cpp_raytracing/geometries/cartesian_3d/swirl.hpp>
+
 using namespace std;
 using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
+namespace cartesian_3d = cpp_raytracing::cartesian_3d;
 
 /**
  * @brief generate an example scene
@@ -19,9 +22,8 @@ using namespace cpp_raytracing::examples;
 Scene3D make_scene() {
 
     auto camera = std::make_shared<PinholeCamera3D>(
-        make_pinhole_camera_cartesian_euclidean_3d(
-            {1.5, 2.0, 2.5}, {1.0, 1.5, 2.0}, {0.0, 1.0, 0.0}, 90.0,
-            16.0 / 9.0));
+        cartesian_3d::make_pinhole_camera({1.5, 2.0, 2.5}, {1.0, 1.5, 2.0},
+                                          {0.0, 1.0, 0.0}, 90.0, 16.0 / 9.0));
     Scene3D scene(camera);
 
     // background (global illumination)
@@ -54,7 +56,7 @@ Scene3D make_scene() {
 
     // floor
     {
-        auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0- 1e-8, 0.0});
+        auto plane = make_xz_plane(1e4, Vec3{0.0, -1.0 - 1e-8, 0.0});
         plane->id.change("floor");
         plane->material = diffuse_gray;
         scene.add(std::move(plane));
@@ -123,7 +125,7 @@ void render_ppm(const RenderConfig& config) {
         .height = 135 * config.resolution_factor,
     };
 
-    SwirlCartesianGeometry3D geometry{
+    cartesian_3d::SwirlGeometry geometry{
         config.swirl_strength, config.ray_initial_step_size,
         config.ray_error_abs,  config.ray_error_rel,
         config.ray_max_length, config.ray_segment_length_factor,
