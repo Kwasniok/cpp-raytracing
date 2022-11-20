@@ -8,7 +8,7 @@
 #ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_EMBEDDED_EUCLIDEAN_HPP
 #define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_EMBEDDED_EUCLIDEAN_HPP
 
-#include "../../geometry/base.hpp"
+#include "../../world/geometry.hpp"
 #include "../../world/ray_segment.hpp"
 
 namespace cpp_raytracing { namespace cartesian_embedded {

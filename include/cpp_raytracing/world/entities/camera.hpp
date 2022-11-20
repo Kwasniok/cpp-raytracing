@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include "../../geometry/base.hpp"
 #include "../../values/tensor.hpp"
+#include "../../world/geometry.hpp"
 #include "../ray_segment.hpp"
 #include "base.hpp"
 

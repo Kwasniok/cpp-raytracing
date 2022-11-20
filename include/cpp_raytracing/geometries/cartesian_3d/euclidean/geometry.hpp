@@ -6,7 +6,7 @@
 #ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_EUCLIDEAN_GEOMETRY_HPP
 #define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_EUCLIDEAN_GEOMETRY_HPP
 
-#include "../../../geometry/base.hpp"
+#include "../../../world/geometry.hpp"
 #include "../../../world/ray_segment.hpp"
 
 namespace cpp_raytracing { namespace cartesian_3d {

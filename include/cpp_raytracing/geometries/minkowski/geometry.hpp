@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-#include "../../geometry/base.hpp"
+#include "../../world/geometry.hpp"
 #include "../../world/ray_segment.hpp"
 
 namespace cpp_raytracing { namespace minkowski {

@@ -3,8 +3,8 @@
  * @brief geometry interface
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_BASE_HPP
-#define CPP_RAYTRACING_GEOMETRY_BASE_HPP
+#ifndef CPP_RAYTRACING_GEOMETRY_HPP
+#define CPP_RAYTRACING_GEOMETRY_HPP
 
 #include <memory>
 

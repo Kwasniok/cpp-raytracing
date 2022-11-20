@@ -6,10 +6,10 @@
 #ifndef CPP_RAYTRACING_BACKGROUNDS_BASE_HPP
 #define CPP_RAYTRACING_BACKGROUNDS_BASE_HPP
 
-#include "../../geometry/base.hpp"
 #include "../../values/color.hpp"
 #include "../../values/identifier.hpp"
 #include "../../values/tensor.hpp"
+#include "../../world/geometry.hpp"
 #include "../ray_segment.hpp"
 
 namespace cpp_raytracing {
