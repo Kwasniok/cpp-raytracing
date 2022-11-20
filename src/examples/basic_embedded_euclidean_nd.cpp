@@ -15,6 +15,7 @@ using namespace std;
 using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
 
+/**@brief dimension of the embedding Cartesian manifold */
 constexpr Dimension EMBEDDING_MANIFOLD_DIMENSION = 4_D;
 
 /** @brief make an n-dimensional sphere */
