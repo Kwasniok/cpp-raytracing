@@ -265,11 +265,11 @@ int main(int argc, char** argv) {
         .default_value<bool>(false) // store_true
         .implicit_value(true);
     parser.add_argument("--speed_of_light")
-        .default_value<Scalar>(10.0)
+        .default_value<Scalar>(7.0)
         .help("speed of light")
         .scan<'g', Scalar>();
     parser.add_argument("--number_of_rows")
-        .default_value<unsigned long>(10)
+        .default_value<unsigned long>(2)
         .help("number of rows of spheres")
         .scan<'d', unsigned long>();
 
