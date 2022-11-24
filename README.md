@@ -17,6 +17,14 @@ Created with `build/examples/basic_swirl` (version ee5499f) using `swirl_strengt
 
 Created with `build/examples/basic_twisted_orb` (version f952428) using `twist_angle = -6.0`, `resolution_factor = 4`, `ray_error_abs  = 1e-12` and `ray_depth = 10000`.
 
+
+### N-Dimensional Manifolds
+
+https://user-images.githubusercontent.com/7516208/203775340-f9e0c10b-fd77-4084-9130-7be2bd69b9e7.mp4
+
+Created with `build/examples/basic_minkowski` (version 27d8af63).
+4D hyperspheres (glome) with a 4D chess board texture in Minkowski space for varying `speed_of_light` (`0` to `20 units of space per unt of time).
+
 ### Materials
 
 ![materials: diffuse glass metal emitter](https://user-images.githubusercontent.com/7516208/172666620-63556ff1-4056-4c56-963e-976d66ede688.png)
