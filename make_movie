@@ -2,10 +2,10 @@
 
 set -e
 
-EXEC="./build/examples/basic_minkowski"
+EXEC="./build/examples/basic_minkowski_3d"
 # executable specific args
 EXEC_ARGS=""
-OUT_DIR="./out/movie_minkowski"
+OUT_DIR="./out/movie_minkowski_3d"
 
 FPS=60 # frames per second
 SAMPLES=4
@@ -17,7 +17,7 @@ RESOLUTION_FACTOR=8 # >= 2 (for ffmpeg to work)
 FIXED_ARGS="--samples ${SAMPLES} --save_frequency ${SAVE_FREQUENCY} --ray_depth ${RAY_DEPTH} --resolution_factor ${RESOLUTION_FACTOR} ${EXEC_ARGS} --number_of_rows 12"
 
 FRAME_START=0
-FRAME_STOP=720
+FRAME_STOP=60
 
 function timestamp {
     echo "        $(date +%H:%M:%S)"
@@ -47,11 +47,11 @@ function convert2png {
 
 function render_frame {
     FRAME=$1
-    SPEED_OF_LIGHT=$(echo "10/6*${FRAME}/${FPS}" | bc -l)
+    TIME=$(echo "${FRAME}/${FPS}" | bc -l)
     echo "frame = ${FRAME}, time = ${TIME}"
     ${EXEC} \
     --out $(out ${FRAME}) \
-    --speed_of_light ${SPEED_OF_LIGHT} \
+    --time ${TIME} \
     ${FIXED_ARGS} \
     > /dev/null
 
