@@ -2,24 +2,22 @@
 
 set -e
 
-EXEC="./build/examples/basic_euclidean"
+EXEC="./build/examples/basic_minkowski"
 # executable specific args
 EXEC_ARGS=""
-OUT_DIR="./out/movie"
+OUT_DIR="./out/movie_minkowski"
 
-FPS=30 # frames per second
-EXPOSURE_TIME=$(echo "0.8/${FPS}" | bc -l)
-TOTAL_LINE_EXPOSURE_TIME=$(echo "${EXPOSURE_TIME} / 5.0" | bc -l)
-SAMPLES=10
+FPS=60 # frames per second
+SAMPLES=4
 SAVE_FREQUENCY=100
-RAY_DEPTH=100
-RESOLUTION_FACTOR=2 # >= 2 (for ffmpeg to work)
+RAY_DEPTH=50
+RESOLUTION_FACTOR=8 # >= 2 (for ffmpeg to work)
 
 # time/frame independent parameters
-FIXED_ARGS="--exposure_time ${EXPOSURE_TIME} --total_line_exposure_time ${TOTAL_LINE_EXPOSURE_TIME} --samples ${SAMPLES} --save_frequency ${SAVE_FREQUENCY} --ray_depth ${RAY_DEPTH} --resolution_factor ${RESOLUTION_FACTOR} ${EXEC_ARGS}"
+FIXED_ARGS="--samples ${SAMPLES} --save_frequency ${SAVE_FREQUENCY} --ray_depth ${RAY_DEPTH} --resolution_factor ${RESOLUTION_FACTOR} ${EXEC_ARGS} --number_of_rows 12"
 
 FRAME_START=0
-FRAME_STOP=60
+FRAME_STOP=720
 
 function timestamp {
     echo "        $(date +%H:%M:%S)"
@@ -49,11 +47,11 @@ function convert2png {
 
 function render_frame {
     FRAME=$1
-    TIME=$(echo "${FRAME}/${FPS}" | bc -l)
+    SPEED_OF_LIGHT=$(echo "10/6*${FRAME}/${FPS}" | bc -l)
     echo "frame = ${FRAME}, time = ${TIME}"
     ${EXEC} \
     --out $(out ${FRAME}) \
-    --time ${TIME} \
+    --speed_of_light ${SPEED_OF_LIGHT} \
     ${FIXED_ARGS} \
     > /dev/null
 
@@ -71,7 +69,7 @@ function make_frames {
 }
 
 function make_mp4 {
-    ffmpeg -r 60 -i $(png "%05d") -vcodec libx264 -pix_fmt yuv420p "${OUT_DIR}/mov.mp4"
+    ffmpeg -r ${FPS} -i $(png "%05d") -vcodec libx264 -pix_fmt yuv420p "${OUT_DIR}/mov.mp4"
 }
 
 
