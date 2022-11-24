@@ -8,5 +8,7 @@
 
 #include "camera.hpp"
 #include "euclidean/geometry.hpp"
+#include "euclidean/sphere.hpp"
+#include "euclidean/sphere_animator.hpp"
 
 #endif
