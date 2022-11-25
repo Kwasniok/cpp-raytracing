@@ -80,6 +80,7 @@ class PinholeCamera : public Camera<DIMENSION> {
     /** @see Entity::set_time   */
     void set_time(const Scalar time) override {
         Camera<DIMENSION>::set_time(time);
+        this->time = time;
     }
 
     std::unique_ptr<Ray<DIMENSION>>
