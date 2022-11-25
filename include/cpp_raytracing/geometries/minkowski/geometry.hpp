@@ -30,7 +30,7 @@ class Ray : public cpp_raytracing::Ray<4_D> {
         _direction[0] = spatial_direction[0];
         _direction[1] = spatial_direction[1];
         _direction[2] = spatial_direction[2];
-        _direction[3] = 1.0 / speed_of_light;
+        _direction[3] = -1.0 / speed_of_light;
     }
 
     /** @brief copy constructor */
