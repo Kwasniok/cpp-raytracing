@@ -20,10 +20,29 @@ Created with `build/examples/basic_twisted_orb` (version f952428) using `twist_a
 
 ### N-Dimensional Manifolds
 
+#### Minkowski Space
+
+https://user-images.githubusercontent.com/7516208/204099110-1542b566-2150-459e-9823-26b5d7b94740.mp4
+
+Conventional 3D raytracing with infinite speed of light (for reference).
+The 3D spheres grow and shrink over time.
+All textures are time-independent.
+Everything appears to be synchronized.
+Created with `build/examples/basic_minkowski` (version 9693243b).
+
+https://user-images.githubusercontent.com/7516208/204099119-b7f8173d-471f-46bd-bddc-3b9e0f70dbe6.mp4
+
+4D raytracing in Minkowski space with a finite `speed_of_light=7.0`.
+Shown are 4D spheres (glomes) which appear to change size over time.
+All textures are 4D time-dependent chess board patterns and change color for every unit of space or time.
+The finite speed reults in distant events appearing to be delayed.
+Created with `build/examples/basic_minkowski` (version 9693243b).
+
 https://user-images.githubusercontent.com/7516208/203775340-f9e0c10b-fd77-4084-9130-7be2bd69b9e7.mp4
 
+Same setup as before but for varying `speed_of_light` (`0` to `20`) for a fixed moment in time.
+The faster the speed of light, the shorter the aparrent delay between two spatial regions.
 Created with `build/examples/basic_minkowski` (version 27d8af63).
-4D hyperspheres (glome) with a 4D chess board texture in Minkowski space for varying `speed_of_light` (`0` to `20 units of space per unt of time).
 
 ### Materials
 
