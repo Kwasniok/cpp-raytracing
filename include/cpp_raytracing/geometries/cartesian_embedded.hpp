@@ -8,6 +8,7 @@
 
 #include "cartesian_embedded/camera.hpp"
 #include "cartesian_embedded/euclidean.hpp"
+#include "cartesian_embedded/instance.hpp"
 #include "cartesian_embedded/sphere.hpp"
 
 namespace cpp_raytracing {
