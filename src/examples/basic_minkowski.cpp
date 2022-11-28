@@ -20,14 +20,20 @@ using namespace cpp_raytracing;
 using namespace cpp_raytracing::examples;
 namespace minkowski = cpp_raytracing::minkowski;
 
-/** @brief make an n-dimensional sphere */
-std::shared_ptr<minkowski::Sphere4D>
-make_4d_sphere(const Scalar radius, const Vec<4_D> position = {}) {
+/** @brief make an 4-dimensional sphere */
+std::shared_ptr<minkowski::Instance4D>
+make_4d_sphere(const Scalar radius, const Vec<4_D> position,
+               std::shared_ptr<Material<4_D>>& material) {
+
     auto sphere = std::make_shared<minkowski::Sphere4D>();
     sphere->radius = radius;
     sphere->position = position;
+    sphere->material = material;
 
-    return sphere;
+    auto instance = std::make_shared<minkowski::Instance4D>();
+    instance->entity = sphere;
+
+    return instance;
 }
 
 /**
@@ -49,25 +55,30 @@ Scene<4_D> make_scene(const unsigned long number_of_rows) {
 
     // background (global illumination)
     {
+        ColorScalar fac = 1e-2;
         auto background = std::make_shared<CartesianSkyBackground<4_D>>();
+        background->color1 = fac * Color{1.0, 0.7, 0.5};
+        background->color2 = fac * Color{0.5, 0.7, 1.0};
         scene.active_background = std::move(background);
     }
 
     // materials
-    auto diffuse_gray = make_diffuse_volume_checker_material<4_D>(
-        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
+    auto diffuse_gray = make_diffuse_material<4_D>(Color{0.55, 0.55, 0.55});
     diffuse_gray->id.change("diffuse gray");
 
     auto diffuse_red = make_diffuse_material<4_D>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
-    auto metal_gray = make_metal_volume_checker_material<4_D>(
-        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
+    auto metal_gray = make_metal_material<4_D>(Color{0.55, 0.55, 0.55});
     metal_gray->id.change("metal gray");
+
+    auto light = make_light_material<4_D>(Color{0.9, 0.95, 1.0}, 4.0);
+    light->id.change("light");
 
     // spheres
     const int offset = -1;
     for (int i{0}; i < static_cast<int>(number_of_rows); ++i) {
+        const Scalar time_stretch = 1e4;
         const Scalar radius = 1.0;
 
         // material
@@ -76,29 +87,38 @@ Scene<4_D> make_scene(const unsigned long number_of_rows) {
         const Color color1{1.0, 0.95, 0.3};
         const Color color2{0.2, 0.3, 1.0};
         const Color color = color1 * frac + (1.0 - frac) * color2;
-        auto metal_gray =
-            make_metal_volume_checker_material<4_D>(0.45 * color, 0.55 * color);
-        metal_gray->id.change("metal");
+        auto metal_blue = make_metal_material<4_D>(0.55 * color);
+        metal_blue->id.change("metal blue");
 
         // left
         {
-            auto sphere =
-                make_4d_sphere(radius, {-2.0, 1.0, -2 * (i + offset)});
-            sphere->material = metal_gray;
+            auto sphere = make_4d_sphere(radius, {-2.0, 1.0, -2 * (i + offset)},
+                                         metal_blue);
+            sphere->scale[3] = time_stretch;
             scene.add(std::move(sphere));
         }
         // right
         {
-            auto sphere = make_4d_sphere(radius, {2.0, 1.0, -2 * (i + offset)});
-            sphere->material = metal_gray;
+            auto sphere = make_4d_sphere(radius, {2.0, 1.0, -2 * (i + offset)},
+                                         metal_blue);
+            sphere->scale[3] = time_stretch;
             scene.add(std::move(sphere));
         }
     }
     // floor
     {
         const Scalar radius = 1e6;
-        auto sphere = make_4d_sphere(radius, {0.0, -radius, 0.0});
-        sphere->material = metal_gray;
+        const Scalar time_stretch = 1e4;
+        auto sphere = make_4d_sphere(radius, {0.0, -radius, 0.0}, metal_gray);
+        sphere->scale[3] = time_stretch;
+        scene.add(std::move(sphere));
+    }
+    // light
+    {
+        const Scalar radius = 1.0;
+        const Scalar time_stretch = 0.1;
+        auto sphere = make_4d_sphere(radius, {0.0, 1.0, 0.0, -1.0}, light);
+        sphere->scale[3] = time_stretch;
         scene.add(std::move(sphere));
     }
 
