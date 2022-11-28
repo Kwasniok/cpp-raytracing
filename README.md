@@ -169,6 +169,7 @@ to get a profile (requires `valgrind` (profiler) and `kcachegrind` (show data)).
 - netpbm v10.73+ (optional, image processing)
 - imagemagick v7.1+ (optional, image processing)
 - darktable v3.8+ (optional, image processing)
+- ffmpeg v5.1+ (optional, video processing)
 - clang-format v14.0+ (optional, development)
 - clang-tidy v14.0+ (optional, development)
 - valgrind v3.18+ (optional, debug & profiling)
