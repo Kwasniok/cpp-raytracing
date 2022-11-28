@@ -43,7 +43,7 @@ function png {
 
 function convert2png {
     FRAME=$1
-    pnm2png $(ppm ${FRAME}) $(png ${FRAME}) \
+    pnmtopng $(ppm ${FRAME}) > $(png ${FRAME}) \
     && rm $(ppm ${FRAME})
 }
 
