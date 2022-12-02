@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "../../values/tensor.hpp"
-#include "../../world/geometry.hpp"
+#include "../../world/geometries/base.hpp"
 #include "../ray_segment.hpp"
 #include "base.hpp"
 

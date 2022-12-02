@@ -3,13 +3,13 @@
  * @brief geometry interface
  */
 
-#ifndef CPP_RAYTRACING_GEOMETRY_HPP
-#define CPP_RAYTRACING_GEOMETRY_HPP
+#ifndef CPP_RAYTRACING_GEOMETRIES_BASE_HPP
+#define CPP_RAYTRACING_GEOMETRIES_BASE_HPP
 
 #include <memory>
 
-#include "../values/tensor.hpp"
-#include "../world/ray_segment.hpp"
+#include "../../values/tensor.hpp"
+#include "../ray_segment.hpp"
 
 namespace cpp_raytracing {
 
@@ -84,6 +84,10 @@ class Geometry {
      * @brief returns a ray with given starting point and direction
      * @param start origin of ray
      * @param direction normalized direction tangential vector
+     * @note An implicit time-dimension might be ignored for either start or
+             direction to ensure a light-like ray.
+     * @note Might be used for pinhole cameras to cast a ray from the detector
+             through the pinhole.
      */
     virtual std::unique_ptr<Ray<DIMENSION>>
     ray_from(const VolumeVec& start, const VolumeVec& direction) const = 0;

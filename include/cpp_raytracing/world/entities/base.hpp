@@ -12,7 +12,7 @@
 #include "../../values/identifier.hpp"
 #include "../../values/scalar.hpp"
 #include "../../values/tensor.hpp"
-#include "../../world/geometry.hpp"
+#include "../../world/geometries/base.hpp"
 #include "../animators/base.hpp"
 #include "../axis_aligned_bounding_box.hpp"
 #include "../hit_record.hpp"

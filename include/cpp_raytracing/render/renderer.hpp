@@ -15,7 +15,7 @@
 #include "../values/color.hpp"
 #include "../values/tensor.hpp"
 #include "../world/entities/base.hpp"
-#include "../world/geometry.hpp"
+#include "../world/geometries/base.hpp"
 #include "../world/materials/base.hpp"
 #include "../world/ray_segment.hpp"
 #include "../world/scene.hpp"

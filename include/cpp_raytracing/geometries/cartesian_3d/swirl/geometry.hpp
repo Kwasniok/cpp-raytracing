@@ -15,7 +15,7 @@
 #include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
 
 #include "../../../values/tensor_boost_numeric_odeint.hpp"
-#include "../../../world/geometry.hpp"
+#include "../../../world/geometries/base.hpp"
 #include "../../../world/ray_segment.hpp"
 
 namespace cpp_raytracing { namespace cartesian_3d {

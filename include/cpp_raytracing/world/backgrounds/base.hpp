@@ -9,7 +9,7 @@
 #include "../../values/color.hpp"
 #include "../../values/identifier.hpp"
 #include "../../values/tensor.hpp"
-#include "../../world/geometry.hpp"
+#include "../../world/geometries/base.hpp"
 #include "../ray_segment.hpp"
 
 namespace cpp_raytracing {
