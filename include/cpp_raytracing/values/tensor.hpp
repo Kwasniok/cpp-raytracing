@@ -96,19 +96,51 @@ constexpr bool near_zero(const Tensor& ten, const Scalar epsilon) {
     return abs(total) < epsilon;
 }
 
-/** @brief returns tuple of two 3D vectors from 6D vector */
-constexpr std::tuple<Vec3, Vec3> split(const Vec6& vec) {
-    return {
-        Vec3{vec[0], vec[1], vec[2]},
-        Vec3{vec[3], vec[4], vec[5]},
-    };
+/** @brief returns tuple of two vectors from first and second half of vector */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS, typename Traits>
+constexpr std::tuple<
+    gttl::Tensor<Scalar, 1, gttl::Dimensions<1>{DIMENSIONS[0] / 2}, Traits>,
+    gttl::Tensor<Scalar, 1, gttl::Dimensions<1>{DIMENSIONS[0] / 2}, Traits>>
+split(const gttl::Tensor<Scalar, 1, DIMENSIONS, Traits>& vec) requires(
+    DIMENSIONS[0] % 2 == 0) {
+
+    constexpr Dimension HALF = DIMENSIONS[0] / 2;
+    using HalfTensor =
+        gttl::Tensor<Scalar, 1, gttl::Dimensions<1>{HALF}, Traits>;
+
+    std::tuple<HalfTensor, HalfTensor> res{};
+
+    for (Dimension i{0}; i < HALF; ++i) {
+        std::get<0>(res)[i] = vec[i];
+    }
+    for (Dimension i{0}; i < HALF; ++i) {
+        std::get<1>(res)[i] = vec[i + HALF];
+    }
+
+    return res;
 }
 
-/** @brief returns 6D vector from two 3D vectors */
-constexpr Vec6 outer_sum(const Vec3& lhs, const Vec3& rhs) {
-    return {
-        lhs[0], lhs[1], lhs[2], rhs[0], rhs[1], rhs[2],
-    };
+/** @brief returns joined vectors */
+template <typename Scalar, gttl::Dimensions<1> DIMENSIONS1,
+          gttl::Dimensions<1> DIMENSIONS2, typename Traits>
+constexpr gttl::Tensor<
+    Scalar, 1, gttl::Dimensions<1>{DIMENSIONS1[0] + DIMENSIONS2[0]}, Traits>
+outer_sum(const gttl::Tensor<Scalar, 1, DIMENSIONS1, Traits>& vec1,
+          const gttl::Tensor<Scalar, 1, DIMENSIONS2, Traits>& vec2) {
+    using SumTensor =
+        gttl::Tensor<Scalar, 1,
+                     gttl::Dimensions<1>{DIMENSIONS1[0] + DIMENSIONS2[0]},
+                     Traits>;
+    SumTensor res{};
+
+    for (Dimension i{0}; i < DIMENSIONS1[0]; ++i) {
+        res[i] = vec1[i];
+    }
+    for (Dimension i{0}; i < DIMENSIONS2[0]; ++i) {
+        res[DIMENSIONS1[0] + i] = vec2[i];
+    }
+
+    return res;
 }
 
 /** @brief returns dot product of vectors */
