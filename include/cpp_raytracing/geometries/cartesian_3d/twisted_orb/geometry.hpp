@@ -23,98 +23,13 @@
 #ifndef CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_TWISTED_ORB_GEOMETRY_HPP
 #define CPP_RAYTRACING_GEOMETRIES_CARTESIAN_3D_TWISTED_ORB_GEOMETRY_HPP
 
-#include <cmath>
-// note specific imports for speed and to avoid warnings for unrelated code
-#include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
-#include <boost/numeric/odeint/iterator/adaptive_time_iterator.hpp>
-#include <boost/numeric/odeint/stepper/generation/generation_controlled_runge_kutta.hpp>
-#include <boost/numeric/odeint/stepper/generation/generation_runge_kutta_cash_karp54.hpp>
-#include <boost/numeric/odeint/stepper/generation/make_controlled.hpp>
-#include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
-
-#include "../../../values/tensor_boost_numeric_odeint.hpp"
-#include "../../../world/geometries/base.hpp"
-#include "../../../world/ray_segment.hpp"
+#include "../../../world/geometries/runge_kutta_geometry.hpp"
 
 namespace cpp_raytracing { namespace cartesian_3d {
-
-class TwistedOrbRay;
-class TwistedOrbGeometry;
-
-/**
- * @brief functional object for solving integral of ray propagation
- * @see TwistedOrbRay, TwistedOrbGeometry
- */
-struct TwistedOrbRayDifferential {
-    /** @brief linked geometry */
-    const TwistedOrbGeometry& geometry;
-
-    /** @brief call */
-    void operator()(const Vec6& p, Vec6& dpdt, Scalar t);
-};
-
-/**
- * @brief ray for non-Euclidean twisted orb geometry with Cartesian-like
- * coordinates
- * @note vectors are with respect to the tangential space
- * @see TwistedOrbGeometry
- */
-class TwistedOrbRay : public Ray3D {
-  public:
-    /**
-     * @brief construct new ray
-     * @param geometry linked geometry
-     * @param start origin of ray
-     * @param direction normalized direction  tangential vector
-     */
-    TwistedOrbRay(const TwistedOrbGeometry& geometry, const Vec3& start,
-                  const Vec3& direction);
-
-    /** @brief copy constructor */
-    TwistedOrbRay(const TwistedOrbRay&) = default;
-
-    /** @brief move constructor */
-    TwistedOrbRay(TwistedOrbRay&&) = default;
-
-    /** @brief copy assignment */
-    TwistedOrbRay& operator=(const TwistedOrbRay&) = delete;
-
-    /** @brief move assignment */
-    TwistedOrbRay& operator=(TwistedOrbRay&&) = delete;
-
-    ~TwistedOrbRay() override = default;
-
-    std::optional<RaySegment3D> next_ray_segment() override;
-
-    /** @brief returns current phase (position, velocity) */
-    const Vec6& phase() const { return _phase; }
-
-  private:
-    using State = Vec6;
-    using Value = Scalar;
-    using Stepper =
-        boost::numeric::odeint::runge_kutta_cash_karp54<State, Value>;
-    using ControlledStepper =
-        typename boost::numeric::odeint::result_of::make_controlled<
-            Stepper>::type;
-    using System = TwistedOrbRayDifferential;
-    using Iterator =
-        boost::numeric::odeint::adaptive_time_iterator<ControlledStepper,
-                                                       System, State>;
-
-    static Iterator make_phase_iterator(TwistedOrbRay& ray,
-                                        const TwistedOrbGeometry& geometry);
-
-  private:
-    Vec6 _phase;
-    const TwistedOrbGeometry& _geometry;
-    Iterator _phase_iterator;
-};
 
 /**
  * @brief non-Euclidean twisted orb geometry with Cartesian-like coordinates
  * @note vectors are with respect to the tangential space
- * @see TwistedOrbRay
  * @note The geometry is defined by the transformation form Carthesian space
  *       `(x,y,z)` to *twisted orb* coordinates:
  *       \code
@@ -133,9 +48,7 @@ class TwistedOrbRay : public Ray3D {
  *        (r,alpha,z) = (r, phi - psi * exp(-sqrt(x^2 + y^2 + z^2) / rho), z)
  *       \endcode
  */
-class TwistedOrbGeometry : public Geometry3D {
-
-    friend class TwistedOrbRay;
+class TwistedOrbGeometry : public RungeKuttaGeometry<3_D> {
 
   public:
     /**
@@ -160,10 +73,6 @@ class TwistedOrbGeometry : public Geometry3D {
     TwistedOrbGeometry& operator=(TwistedOrbGeometry&&) = delete;
 
     ~TwistedOrbGeometry() override = default;
-
-    /** @see Geometry::ray_from */
-    std::unique_ptr<Ray3D> ray_from(const Vec3& start,
-                                    const Vec3& direction) const override;
 
     /** @see Geometry::ray_passing_through */
     std::unique_ptr<Ray3D>
@@ -205,114 +114,19 @@ class TwistedOrbGeometry : public Geometry3D {
 
     /**
      * @brief returns Chirstoffel symbols of second kind
-     * @note Public access for debugging only.
      */
-    Ten3x3x3 christoffel_2(const Vec3& position) const;
+    Ten3x3x3 christoffel_2(const Vec3& position) const override;
+
+    /** @see RungeKuttaGeometry::treat_as_infinite_segment */
+    bool treat_as_infinite_segment(const Vec3& position,
+                                   const Vec3& velocity) const override;
 
   private:
     /** @brief maximal twist angle */
     Scalar _twist_angle;
     /** @brief controlls spatial extend of twisting  */
     Scalar _twist_radius;
-    /** @brief initial step size for rays */
-    Scalar _ray_initial_step_size;
-    /** @brief absolute error tolerance for rays */
-    Scalar _ray_error_abs;
-    /** @brief relative error tolerance for rays */
-    Scalar _ray_error_rel;
-    /** @brief upper limit for ray length */
-    Scalar _ray_max_length;
-    /**
-     * @brief factor by which to stretch each ray segment
-     * @note Should be a bit larger than `1.0` to avoid small scale geometrical
-     *        banding.
-     */
-    Scalar _ray_segment_length_factor;
-
-    /** @brief differential equation for phase velocity */
-    const TwistedOrbRayDifferential _phase_derivative_func;
 };
-
-void TwistedOrbRayDifferential::operator()(const Vec6& p, Vec6& dpdt,
-                                           [[maybe_unused]] Scalar t) {
-    using namespace tensor;
-
-    const auto [pos, dir] = split(p);
-    const Ten3x3x3 chris_2 = geometry.christoffel_2(pos);
-    dpdt = outer_sum(dir, gttl::contraction<1, 2>(
-                              gttl::contraction<1, 3>(chris_2, dir), -dir));
-}
-
-TwistedOrbRay::TwistedOrbRay(const TwistedOrbGeometry& geometry,
-                             const Vec3& start, const Vec3& direction)
-    : _phase{tensor::outer_sum(start, direction)},
-      _geometry{geometry},
-      _phase_iterator{make_phase_iterator(*this, geometry)} {}
-
-std::optional<RaySegment3D> TwistedOrbRay::next_ray_segment() {
-    using namespace tensor;
-
-    const auto& [phase_start, time] = *_phase_iterator;
-    // note: copies! (phase will be updated later)
-    const Scalar time_start = time;
-
-    // check for ray length
-    if (time_start > _geometry._ray_max_length) {
-        // prematurely end ray due to exceeding length
-        // note: iterator will stop generating new elements for this time/length
-        return std::nullopt;
-    }
-
-    const auto [position, velocity] = split(phase_start);
-
-    // check for numerical issues
-    if (auto x = length(position), y = length(velocity);
-        !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
-        // encountered a numerical issue -> abort ray
-        return std::nullopt;
-    }
-
-    // create next segment
-    const Scalar R = length(position);
-    const bool outwards = dot(position, velocity) > 0.0;
-    if (R / _geometry._twist_radius > 5.0 && outwards) {
-        // far away from origin and point away from origin
-        // -> conventional infinite ray segment
-        return RaySegment3D{position, velocity, infinity};
-    }
-
-    // update state
-    ++_phase_iterator;
-
-    // calculate segment
-    // determine dt
-    const auto& [_, time_end] = *_phase_iterator;
-    // note: extend interval a tiny bit to avoid small scale geometrical banding
-    const Scalar delta_t =
-        (time_end - time_start) * _geometry._ray_segment_length_factor;
-    // note: direction is approximately constant for small segments
-    // note: use initial position and velocity
-    const RaySegment3D segment = {position, velocity, delta_t};
-
-    return segment;
-};
-
-TwistedOrbRay::Iterator
-TwistedOrbRay::make_phase_iterator(TwistedOrbRay& ray,
-                                   const TwistedOrbGeometry& geometry) {
-    using namespace boost::numeric::odeint;
-
-    const Scalar initial_dt = geometry._ray_initial_step_size;
-    const Scalar error_abs = geometry._ray_error_abs;
-    const Scalar error_rel = geometry._ray_error_rel;
-
-    ControlledStepper stepper = make_controlled(
-        error_abs, error_rel, runge_kutta_cash_karp54<State, Value>());
-
-    return make_adaptive_time_iterator_begin<ControlledStepper, System, State>(
-        std::move(stepper), geometry._phase_derivative_func, ray._phase, 0.0,
-        geometry._ray_max_length, initial_dt);
-}
 
 TwistedOrbGeometry::TwistedOrbGeometry(const Scalar twist_angle,
                                        const Scalar twist_radius,
@@ -321,20 +135,10 @@ TwistedOrbGeometry::TwistedOrbGeometry(const Scalar twist_angle,
                                        const Scalar ray_error_rel,
                                        const Scalar ray_max_length,
                                        const Scalar ray_segment_length_factor)
-    : _twist_angle(twist_angle),
-      _twist_radius(twist_radius),
-      _ray_initial_step_size(ray_initial_step_size),
-      _ray_error_abs(ray_error_abs),
-      _ray_error_rel(ray_error_rel),
-      _ray_max_length(ray_max_length),
-      _ray_segment_length_factor(ray_segment_length_factor),
-      // note: store derivative function once per geometry
-      _phase_derivative_func{*this} {}
-
-std::unique_ptr<Ray3D>
-TwistedOrbGeometry::ray_from(const Vec3& start, const Vec3& direction) const {
-    return std::make_unique<TwistedOrbRay>(*this, start, direction);
-}
+    : RungeKuttaGeometry{ray_initial_step_size, ray_error_abs, ray_error_rel,
+                         ray_max_length, ray_segment_length_factor},
+      _twist_angle{twist_angle},
+      _twist_radius{twist_radius} {}
 
 std::unique_ptr<Ray3D>
 TwistedOrbGeometry::ray_passing_through(const Vec3& start,
@@ -353,7 +157,7 @@ TwistedOrbGeometry::ray_passing_through(const Vec3& start,
     // note: direction is still normalized after transfomration
     const Vec3 direction = jacobian * direction_cart;
 
-    return std::make_unique<TwistedOrbRay>(*this, start, direction);
+    return std::make_unique<RungeKuttaRay<3_D>>(*this, start, direction);
 }
 
 Mat3x3 TwistedOrbGeometry::to_onb_jacobian(const Vec3& position) const {
@@ -676,6 +480,15 @@ Ten3x3x3 TwistedOrbGeometry::christoffel_2(const Vec3& position) const {
     const Ten3x3x3 chris_1 = christoffel_1(position);
 
     return gttl::contraction<1, 2>(inv_metric, chris_1);
+}
+
+bool TwistedOrbGeometry::treat_as_infinite_segment(const Vec3& position,
+                                                   const Vec3& velocity) const {
+    using namespace tensor;
+
+    const Scalar R = length(position);
+    const bool outwards = dot(position, velocity) > 0.0;
+    return R / _twist_radius > 5.0 && outwards;
 }
 
 }} // namespace cpp_raytracing::cartesian_3d
