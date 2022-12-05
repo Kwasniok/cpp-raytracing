@@ -31,6 +31,7 @@ class Camera : public Entity<DIMENSION> {
     ray_for_coords(const Geometry<DIMENSION>& geometry, const Scalar x,
                    const Scalar y) const = 0;
 
+    /** @see Entity::hit_record */
     HitRecord<DIMENSION> hit_record(const Geometry<DIMENSION>&,
                                     const RaySegment<DIMENSION>&,
                                     const Scalar) const override {
