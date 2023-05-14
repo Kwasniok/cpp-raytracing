@@ -7,130 +7,39 @@
 #ifndef CPP_RAYTRACING_GEOMETRIES_SCHWARZSCHILD_GEOMETRY_HPP
 #define CPP_RAYTRACING_GEOMETRIES_SCHWARZSCHILD_GEOMETRY_HPP
 
-#include <cmath>
-// note specific imports for speed and to avoid warnings for unrelated code
-#include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
-#include <boost/numeric/odeint/iterator/adaptive_time_iterator.hpp>
-#include <boost/numeric/odeint/stepper/generation/generation_controlled_runge_kutta.hpp>
-#include <boost/numeric/odeint/stepper/generation/generation_runge_kutta_cash_karp54.hpp>
-#include <boost/numeric/odeint/stepper/generation/make_controlled.hpp>
-#include <boost/numeric/odeint/stepper/runge_kutta_cash_karp54.hpp>
+#include <exception>
 
-#include "../../values/tensor_boost_numeric_odeint.hpp"
-#include "../../world/geometries/base.hpp"
-#include "../../world/ray_segment.hpp"
+#include "../../world/geometries/runge_kutta_geometry.hpp"
 
 namespace cpp_raytracing { namespace schwarzschild {
 
-class SchwarzschildRay;
-class SchwarzschildGeometry;
-
 /**
- * @brief functional object for solving integral of ray propagation
- * @see SchwarzschildRay, SchwarzschildGeometry
+ * @brief Cartesian (x, y, z, t) Schwarzschild geometry
  */
-struct SchwarzschildRayDifferential {
-    /** @brief linked geometry */
-    const SchwarzschildGeometry& geometry;
-
-    /** @brief call */
-    void operator()(const Vec<8_D>& p, Vec<8_D>& dpdt, Scalar t);
-};
-
-/**
- * @brief ray for non-Euclidean twisted orb geometry with Cartesian-like
- * coordinates
- * @note vectors are with respect to the tangential space
- * @see SchwarzschildGeometry
- */
-class SchwarzschildRay : public Ray<4_D> {
-  public:
-    /**
-     * @brief construct new ray
-     * @param geometry linked geometry
-     * @param start origin of ray
-     * @param direction normalized direction  tangential vector
-     */
-    SchwarzschildRay(const SchwarzschildGeometry& geometry,
-                     const Vec<4_D>& start, const Vec<4_D>& direction);
-
-    /** @brief copy constructor */
-    SchwarzschildRay(const SchwarzschildRay&) = default;
-
-    /** @brief move constructor */
-    SchwarzschildRay(SchwarzschildRay&&) = default;
-
-    /** @brief copy assignment */
-    SchwarzschildRay& operator=(const SchwarzschildRay&) = delete;
-
-    /** @brief move assignment */
-    SchwarzschildRay& operator=(SchwarzschildRay&&) = delete;
-
-    ~SchwarzschildRay() override = default;
-
-    std::optional<RaySegment<4_D>> next_ray_segment() override;
-
-    /** @brief returns current phase (position, velocity) */
-    const Vec<8_D>& phase() const { return _phase; }
-
-  private:
-    using State = Vec<8_D>;
-    using Value = Scalar;
-    using Stepper =
-        boost::numeric::odeint::runge_kutta_cash_karp54<State, Value>;
-    using ControlledStepper =
-        typename boost::numeric::odeint::result_of::make_controlled<
-            Stepper>::type;
-    using System = SchwarzschildRayDifferential;
-    using Iterator =
-        boost::numeric::odeint::adaptive_time_iterator<ControlledStepper,
-                                                       System, State>;
-
-    static Iterator make_phase_iterator(SchwarzschildRay& ray,
-                                        const SchwarzschildGeometry& geometry);
-
-  private:
-    Vec<8_D> _phase;
-    const SchwarzschildGeometry& _geometry;
-    Iterator _phase_iterator;
-};
-
-/**
- * @brief Cartesian (3+1) Schwarzschild geometry
- * @see SchwarzschildRay
- */
-class SchwarzschildGeometry : public Geometry<4_D> {
-
-    friend class SchwarzschildRay;
+class Geometry : public RungeKuttaGeometry<4_D> {
 
   public:
     /**
      * @brief construct new geometry
      */
-    SchwarzschildGeometry(const Scalar twist_angle, const Scalar twist_radius,
-                          const Scalar ray_initial_step_size,
-                          const Scalar ray_error_abs,
-                          const Scalar ray_error_rel,
-                          const Scalar ray_max_length,
-                          const Scalar _ray_segment_length_factor);
+    Geometry(const Scalar speed_of_light, const Scalar schwarzschild_radius,
+             const Scalar ray_initial_step_size, const Scalar ray_error_abs,
+             const Scalar ray_error_rel, const Scalar ray_max_length,
+             const Scalar _ray_segment_length_factor);
 
     /** @brief copy constructor */
-    SchwarzschildGeometry(const SchwarzschildGeometry&) = default;
+    Geometry(const Geometry&) = default;
 
     /** @brief move constructor */
-    SchwarzschildGeometry(SchwarzschildGeometry&&) = default;
+    Geometry(Geometry&&) = default;
 
     /** @brief copy assignment */
-    SchwarzschildGeometry& operator=(const SchwarzschildGeometry&) = delete;
+    Geometry& operator=(const Geometry&) = delete;
 
     /** @brief move assignment */
-    SchwarzschildGeometry& operator=(SchwarzschildGeometry&&) = delete;
+    Geometry& operator=(Geometry&&) = delete;
 
-    ~SchwarzschildGeometry() override = default;
-
-    /** @see Geometry::ray_from */
-    std::unique_ptr<Ray<4_D>>
-    ray_from(const Vec<4_D>& start, const Vec<4_D>& direction) const override;
+    ~Geometry() override = default;
 
     /** @see Geometry::ray_passing_through */
     std::unique_ptr<Ray<4_D>>
@@ -147,175 +56,369 @@ class SchwarzschildGeometry : public Geometry<4_D> {
 
   public:
     /**
-     * @brief returns inverse metric
-     * @note Public access for debugging only.
-     * @see metric()
+     * @brief returns Christoffel symbols of second kind
      */
-    Mat<4_D> inverse_metric(const Vec<4_D>& position) const;
+    TenR3<4_D> christoffel_2(const Vec<4_D>& position) const override;
 
-    /**
-     * @brief returns Chirstoffel symbols of first kind
-     * @note Public access for debugging only.
-     */
-    TenR3<4_D> christoffel_1(const Vec<4_D>& position) const;
-
-    /**
-     * @brief returns Chirstoffel symbols of second kind
-     * @note Public access for debugging only.
-     */
-    TenR3<4_D> christoffel_2(const Vec<4_D>& position) const;
+  public:
+    /** @brief speed of light */
+    Scalar speed_of_light() const { return _speed_of_light; }
+    /** @brief Schwarzschild radius */
+    Scalar schwarzschild_radius() const { return _schwarzschild_radius; }
 
   private:
-    /** @brief maximal twist angle */
-    Scalar _twist_angle;
-    /** @brief controlls spatial extend of twisting  */
-    Scalar _twist_radius;
-    /** @brief initial step size for rays */
-    Scalar _ray_initial_step_size;
-    /** @brief absolute error tolerance for rays */
-    Scalar _ray_error_abs;
-    /** @brief relative error tolerance for rays */
-    Scalar _ray_error_rel;
-    /** @brief upper limit for ray length */
-    Scalar _ray_max_length;
-    /**
-     * @brief factor by which to stretch each ray segment
-     * @note Should be a bit larger than `1.0` to avoid small scale geometrical
-     *        banding.
-     */
-    Scalar _ray_segment_length_factor;
-
-    /** @brief differential equation for phase velocity */
-    const SchwarzschildRayDifferential _phase_derivative_func;
+    /** @brief controlls speed of light  */
+    Scalar _speed_of_light;
+    /** @brief controlls spatial extend of black hole around origin  */
+    Scalar _schwarzschild_radius;
 };
 
-void SchwarzschildRayDifferential::operator()(const Vec<8_D>& p, Vec<8_D>& dpdt,
-                                              [[maybe_unused]] Scalar t) {
-    using namespace tensor;
-
-    const auto [pos, dir] = split(p);
-    const auto chris_2 = geometry.christoffel_2(pos);
-    dpdt = outer_sum(dir, gttl::contraction<1, 2>(
-                              gttl::contraction<1, 3>(chris_2, dir), -dir));
-}
-
-SchwarzschildRay::SchwarzschildRay(const SchwarzschildGeometry& geometry,
-                                   const Vec<4_D>& start,
-                                   const Vec<4_D>& direction)
-    : _phase{tensor::outer_sum(start, direction)},
-      _geometry{geometry},
-      _phase_iterator{make_phase_iterator(*this, geometry)} {}
-
-std::optional<RaySegment<4_D>> SchwarzschildRay::next_ray_segment() {
-    using namespace tensor;
-
-    const auto& [phase_start, time] = *_phase_iterator;
-    // note: copies! (phase will be updated later)
-    const Scalar time_start = time;
-
-    // check for ray length
-    if (time_start > _geometry._ray_max_length) {
-        // prematurely end ray due to exceeding length
-        // note: iterator will stop generating new elements for this time/length
-        return std::nullopt;
-    }
-
-    const auto [position, velocity] = split(phase_start);
-
-    // check for numerical issues
-    if (auto x = length(position), y = length(velocity);
-        !(0.0 < x && x < infinity) || !(0.0 < y && y < infinity)) {
-        // encountered a numerical issue -> abort ray
-        return std::nullopt;
-    }
-
-    // update state
-    ++_phase_iterator;
-
-    // calculate segment
-    // determine dt
-    const auto& [_, time_end] = *_phase_iterator;
-    // note: extend interval a tiny bit to avoid small scale geometrical banding
-    const Scalar delta_t =
-        (time_end - time_start) * _geometry._ray_segment_length_factor;
-    // note: direction is approximately constant for small segments
-    // note: use initial position and velocity
-    const RaySegment<4_D> segment = {position, velocity, delta_t};
-
-    return segment;
-};
-
-SchwarzschildRay::Iterator
-SchwarzschildRay::make_phase_iterator(SchwarzschildRay& ray,
-                                      const SchwarzschildGeometry& geometry) {
-    using namespace boost::numeric::odeint;
-
-    const Scalar initial_dt = geometry._ray_initial_step_size;
-    const Scalar error_abs = geometry._ray_error_abs;
-    const Scalar error_rel = geometry._ray_error_rel;
-
-    ControlledStepper stepper = make_controlled(
-        error_abs, error_rel, runge_kutta_cash_karp54<State, Value>());
-
-    return make_adaptive_time_iterator_begin<ControlledStepper, System, State>(
-        std::move(stepper), geometry._phase_derivative_func, ray._phase, 0.0,
-        geometry._ray_max_length, initial_dt);
-}
-
-SchwarzschildGeometry::SchwarzschildGeometry(
-    const Scalar twist_angle, const Scalar twist_radius,
-    const Scalar ray_initial_step_size, const Scalar ray_error_abs,
-    const Scalar ray_error_rel, const Scalar ray_max_length,
-    const Scalar ray_segment_length_factor)
-    : _twist_angle(twist_angle),
-      _twist_radius(twist_radius),
-      _ray_initial_step_size(ray_initial_step_size),
-      _ray_error_abs(ray_error_abs),
-      _ray_error_rel(ray_error_rel),
-      _ray_max_length(ray_max_length),
-      _ray_segment_length_factor(ray_segment_length_factor),
-      // note: store derivative function once per geometry
-      _phase_derivative_func{*this} {}
+Geometry::Geometry(const Scalar speed_of_light,
+                   const Scalar schwarzschild_radius,
+                   const Scalar ray_initial_step_size,
+                   const Scalar ray_error_abs, const Scalar ray_error_rel,
+                   const Scalar ray_max_length,
+                   const Scalar ray_segment_length_factor)
+    : RungeKuttaGeometry{ray_initial_step_size, ray_error_abs, ray_error_rel,
+                         ray_max_length, ray_segment_length_factor},
+      _speed_of_light{speed_of_light},
+      _schwarzschild_radius{schwarzschild_radius} {}
 
 std::unique_ptr<Ray<4_D>>
-SchwarzschildGeometry::ray_from(const Vec<4_D>& start,
-                                const Vec<4_D>& direction) const {
-    return std::make_unique<SchwarzschildRay>(*this, start, direction);
-}
-
-std::unique_ptr<Ray<4_D>>
-SchwarzschildGeometry::ray_passing_through(const Vec<4_D>& start,
-                                           const Vec<4_D>& target) const {
+Geometry::ray_passing_through([[maybe_unused]] const Vec<4_D>& start,
+                              [[maybe_unused]] const Vec<4_D>& target) const {
     using namespace tensor;
 
-    // convert positions to flat space
-    const Vec<4_D> start_cart = to_cartesian_coords(start);
-    const Vec<4_D> target_cart = to_cartesian_coords(target);
-
-    return std::make_unique<SchwarzschildRay>(*this, start, direction);
+    throw std::logic_error("Geometry::ray_passing_through is not implemented.");
 }
 
-Mat<3_D, 4_D>
-SchwarzschildGeometry::to_onb_jacobian(const Vec<4_D>& position) const {}
+Mat<3_D, 4_D> Geometry::to_onb_jacobian(const Vec<4_D>& position) const {
 
-Mat<4_D, 3_D>
-SchwarzschildGeometry::from_onb_jacobian(const Vec<4_D>& position) const {}
+    using std::sqrt, std::pow;
+    using namespace tensor;
 
-Mat<4_D> SchwarzschildGeometry::metric(const Vec<4_D>& position) const {}
+    const Scalar Rs = _schwarzschild_radius;
+    const Scalar x = position[0];
+    const Scalar y = position[1];
+    const Scalar z = position[2];
+    const Scalar r2 = pow(x, 2) + pow(y, 2) + pow(z, 2);
+    const Scalar r = sqrt(r2);
+    const Scalar rho = sqrt(pow(x, 2) + pow(y, 2));
+    const Scalar alpha = pow(1 - Rs / r, -0.5);
 
-Mat<4_D> SchwarzschildGeometry::inverse_metric(const Vec<4_D>& position) const {
-
+    // Cartesian to spherical contravariant Jacobian and normalization
+    return {
+        Vec<4_D>{x / (r * alpha), (x * z) / (rho * alpha), -y / alpha, 0},
+        Vec<4_D>{y / r2, (y * z) / (r * rho), x / r, 0},
+        Vec<4_D>{z / (r * rho), -1, 0, 0},
+    };
 }
 
-TenR3<4_D>
-SchwarzschildGeometry::christoffel_1(const Vec<4_D>& position) const {}
+Mat<4_D, 3_D> Geometry::from_onb_jacobian(const Vec<4_D>& position) const {
 
-TenR3<4_D>
-SchwarzschildGeometry::christoffel_2(const Vec<4_D>& position) const {
-    const Mat<4_D> inv_metric = inverse_metric(position);
-    const TenR3<4_D> chris_1 = christoffel_1(position);
+    using std::sqrt, std::pow;
+    using namespace tensor;
 
-    return gttl::contraction<1, 2>(inv_metric, chris_1);
+    const Scalar Rs = _schwarzschild_radius;
+    const Scalar x = position[0];
+    const Scalar y = position[1];
+    const Scalar z = position[2];
+    const Scalar r2 = pow(x, 2) + pow(y, 2) + pow(z, 2);
+    const Scalar r = sqrt(r2);
+    const Scalar rho2 = pow(x, 2) + pow(y, 2);
+    const Scalar rho = sqrt(rho2);
+    const Scalar alpha = pow(1 - Rs / r, -0.5);
+
+    // denormalize and spherical to Cartesian contravariant Jacobian
+    return {
+        Vec<3_D>{(alpha * x) / r, y, (rho * z) / r},
+        Vec<3_D>{(alpha * x * z / (rho * r2)), (y * z) / (rho * r), -rho2 / r2},
+        Vec<3_D>{(-alpha * y) / rho2, (r * x) / rho2, 0},
+        Vec<3_D>{0, 0, 0},
+    };
+}
+
+/**
+ * @brief Christoffel symbols of second kind for spherical Schwarzschild
+ *        coordinates (r, theta, phi, t)
+ */
+inline TenR3<4_D>
+_spherical_swarzschild_christoffel_2(const Scalar speed_of_light,
+                                     const Scalar schwarzschild_radius,
+                                     const Scalar r, const Scalar theta) {
+
+    using std::sqrt, std::pow, std::cos, std::sin, std::tan;
+    using namespace tensor;
+
+    const Scalar Rs = schwarzschild_radius;
+    const Scalar c2 = pow(speed_of_light, 2);
+
+    return {
+        // clang-format off
+        Rs / (2 * Rs * r - 2 * pow(r, 2)), 0, 0, 0,
+        0, Rs - r, 0, 0,
+        0, 0, (Rs - r) * pow(sin(theta), 2), 0,
+        0, 0, 0, -0.5 * c2 * (Rs * (Rs - r)) / pow(r, 3),
+
+        0, 1 / r, 0, 0,
+        1 / r, 0, 0, 0,
+        0, 0, -cos(theta) * sin(theta), 0,
+        0, 0, 0, 0,
+
+        0, 0, 1 / r, 0,
+        0, 0, 1 / tan(theta), 0,
+        1 / r, 1 / tan(theta), 0, 0,
+        0, 0, 0, 0,
+
+        0, 0, 0, -(Rs / (2 * Rs * r - 2 * pow(r, 2))),
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        -(Rs / (2 * Rs * r - 2 * pow(r, 2))), 0, 0, 0,
+        // clang-format on
+    };
+}
+
+/**
+ * @brief contravariant Jacobian for transition from spherical to Cartesian
+ * codiantes
+ * @note internal only
+ */
+inline Mat<4_D> _cartesian_from_spherical_swarzschild_contravariant_jacobian(
+    const Scalar r, const Scalar theta, const Scalar phi) {
+
+    using std::cos, std::sin;
+    using namespace tensor;
+
+    const Scalar ctheta = cos(theta);
+    const Scalar stheta = sin(theta);
+    const Scalar cphi = cos(phi);
+    const Scalar sphi = sin(phi);
+
+    // spherical to cartesian jacobian
+    return {
+        // clang-format off
+        cphi * stheta,       stheta * sphi,       ctheta,   0,
+        ctheta * cphi/r,     ctheta * sphi / r,  -stheta/r, 0,
+       -sphi / (stheta * r), cphi / (stheta * r), 0,        0,
+        0,                   0,                   0,        1,
+        // clang-format on
+    };
+}
+
+/**
+ * @brief contravariant Jacobian for transition from Cartesian to spherical
+ * codiantes
+ * @note internal only
+ * @note stored as transposed
+ */
+inline Mat<4_D> _cartesian_from_spherical_swarzschild_covariant_jacobian(
+    const Scalar r, const Scalar theta, const Scalar phi) {
+
+    using std::cos, std::sin;
+    using namespace tensor;
+
+    const Scalar ctheta = cos(theta);
+    const Scalar stheta = sin(theta);
+    const Scalar cphi = cos(phi);
+    const Scalar sphi = sin(phi);
+
+    // spherical to cartesian jacobian
+    return {
+        // clang-format off
+        cphi * stheta, r * ctheta * cphi, -r * stheta * sphi, 0,
+        stheta * sphi, r * ctheta * sphi,  r * cphi * stheta, 0,
+        ctheta,       -r * stheta,         0,                 0,
+        0,             0,                  0,                 1,
+        // clang-format on
+    };
+}
+
+Mat<4_D> Geometry::metric(const Vec<4_D>& position) const {
+
+    using std::sqrt, std::pow, std::atan2;
+    using namespace tensor;
+
+    const Scalar c = _speed_of_light;
+    const Scalar Rs = _schwarzschild_radius;
+    const Scalar x = position[0];
+    const Scalar y = position[1];
+    const Scalar z = position[2];
+    const Scalar r2 = pow(x, 2) + pow(y, 2) + pow(z, 2);
+    const Scalar r = sqrt(r2);
+
+    return {
+        // clang-format off
+        (pow(y, 2) + pow(z, 2)) / r2 + pow(x, 2) / (r2 - r * Rs),
+        (x * y * Rs) / (r2 * (r - Rs)),
+        (x * z * Rs) / (r2 * (r - Rs)),
+        0,
+
+        (x * y * Rs) / (r2 * (r - Rs)),
+        (pow(x, 2) + pow(z, 2)) / r2 + pow(y, 2) / (r2 - r * Rs),
+        (y * z * Rs) / (r2 * (r - Rs)),
+        0,
+
+        (x * z * Rs) / (r2 * (r - Rs)),
+        (y * z * Rs) / (r2 * (r - Rs)),
+        (pow(x, 2) + pow(y, 2)) / r2 + pow(z, 2) / (r2 - r * Rs),
+        0,
+
+        0,
+        0,
+        0,
+        pow(c, 2) * (-1 + Rs / r),
+        // clang-format on
+    };
+}
+
+TenR3<4_D> _shperical_christoffel_2(const Scalar r, const Scalar theta) {
+
+    using std::pow, std::cos, std::sin;
+
+    return {
+        // clang-format off
+        0, 0, 0, 0,
+        0, -r, 0, 0,
+        0, 0, -r * pow(sin(theta), 2), 0,
+        0, 0, 0, 0,
+
+        0, 1 / r, 0, 0,
+        1 / r, 0, 0, 0,
+        0, 0, -cos(theta) * sin(theta), 0,
+        0, 0, 0, 0,
+
+        0, 0, 1 / r, 0,
+        0, 0, 1 / tan(theta), 0,
+        1 / r, 1 / tan(theta), 0, 0,
+        0, 0, 0, 0,
+
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        // clang-format on
+    };
+}
+
+TenR3<4_D> Geometry::christoffel_2(const Vec<4_D>& position) const {
+
+    using std::sqrt, std::pow, std::atan2;
+    using namespace tensor;
+
+    const Scalar c = _speed_of_light;
+    const Scalar c2 = pow(c, 2);
+    const Scalar Rs = _schwarzschild_radius;
+    const Scalar Rs2 = pow(Rs, 2);
+    const Scalar Rs3 = pow(Rs, 3);
+    const Scalar Rs4 = pow(Rs, 4);
+    const Scalar Rs5 = pow(Rs, 5);
+    const Scalar Rs6 = pow(Rs, 6);
+    const Scalar Rs7 = pow(Rs, 7);
+    const Scalar x = position[0];
+    const Scalar y = position[1];
+    const Scalar z = position[2];
+    const Scalar x2 = pow(x, 2);
+    const Scalar y2 = pow(y, 2);
+    const Scalar z2 = pow(z, 2);
+    const Scalar x4 = pow(x, 4);
+    const Scalar y4 = pow(y, 4);
+    const Scalar z4 = pow(z, 4);
+    const Scalar x6 = pow(x, 6);
+    const Scalar y6 = pow(y, 6);
+    const Scalar z6 = pow(z, 6);
+    const Scalar x8 = pow(x, 8);
+    const Scalar y8 = pow(y, 8);
+    const Scalar z8 = pow(z, 8);
+    const Scalar x10 = pow(x, 10);
+    const Scalar y10 = pow(y, 10);
+    const Scalar r = sqrt(x2 + y2 + z2);
+    const Scalar r2 = pow(r, 2);
+    const Scalar r5 = pow(r, 5);
+    const Scalar r7 = pow(r, 7);
+
+    return {
+        // clang-format off
+        -((x * (r - Rs) * Rs * (x4 - x2 * (y2 + z2) - 2 *(y2 + z2) * (y2 + z2 - r * Rs)) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r2 - r * Rs) * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x2 * y * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x2 * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        0, 
+
+        -((x2 * y * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        (x * (r - Rs) * Rs * (2 * x4 - y4 + y2 * z2 + 2 * z4 - 2 * z2 * r * Rs + x2 * (y2 + 4 * z2 - 2 * r * Rs)) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))), 
+        -((x * y * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r - Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        0, 
+
+        -((x2 * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x * y * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r - Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        (x * (r - Rs) * Rs * (2 * x8 + 2 * y8 - z8 + 5 * z6 * r * Rs - 10 * z6 * Rs2 + 10 * z4 * r * Rs3 - 5 * z4 * Rs4 + z2 * r * Rs5 - y2 * (z6 + 2 * z4 * (r - 5 * Rs) * Rs + 5 * z2 * (6 * r - 5 * Rs) * Rs3 + 2 *(6 * r - Rs) * Rs5) + y6 * (5 * z2 + 6 * Rs * (-2 * r + 5 * Rs)) + x6 * (8 * y2 + 5 * z2 + 6 * Rs * (-2 * r + 5 * Rs)) + y4 * (3 * z4 + 10 * Rs3 * (-4 * r + 3 * Rs) + z2 * Rs * (-19 * r + 50 * Rs)) + x4 * (12 * y4 + 3 * z4 + 10 * Rs3 * (-4 * r + 3 * Rs) + z2 * Rs * (-19 * r + 50 * Rs) + 3 * y2 * (5 * z2 + 6 * Rs * (-2 * r + 5 * Rs))) + x2 * (8 * y6 - z6 - 2 * z4 * (r - 5 * Rs) * Rs - 5 * z2 * (6 * r - 5 * Rs) * Rs3 + 2 * Rs5 * (-6 * r + Rs) + 3 * y4 * (5 * z2 + 6 * Rs * (-2 * r + 5 * Rs)) + 2 * y2 * (3 * z4 + 10 * Rs3 * (-4 * r + 3 * Rs) + z2 * Rs * (-19 * r + 50 * Rs))))) / (2 * r5 * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))), 
+        0, 
+
+        0, 
+        0, 
+        0, 
+        (c2 * x * (r - Rs) * Rs * (r2 - r * Rs) * (x4 + y4 + z4 - 4 * z2 * r * Rs + 6 * z2 * Rs2 - 4 * r * Rs3 + Rs4 + 2 * y2 * (z2 - 2 * r * Rs + 3 * Rs2) + 2 * x2 * (y2 + z2 - 2 * r * Rs + 3 * Rs2))) / (2 * r5 * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))),
+
+        -((y * (r - Rs) * Rs * (x4 - x2 * (y2 + z2) - 2 *(y2 + z2) * (y2 + z2 - r * Rs)) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x * y2 * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x * y * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r - Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        0, 
+
+        -((x * y2 * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((y * (r - Rs) * Rs * (-2 * x4 + y4 - y2 * z2 - 2 * z4 + 2 * z2 * r * Rs - x2 * (y2 + 4 * z2 - 2 * r * Rs)) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r2 - r * Rs) * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((y2 * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        0, 
+
+        -((x * y * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r - Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((y2 * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        (y * (r - Rs) * Rs * (2 * x8 + 2 * y8 - z8 + 5 * z6 * r * Rs - 10 * z6 * Rs2 + 10 * z4 * r * Rs3 - 5 * z4 * Rs4 + z2 * r * Rs5 - y2 * (z6 + 2 * z4 * (r - 5 * Rs) * Rs + 5 * z2 * (6 * r - 5 * Rs) * Rs3 + 2 *(6 * r - Rs) * Rs5) + y6 * (5 * z2 + 6 * Rs * (-2 * r + 5 * Rs)) + x6 * (8 * y2 + 5 * z2 + 6 * Rs * (-2 * r + 5 * Rs)) + y4 * (3 * z4 + 10 * Rs3 * (-4 * r + 3 * Rs) + z2 * Rs * (-19 * r + 50 * Rs)) + x4 * (12 * y4 + 3 * z4 + 10 * Rs3 * (-4 * r + 3 * Rs) + z2 * Rs * (-19 * r + 50 * Rs) + 3 * y2 * (5 * z2 + 6 * Rs * (-2 * r + 5 * Rs))) + x2 * (8 * y6 - z6 - 2 * z4 * (r - 5 * Rs) * Rs - 5 * z2 * (6 * r - 5 * Rs) * Rs3 + 2 * Rs5 * (-6 * r + Rs) + 3 * y4 * (5 * z2 + 6 * Rs * (-2 * r + 5 * Rs)) + 2 * y2 * (3 * z4 + 10 * Rs3 * (-4 * r + 3 * Rs) + z2 * Rs * (-19 * r + 50 * Rs))))) / (2 * r5 * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))), 
+        0, 
+
+        0, 
+        0, 
+        0, 
+        (c2 * y * (r - Rs) * Rs * (r2 - r * Rs) * (x4 + y4 + z4 - 4 * z2 * r * Rs + 6 * z2 * Rs2 - 4 * r * Rs3 + Rs4 + 2 * y2 * (z2 - 2 * r * Rs + 3 * Rs2) + 2 * x2 * (y2 + z2 - 2 * r * Rs + 3 * Rs2))) / (2 * r5 * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))),
+
+        -((z * (r - Rs) * Rs * (x4 - x2 * (y2 + z2) - 2 *(y2 + z2) * (y2 + z2 - r * Rs)) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x * y * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r - Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((x * z2 * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        0, 
+
+        -((x * y * z * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r - Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        (z * (r - Rs) * Rs * (2 * x4 - y4 + y2 * z2 + 2 * z4 - 2 * z2 * r * Rs + x2 * (y2 + 4 * z2 - 2 * r * Rs)) * (x6 + y6 + z6 - 5 * z4 * r * Rs + 10 * z4 * Rs2 - 10 * z2 * r * Rs3 + 5 * z2 * Rs4 - r * Rs5 + y2 * (3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs)) + y4 * (3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x4 * (3 * y2 + 3 * z2 + 5 * Rs * (-r + 2 * Rs)) + x2 * (3 * y4 + 3 * z4 - 10 * z2 * (r - 2 * Rs) * Rs + 5 * Rs3 * (-2 * r + Rs) + 2 * y2 * (3 * z2 + 5 * Rs * (-r + 2 * Rs))))) / (2 * r7 * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))), 
+        -((y * z2 * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        0, 
+
+        -((x * z2 * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        -((y * z2 * Rs * (3 * x2 + 3 * y2 + 3 * z2 - 2 * r * Rs) * (x6 + y6 + z6 - 6 * z4 * r * Rs + 15 * z4 * Rs2 - 20 * z2 * r * Rs3 + 15 * z2 * Rs4 - 6 * r * Rs5 + Rs6 + y2 * (3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs)) + 3 * y4 * (z2 + Rs * (-2 * r + 5 * Rs)) + 3 * x4 * (y2 + z2 + Rs * (-2 * r + 5 * Rs)) + x2 * (3 * y4 + 3 * z4 - 6 * z2 * (2 * r - 5 * Rs) * Rs + 5 * Rs3 * (-4 * r + 3 * Rs) + 6 * y2 * (z2 + Rs * (-2 * r + 5 * Rs))))) / (2 * r5 * (r - Rs) * (r2 - r * Rs) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2)))), 
+        (z * (r - Rs) * Rs * (2 * x10 + 2 * y10 + 7 * y8 * (z2 - 2 *(r - 3 * Rs) * Rs) - y2 * (2 * z8 + 10 * z4 * (3 * r - 4 * Rs) * Rs3 + z2 * (36 * r - 13 * Rs) * Rs5 + 2 * r * Rs7 + z6 * Rs * (-4 * r + 3 * Rs)) - z4 * (z6 - 5 * z2 * (4 * r - 3 * Rs) * Rs3 + Rs5 * (-6 * r + Rs) + 3 * z4 * Rs * (-2 * r + 5 * Rs)) + y4 * (2 * z6 - 5 * z2 * (24 * r - 25 * Rs) * Rs3 + 14 * Rs5 * (-3 * r + Rs) + 3 * z4 * Rs * (-8 * r + 27 * Rs)) + y6 * (8 * z4 + 70 * Rs3 * (-r + Rs) + 3 * z2 * Rs * (-12 * r + 37 * Rs)) + x8 * (10 * y2 + 7 *(z2 - 2 *(r - 3 * Rs) * Rs)) + x6 * (20 * y4 + 8 * z4 + 70 * Rs3 * (-r + Rs) + 3 * z2 * Rs * (-12 * r + 37 * Rs) + 28 * y2 * (z2 - 2 *(r - 3 * Rs) * Rs)) + x4 * (20 * y6 + 2 * z6 - 5 * z2 * (24 * r - 25 * Rs) * Rs3 + 14 * Rs5 * (-3 * r + Rs) + 3 * z4 * Rs * (-8 * r + 27 * Rs) + 42 * y4 * (z2 - 2 *(r - 3 * Rs) * Rs) + 3 * y2 * (8 * z4 + 70 * Rs3 * (-r + Rs) + 3 * z2 * Rs * (-12 * r + 37 * Rs))) + x2 * (10 * y8 - 2 * z8 + z6 * (4 * r - 3 * Rs) * Rs - 2 * r * Rs7 + 10 * z4 * Rs3 * (-3 * r + 4 * Rs) + z2 * Rs5 * (-36 * r + 13 * Rs) + 28 * y6 * (z2 - 2 *(r - 3 * Rs) * Rs) + 2 * y2 * (2 * z6 - 5 * z2 * (24 * r - 25 * Rs) * Rs3 + 14 * Rs5 * (-3 * r + Rs) + 3 * z4 * Rs * (-8 * r + 27 * Rs)) + 3 * y4 * (8 * z4 + 70 * Rs3 * (-r + Rs) + 3 * z2 * Rs * (-12 * r + 37 * Rs))))) / (2 * r5 * (r2 - r * Rs) * (r2 - 2 * r * Rs + Rs2) * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))), 
+        0, 
+
+        0, 
+        0, 
+        0, 
+        (c2 * z * (r - Rs) * Rs * (r2 - r * Rs) * (x4 + y4 + z4 - 4 * z2 * r * Rs + 6 * z2 * Rs2 - 4 * r * Rs3 + Rs4 + 2 * y2 * (z2 - 2 * r * Rs + 3 * Rs2) + 2 * x2 * (y2 + z2 - 2 * r * Rs + 3 * Rs2))) / (2 * r5 * (z4 * r + x4 * (r - 5 * Rs) + y4 * (r - 5 * Rs) - 5 * z4 * Rs + 10 * z2 * r * Rs2 - 10 * z2 * Rs3 + 5 * r * Rs4 - Rs5 + 2 * y2 * (z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2) + 2 * x2 * (y2 * (r - 5 * Rs) + z2 * (r - 5 * Rs) + 5 *(r - Rs) * Rs2))),
+
+        0, 
+        0, 
+        0, 
+        (x * Rs) / (2 * r2 * (r - Rs)), 
+
+        0, 
+        0, 
+        0, 
+        (y * Rs) / (2 * r2 * (r - Rs)), 
+
+        0, 
+        0, 
+        0, 
+        (z * Rs) / (2 * r2 * (r - Rs)), 
+
+        (x * Rs) / (2 * r2 * (r - Rs)), 
+        (y * Rs) / (2 * r2 * (r - Rs)), 
+        (z * Rs) / (2 * r2 * (r - Rs)), 
+        0,
+        // clang-format on
+    };
 }
 
 }} // namespace cpp_raytracing::schwarzschild
