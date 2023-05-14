@@ -17,6 +17,9 @@ Created with `build/examples/basic_swirl` (version ee5499f) using `swirl_strengt
 
 Created with `build/examples/basic_twisted_orb` (version f952428) using `twist_angle = -6.0`, `resolution_factor = 4`, `ray_error_abs  = 1e-12` and `ray_depth = 10000`.
 
+![example_schwarzschild](https://github.com/Kwasniok/cpp-raytracing/assets/7516208/40009026-adab-45e6-a39e-d02c3f3daa10)
+
+Created with `build/examples/schwarzschild` (version e931515) using `speed_of_light = 100.0`, `schwarzschild_radius = 1.0`, `resolution_factor = 4`, `ray_error_abs = 1e-8` and `ray_depth = 75`. Took **303min12sec** user time (intel i5-4590).
 
 ### N-Dimensional Manifolds
 
