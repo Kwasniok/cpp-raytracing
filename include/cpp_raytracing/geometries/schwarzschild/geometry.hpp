@@ -138,101 +138,6 @@ Mat<4_D, 3_D> Geometry::from_onb_jacobian(const Vec<4_D>& position) const {
     };
 }
 
-/**
- * @brief Christoffel symbols of second kind for spherical Schwarzschild
- *        coordinates (r, theta, phi, t)
- */
-inline TenR3<4_D>
-_spherical_swarzschild_christoffel_2(const Scalar speed_of_light,
-                                     const Scalar schwarzschild_radius,
-                                     const Scalar r, const Scalar theta) {
-
-    using std::sqrt, std::pow, std::cos, std::sin, std::tan;
-    using namespace tensor;
-
-    const Scalar Rs = schwarzschild_radius;
-    const Scalar c2 = pow(speed_of_light, 2);
-
-    return {
-        // clang-format off
-        Rs / (2 * Rs * r - 2 * pow(r, 2)), 0, 0, 0,
-        0, Rs - r, 0, 0,
-        0, 0, (Rs - r) * pow(sin(theta), 2), 0,
-        0, 0, 0, -0.5 * c2 * (Rs * (Rs - r)) / pow(r, 3),
-
-        0, 1 / r, 0, 0,
-        1 / r, 0, 0, 0,
-        0, 0, -cos(theta) * sin(theta), 0,
-        0, 0, 0, 0,
-
-        0, 0, 1 / r, 0,
-        0, 0, 1 / tan(theta), 0,
-        1 / r, 1 / tan(theta), 0, 0,
-        0, 0, 0, 0,
-
-        0, 0, 0, -(Rs / (2 * Rs * r - 2 * pow(r, 2))),
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        -(Rs / (2 * Rs * r - 2 * pow(r, 2))), 0, 0, 0,
-        // clang-format on
-    };
-}
-
-/**
- * @brief contravariant Jacobian for transition from spherical to Cartesian
- * codiantes
- * @note internal only
- */
-inline Mat<4_D> _cartesian_from_spherical_swarzschild_contravariant_jacobian(
-    const Scalar r, const Scalar theta, const Scalar phi) {
-
-    using std::cos, std::sin;
-    using namespace tensor;
-
-    const Scalar ctheta = cos(theta);
-    const Scalar stheta = sin(theta);
-    const Scalar cphi = cos(phi);
-    const Scalar sphi = sin(phi);
-
-    // spherical to cartesian jacobian
-    return {
-        // clang-format off
-        cphi * stheta,       stheta * sphi,       ctheta,   0,
-        ctheta * cphi/r,     ctheta * sphi / r,  -stheta/r, 0,
-       -sphi / (stheta * r), cphi / (stheta * r), 0,        0,
-        0,                   0,                   0,        1,
-        // clang-format on
-    };
-}
-
-/**
- * @brief contravariant Jacobian for transition from Cartesian to spherical
- * codiantes
- * @note internal only
- * @note stored as transposed
- */
-inline Mat<4_D> _cartesian_from_spherical_swarzschild_covariant_jacobian(
-    const Scalar r, const Scalar theta, const Scalar phi) {
-
-    using std::cos, std::sin;
-    using namespace tensor;
-
-    const Scalar ctheta = cos(theta);
-    const Scalar stheta = sin(theta);
-    const Scalar cphi = cos(phi);
-    const Scalar sphi = sin(phi);
-
-    // spherical to cartesian jacobian
-    return {
-        // clang-format off
-        cphi * stheta, r * ctheta * cphi, -r * stheta * sphi, 0,
-        stheta * sphi, r * ctheta * sphi,  r * cphi * stheta, 0,
-        ctheta,       -r * stheta,         0,                 0,
-        0,             0,                  0,                 1,
-        // clang-format on
-    };
-}
-
 Mat<4_D> Geometry::metric(const Vec<4_D>& position) const {
 
     using std::sqrt, std::pow, std::atan2;
@@ -267,35 +172,6 @@ Mat<4_D> Geometry::metric(const Vec<4_D>& position) const {
         0,
         0,
         pow(c, 2) * (-1 + Rs / r),
-        // clang-format on
-    };
-}
-
-TenR3<4_D> _shperical_christoffel_2(const Scalar r, const Scalar theta) {
-
-    using std::pow, std::cos, std::sin;
-
-    return {
-        // clang-format off
-        0, 0, 0, 0,
-        0, -r, 0, 0,
-        0, 0, -r * pow(sin(theta), 2), 0,
-        0, 0, 0, 0,
-
-        0, 1 / r, 0, 0,
-        1 / r, 0, 0, 0,
-        0, 0, -cos(theta) * sin(theta), 0,
-        0, 0, 0, 0,
-
-        0, 0, 1 / r, 0,
-        0, 0, 1 / tan(theta), 0,
-        1 / r, 1 / tan(theta), 0, 0,
-        0, 0, 0, 0,
-
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
         // clang-format on
     };
 }
