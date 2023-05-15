@@ -46,16 +46,15 @@ Scene<4_D> make_scene() {
 
     Scene<4_D> scene(camera);
 
-    // background (global illumination)
+    // background/black hole color/global illumination
     {
         auto background = std::make_shared<ConstantBackground<4_D>>();
-        background->color = {0.5, 0.7, 1.0};
+        background->color = 2.0 * Color{0.5, 0.7, 1.0};
         scene.active_background = std::move(background);
     }
 
     // materials
-    auto diffuse_gray = make_diffuse_volume_checker_material<4_D>(
-        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
+    auto diffuse_gray = make_diffuse_material<4_D>(Color{0.5, 0.5, 0.5});
     diffuse_gray->id.change("diffuse gray");
 
     auto diffuse_red = make_diffuse_material<4_D>(Color{0.75, 0.5, 0.5});
@@ -65,24 +64,30 @@ Scene<4_D> make_scene() {
         Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
     metal_gray->id.change("metal gray");
 
-    auto light = make_light_material<4_D>(Color{0.85, 0.95, 0.75}, 2.0);
+    auto diffuse_checker_gray = make_diffuse_volume_checker_material<4_D>(
+        Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
+    diffuse_checker_gray->id.change("diffuse checker gray");
+
+    auto light = make_light_volume_checker_material<4_D>(
+        Color{0.95, 0.85, 0.75}, Color{0.85, 0.75, 0.95}, 1.0);
     light->id.change("light");
 
     {
         auto sphere = make_4d_sphere(0.5, {-1.0, -1.0, -2.0});
-        sphere->material = diffuse_red;
+        sphere->material = metal_gray;
         scene.add(std::move(sphere));
     }
 
     {
         auto sphere = make_4d_sphere(0.5, {1.0, 1.0, -2.0});
-        sphere->material = light;
+        sphere->material = diffuse_red;
         scene.add(std::move(sphere));
     }
 
+    // background sphere
     {
         auto sphere = make_4d_sphere(10.0, {0.0, 0.0, 0.0});
-        sphere->material = diffuse_gray;
+        sphere->material = diffuse_checker_gray;
         scene.add(std::move(sphere));
     }
 
