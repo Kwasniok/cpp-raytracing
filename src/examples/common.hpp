@@ -103,6 +103,17 @@ make_light_material(const Color& color, const ColorScalar strength = 1.0) {
     return mat;
 }
 
+/** @brief returns light volume checker board material */
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>> make_light_volume_checker_material(
+    const Color& color1, const Color& color2, const Scalar strength = 1.0,
+    const Scalar scale = 1.0, const Vec<DIMENSION>& offset = {}) {
+    auto mat = std::make_shared<Emitter<DIMENSION>>();
+    mat->color = make_volume_checker_texture<DIMENSION>(
+        strength * color1, strength * color2, scale, offset);
+    return mat;
+}
+
 /**
  * @brief write image to ppm file
  * @note The ppm file format is lossy.
