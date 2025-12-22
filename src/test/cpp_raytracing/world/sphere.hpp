@@ -52,7 +52,7 @@ class Sphere3D : public Entity3D {
   private:
     /**
      * @brief transforms normal vector of a sphere to uv coordinates
-     * @note `u = phi / (2 * pi)`, `v = theta / pi`, y = -cos(theta)`, `x =
+     * @note `u = phi / (2 * pi)`, `v = theta / pi`, `y = -cos(theta)`, `x =
      *       -sin(theta) * cos(phi)` and `z = sin(theta) * sin(phi)`.
      * @note This uv mapping is similar but not identical to the canonical
      *       mappings in maths and physics.
