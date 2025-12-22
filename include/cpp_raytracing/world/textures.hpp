@@ -10,6 +10,7 @@
 
 #include "textures/base.hpp"
 #include "textures/constant_color.hpp"
+#include "textures/image.hpp"
 #include "textures/surface_checker.hpp"
 #include "textures/volume_checker.hpp"
 

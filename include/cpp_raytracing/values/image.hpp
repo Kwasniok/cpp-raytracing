@@ -211,7 +211,7 @@ void write_image_ppm(std::ostream& os, const Image2D& image,
  * @param gamma (optional) gamma correction
  * @see write_image_ppm
  */
-Image2D read_image_ppm(std::iostream& is, const ColorScalar scale = 1.0,
+Image2D read_image_ppm(std::istream& is, const ColorScalar scale = 1.0,
                        const ColorScalar gamma = 1.0) {
     // header
     // P3

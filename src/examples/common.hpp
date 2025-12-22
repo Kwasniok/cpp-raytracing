@@ -18,6 +18,75 @@
 
 namespace cpp_raytracing::examples {
 
+/**
+ * @brief write image to ppm file
+ * @note The ppm file format is lossy.
+ * @param path path to ppm file (without extension)
+ * @param image raw image to be written
+ * @param scale factor to multiply each channel's value with
+ * @param gamma gamma correction
+ */
+void write_ppm(const std::string& path, const Image2D& image,
+               const ColorScalar scale, const ColorScalar gamma) {
+    std::ofstream file;
+    file.open(path);
+    if (file) {
+        write_image_ppm(file, image, scale, gamma);
+    } else {
+        std::cerr << "Could not open file " << path << std::endl;
+    }
+    file.close();
+}
+
+/**
+ * @brief load image from ppm file
+ * @param path path to ppm file (without extension)
+ * @param scale factor to multiply each channel's value with
+ * @param gamma gamma correction
+ */
+Image2D read_ppm(const std::string& path, const ColorScalar scale,
+                 const ColorScalar gamma) {
+    std::ifstream file;
+    file.open(path);
+    if (!file) {
+        throw std::runtime_error("Could not read file `" + path + "`.");
+    }
+    Image2D img = read_image_ppm(file, scale, gamma);
+    file.close();
+    return img;
+}
+
+/**
+ * @brief write raw image to pfm file
+ * @note The pfm file format might be lossy, but is less lossy then e.g. ppm.
+ * @note The pfm format supports 32-bit floats only, which might not be enough
+ *       to represent a ColorScalar accurately.
+ * @param path path to pfm file (without extension)
+ * @param image raw image to be written
+ * @param scale factor to multiply each channel's value with
+ */
+void write_pfm(const std::string& path, const Image2D& image,
+               const ColorScalar scale) {
+    std::ofstream file;
+    file.open(path);
+    if (file) {
+        write_image_pfm(file, image, scale);
+    } else {
+        std::cerr << "Could not open file " << path << std::endl;
+    }
+    file.close();
+}
+
+/**
+ * @brief write image to ppm and pfm file
+ * @see write_ppm, write_pfm
+ */
+void write_image(const std::string& path, const Image2D& image,
+                 const ColorScalar scale, const ColorScalar gamma) {
+    write_ppm(path + ".ppm", image, scale, gamma);
+    write_pfm(path + ".pfm", image, scale);
+}
+
 /** @brief global shutter mode constant */
 const std::string SHUTTER_MODE_GLOBAL = "global";
 /** @brief rolling shutter mode constant */
@@ -32,7 +101,7 @@ const auto SHUTTER_MODES = std::to_array({
 /** @brief returns constant color texture */
 template <Dimension DIMENSION>
 std::shared_ptr<Texture<DIMENSION>> make_color_texture(const Color& color) {
-    auto texture = std::make_shared<ImageColor<DIMENSION>>();
+    auto texture = std::make_shared<ColorTexture<DIMENSION>>();
     texture->color = color;
     return texture;
 }
@@ -43,7 +112,7 @@ std::shared_ptr<Texture<DIMENSION>>
 make_volume_checker_texture(const Color& color1, const Color& color2,
                             const Scalar scale = 1.0,
                             const Vec<DIMENSION>& offset = {}) {
-    auto texture = std::make_shared<VolumeChecker<DIMENSION>>();
+    auto texture = std::make_shared<VolumeCheckerTexture<DIMENSION>>();
     texture->color1 = color1;
     texture->color2 = color2;
     texture->scale = scale;
@@ -51,11 +120,21 @@ make_volume_checker_texture(const Color& color1, const Color& color2,
     return texture;
 }
 
+/** @brief returns image texture */
+template <Dimension DIMENSION>
+std::shared_ptr<Image2DTexture<DIMENSION>>
+make_image_texture(const std::string& path) {
+    auto texture = std::make_shared<Image2DTexture<DIMENSION>>();
+    Image2D image = read_ppm(path, 1.0, 2.0);
+    texture->image = std::make_shared<Image2D>(std::move(image));
+    return texture;
+}
+
 /** @brief returns diffuse material */
 template <Dimension DIMENSION>
 std::shared_ptr<Material<DIMENSION>> make_diffuse_material(const Color& color) {
     auto mat = std::make_shared<Diffuse<DIMENSION>>();
-    auto texture = std::make_shared<ImageColor<DIMENSION>>();
+    auto texture = std::make_shared<ColorTexture<DIMENSION>>();
     mat->color = make_color_texture<DIMENSION>(color);
     return mat;
 }
@@ -69,6 +148,15 @@ make_diffuse_volume_checker_material(const Color& color1, const Color& color2,
     auto mat = std::make_shared<Diffuse<DIMENSION>>();
     mat->color =
         make_volume_checker_texture<DIMENSION>(color1, color2, scale, offset);
+    return mat;
+}
+
+/** @brief returns diffuse image material */
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>>
+make_diffuse_image_material(const std::string& path) {
+    auto mat = std::make_shared<Diffuse<DIMENSION>>();
+    mat->color = make_image_texture<DIMENSION>(path);
     return mat;
 }
 
@@ -112,57 +200,6 @@ std::shared_ptr<Material<DIMENSION>> make_light_volume_checker_material(
     mat->color = make_volume_checker_texture<DIMENSION>(
         strength * color1, strength * color2, scale, offset);
     return mat;
-}
-
-/**
- * @brief write image to ppm file
- * @note The ppm file format is lossy.
- * @param path path to ppm file (without extension)
- * @param image raw image to be written
- * @param scale factor to multiply each channel's value with
- * @param gamma gamma correction
- */
-void write_ppm(const std::string& path, const Image2D& image,
-               const ColorScalar scale, const ColorScalar gamma) {
-    std::ofstream file;
-    file.open(path + ".ppm");
-    if (file) {
-        write_image_ppm(file, image, scale, gamma);
-    } else {
-        std::cerr << "Could not open file " << path << std::endl;
-    }
-    file.close();
-}
-
-/**
- * @brief write raw image to pfm file
- * @note The pfm file format might be lossy, but is less lossy then e.g. ppm.
- * @note The pfm format supports 32-bit floats only, which might not be enough
- *       to represent a ColorScalar accurately.
- * @param path path to ppm file (without extension)
- * @param image raw image to be written
- * @param scale factor to multiply each channel's value with
- */
-void write_pfm(const std::string& path, const Image2D& image,
-               const ColorScalar scale) {
-    std::ofstream file;
-    file.open(path + ".pfm");
-    if (file) {
-        write_image_pfm(file, image, scale);
-    } else {
-        std::cerr << "Could not open file " << path << std::endl;
-    }
-    file.close();
-}
-
-/**
- * @brief write image to ppm and pfm file
- * @see write_ppm, write_pfm
- */
-void write_image(const std::string& path, const Image2D& image,
-                 const ColorScalar scale, const ColorScalar gamma) {
-    write_ppm(path, image, scale, gamma);
-    write_pfm(path, image, scale);
 }
 
 } // namespace cpp_raytracing::examples

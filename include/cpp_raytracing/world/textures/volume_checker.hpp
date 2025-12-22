@@ -19,7 +19,7 @@ namespace cpp_raytracing {
  * @note The value at the edges of each cell is undefined.
  */
 template <Dimension DIMENSION>
-class VolumeChecker : public Texture<DIMENSION> {
+class VolumeCheckerTexture : public Texture<DIMENSION> {
   public:
     /** @brief primary color of the surface */
     Color color1 = Colors::WHITE;
@@ -31,21 +31,21 @@ class VolumeChecker : public Texture<DIMENSION> {
     Scalar scale = 1.0;
 
     /** @brief default construct with default idenfifier root */
-    VolumeChecker() = default;
+    VolumeCheckerTexture() = default;
 
     /** @brief copy constructor */
-    VolumeChecker(const VolumeChecker&) = delete;
+    VolumeCheckerTexture(const VolumeCheckerTexture&) = delete;
 
     /** @brief move constructor */
-    VolumeChecker(VolumeChecker&&) = default;
+    VolumeCheckerTexture(VolumeCheckerTexture&&) = default;
 
     /** @brief copy assignment */
-    VolumeChecker& operator=(const VolumeChecker&) = delete;
+    VolumeCheckerTexture& operator=(const VolumeCheckerTexture&) = delete;
 
     /** @brief move assignment */
-    VolumeChecker& operator=(VolumeChecker&&) = default;
+    VolumeCheckerTexture& operator=(VolumeCheckerTexture&&) = default;
 
-    ~VolumeChecker() override = default;
+    ~VolumeCheckerTexture() override = default;
 
     /** @see Texture::value */
     Color value([[maybe_unused]] const Vec2& uv_coordinates,
@@ -64,7 +64,7 @@ class VolumeChecker : public Texture<DIMENSION> {
 };
 
 /** @brief 3D volume checker texture for 3D entities */
-using VolumeChecker3D = VolumeChecker<Dimension{3}>;
+using VolumeChecker3D = VolumeCheckerTexture<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

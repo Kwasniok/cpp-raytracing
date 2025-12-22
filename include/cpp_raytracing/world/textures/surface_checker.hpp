@@ -18,7 +18,7 @@ namespace cpp_raytracing {
  * @note The value at the edges of each cell is undefined.
  */
 template <Dimension DIMENSION>
-class SurfaceChecker : public Texture<DIMENSION> {
+class SurfaceCheckerTexture : public Texture<DIMENSION> {
   public:
     /** @brief primary color of the surface */
     Color color1 = Colors::WHITE;
@@ -30,21 +30,21 @@ class SurfaceChecker : public Texture<DIMENSION> {
     Scalar scale = 1.0;
 
     /** @brief default construct with default idenfifier root */
-    SurfaceChecker() = default;
+    SurfaceCheckerTexture() = default;
 
     /** @brief copy constructor */
-    SurfaceChecker(const SurfaceChecker&) = delete;
+    SurfaceCheckerTexture(const SurfaceCheckerTexture&) = delete;
 
     /** @brief move constructor */
-    SurfaceChecker(SurfaceChecker&&) = default;
+    SurfaceCheckerTexture(SurfaceCheckerTexture&&) = default;
 
     /** @brief copy assignment */
-    SurfaceChecker& operator=(const SurfaceChecker&) = delete;
+    SurfaceCheckerTexture& operator=(const SurfaceCheckerTexture&) = delete;
 
     /** @brief move assignment */
-    SurfaceChecker& operator=(SurfaceChecker&&) = default;
+    SurfaceCheckerTexture& operator=(SurfaceCheckerTexture&&) = default;
 
-    ~SurfaceChecker() override = default;
+    ~SurfaceCheckerTexture() override = default;
 
     /** @see Texture::value */
     Color value(const Vec2& uv_coordinates,
@@ -63,7 +63,7 @@ class SurfaceChecker : public Texture<DIMENSION> {
 };
 
 /** @brief 2D surface checker texture  for 3D entities */
-using SurfaceChecker3D = SurfaceChecker<Dimension{3}>;
+using SurfaceChecker3D = SurfaceCheckerTexture<Dimension{3}>;
 
 } // namespace cpp_raytracing
 

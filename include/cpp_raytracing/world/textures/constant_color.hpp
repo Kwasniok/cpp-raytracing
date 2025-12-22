@@ -14,26 +14,26 @@ namespace cpp_raytracing {
  * @brief simple constant color texture
  */
 template <Dimension DIMENSION>
-class ImageColor : public Texture<DIMENSION> {
+class ColorTexture : public Texture<DIMENSION> {
   public:
     /** @brief color of the surface */
     Color color = Colors::WHITE;
     /** @brief default construct with default idenfifier root */
-    ImageColor() = default;
+    ColorTexture() = default;
 
     /** @brief copy constructor */
-    ImageColor(const ImageColor&) = delete;
+    ColorTexture(const ColorTexture&) = delete;
 
     /** @brief move constructor */
-    ImageColor(ImageColor&&) = default;
+    ColorTexture(ColorTexture&&) = default;
 
     /** @brief copy assignment */
-    ImageColor& operator=(const ImageColor&) = delete;
+    ColorTexture& operator=(const ColorTexture&) = delete;
 
     /** @brief move assignment */
-    ImageColor& operator=(ImageColor&&) = default;
+    ColorTexture& operator=(ColorTexture&&) = default;
 
-    ~ImageColor() override = default;
+    ~ColorTexture() override = default;
 
     /** @see Texture::value */
     Color value([[maybe_unused]] const Vec2& coordinates,
@@ -43,7 +43,7 @@ class ImageColor : public Texture<DIMENSION> {
 };
 
 /** @brief texture of constant color for 3D entity */
-using ImageColor3D = ImageColor<Dimension{3}>;
+using ImageColor3D = ColorTexture<Dimension{3}>;
 
 } // namespace cpp_raytracing
 
