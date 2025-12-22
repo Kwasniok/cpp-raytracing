@@ -194,6 +194,9 @@ constexpr Color WHITE{1.0, 1.0, 1.0}; /**< @brief white */
 constexpr Color RED{1.0, 0.0, 0.0};   /**< @brief red */
 constexpr Color GREEN{0.0, 1.0, 0.0}; /**< @brief green */
 constexpr Color BLUE{0.0, 0.0, 1.0};  /**< @brief blue */
+constexpr Color CYAN{0.0, 1.0, 1.0}; /**< @brief cyan */
+constexpr Color MAGENTA{1.0, 0.0, 1.0};   /**< @brief magenta */
+constexpr Color YELLOW{1.0, 1.0, 0.0};  /**< @brief yellow */
 } // namespace Colors
 
 } // namespace cpp_raytracing
