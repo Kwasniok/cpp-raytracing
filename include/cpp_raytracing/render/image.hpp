@@ -139,10 +139,9 @@ std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
     const ColorIntegral max_color = 255;
 
     // header
-    os << "P3 # ASCII 8-bit RGB" << std::endl;
-    os << image.width() << " " << image.height() << " # width x height"
-       << std::endl;
-    os << max_color << " # max color value per channel" << std::endl;
+    os << "P3" << std::endl;
+    os << image.width() << " " << image.height() << std::endl;
+    os << max_color << std::endl;
 
     for (unsigned long y = image.height() - 1;
          y != std::numeric_limits<unsigned long>::max(); --y) {

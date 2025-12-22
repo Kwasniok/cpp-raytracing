@@ -90,9 +90,9 @@ BOOST_AUTO_TEST_CASE(write_image_ppm) {
     // note: Enforcing output correctness on character by character basis is in
     //       general not correct (disrespects the PPM grammar) but is most
     //       simple to implement.
-    const std::string output{"P3 # ASCII 8-bit RGB\n\
-2 3 # width x height\n\
-255 # max color value per channel\n\
+    const std::string output{"P3\n\
+2 3\n\
+255\n\
 0 255 0   255 255 0   \n\
 0 255 0   255 255 0   \n\
 0 0 0   255 0 0   \n"};
