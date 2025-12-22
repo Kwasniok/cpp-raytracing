@@ -57,6 +57,11 @@ inline constexpr Scalar max(Scalar x, Scalar y) {
     return x > y ? x : y;
 }
 
+/** @brief returns the modulo of x by y */
+inline constexpr Scalar mod(Scalar x, Scalar y) {
+    return std::fmod(std::fmod(x, y) + y, y);
+}
+
 } // namespace cpp_raytracing
 
 #endif

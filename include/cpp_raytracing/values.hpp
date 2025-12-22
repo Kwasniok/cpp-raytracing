@@ -9,6 +9,7 @@
 #include "values/color.hpp"
 #include "values/image.hpp"
 #include "values/random.hpp"
+#include "values/scalar.hpp"
 #include "values/tensor.hpp"
 #include "values/tensor_boost_numeric_odeint.hpp"
 
