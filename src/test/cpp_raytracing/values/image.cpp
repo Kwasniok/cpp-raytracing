@@ -5,7 +5,7 @@
 #include <array>
 #include <sstream>
 
-#include <cpp_raytracing/render/image.hpp>
+#include <cpp_raytracing/values/image.hpp>
 
 namespace but = boost::unit_test;
 namespace ray = cpp_raytracing;
@@ -13,27 +13,27 @@ namespace ray = cpp_raytracing;
 constexpr ray::Scalar epsilon = 1.0e-12;
 
 BOOST_AUTO_TEST_CASE(constructor) {
-    ray::RawImage(10, 10);
+    ray::Image2D(10, 10);
 }
 
 BOOST_AUTO_TEST_CASE(properties) {
-    const ray::RawImage img{10, 20};
+    const ray::Image2D img{10, 20};
     BOOST_CHECK(img.width() == 10ul);
     BOOST_CHECK(img.height() == 20ul);
 }
 
 BOOST_AUTO_TEST_CASE(operator_bracket_const, *but::tolerance(epsilon)) {
     const ray::Color color{0.0, 0.5, 1.0};
-    ray::RawImage image{10, 10};
+    ray::Image2D image{10, 10};
     image[{1, 2}] = color;
-    const ray::RawImage& cimg = image;
+    const ray::Image2D& cimg = image;
 
     TEST_EQUAL_RANGES(cimg[std::pair(1, 2)], color);
 }
 
 BOOST_AUTO_TEST_CASE(operator_bracket_mut, *but::tolerance(epsilon)) {
     const ray::Color color{0.0, 0.5, 1.0};
-    ray::RawImage image{10, 10};
+    ray::Image2D image{10, 10};
     image[{1, 2}] = color;
 
     TEST_EQUAL_RANGES(image[std::pair(1, 2)], color);
@@ -58,8 +58,8 @@ struct RawImageArithmeticFixture {
 
     const unsigned long N = 8;
     const ray::ColorScalar f = 8.0;
-    ray::RawImage img1{N, N};
-    ray::RawImage img2{N, N};
+    ray::Image2D img1{N, N};
+    ray::Image2D img2{N, N};
 };
 
 BOOST_FIXTURE_TEST_CASE(inplace_plus, RawImageArithmeticFixture,
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(write_image_ppm) {
 0 255 0   255 255 0   \n\
 0 255 0   255 255 0   \n\
 0 0 0   255 0 0   \n"};
-    ray::RawImage img{N, M};
+    ray::Image2D img{N, M};
     for (unsigned long i = 0; i < N; ++i) {
         for (unsigned long j = 0; j < M; ++j) {
             const auto a = static_cast<ray::ColorScalar>(i);
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(write_image_pfm, *but::tolerance(epsilon)) {
         0x80, 0x3f, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x3f, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00};
-    ray::RawImage img{N, M};
+    ray::Image2D img{N, M};
     for (unsigned long i = 0; i < N; ++i) {
         for (unsigned long j = 0; j < M; ++j) {
             const auto a = static_cast<ray::ColorScalar>(i);

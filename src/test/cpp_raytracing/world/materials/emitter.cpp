@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(emitter, *but::tolerance(epsilon)) {
     std::shared_ptr<ray::Material3D> mat;
     {
         auto emitter = std::make_unique<ray::Emitter3D>();
-        auto texture = std::make_shared<ray::ConstantColor3D>();
+        auto texture = std::make_shared<ray::ImageColor3D>();
         texture->color = mat_col;
         emitter->color = std::move(texture);
         mat = std::move(emitter);

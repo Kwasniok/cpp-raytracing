@@ -34,7 +34,7 @@ std::shared_ptr<ray::Mesh3D> make_triange_mesh(const ray::Vec3& point0,
 
 /** @brief returns constant color texture */
 std::shared_ptr<ray::Texture3D> make_color_texture(const ray::Color& color) {
-    auto texture = std::make_shared<ray::ConstantColor3D>();
+    auto texture = std::make_shared<ray::ImageColor3D>();
     texture->color = color;
     return texture;
 }

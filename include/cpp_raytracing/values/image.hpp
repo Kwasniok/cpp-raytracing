@@ -1,10 +1,10 @@
 /**
  * @file
- * @brief image representation
+ * @brief 2D colored image representation
  */
 
-#ifndef CPP_RAYTRACING_IMAGE_HPP
-#define CPP_RAYTRACING_IMAGE_HPP
+#ifndef CPP_RAYTRACING_IMAGE2D_HPP
+#define CPP_RAYTRACING_IMAGE2D_HPP
 
 #include <cmath>
 #include <iostream>
@@ -12,35 +12,35 @@
 #include <utility>
 #include <vector>
 
-#include "../values/color.hpp"
+#include "./color.hpp"
 
 namespace cpp_raytracing {
 
 /**
  * @brief raw image with floating-point channels
  */
-class RawImage {
+class Image2D {
   public:
     /** @brief pixel index type */
     using Index = std::pair<std::size_t, std::size_t>;
 
     /** @brief initialize with dimensions */
-    RawImage(unsigned long width, unsigned long height)
+    Image2D(unsigned long width, unsigned long height)
         : _pixel_colors(width * height), _width(width), _height(height) {}
 
     /** @brief copy constructor */
-    RawImage(const RawImage&) = delete;
+    Image2D(const Image2D&) = delete;
 
     /** @brief move constructor */
-    RawImage(RawImage&&) = default;
+    Image2D(Image2D&&) = default;
 
     /** @brief copy assignment */
-    RawImage& operator=(const RawImage&) = delete;
+    Image2D& operator=(const Image2D&) = delete;
 
     /** @brief move assignment */
-    RawImage& operator=(RawImage&&) = default;
+    Image2D& operator=(Image2D&&) = default;
 
-    ~RawImage() = default;
+    ~Image2D() = default;
 
     /** @brief width in pixel */
     unsigned long width() const { return _width; }
@@ -59,7 +59,7 @@ class RawImage {
     }
 
     /** @brief add another image pixelwise */
-    void operator+=(const RawImage& other) {
+    void operator+=(const Image2D& other) {
         for (unsigned long y = 0; y < _height; ++y) {
             for (unsigned long x = 0; x < _width; ++x) {
                 auto i = y * _width + x;
@@ -132,7 +132,7 @@ std::ostream& write_color_as_uint8_triple(std::ostream& os, const Color& color,
  * @param scale (optional) factor to multiply each channel's value with
  * @param gamma gamma correction
  */
-std::ostream& write_image_ppm(std::ostream& os, const RawImage& image,
+std::ostream& write_image_ppm(std::ostream& os, const Image2D& image,
                               const ColorScalar scale = 1.0,
                               const ColorScalar gamma = 1.0) {
 
@@ -207,7 +207,7 @@ std::ostream& write_color_as_float32_triple(std::ostream& os,
  * @param image image to be written
  * @param scale (optional) factor to multiply each channel's value with
  */
-std::ostream& write_image_pfm(std::ostream& os, const RawImage& image,
+std::ostream& write_image_pfm(std::ostream& os, const Image2D& image,
                               const ColorScalar scale = 1.0) {
 
     // header

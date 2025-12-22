@@ -32,7 +32,7 @@ const auto SHUTTER_MODES = std::to_array({
 /** @brief returns constant color texture */
 template <Dimension DIMENSION>
 std::shared_ptr<Texture<DIMENSION>> make_color_texture(const Color& color) {
-    auto texture = std::make_shared<ConstantColor<DIMENSION>>();
+    auto texture = std::make_shared<ImageColor<DIMENSION>>();
     texture->color = color;
     return texture;
 }
@@ -55,7 +55,7 @@ make_volume_checker_texture(const Color& color1, const Color& color2,
 template <Dimension DIMENSION>
 std::shared_ptr<Material<DIMENSION>> make_diffuse_material(const Color& color) {
     auto mat = std::make_shared<Diffuse<DIMENSION>>();
-    auto texture = std::make_shared<ConstantColor<DIMENSION>>();
+    auto texture = std::make_shared<ImageColor<DIMENSION>>();
     mat->color = make_color_texture<DIMENSION>(color);
     return mat;
 }
@@ -122,7 +122,7 @@ std::shared_ptr<Material<DIMENSION>> make_light_volume_checker_material(
  * @param scale factor to multiply each channel's value with
  * @param gamma gamma correction
  */
-void write_ppm(const std::string& path, const RawImage& image,
+void write_ppm(const std::string& path, const Image2D& image,
                const ColorScalar scale, const ColorScalar gamma) {
     std::ofstream file;
     file.open(path + ".ppm");
@@ -143,7 +143,7 @@ void write_ppm(const std::string& path, const RawImage& image,
  * @param image raw image to be written
  * @param scale factor to multiply each channel's value with
  */
-void write_pfm(const std::string& path, const RawImage& image,
+void write_pfm(const std::string& path, const Image2D& image,
                const ColorScalar scale) {
     std::ofstream file;
     file.open(path + ".pfm");
@@ -159,7 +159,7 @@ void write_pfm(const std::string& path, const RawImage& image,
  * @brief write image to ppm and pfm file
  * @see write_ppm, write_pfm
  */
-void write_image(const std::string& path, const RawImage& image,
+void write_image(const std::string& path, const Image2D& image,
                  const ColorScalar scale, const ColorScalar gamma) {
     write_ppm(path, image, scale, gamma);
     write_pfm(path, image, scale);

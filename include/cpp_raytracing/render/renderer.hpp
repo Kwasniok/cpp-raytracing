@@ -13,6 +13,7 @@
 
 #include "../util.hpp"
 #include "../values/color.hpp"
+#include "../values/image.hpp"
 #include "../values/tensor.hpp"
 #include "../world/entities/base.hpp"
 #include "../world/geometries/base.hpp"
@@ -20,7 +21,6 @@
 #include "../world/ray_segment.hpp"
 #include "../world/scene.hpp"
 #include "canvas.hpp"
-#include "image.hpp"
 
 namespace cpp_raytracing {
 
@@ -39,7 +39,7 @@ class Renderer {
      */
     struct State {
         /** @brief image */
-        RawImage& image;
+        Image2D& image;
         /** @brief samples */
         unsigned long samples;
     };
@@ -162,8 +162,8 @@ class Renderer {
 
     virtual ~Renderer() = default;
 
-    /** @brief render Scene as RawImage */
-    virtual RawImage render(const Geometry<DIMENSION>& geometry,
+    /** @brief render Scene as Image2D */
+    virtual Image2D render(const Geometry<DIMENSION>& geometry,
                             Scene<DIMENSION>& scene) = 0;
 
     /** @brief calculates color of light ray */
@@ -261,7 +261,7 @@ class Renderer {
         const unsigned long i, const unsigned long j,
         const Geometry<DIMENSION>& geometry,
         const typename Scene<DIMENSION>::FreezeGuard& frozen_scene,
-        RawImage& buffer) const {
+        Image2D& buffer) const {
         // random sub-pixel offset for antialiasing
         Scalar x = Scalar(i) + random_scalar(-0.5, +0.5);
         Scalar y = Scalar(j) + random_scalar(-0.5, +0.5);
@@ -309,10 +309,10 @@ class GlobalShutterRenderer : public Renderer<DIMENSION> {
 
     ~GlobalShutterRenderer() override = default;
 
-    RawImage render(const Geometry<DIMENSION>& geometry,
+    Image2D render(const Geometry<DIMENSION>& geometry,
                     Scene<DIMENSION>& scene) override {
 
-        RawImage buffer{this->canvas.width, this->canvas.height};
+        Image2D buffer{this->canvas.width, this->canvas.height};
 
         // optimization: reduce cache generation if possible
         if (this->exposure_time == 0.0) {
@@ -346,7 +346,7 @@ class GlobalShutterRenderer : public Renderer<DIMENSION> {
   private:
     /** @brief render with global shutter and motion blur */
     inline void
-    render_sample(const unsigned long sample, RawImage& buffer,
+    render_sample(const unsigned long sample, Image2D& buffer,
                   const Geometry<DIMENSION>& geometry,
                   const typename Scene<DIMENSION>::FreezeGuard& frozen_scene) {
 
@@ -411,10 +411,10 @@ class RollingShutterRenderer : public Renderer<DIMENSION> {
     RollingShutterRenderer& operator=(RollingShutterRenderer&&) = default;
 
     ~RollingShutterRenderer() override = default;
-    RawImage render(const Geometry<DIMENSION>& geometry,
+    Image2D render(const Geometry<DIMENSION>& geometry,
                     Scene<DIMENSION>& scene) override {
 
-        RawImage buffer{this->canvas.width, this->canvas.height};
+        Image2D buffer{this->canvas.width, this->canvas.height};
 
         for (unsigned long s = 1; s < this->samples + 1; ++s) {
             this->render_sample(s, buffer, geometry, scene);
@@ -426,7 +426,7 @@ class RollingShutterRenderer : public Renderer<DIMENSION> {
 
   private:
     /** @brief render with rolling shutter and motion blur */
-    inline void render_sample(const unsigned long sample, RawImage& buffer,
+    inline void render_sample(const unsigned long sample, Image2D& buffer,
                               const Geometry<DIMENSION>& geometry,
                               Scene<DIMENSION>& scene) const {
 
