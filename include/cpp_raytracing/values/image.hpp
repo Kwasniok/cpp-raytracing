@@ -25,7 +25,7 @@ class Image2D {
     using Index = std::pair<std::size_t, std::size_t>;
 
     /** @brief initialize with dimensions */
-    Image2D(unsigned long width, unsigned long height)
+    Image2D(unsigned long width = 1, unsigned long height = 1)
         : _pixel_colors(width * height), _width(width), _height(height) {}
 
     /** @brief copy constructor */
@@ -58,8 +58,22 @@ class Image2D {
         return _pixel_colors[y * _width + x];
     }
 
+
+    /** @brief const iterator for first element */
+    constexpr auto begin() const { return std::cbegin(_pixel_colors); }
+    /** @brief const iterator for end */
+    constexpr auto end() const { return std::cend(_pixel_colors); }
+    /** @brief iterator for first element */
+    constexpr auto begin() { return std::begin(_pixel_colors); }
+    /** @brief iterator for end */
+    constexpr auto end() { return std::end(_pixel_colors); }
+
     /** @brief add another image pixelwise */
     void operator+=(const Image2D& other) {
+        if (_width != other._width || _height != other._height) {
+            throw std::runtime_error(
+                "Error: Cannot add images of different dimensions.");
+        }
         for (unsigned long y = 0; y < _height; ++y) {
             for (unsigned long x = 0; x < _width; ++x) {
                 auto i = y * _width + x;
@@ -70,21 +84,19 @@ class Image2D {
 
     /** @brief multiply image pixelwise */
     void operator*=(const ColorScalar fac) {
-        for (unsigned long y = 0; y < _height; ++y) {
-            for (unsigned long x = 0; x < _width; ++x) {
-                auto i = y * _width + x;
-                _pixel_colors[i] *= fac;
-            }
+        for (auto& c : _pixel_colors) {
+            c *= fac;
         }
     }
 
-    /** @brief set all pixels to random colors */
-    void randomize(Scalar min, Scalar max) {
-        for (unsigned long j = 0; j < _height; ++j) {
-            for (unsigned long i = 0; i < _width; ++i) {
-                this->operator[]({i, j}) += Color::random(min, max);
-            }
+    /** @brief initialize with all pixels set to random colors */
+    inline static Image2D random(unsigned long width, unsigned long height,
+                                 ColorScalar min, ColorScalar max) {
+        Image2D img(width, height);
+        for (auto& c : img) {
+            c = Color::random(min, max);
         }
+        return img;
     }
 
   private:
@@ -98,11 +110,12 @@ class Image2D {
  * @param os output stream
  * @param color color to be written
  * @param scale (optinal) factor to multiply each channel's value with
- * @param inv_gamma  `inv_gamma = 1.0 / gamma` for gamma correction
+ * @param gamma (optional) gamma correction
+ * @see read_color_from_8bit_ascii_triple
  */
-std::ostream& write_color_as_uint8_triple(std::ostream& os, const Color& color,
-                                          const ColorScalar scale = 1.0,
-                                          const ColorScalar inv_gamma = 1.0) {
+void write_color_as_8bit_ascii_triple(std::ostream& os, const Color& color,
+                                      const ColorScalar scale = 1.0,
+                                      const ColorScalar gamma = 1.0) {
     ColorScalar r = color.r();
     ColorScalar g = color.g();
     ColorScalar b = color.b();
@@ -111,15 +124,45 @@ std::ostream& write_color_as_uint8_triple(std::ostream& os, const Color& color,
     g *= scale;
     b *= scale;
     // gamma correction
-    r = std::pow(r, inv_gamma);
-    g = std::pow(g, inv_gamma);
-    b = std::pow(b, inv_gamma);
+    r = std::pow(r, 1 / gamma);
+    g = std::pow(g, 1 / gamma);
+    b = std::pow(b, 1 / gamma);
     // convert to integers
     const ColorIntegral ir = int_from_color_scalar(r);
     const ColorIntegral ig = int_from_color_scalar(g);
     const ColorIntegral ib = int_from_color_scalar(b);
+    // write
     os << ir << " " << ig << " " << ib;
-    return os;
+}
+
+/**
+ * @brief read color as space separated ASCII 8-bit RGB channels
+ * @param is input stream
+ * @param color color to be written
+ * @param scale (optinal) factor to divide each channel's value by
+ * @param gamma (optional) gamma correction
+ * @see write_color_as_8bit_ascii_triple
+ */
+Color read_color_from_8bit_ascii_triple(std::istream& is,
+                                        const ColorScalar scale = 1.0,
+                                        const ColorScalar gamma = 1.0) {
+
+    ColorIntegral ir, ig, ib;
+    is >> ir >> ig >> ib;
+    // convert to scalars
+    ColorScalar r = color_scalar_from_int(ir);
+    ColorScalar g = color_scalar_from_int(ig);
+    ColorScalar b = color_scalar_from_int(ib);
+    // gamma correction
+    r = std::pow(r, gamma);
+    g = std::pow(g, gamma);
+    b = std::pow(b, gamma);
+    // scale (e.g. 1/samples)
+    r /= scale;
+    g /= scale;
+    b /= scale;
+    // return
+    return {r, g, b};
 }
 
 /**
@@ -130,11 +173,12 @@ std::ostream& write_color_as_uint8_triple(std::ostream& os, const Color& color,
  * @param os output stream
  * @param image image to be written
  * @param scale (optional) factor to multiply each channel's value with
- * @param gamma gamma correction
+ * @param gamma (optional) gamma correction
+ * @see read_image_ppm
  */
-std::ostream& write_image_ppm(std::ostream& os, const Image2D& image,
-                              const ColorScalar scale = 1.0,
-                              const ColorScalar gamma = 1.0) {
+void write_image_ppm(std::ostream& os, const Image2D& image,
+                     const ColorScalar scale = 1.0,
+                     const ColorScalar gamma = 1.0) {
 
     const ColorIntegral max_color = 255;
 
@@ -143,19 +187,96 @@ std::ostream& write_image_ppm(std::ostream& os, const Image2D& image,
     os << image.width() << " " << image.height() << std::endl;
     os << max_color << std::endl;
 
+    // body
     for (unsigned long y = image.height() - 1;
          y != std::numeric_limits<unsigned long>::max(); --y) {
         for (unsigned long x = 0; x < image.width(); ++x) {
-            write_color_as_uint8_triple(os, image[{x, y}], scale, 1.0 / gamma);
+            write_color_as_8bit_ascii_triple(os, image[{x, y}], scale, gamma);
             os << "   ";
         }
         os << std::endl;
     }
-    return os;
+}
+
+/**
+ * @brief read image from
+ * [Portable PixMap file format](https://en.wikipedia.org/wiki/Netpbm)
+ * (P3: ASCII 8-bit RGB)
+ * @note Includes gamma correction of `gamma = 0.5`.
+ * @note Format requirmenets are very strict: E.g. No comments or extra white
+ * spaces allowed.
+ * @param is input stream
+ * @param image image to be read
+ * @param scale (optional) factor to divide each channel's value by
+ * @param gamma (optional) gamma correction
+ * @see write_image_ppm
+ */
+Image2D read_image_ppm(std::iostream& is, const ColorScalar scale = 1.0,
+                       const ColorScalar gamma = 1.0) {
+    // header
+    // P3
+    std::string magic_number;
+    is >> magic_number;
+    if (!is) {
+        throw std::runtime_error("Error: Cannot read file. File not in Netpbm "
+                                 "P3 format. Could not read magic number.");
+    }
+    if (magic_number != "P3") {
+        throw std::runtime_error("Error: Cannot read file. File not in Netpbm "
+                                 "P3 format. Unexpected magic number.");
+    }
+    // width height
+    std::size_t width, height;
+    is >> width >> height;
+    if (!is) {
+        throw std::runtime_error("Error: Cannot read file. File not in Netpbm "
+                                 "P3 format. Could not read width and height.");
+    }
+    if ((width < 1) || (height < 1)) {
+        throw std::runtime_error(
+            "Error: Cannot read file. File not in Netpbm "
+            "P3 format. Width or height must be positive.");
+    }
+    // max color value
+    ColorIntegral max_color;
+    is >> max_color;
+    if (!is) {
+        throw std::runtime_error("Error: Cannot read file. File not in Netpbm "
+                                 "P3 format. Could not read maximum value.");
+    }
+    if (max_color != 255) {
+        throw std::runtime_error(
+            "Error: Cannot read file. File not in Netpbm "
+            "P3 format. Unexpected maximum color value (expected 255).");
+    }
+
+    // body
+    Image2D image(width, height);
+    for (unsigned long y = height - 1;
+         y != std::numeric_limits<unsigned long>::max(); --y) {
+        for (unsigned long x = 0; x < width; ++x) {
+            image[{x, y}] = read_color_from_8bit_ascii_triple(is, scale, gamma);
+            if (!is) {
+                throw std::runtime_error(
+                    "Error: Cannot read file. File not in Netpbm "
+                    "P3 format. Could not read color triplet.");
+            }
+        }
+    }
+
+    // tail
+    is >> std::ws;
+    if (!is.eof()) {
+        throw std::runtime_error(
+            "Error: Cannot read file. File not in Netpbm "
+            "P3 format. File did not end after last color triplet.");
+    }
+
+    return image;
 }
 
 /** @brief write binary 32-bit little-endian float to stream */
-std::ostream& write_binary_float32(std::ostream& os, const float value) {
+void write_binary_float32(std::ostream& os, const float value) {
     // convert to bytes (asserts IEEE 754 32-bit little endian)
     constexpr static auto IEEE_754_DIGITS = 24;
     static_assert(std::numeric_limits<float>::is_iec559,
@@ -169,8 +290,6 @@ std::ostream& write_binary_float32(std::ostream& os, const float value) {
 
     // write bytes
     os.write(binary_data, sizeof(value));
-
-    return os;
 }
 
 /**
@@ -180,8 +299,7 @@ std::ostream& write_binary_float32(std::ostream& os, const float value) {
  * @param os output stream
  * @param color color to be written
  */
-std::ostream& write_color_as_float32_triple(std::ostream& os,
-                                            const Color& color) {
+void write_color_as_float32_triple(std::ostream& os, const Color& color) {
     // convert to float32
     const float fr = static_cast<float>(color.r());
     const float fg = static_cast<float>(color.g());
@@ -193,8 +311,6 @@ std::ostream& write_color_as_float32_triple(std::ostream& os,
     write_binary_float32(os, fr);
     write_binary_float32(os, fg);
     write_binary_float32(os, fb);
-
-    return os;
 }
 
 /**
@@ -207,8 +323,8 @@ std::ostream& write_color_as_float32_triple(std::ostream& os,
  * @param image image to be written
  * @param scale (optional) factor to multiply each channel's value with
  */
-std::ostream& write_image_pfm(std::ostream& os, const Image2D& image,
-                              const ColorScalar scale = 1.0) {
+void write_image_pfm(std::ostream& os, const Image2D& image,
+                     const ColorScalar scale = 1.0) {
 
     // header
     os << "PF\n"; // binary 32-bit float RGB
@@ -220,7 +336,6 @@ std::ostream& write_image_pfm(std::ostream& os, const Image2D& image,
             write_color_as_float32_triple(os, image[{x, y}]);
         }
     }
-    return os;
 }
 
 } // namespace cpp_raytracing

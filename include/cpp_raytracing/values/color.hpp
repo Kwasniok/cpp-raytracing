@@ -37,7 +37,7 @@ class Color {
         : _data{r, g, b} {}
 
     /** @brief initialize channels with random values */
-    inline static Color random(Scalar min, Scalar max) {
+    inline static Color random(ColorScalar min, ColorScalar max) {
         return {random_scalar(min, max), random_scalar(min, max),
                 random_scalar(min, max)};
     }
@@ -130,15 +130,28 @@ inline std::ostream& operator<<(std::ostream& os, const Color& color) {
  * channelwise
  * @note cs > 1.0 infinity and NaN clip to 255
  * @note cs < 0.0 -infinity clip to 0
+ * @see color_scalar_from_int
  */
 inline constexpr ColorIntegral int_from_color_scalar(ColorScalar cs) {
     if (std::isnan(cs)) {
         return 0;
     }
-    cs = clip(cs, 0.0, 1.0);
+    cs = clip(cs, ColorScalar{0.0}, ColorScalar{1.0});
     const ColorIntegral ci = static_cast<ColorIntegral>(cs * 255.0);
-    return clip(ci, static_cast<ColorIntegral>(0),
-                static_cast<ColorIntegral>(255));
+    return clip(ci, ColorIntegral{0}, ColorIntegral{255});
+}
+
+/**
+ * @brief convert integer in range 0-255 to floating point color value
+ * channelwise
+ * @note ci > 255 clip to 1.0
+ * @note ci < 0 clip to 0
+ * @see int_from_color_scalar
+ */
+inline constexpr ColorScalar color_scalar_from_int(ColorIntegral ci) {
+    ci = clip(ci, ColorIntegral{0}, ColorIntegral{255});
+    const ColorScalar cs = static_cast<ColorScalar>(ci) / 255.0;
+    return clip(cs, ColorScalar{0.0}, ColorScalar{1.0});
 }
 
 /** @brief add channelwise */
@@ -170,9 +183,7 @@ inline constexpr Color operator*(const ColorScalar f, const Color& color) {
 /** @brief divide channelwise */
 inline constexpr Color operator/(const Color& color, const ColorScalar f) {
     const auto div = typename Color::data_type::traits_type::div{};
-    const auto func = [&](const auto x) constexpr {
-        return div(x, f);
-    };
+    const auto func = [&](const auto x) constexpr { return div(x, f); };
     return Color(color._data.elementwise(func));
 }
 
