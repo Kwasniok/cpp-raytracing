@@ -23,15 +23,16 @@ namespace cpp_raytracing::examples {
  * @note The ppm file format is lossy.
  * @param path path to ppm file (without extension)
  * @param image raw image to be written
- * @param scale factor to multiply each channel's value with
+ * @param gain factor to divide each color channel value with
  * @param gamma gamma correction
+ * @see read_ppm
  */
 void write_ppm(const std::string& path, const Image2D& image,
-               const ColorScalar scale, const ColorScalar gamma) {
+               const ColorScalar gain, const ColorScalar gamma) {
     std::ofstream file;
     file.open(path);
     if (file) {
-        write_image_ppm(file, image, scale, gamma);
+        write_image_ppm(file, image, gain, gamma);
     } else {
         std::cerr << "Could not open file " << path << std::endl;
     }
@@ -41,17 +42,18 @@ void write_ppm(const std::string& path, const Image2D& image,
 /**
  * @brief load image from ppm file
  * @param path path to ppm file (without extension)
- * @param scale factor to multiply each channel's value with
+ * @param gain factor to multiply each color channel value with
  * @param gamma gamma correction
+ * @see write_ppm
  */
-Image2D read_ppm(const std::string& path, const ColorScalar scale,
+Image2D read_ppm(const std::string& path, const ColorScalar gain,
                  const ColorScalar gamma) {
     std::ifstream file;
     file.open(path);
     if (!file) {
         throw std::runtime_error("Could not read file `" + path + "`.");
     }
-    Image2D img = read_image_ppm(file, scale, gamma);
+    Image2D img = read_image_ppm(file, gain, gamma);
     file.close();
     return img;
 }
@@ -63,14 +65,14 @@ Image2D read_ppm(const std::string& path, const ColorScalar scale,
  *       to represent a ColorScalar accurately.
  * @param path path to pfm file (without extension)
  * @param image raw image to be written
- * @param scale factor to multiply each channel's value with
+ * @param gain factor to multiply each channel's value with
  */
 void write_pfm(const std::string& path, const Image2D& image,
-               const ColorScalar scale) {
+               const ColorScalar gain) {
     std::ofstream file;
     file.open(path);
     if (file) {
-        write_image_pfm(file, image, scale);
+        write_image_pfm(file, image, gain);
     } else {
         std::cerr << "Could not open file " << path << std::endl;
     }
@@ -82,9 +84,9 @@ void write_pfm(const std::string& path, const Image2D& image,
  * @see write_ppm, write_pfm
  */
 void write_image(const std::string& path, const Image2D& image,
-                 const ColorScalar scale, const ColorScalar gamma) {
-    write_ppm(path + ".ppm", image, scale, gamma);
-    write_pfm(path + ".pfm", image, scale);
+                 const ColorScalar gain, const ColorScalar gamma) {
+    write_ppm(path + ".ppm", image, gain, gamma);
+    write_pfm(path + ".pfm", image, gain);
 }
 
 /** @brief global shutter mode constant */
@@ -123,10 +125,10 @@ make_volume_checker_texture(const Color& color1, const Color& color2,
 /** @brief returns image texture */
 template <Dimension DIMENSION>
 std::shared_ptr<Image2DTexture<DIMENSION>>
-make_image_texture(const std::string& path, const ColorScalar scale=1.0,
+make_image_texture(const std::string& path, const ColorScalar gain=1.0,
                    const ColorScalar gamma=2.0) {
     auto texture = std::make_shared<Image2DTexture<DIMENSION>>();
-    Image2D image = read_ppm(path, scale, gamma);
+    Image2D image = read_ppm(path, gain, gamma);
     texture->image = std::make_shared<Image2D>(std::move(image));
     return texture;
 }
@@ -195,10 +197,10 @@ make_light_material(const Color& color, const ColorScalar strength = 1.0) {
 /** @brief returns diffuse image material */
 template <Dimension DIMENSION>
 std::shared_ptr<Material<DIMENSION>>
-make_light_image_material(const std::string& path, const ColorScalar scale=1.0,
+make_light_image_material(const std::string& path, const ColorScalar gain=1.0,
                           const ColorScalar gamma=2.0) {
     auto mat = std::make_shared<Emitter<DIMENSION>>();
-    mat->color = make_image_texture<DIMENSION>(path, scale, gamma);
+    mat->color = make_image_texture<DIMENSION>(path, gain, gamma);
     return mat;
 }
 

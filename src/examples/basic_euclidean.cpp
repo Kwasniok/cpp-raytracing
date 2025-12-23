@@ -41,8 +41,7 @@ Scene3D make_scene(const std::string& texture_path) {
     auto diffuse_red = make_diffuse_material<3_D>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
-    auto diffuse_image =
-        make_diffuse_image_material<3_D>(texture_path);
+    auto diffuse_image = make_diffuse_image_material<3_D>(texture_path);
     diffuse_image->id.change("diffuse image");
 
     // cube
@@ -146,7 +145,7 @@ void render_ppm(const RenderConfig& config) {
         [&config](const Renderer3D::State& current_state) {
             cerr << "save current ..." << endl;
             write_image(config.path + ".current", current_state.image,
-                        1.0 / ColorScalar(current_state.samples), config.gamma);
+                        ColorScalar(current_state.samples), config.gamma);
         };
 
     if (config.verbose) {

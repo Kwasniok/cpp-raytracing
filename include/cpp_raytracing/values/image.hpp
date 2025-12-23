@@ -108,21 +108,21 @@ class Image2D {
  * @brief write color as space separated ASCII 8-bit RGB channels
  * @param os output stream
  * @param color color to be written
- * @param scale (optinal) factor to multiply each channel's value with
+ * @param gain (optinal) factor to divide each channel's value with
  * @param gamma (optional) gamma correction
  * @see read_color_from_ascii_triple
  */
 void write_color_as_ascii_triple(std::ostream& os, const Color& color,
-                                 const ColorScalar scale = 1.0,
+                                 const ColorScalar gain = 1.0,
                                  const ColorScalar gamma = 1.0,
                                  const ColorIntegral max_value = 255) {
     ColorScalar r = color.r();
     ColorScalar g = color.g();
     ColorScalar b = color.b();
-    // scale (e.g. 1/samples)
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    // gain (e.g. samples)
+    r /= gain;
+    g /= gain;
+    b /= gain;
     // gamma correction
     r = std::pow(r, 1 / gamma);
     g = std::pow(g, 1 / gamma);
@@ -139,12 +139,12 @@ void write_color_as_ascii_triple(std::ostream& os, const Color& color,
  * @brief read color as space separated ASCII 8-bit RGB channels
  * @param is input stream
  * @param color color to be written
- * @param scale (optinal) factor to divide each channel's value by
+ * @param gain (optinal) factor to multiply each channel's value by
  * @param gamma (optional) gamma correction
  * @see write_color_as_ascii_triple
  */
 Color read_color_from_ascii_triple(std::istream& is,
-                                   const ColorScalar scale = 1.0,
+                                   const ColorScalar gain = 1.0,
                                    const ColorScalar gamma = 1.0,
                                    const ColorIntegral max_value = 255) {
 
@@ -158,10 +158,10 @@ Color read_color_from_ascii_triple(std::istream& is,
     r = std::pow(r, gamma);
     g = std::pow(g, gamma);
     b = std::pow(b, gamma);
-    // scale (e.g. 1/samples)
-    r /= scale;
-    g /= scale;
-    b /= scale;
+    // gain (e.g. samples)
+    r *= gain;
+    g *= gain;
+    b *= gain;
     // return
     return {r, g, b};
 }
@@ -173,12 +173,12 @@ Color read_color_from_ascii_triple(std::istream& is,
  * @note Includes gamma correction of `gamma = 0.5`.
  * @param os output stream
  * @param image image to be written
- * @param scale (optional) factor to multiply each channel's value with
+ * @param gain (optional) factor to divide each channel's value with
  * @param gamma (optional) gamma correction
  * @see read_image_ppm
  */
 void write_image_ppm(std::ostream& os, const Image2D& image,
-                     const ColorScalar scale = 1.0,
+                     const ColorScalar gain = 1.0,
                      const ColorScalar gamma = 1.0,
                      const ColorIntegral max_color = 255) {
 
@@ -191,7 +191,7 @@ void write_image_ppm(std::ostream& os, const Image2D& image,
     for (unsigned long y = image.height() - 1;
          y != std::numeric_limits<unsigned long>::max(); --y) {
         for (unsigned long x = 0; x < image.width(); ++x) {
-            write_color_as_ascii_triple(os, image[{x, y}], scale, gamma,
+            write_color_as_ascii_triple(os, image[{x, y}], gain, gamma,
                                         max_color);
             os << "   ";
         }
@@ -208,11 +208,11 @@ void write_image_ppm(std::ostream& os, const Image2D& image,
  * spaces allowed.
  * @param is input stream
  * @param image image to be read
- * @param scale (optional) factor to divide each channel's value by
+ * @param gain (optional) factor to multiply each channel's value by
  * @param gamma (optional) gamma correction
  * @see write_image_ppm
  */
-Image2D read_image_ppm(std::istream& is, const ColorScalar scale = 1.0,
+Image2D read_image_ppm(std::istream& is, const ColorScalar gain = 1.0,
                        const ColorScalar gamma = 1.0) {
     // header
     // P3
@@ -256,7 +256,8 @@ Image2D read_image_ppm(std::istream& is, const ColorScalar scale = 1.0,
     for (unsigned long y = height - 1;
          y != std::numeric_limits<unsigned long>::max(); --y) {
         for (unsigned long x = 0; x < width; ++x) {
-            image[{x, y}] = read_color_from_ascii_triple(is, scale, gamma, max_color);
+            image[{x, y}] =
+                read_color_from_ascii_triple(is, gain, gamma, max_color);
             if (!is) {
                 throw std::runtime_error(
                     "Error: Cannot read file. File not in Netpbm "
@@ -315,21 +316,21 @@ void write_color_as_float32_triple(std::ostream& os, const Color& color) {
 }
 
 /**
- * @brief write raw image in
+ * @brief write an image in
  * [Portable FloatMap file format](https://en.wikipedia.org/wiki/Netpbm)
  * (PF: binary 32-bit little-endian float RGB)
  * @note No gamma correction.
- * @note Typically `scale = 1 / samples` for raw images.
+ * @note Typically `gain = samples` for rendered image previews.
  * @param os output stream
  * @param image image to be written
- * @param scale (optional) factor to multiply each channel's value with
+ * @param gain (optional) factor to divide each channel's value with
  */
 void write_image_pfm(std::ostream& os, const Image2D& image,
-                     const ColorScalar scale = 1.0) {
+                     const ColorScalar gain = 1.0) {
     // header
     os << "PF\n"; // binary 32-bit float RGB
     os << image.width() << " " << image.height() << '\n'; // # width x height"
-    os << "-" << std::abs(scale) << "\n"; // # negative <-> little endian"
+    os << "-" << std::abs(1 / gain) << "\n"; // # negative <-> little endian"
 
     for (unsigned long y = 0; y < image.height(); ++y) {
         for (unsigned long x = 0; x < image.width(); ++x) {

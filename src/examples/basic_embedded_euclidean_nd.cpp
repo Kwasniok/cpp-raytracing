@@ -58,8 +58,7 @@ Scene<DIMENSION> make_scene(const std::string& texture_path) {
     auto diffuse_red = make_diffuse_material<DIMENSION>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
-    auto diffuse_image =
-        make_diffuse_image_material<DIMENSION>(texture_path);
+    auto diffuse_image = make_diffuse_image_material<DIMENSION>(texture_path);
     diffuse_image->id.change("diffuse image");
 
     auto metal_gray = make_metal_volume_checker_material<DIMENSION>(
@@ -179,7 +178,7 @@ void render_ppm(const RenderConfig& config) {
         [&config](const typename Renderer<DIMENSION>::State& current_state) {
             cerr << "save current ..." << endl;
             write_image(config.path + ".current", current_state.image,
-                        1.0 / ColorScalar(current_state.samples), config.gamma);
+                        ColorScalar(current_state.samples), config.gamma);
         };
 
     if (config.verbose) {

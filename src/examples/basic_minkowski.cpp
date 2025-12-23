@@ -33,7 +33,8 @@ make_4d_sphere(const Scalar radius, const Vec<4_D> position = {}) {
 /**
  * @brief generate an example scene
  */
-Scene<4_D> make_scene(const std::string& texture_path, const unsigned long number_of_rows) {
+Scene<4_D> make_scene(const std::string& texture_path,
+                      const unsigned long number_of_rows) {
 
     const Vec3 origin{0.0, 1.75, 5.0};
     const Vec3 pinhole{0.0, 1.65, 4.5};
@@ -61,8 +62,7 @@ Scene<4_D> make_scene(const std::string& texture_path, const unsigned long numbe
     auto diffuse_red = make_diffuse_material<4_D>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
-    auto diffuse_image =
-        make_diffuse_image_material<3_D>(texture_path);
+    auto diffuse_image = make_diffuse_image_material<3_D>(texture_path);
     diffuse_image->id.change("diffuse image");
 
     auto metal_gray = make_metal_volume_checker_material<4_D>(
@@ -197,7 +197,7 @@ void render_ppm(const RenderConfig& config) {
         [&config](const typename Renderer<4_D>::State& current_state) {
             cerr << "save current ..." << endl;
             write_image(config.path + ".current", current_state.image,
-                        1.0 / ColorScalar(current_state.samples), config.gamma);
+                        ColorScalar(current_state.samples), config.gamma);
         };
 
     if (config.verbose) {
