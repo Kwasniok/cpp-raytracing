@@ -61,6 +61,9 @@ using Vec6 = Vec<6_D>;
 template <Dimension DIMENSION1, Dimension DIMENSION2 = DIMENSION1>
 using Mat = gttl::Tensor<Scalar, 2, Dimensions<2>{DIMENSION1, DIMENSION2}>;
 
+/** @brief 2x2 matrix */
+using Mat2x2 = Mat<2_D>;
+
 /** @brief 3x3 matrix */
 using Mat3x3 = Mat<3_D>;
 
