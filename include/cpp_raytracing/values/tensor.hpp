@@ -357,6 +357,18 @@ inline Mat<DIMENSION> make_identity_mat() {
 }
 
 /**
+ * @brief returns diagonal matrix
+ */
+template <Dimension DIMENSION>
+inline Mat<DIMENSION> make_diag_mat(std::array<Scalar, DIMENSION> diag_elements) {
+    Mat<DIMENSION> mat{}; // zero-initialization is required
+    for (std::size_t i = 0; i < DIMENSION; ++i) {
+        mat[i][i] = diag_elements[i];
+    }
+    return mat;
+}
+
+/**
  * @brief returns identity matrix
  */
 template <Dimension DIMENSION>
