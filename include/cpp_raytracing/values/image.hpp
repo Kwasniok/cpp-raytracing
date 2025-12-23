@@ -58,7 +58,6 @@ class Image2D {
         return _pixel_colors[y * _width + x];
     }
 
-
     /** @brief const iterator for first element */
     constexpr auto begin() const { return std::cbegin(_pixel_colors); }
     /** @brief const iterator for end */
@@ -111,11 +110,12 @@ class Image2D {
  * @param color color to be written
  * @param scale (optinal) factor to multiply each channel's value with
  * @param gamma (optional) gamma correction
- * @see read_color_from_8bit_ascii_triple
+ * @see read_color_from_ascii_triple
  */
-void write_color_as_8bit_ascii_triple(std::ostream& os, const Color& color,
-                                      const ColorScalar scale = 1.0,
-                                      const ColorScalar gamma = 1.0) {
+void write_color_as_ascii_triple(std::ostream& os, const Color& color,
+                                 const ColorScalar scale = 1.0,
+                                 const ColorScalar gamma = 1.0,
+                                 const ColorIntegral max_value = 255) {
     ColorScalar r = color.r();
     ColorScalar g = color.g();
     ColorScalar b = color.b();
@@ -128,9 +128,9 @@ void write_color_as_8bit_ascii_triple(std::ostream& os, const Color& color,
     g = std::pow(g, 1 / gamma);
     b = std::pow(b, 1 / gamma);
     // convert to integers
-    const ColorIntegral ir = int_from_color_scalar(r);
-    const ColorIntegral ig = int_from_color_scalar(g);
-    const ColorIntegral ib = int_from_color_scalar(b);
+    const ColorIntegral ir = int_from_color_scalar(r, max_value);
+    const ColorIntegral ig = int_from_color_scalar(g, max_value);
+    const ColorIntegral ib = int_from_color_scalar(b, max_value);
     // write
     os << ir << " " << ig << " " << ib;
 }
@@ -141,18 +141,19 @@ void write_color_as_8bit_ascii_triple(std::ostream& os, const Color& color,
  * @param color color to be written
  * @param scale (optinal) factor to divide each channel's value by
  * @param gamma (optional) gamma correction
- * @see write_color_as_8bit_ascii_triple
+ * @see write_color_as_ascii_triple
  */
-Color read_color_from_8bit_ascii_triple(std::istream& is,
-                                        const ColorScalar scale = 1.0,
-                                        const ColorScalar gamma = 1.0) {
+Color read_color_from_ascii_triple(std::istream& is,
+                                   const ColorScalar scale = 1.0,
+                                   const ColorScalar gamma = 1.0,
+                                   const ColorIntegral max_value = 255) {
 
     ColorIntegral ir, ig, ib;
     is >> ir >> ig >> ib;
     // convert to scalars
-    ColorScalar r = color_scalar_from_int(ir);
-    ColorScalar g = color_scalar_from_int(ig);
-    ColorScalar b = color_scalar_from_int(ib);
+    ColorScalar r = color_scalar_from_int(ir, max_value);
+    ColorScalar g = color_scalar_from_int(ig, max_value);
+    ColorScalar b = color_scalar_from_int(ib, max_value);
     // gamma correction
     r = std::pow(r, gamma);
     g = std::pow(g, gamma);
@@ -178,9 +179,8 @@ Color read_color_from_8bit_ascii_triple(std::istream& is,
  */
 void write_image_ppm(std::ostream& os, const Image2D& image,
                      const ColorScalar scale = 1.0,
-                     const ColorScalar gamma = 1.0) {
-
-    const ColorIntegral max_color = 255;
+                     const ColorScalar gamma = 1.0,
+                     const ColorIntegral max_color = 255) {
 
     // header
     os << "P3" << std::endl;
@@ -191,7 +191,8 @@ void write_image_ppm(std::ostream& os, const Image2D& image,
     for (unsigned long y = image.height() - 1;
          y != std::numeric_limits<unsigned long>::max(); --y) {
         for (unsigned long x = 0; x < image.width(); ++x) {
-            write_color_as_8bit_ascii_triple(os, image[{x, y}], scale, gamma);
+            write_color_as_ascii_triple(os, image[{x, y}], scale, gamma,
+                                        max_color);
             os << "   ";
         }
         os << std::endl;
@@ -244,10 +245,10 @@ Image2D read_image_ppm(std::istream& is, const ColorScalar scale = 1.0,
         throw std::runtime_error("Error: Cannot read file. File not in Netpbm "
                                  "P3 format. Could not read maximum value.");
     }
-    if (max_color != 255) {
+    if (max_color < 1) {
         throw std::runtime_error(
             "Error: Cannot read file. File not in Netpbm "
-            "P3 format. Unexpected maximum color value (expected 255).");
+            "P3 format. Unexpected maximum color value (expected >= 1).");
     }
 
     // body
@@ -255,7 +256,7 @@ Image2D read_image_ppm(std::istream& is, const ColorScalar scale = 1.0,
     for (unsigned long y = height - 1;
          y != std::numeric_limits<unsigned long>::max(); --y) {
         for (unsigned long x = 0; x < width; ++x) {
-            image[{x, y}] = read_color_from_8bit_ascii_triple(is, scale, gamma);
+            image[{x, y}] = read_color_from_ascii_triple(is, scale, gamma, max_color);
             if (!is) {
                 throw std::runtime_error(
                     "Error: Cannot read file. File not in Netpbm "
@@ -325,7 +326,6 @@ void write_color_as_float32_triple(std::ostream& os, const Color& color) {
  */
 void write_image_pfm(std::ostream& os, const Image2D& image,
                      const ColorScalar scale = 1.0) {
-
     // header
     os << "PF\n"; // binary 32-bit float RGB
     os << image.width() << " " << image.height() << '\n'; // # width x height"

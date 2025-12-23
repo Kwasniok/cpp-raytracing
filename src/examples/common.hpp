@@ -123,9 +123,10 @@ make_volume_checker_texture(const Color& color1, const Color& color2,
 /** @brief returns image texture */
 template <Dimension DIMENSION>
 std::shared_ptr<Image2DTexture<DIMENSION>>
-make_image_texture(const std::string& path) {
+make_image_texture(const std::string& path, const ColorScalar scale=1.0,
+                   const ColorScalar gamma=2.0) {
     auto texture = std::make_shared<Image2DTexture<DIMENSION>>();
-    Image2D image = read_ppm(path, 1.0, 2.0);
+    Image2D image = read_ppm(path, scale, gamma);
     texture->image = std::make_shared<Image2D>(std::move(image));
     return texture;
 }
@@ -188,6 +189,16 @@ std::shared_ptr<Material<DIMENSION>>
 make_light_material(const Color& color, const ColorScalar strength = 1.0) {
     auto mat = std::make_shared<Emitter<DIMENSION>>();
     mat->color = make_color_texture<DIMENSION>(strength * color);
+    return mat;
+}
+
+/** @brief returns diffuse image material */
+template <Dimension DIMENSION>
+std::shared_ptr<Material<DIMENSION>>
+make_light_image_material(const std::string& path, const ColorScalar scale=1.0,
+                          const ColorScalar gamma=2.0) {
+    auto mat = std::make_shared<Emitter<DIMENSION>>();
+    mat->color = make_image_texture<DIMENSION>(path, scale, gamma);
     return mat;
 }
 

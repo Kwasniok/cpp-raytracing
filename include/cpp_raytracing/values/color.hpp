@@ -132,13 +132,15 @@ inline std::ostream& operator<<(std::ostream& os, const Color& color) {
  * @note cs < 0.0 -infinity clip to 0
  * @see color_scalar_from_int
  */
-inline constexpr ColorIntegral int_from_color_scalar(ColorScalar cs) {
+inline constexpr ColorIntegral
+int_from_color_scalar(ColorScalar cs, const ColorIntegral max_value = 255) {
     if (std::isnan(cs)) {
         return 0;
     }
     cs = clip(cs, ColorScalar{0.0}, ColorScalar{1.0});
-    const ColorIntegral ci = static_cast<ColorIntegral>(cs * 255.0);
-    return clip(ci, ColorIntegral{0}, ColorIntegral{255});
+    const ColorIntegral ci =
+        static_cast<ColorIntegral>(cs * static_cast<ColorScalar>(max_value));
+    return clip(ci, ColorIntegral{0}, ColorIntegral{max_value});
 }
 
 /**
@@ -148,9 +150,11 @@ inline constexpr ColorIntegral int_from_color_scalar(ColorScalar cs) {
  * @note ci < 0 clip to 0
  * @see int_from_color_scalar
  */
-inline constexpr ColorScalar color_scalar_from_int(ColorIntegral ci) {
-    ci = clip(ci, ColorIntegral{0}, ColorIntegral{255});
-    const ColorScalar cs = static_cast<ColorScalar>(ci) / 255.0;
+inline constexpr ColorScalar
+color_scalar_from_int(ColorIntegral ci, const ColorIntegral max_value = 255) {
+    ci = clip(ci, ColorIntegral{0}, max_value);
+    const ColorScalar cs =
+        static_cast<ColorScalar>(ci) / static_cast<ColorScalar>(max_value);
     return clip(cs, ColorScalar{0.0}, ColorScalar{1.0});
 }
 
@@ -189,13 +193,13 @@ inline constexpr Color operator/(const Color& color, const ColorScalar f) {
 
 /** @brief color constants */
 namespace Colors {
-constexpr Color BLACK{0.0, 0.0, 0.0}; /**< @brief black */
-constexpr Color WHITE{1.0, 1.0, 1.0}; /**< @brief white */
-constexpr Color RED{1.0, 0.0, 0.0};   /**< @brief red */
-constexpr Color GREEN{0.0, 1.0, 0.0}; /**< @brief green */
-constexpr Color BLUE{0.0, 0.0, 1.0};  /**< @brief blue */
-constexpr Color CYAN{0.0, 1.0, 1.0}; /**< @brief cyan */
-constexpr Color MAGENTA{1.0, 0.0, 1.0};   /**< @brief magenta */
+constexpr Color BLACK{0.0, 0.0, 0.0};   /**< @brief black */
+constexpr Color WHITE{1.0, 1.0, 1.0};   /**< @brief white */
+constexpr Color RED{1.0, 0.0, 0.0};     /**< @brief red */
+constexpr Color GREEN{0.0, 1.0, 0.0};   /**< @brief green */
+constexpr Color BLUE{0.0, 0.0, 1.0};    /**< @brief blue */
+constexpr Color CYAN{0.0, 1.0, 1.0};    /**< @brief cyan */
+constexpr Color MAGENTA{1.0, 0.0, 1.0}; /**< @brief magenta */
 constexpr Color YELLOW{1.0, 1.0, 0.0};  /**< @brief yellow */
 } // namespace Colors
 

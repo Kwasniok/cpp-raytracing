@@ -95,16 +95,16 @@ struct ColorIOFixture {
     const std::string string = "0 128 255";
 };
 
-BOOST_FIXTURE_TEST_CASE(write_color_as_8bit_ascii_triple, ColorIOFixture) {
+BOOST_FIXTURE_TEST_CASE(write_color_as_ascii_triple, ColorIOFixture) {
     std::stringstream ss;
-    ray::write_color_as_8bit_ascii_triple(ss, color);
+    ray::write_color_as_ascii_triple(ss, color);
     TEST_EQUAL_RANGES(ss.str(), string);
 }
 
-BOOST_FIXTURE_TEST_CASE(read_color_from_8bit_ascii_triple, ColorIOFixture,
+BOOST_FIXTURE_TEST_CASE(read_color_from_ascii_triple, ColorIOFixture,
                         *but::tolerance(1e-2)) {
     std::stringstream ss(string);
-    ray::Color c = ray::read_color_from_8bit_ascii_triple(ss);
+    ray::Color c = ray::read_color_from_ascii_triple(ss);
     TEST_EQUAL_RANGES(c, color);
 }
 
