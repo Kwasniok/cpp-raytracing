@@ -29,10 +29,20 @@ make_4d_sphere(const Scalar radius, const Vec<4_D> position = {}) {
     return sphere;
 }
 
+/** @brief configuration for scene */
+struct SceneConfig {
+        /** @brief path to texture input file (excluding extension) */
+    string texture_path;
+    /** @brief scale factor for texture colors */
+    ColorScalar texture_scale = 1.0;
+    /** @brief gamma correction for texture colors */
+    ColorScalar texture_gamma = 2.0;    
+};
+
 /**
  * @brief generate a scene
  */
-Scene<4_D> make_scene(const std::string& texture_path) {
+Scene<4_D> make_scene(const SceneConfig& config) {
 
     const Vec3 position{0.0, 0.0, 3.0};
     const Vec3 focus{0.0, 0.0, -3.0};
@@ -54,15 +64,18 @@ Scene<4_D> make_scene(const std::string& texture_path) {
     }
 
     // materials
+    auto diffuse_black = make_diffuse_material<4_D>(Colors::BLACK);
+    diffuse_black->id.change("diffuse black");
+
     auto diffuse_gray = make_diffuse_material<4_D>(Color{0.5, 0.5, 0.5});
     diffuse_gray->id.change("diffuse gray");
 
     auto diffuse_red = make_diffuse_material<4_D>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
-    auto diffuse_image =
-        make_diffuse_image_material<4_D>(texture_path);
-    diffuse_image->id.change("diffuse image");
+    auto emissive_image = make_light_image_material<4_D>(
+        config.texture_path, config.texture_scale, config.texture_gamma);
+    emissive_image->id.change("emissive image");
 
     auto metal_gray = make_metal_volume_checker_material<4_D>(
         Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
@@ -84,15 +97,23 @@ Scene<4_D> make_scene(const std::string& texture_path) {
 
     {
         auto sphere = make_4d_sphere(0.5, {1.0, 1.0, -2.0});
-        sphere->material = diffuse_image;
+        sphere->material = diffuse_red;
         scene.add(std::move(sphere));
     }
 
     // background sphere
     {
         auto sphere = make_4d_sphere(10.0, {0.0, 0.0, 0.0});
-        sphere->material = diffuse_checker_gray;
+        sphere->material = emissive_image;
         scene.add(std::move(sphere));
+    }
+
+    // background = end of rendering = black hole
+    {
+        auto background = std::make_shared<ConstantBackground<4_D>>();
+        background->color = Colors::BLACK;
+        background->id.change("black hole");
+        scene.active_background = std::move(background);
     }
 
     return scene;
@@ -106,8 +127,6 @@ struct RenderConfig {
     bool verbose = false;
     /** @brief path to output file (excluding extensions) */
     string path;
-    /** @brief path to texture input file (excluding extension) */
-    string texture_path;
     /**
      * @brief factor to upscale the resolution
      * @note 1 <-> 240p, 8 <-> 1080p, 16 <-> 4k
@@ -156,7 +175,7 @@ struct RenderConfig {
 /**
  * @brief render and save example scene
  */
-void render_ppm(const RenderConfig& config) {
+void render_ppm(const SceneConfig& scene_config, const RenderConfig& config) {
 
     const Canvas canvas{
         // 16:9 ratio
@@ -173,7 +192,7 @@ void render_ppm(const RenderConfig& config) {
         config.ray_max_length,
         config.ray_segment_length_factor,
     };
-    Scene<4_D> scene = make_scene(config.texture_path);
+    Scene<4_D> scene = make_scene(scene_config);
 
     std::unique_ptr<Renderer<4_D>> renderer;
 
@@ -225,12 +244,22 @@ void render_ppm(const RenderConfig& config) {
  */
 int main(int argc, char** argv) {
     argparse::ArgumentParser parser;
+    // scene
+    parser.add_argument("--texture_path")
+        .default_value<std::string>("in/texture/test.ppm")
+        .help("file input path for texture");
+    parser.add_argument("--texture_scale")
+        .default_value<ColorScalar>(1.0)
+        .help("scale factor for texture colors")
+        .scan<'g', ColorScalar>();
+    parser.add_argument("--texture_gamma")
+        .default_value<ColorScalar>(2.0)
+        .help("gamma correction for texture colors")
+        .scan<'g', ColorScalar>();
+    // render
     parser.add_argument("-o", "--out")
         .required()
         .help("file output path (excluding extensions)");
-    parser.add_argument("-i", "--image")
-        .default_value<std::string>("in/texture/test.ppm")
-        .help("file input path (excluding extension) for test texture");
     parser.add_argument("-v", "--verbose")
         .default_value<bool>(false) // store_true
         .implicit_value(true)
@@ -323,11 +352,15 @@ int main(int argc, char** argv) {
         std::cerr << parser;
         std::exit(1);
     }
+    
+    SceneConfig scene_config;
+    scene_config.texture_path = parser.get("--texture_path");
+    scene_config.texture_scale = parser.get<ColorScalar>("--texture_scale");
+    scene_config.texture_gamma = parser.get<ColorScalar>("--texture_gamma");
 
     RenderConfig config;
     config.verbose = parser.get<bool>("-v");
     config.path = parser.get("-o");
-    config.texture_path = parser.get("--image");
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
     config.save_frequency = parser.get<unsigned long>("--save_frequency");
@@ -351,5 +384,6 @@ int main(int argc, char** argv) {
     config.ray_segment_length_factor =
         parser.get<Scalar>("--ray_segment_length_factor");
 
-    render_ppm(config);
+
+    render_ppm(scene_config, config);
 }
