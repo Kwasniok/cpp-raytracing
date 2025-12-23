@@ -36,7 +36,7 @@ make_sphere(const Scalar radius, const Vec<DIMENSION> position = {}) {
  * @brief generate an example scene
  */
 template <Dimension DIMENSION>
-Scene<DIMENSION> make_scene() {
+Scene<DIMENSION> make_scene(const std::string& texture_path) {
 
     auto camera = std::make_shared<PinholeCamera<DIMENSION>>(
         cartesian_embedded::make_pinhole_camera<DIMENSION>(
@@ -58,6 +58,10 @@ Scene<DIMENSION> make_scene() {
     auto diffuse_red = make_diffuse_material<DIMENSION>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
+    auto diffuse_image =
+        make_diffuse_image_material<DIMENSION>(texture_path);
+    diffuse_image->id.change("diffuse image");
+
     auto metal_gray = make_metal_volume_checker_material<DIMENSION>(
         Color{0.45, 0.45, 0.45}, Color{0.55, 0.55, 0.55});
     metal_gray->id.change("metal gray");
@@ -77,7 +81,7 @@ Scene<DIMENSION> make_scene() {
     // sphere right
     {
         auto sphere = make_sphere<DIMENSION>(1.0, {2.0, 1.0, 0.0});
-        sphere->material = diffuse_red;
+        sphere->material = diffuse_image;
         scene.add(std::move(sphere));
     }
     // floor
@@ -98,6 +102,8 @@ struct RenderConfig {
     bool verbose = false;
     /** @brief path to output file (excluding extensions) */
     string path;
+    /** @brief path to texture input file (excluding extension) */
+    string texture_path;
     /**
      * @brief factor to upscale the resolution
      * @note 1 <-> 240p, 8 <-> 1080p, 16 <-> 4k
@@ -138,7 +144,7 @@ void render_ppm(const RenderConfig& config) {
     };
 
     cartesian_embedded::EuclideanGeometry<DIMENSION> geometry;
-    Scene<DIMENSION> scene = make_scene<DIMENSION>();
+    Scene<DIMENSION> scene = make_scene<DIMENSION>(config.texture_path);
 
     std::unique_ptr<Renderer<DIMENSION>> renderer;
 
@@ -193,6 +199,9 @@ int main(int argc, char** argv) {
     parser.add_argument("-o", "--out")
         .required()
         .help("file output path (excluding extensions)");
+    parser.add_argument("-i", "--image")
+        .default_value<std::string>("in/texture/test.ppm")
+        .help("file input path (excluding extension) for test texture");
     parser.add_argument("-v", "--verbose")
         .default_value<bool>(false) // store_true
         .implicit_value(true)
@@ -258,6 +267,7 @@ int main(int argc, char** argv) {
     RenderConfig config;
     config.verbose = parser.get<bool>("-v");
     config.path = parser.get("-o");
+    config.texture_path = parser.get("--image");
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
     config.save_frequency = parser.get<unsigned long>("--save_frequency");

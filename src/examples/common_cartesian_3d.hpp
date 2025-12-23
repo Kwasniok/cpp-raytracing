@@ -15,6 +15,8 @@ namespace cpp_raytracing::examples {
  * @note Uses Cartesian coordinates.
  */
 std::shared_ptr<Mesh3D> make_cube_3d(const Scalar scale, const Vec3& position) {
+    using namespace tensor;
+
     auto mesh = std::make_shared<SmallTriangleMesh3D>();
     mesh->id.change("cube");
     mesh->points = {
@@ -27,13 +29,22 @@ std::shared_ptr<Mesh3D> make_cube_3d(const Scalar scale, const Vec3& position) {
         scale * Vec3{+1.0, +1.0, -1.0} + position, // 6
         scale * Vec3{+1.0, +1.0, +1.0} + position, // 7
     };
+    const Mat2x2 m = make_diag_mat<2_D>({1, 1});
+    const Vec2 v0 = zero_vec<2_D>;
+    const Vec2 v1 = Vec2{1.0, 1.0};
     mesh->faces = {
-        Face3D{0, 1, 3}, Face3D{3, 2, 0}, // -x
-        Face3D{5, 4, 6}, Face3D{6, 7, 5}, // +x
-        Face3D{1, 0, 4}, Face3D{4, 5, 1}, // -y
-        Face3D{2, 3, 7}, Face3D{7, 6, 2}, // +y
-        Face3D{4, 0, 2}, Face3D{2, 6, 4}, // -z
-        Face3D{1, 5, 7}, Face3D{7, 3, 1}, // +z
+        Face{.indices = {1, 3, 0}, .uv_map = {m, v0}},  // -x
+        Face{.indices = {2, 0, 3}, .uv_map = {-m, v1}}, // -x
+        Face{.indices = {4, 6, 5}, .uv_map = {m, v0}},  // +x
+        Face{.indices = {7, 5, 6}, .uv_map = {-m, v1}}, // +x
+        Face{.indices = {0, 4, 1}, .uv_map = {m, v0}},  // -y
+        Face{.indices = {5, 1, 4}, .uv_map = {-m, v1}}, // -y
+        Face{.indices = {3, 7, 2}, .uv_map = {m, v0}},  // +y
+        Face{.indices = {6, 2, 7}, .uv_map = {-m, v1}}, // +y
+        Face{.indices = {0, 2, 4}, .uv_map = {m, v0}},  // -z
+        Face{.indices = {6, 4, 2}, .uv_map = {-m, v1}}, // -z
+        Face{.indices = {5, 7, 1}, .uv_map = {m, v0}},  // +z
+        Face{.indices = {3, 1, 7}, .uv_map = {-m, v1}}, // +z
     };
 
     return mesh;
@@ -53,7 +64,7 @@ std::shared_ptr<Mesh3D> make_xz_plane(const Scalar scale,
         scale * Vec3{+1.0, 0.0, -1.0} + position, // 2
         scale * Vec3{+1.0, 0.0, +1.0} + position, // 3
     };
-    mesh->faces = {Face3D{0, 1, 3}, Face3D{3, 2, 0}};
+    mesh->faces = {Face{0, 1, 3}, Face{3, 2, 0}};
 
     return mesh;
 }

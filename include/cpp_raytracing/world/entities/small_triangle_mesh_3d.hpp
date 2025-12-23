@@ -52,10 +52,11 @@ HitRecord3D SmallTriangleMesh3D::hit_record(const Geometry3D& geometry,
                                             const RaySegment3D& ray_segment,
                                             const Scalar t_min) const {
     HitRecord3D record = {.t = infinity};
-    for (const auto& face : this->faces) {
+    for (const auto& [indicies, uv_map] : this->faces) {
         HitRecord3D rec = small_triangle_hit_record_3d(
-            geometry, ray_segment, t_min, this->points[face[0]],
-            this->points[face[1]], this->points[face[2]], this->material.get());
+            geometry, ray_segment, t_min, this->points[indicies[0]],
+            this->points[indicies[1]], this->points[indicies[2]], this->material.get(),
+            uv_map);
         if (rec.t < record.t) {
             record = rec;
         }

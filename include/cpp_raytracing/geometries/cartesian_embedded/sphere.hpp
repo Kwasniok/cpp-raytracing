@@ -18,7 +18,8 @@ namespace cpp_raytracing { namespace cartesian_embedded {
  * @note Asserts n-dimensinal Euclidean geometry
  */
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3) class Sphere : public Entity<DIMENSION> {
+    requires(DIMENSION >= 3)
+class Sphere : public Entity<DIMENSION> {
   public:
     /** @brief origin of the sphere */
     Vec<DIMENSION> position{};
@@ -54,10 +55,11 @@ requires(DIMENSION >= 3) class Sphere : public Entity<DIMENSION> {
 };
 
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3) HitRecord<DIMENSION> Sphere<DIMENSION>::hit_record(
-    const Geometry<DIMENSION>& geometry,
-    const RaySegment<DIMENSION>& ray_segment, const Scalar t_min)
-const {
+    requires(DIMENSION >= 3)
+HitRecord<DIMENSION>
+Sphere<DIMENSION>::hit_record(const Geometry<DIMENSION>& geometry,
+                              const RaySegment<DIMENSION>& ray_segment,
+                              const Scalar t_min) const {
     using namespace tensor;
 
     // analytical geometry: line hits sphere
@@ -98,21 +100,26 @@ const {
     const Mat<DIMENSION> metric = geometry.metric(point);
     const Mat<3_D, DIMENSION> to_onb_jacobian = geometry.to_onb_jacobian(point);
 
+    // normal
     const Vec3 onb_normal = unit_vector(to_onb_jacobian * (point - position));
+    // angle coords
+    const auto theta = std::acos(-onb_normal[1]);
+    const auto phi = std::atan2(-onb_normal[2], onb_normal[0]) + pi;
+
     HitRecord<DIMENSION> record;
     record.t = t;
     record.point = point;
     record.set_local_geometry(to_onb_jacobian * ray_segment.direction(),
                               onb_normal);
-    record.uv_coordinates = {0, 0}; // dummy coordinates
+    record.uv_coordinates = {phi / (2 * pi), theta / pi};
     record.material = material.get();
     return record;
 }
 
 template <Dimension DIMENSION>
-requires(DIMENSION >= 3) std::optional<
-    AxisAlignedBoundingBox<DIMENSION>> Sphere<DIMENSION>::bounding_box()
-const {
+    requires(DIMENSION >= 3)
+std::optional<AxisAlignedBoundingBox<DIMENSION>>
+Sphere<DIMENSION>::bounding_box() const {
     Vec<DIMENSION> corner{};
     std::ranges::fill(corner.coefficients, radius);
     return AxisAlignedBoundingBox<DIMENSION>{position - corner,

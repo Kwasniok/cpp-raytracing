@@ -19,7 +19,7 @@ namespace cpp_raytracing {
 inline HitRecord3D small_triangle_hit_record_3d(
     const Geometry3D& geometry, const RaySegment3D& ray_segment,
     const Scalar t_min, const Vec3& point0, const Vec3& point1,
-    const Vec3& point2, const Material3D* material) {
+    const Vec3& point2, const Material3D* material, const UVMap& uv_map) {
     using namespace tensor;
 
     // basis for span
@@ -50,11 +50,12 @@ inline HitRecord3D small_triangle_hit_record_3d(
         return {.t = infinity};
     }
 
+    const Vec2 face_coordinates =
+        get_coords_in_plane<3_D>(b1, b2, (s + t * d) - point0);
+
     // union access is checked by gttl
     // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
-    const auto [u, v] =
-        get_coords_in_plane<3_D>(b1, b2, (s + t * d) - point0).coefficients;
-    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
+    const auto& [u, v] = face_coordinates.coefficients;
 
     if (u < 0.0 || v < 0.0 || u + v > 1.0) {
         // outside of triangle region
@@ -63,13 +64,14 @@ inline HitRecord3D small_triangle_hit_record_3d(
 
     // construct hit record
     const Vec3 point = ray_segment.at(t);
+    const Vec2 uv_coordinates = uv_map(face_coordinates);
     const Mat3x3 metric = geometry.metric(point);
     const Mat3x3 to_onb_jacobian = geometry.to_onb_jacobian(point);
 
     HitRecord3D record;
     record.t = t;
     record.point = point;
-    record.uv_coordinates = {u, v};
+    record.uv_coordinates = uv_coordinates;
     // note: The normal is position dependent since the tri might be curved.
     // note: Calculating a face normal from the cross product of two
     //       coordinate deltas (as given here) works only, if the curvature

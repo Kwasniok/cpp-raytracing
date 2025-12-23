@@ -11,6 +11,7 @@
 #include "../../values/tensor.hpp"
 #include "../materials/base.hpp"
 #include "base.hpp"
+#include "face_util.hpp"
 
 namespace cpp_raytracing {
 
@@ -28,7 +29,9 @@ class Triangle : public Entity<DIMENSION> {
 
     /** @brief face corners */
     std::array<VolumeVec, 3> points;
-    /** @brief material of the plane */
+    /** @brief uv map of the face */
+    UVMap uv_map;
+    /** @brief material of the face */
     std::shared_ptr<Material<DIMENSION>> material;
 
     /** @brief default constructor */

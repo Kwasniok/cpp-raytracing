@@ -13,6 +13,7 @@
 #include "../../values/tensor.hpp"
 #include "../materials/base.hpp"
 #include "base.hpp"
+#include "face_util.hpp"
 
 namespace cpp_raytracing {
 
@@ -25,10 +26,6 @@ class Mesh : public Entity<DIMENSION> {
   public:
     /** @brief position vector type */
     using VolumeVec = Vec<DIMENSION>;
-    /** @brief point index type */
-    using Index = typename std::vector<VolumeVec>::size_type;
-    /** @brief face type (triplet of point indices)*/
-    using Face = std::array<Index, 3>;
 
     /** @brief face corners */
     std::vector<VolumeVec> points;
@@ -107,11 +104,6 @@ class Mesh : public Entity<DIMENSION> {
  */
 using Mesh3D = Mesh<Dimension{3}>;
 
-/**
- * @brief face of a 3D mesh object (triplet of point indices)
- * @see Mesh::Face
- */
-using Face3D = Mesh3D::Face;
 
 } // namespace cpp_raytracing
 

@@ -53,9 +53,9 @@ HitRecord3D SmallTriangle3D::hit_record(const Geometry3D& geometry,
                                         const RaySegment3D& ray_segment,
                                         const Scalar t_min) const {
     using namespace tensor;
-    return small_triangle_hit_record_3d(geometry, ray_segment, t_min,
-                                        this->points[0], this->points[1],
-                                        this->points[2], this->material.get());
+    return small_triangle_hit_record_3d(
+        geometry, ray_segment, t_min, this->points[0], this->points[1],
+        this->points[2], this->material.get(), this->uv_map);
 }
 
 } // namespace cpp_raytracing

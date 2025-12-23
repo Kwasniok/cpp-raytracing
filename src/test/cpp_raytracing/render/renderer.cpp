@@ -27,7 +27,7 @@ std::shared_ptr<ray::Mesh3D> make_triange_mesh(const ray::Vec3& point0,
     auto mesh = std::make_shared<ray::SmallTriangleMesh3D>();
     mesh->id.change("triangle mesh");
     mesh->points = {point0, point1, point2};
-    mesh->faces = {ray::Face3D{0, 1, 2}};
+    mesh->faces = {ray::Face{.indices = {0, 1, 2}}};
 
     return mesh;
 }

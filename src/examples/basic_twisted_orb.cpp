@@ -19,7 +19,7 @@ namespace cartesian_3d = cpp_raytracing::cartesian_3d;
 /**
  * @brief generate an example scene
  */
-Scene3D make_scene() {
+Scene3D make_scene(const std::string& texture_path) {
 
     const Vec3 camera_position = 1.1 * Vec3{20, 12, 12};
     const Vec3 pinhole_position = 1.1 * Vec3{15, 8.4, 9};
@@ -42,10 +42,14 @@ Scene3D make_scene() {
     auto diffuse_red = make_diffuse_material<3_D>(Color{0.75, 0.5, 0.5});
     diffuse_red->id.change("diffuse red");
 
+    auto diffuse_image =
+        make_diffuse_image_material<3_D>(texture_path);
+    diffuse_image->id.change("diffuse image");
+
     // cube
     {
         auto cube = make_cube_3d(1.0, Vec3{0.0, 0.0, 0.0});
-        cube->material = diffuse_red;
+        cube->material = diffuse_image;
         // animation
         auto anim = std::make_unique<SinusoidalMotionMeshAnimator3D>();
         anim->start_points = cube->points;
@@ -72,6 +76,8 @@ struct RenderConfig {
     bool verbose = false;
     /** @brief path to output file (excluding extensions) */
     string path;
+    /** @brief path to texture input file (excluding extension) */
+    string texture_path;
     /**
      * @brief factor to upscale the resolution
      * @note 1 <-> 240p, 8 <-> 1080p, 16 <-> 4k
@@ -137,7 +143,7 @@ void render_ppm(const RenderConfig& config) {
         config.ray_max_length,
         config.ray_segment_length_factor,
     };
-    Scene3D scene = make_scene();
+    Scene3D scene = make_scene(config.texture_path);
 
     std::unique_ptr<Renderer3D> renderer;
 
@@ -192,6 +198,9 @@ int main(int argc, char** argv) {
     parser.add_argument("-o", "--out")
         .required()
         .help("file output path (excluding extensions)");
+    parser.add_argument("-i", "--image")
+        .default_value<std::string>("in/texture/test.ppm")
+        .help("file input path (excluding extension) for test texture");
     parser.add_argument("-v", "--verbose")
         .default_value<bool>(false) // store_true
         .implicit_value(true)
@@ -290,6 +299,7 @@ int main(int argc, char** argv) {
     RenderConfig config;
     config.verbose = parser.get<bool>("-v");
     config.path = parser.get("-o");
+    config.texture_path = parser.get("--image");
     config.resolution_factor = parser.get<unsigned long>("--resolution_factor");
     config.samples = parser.get<unsigned long>("--samples");
     config.save_frequency = parser.get<unsigned long>("--save_frequency");
