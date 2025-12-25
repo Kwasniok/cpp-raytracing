@@ -31,12 +31,12 @@ make_4d_sphere(const Scalar radius, const Vec<4_D> position = {}) {
 
 /** @brief configuration for scene */
 struct SceneConfig {
-    /** @brief path to texture input file (excluding extension) */
-    string texture_path;
-    /** @brief scale factor for texture colors */
-    ColorScalar texture_gain = 1.0;
-    /** @brief gamma correction for texture colors */
-    ColorScalar texture_gamma = 2.0;
+    /** @brief path to sky texture input file (excluding extension) */
+    string sky_texture_path;
+    /** @brief scale factor for sky texture colors */
+    ColorScalar sky_texture_gain = 1.0;
+    /** @brief gamma correction for sky texture colors */
+    ColorScalar sky_texture_gamma = 2.0;
 };
 
 /**
@@ -74,7 +74,7 @@ Scene<4_D> make_scene(const SceneConfig& config) {
     diffuse_red->id.change("diffuse red");
 
     auto emissive_image = make_light_image_material<4_D>(
-        config.texture_path, config.texture_gain, config.texture_gamma);
+        config.sky_texture_path, config.sky_texture_gain, config.sky_texture_gamma);
     emissive_image->id.change("emissive image");
 
     auto metal_gray = make_metal_volume_checker_material<4_D>(
@@ -245,16 +245,16 @@ void render_ppm(const SceneConfig& scene_config, const RenderConfig& config) {
 int main(int argc, char** argv) {
     argparse::ArgumentParser parser;
     // scene
-    parser.add_argument("--texture_path")
+    parser.add_argument("--sky_texture_path")
         .default_value<std::string>("in/texture/test.ppm")
-        .help("file input path for texture");
-    parser.add_argument("--texture_gain")
+        .help("file input path for sky texture");
+    parser.add_argument("--sky_texture_gain")
         .default_value<ColorScalar>(1.0)
-        .help("scale factor for texture colors")
+        .help("scale factor for sky texture colors")
         .scan<'g', ColorScalar>();
-    parser.add_argument("--texture_gamma")
+    parser.add_argument("--sky_texture_gamma")
         .default_value<ColorScalar>(2.0)
-        .help("gamma correction for texture colors")
+        .help("gamma correction for sky texture colors")
         .scan<'g', ColorScalar>();
     // render
     parser.add_argument("-o", "--out")
@@ -354,9 +354,9 @@ int main(int argc, char** argv) {
     }
 
     SceneConfig scene_config;
-    scene_config.texture_path = parser.get("--texture_path");
-    scene_config.texture_gain = parser.get<ColorScalar>("--texture_gain");
-    scene_config.texture_gamma = parser.get<ColorScalar>("--texture_gamma");
+    scene_config.sky_texture_path = parser.get("--sky_texture_path");
+    scene_config.sky_texture_gain = parser.get<ColorScalar>("--sky_texture_gain");
+    scene_config.sky_texture_gamma = parser.get<ColorScalar>("--sky_texture_gamma");
 
     RenderConfig config;
     config.verbose = parser.get<bool>("-v");
