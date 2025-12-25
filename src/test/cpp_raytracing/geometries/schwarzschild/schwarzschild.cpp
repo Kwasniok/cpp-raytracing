@@ -280,3 +280,86 @@ BOOST_FIXTURE_TEST_CASE(christoffel_2, SchwarzschildFixture,
     const ray::TenR3<4_D> chris2 = geometry.christoffel_2(point);
     TEST_EQUAL_RANGES(chris2, expected);
 }
+
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
+struct SchwarzschildFlatFixture {
+    SchwarzschildFlatFixture() {}
+    ~SchwarzschildFlatFixture() = default;
+
+    ray::schwarzschild::Geometry geometry{
+        1.0,
+        0.0,
+        ray_initial_step_size,
+        ray_error_abs,
+        ray_error_rel,
+        ray_max_length,
+        ray_segment_length_factor,
+    };
+};
+
+BOOST_FIXTURE_TEST_CASE(jacobian_relations_flat, SchwarzschildFlatFixture,
+                        *but::tolerance(epsilon)) {
+    using namespace ray::tensor;
+
+    const std::vector<ray::Vec<4_D>> points = {
+        ray::Vec<4_D>{2.0, 3.0, 5.0, 7.0},
+        ray::Vec<4_D>{1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0, 1.0 / 7.0},
+    };
+
+    for (const auto& point : points) {
+        const auto to_jac = geometry.to_onb_jacobian(point);
+        const auto from_jac = geometry.from_onb_jacobian(point);
+
+        {
+            // to * from
+            const ray::Mat<3_D> res = to_jac * from_jac;
+            const auto& expected = identity_mat<3_D>;
+            TEST_EQUAL_RANGES(res, expected);
+        }
+        {
+            // from * to
+            const ray::Mat<4_D> res = from_jac * to_jac;
+            const ray::Mat<4_D> expected = {
+                // clang-format off
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 0,
+                // clang-format on
+            };
+            TEST_EQUAL_RANGES(res, expected);
+        }
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(metric_flat, SchwarzschildFlatFixture,
+                        *but::tolerance(epsilon)) {
+    using std::pow, std::sin;
+
+    const std::vector<std::pair<const ray::Vec<4_D>, const ray::Mat<4_D>>>
+        points_and_metrics = {
+            {
+                ray::Vec<4_D>{1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0, 1.0 / 7.0},
+                ray::Mat<4_D>{ray::Vec<4_D>{1.0, 0.0, 0.0, 0.0},
+                              ray::Vec<4_D>{0.0, 1.0, 0.0, 0.0},
+                              ray::Vec<4_D>{0.0, 0.0, 1.0, 0.0},
+                              ray::Vec<4_D>{0.0, 0.0, 0.0, -1.0}},
+            },
+        };
+
+    for (const auto& [point, metric] : points_and_metrics) {
+        const auto met = geometry.metric(point);
+        TEST_EQUAL_RANGES(met, metric);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(christoffel_2_flat, SchwarzschildFlatFixture,
+                        *but::tolerance(epsilon)) {
+    using std::exp, std::cos, std::sin, std::atan2, std::sqrt, ray::pi;
+
+    const ray::Vec<4_D> point = {1.0 / 2.0, 1.0 / 3.0, 1.0 / 5.0, 1.0 / 7.0};
+    const ray::TenR3<4_D> expected = {};
+
+    const ray::TenR3<4_D> chris2 = geometry.christoffel_2(point);
+    TEST_EQUAL_RANGES(chris2, expected);
+}
