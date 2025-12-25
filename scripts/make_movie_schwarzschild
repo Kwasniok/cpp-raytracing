@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -e
+
+# include utility functions
+source "$(dirname $0)/make_movie_util.sh"
+
+EXEC="./build/examples/schwarzschild"
+OUT_DIR="./out/movie_schwarzschild"
+
+# frames parameters
+FRAME_START=0
+FRAME_STOP=30
+FPS=30 # frames per second
+
+# render parameters
+SPEED_OF_LIGHT=100.0
+FAC_SCHWARZSCHILD_RADIUS=1.0
+EXPOSURE_TIME=$(echo "0.8/${FPS}" | bc -l)
+TOTAL_LINE_EXPOSURE_TIME=$(echo "${EXPOSURE_TIME} / 5.0" | bc -l)
+SAMPLES=1
+SAVE_FREQUENCY=100
+RAY_DEPTH=200
+RAY_ERROR_ABS=1e-8
+RESOLUTION_FACTOR=2 # >= 2 (for ffmpeg to work)
+SKY_TEXTURE_PATH="in/texture/test.ppm"
+SKY_TEXTURE_GAMMA=2.0
+SKY_TEXTURE_GAIN=1.0
+
+# time/frame independent parameters
+FIXED_ARGS="\
+--sky_texture_path ${SKY_TEXTURE_PATH} \
+--sky_texture_gamma ${SKY_TEXTURE_GAMMA} \
+--sky_texture_gain ${SKY_TEXTURE_GAIN} \
+--speed_of_light ${SPEED_OF_LIGHT} \
+--exposure_time ${EXPOSURE_TIME} \
+--total_line_exposure_time ${TOTAL_LINE_EXPOSURE_TIME} \
+--samples ${SAMPLES} \
+--save_frequency ${SAVE_FREQUENCY} \
+--ray_depth ${RAY_DEPTH} \
+--ray_error_abs ${RAY_ERROR_ABS} \
+--resolution_factor ${RESOLUTION_FACTOR} \
+"
+
+# time/frame dependent parameters
+function dynamic_args {
+    TIME=$1
+    SCHWARZSCHILD_RADIUS=$(echo "${TIME} * ${FAC_SCHWARZSCHILD_RADIUS}" | bc -l)
+    echo "\
+--time ${TIME} \
+--schwarzschild_radius ${SCHWARZSCHILD_RADIUS} \
+"
+}
+
+
+make_movie
