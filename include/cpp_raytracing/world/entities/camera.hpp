@@ -45,6 +45,8 @@ using Camera3D = Camera<Dimension{3}>;
 
 /**
  * @brief represents a pinhole camera
+ * @note All rays start at the detector surface at the same time and pass
+ * through the pinhole.
  */
 template <Dimension DIMENSION>
 class PinholeCamera : public Camera<DIMENSION> {
@@ -84,6 +86,11 @@ class PinholeCamera : public Camera<DIMENSION> {
         this->time = time;
     }
 
+    /**
+     * @note All rays start at the detector surface at the same time and pass
+     * through the pinhole.
+     * @see Camera::ray_for_coords
+     */
     std::unique_ptr<Ray<DIMENSION>>
     ray_for_coords(const Geometry<DIMENSION>& geometry, const Scalar x,
                    const Scalar y) const override {
