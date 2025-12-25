@@ -15,7 +15,8 @@ namespace cpp_raytracing { namespace cartesian_embedded {
 
 /**
  * @brief n-dimensional sphere (projected into first three dimensions)
- * @note Asserts n-dimensinal Euclidean geometry
+ * @note Asserts n-dimensinal Euclidean geometry for coordinates.
+ * @note The tangential ONB is unrestricted.
  */
 template <Dimension DIMENSION>
     requires(DIMENSION >= 3)
@@ -103,8 +104,15 @@ Sphere<DIMENSION>::hit_record(const Geometry<DIMENSION>& geometry,
     // normal
     const Vec3 onb_normal = unit_vector(to_onb_jacobian * (point - position));
     // angle coords
-    const auto theta = std::acos(-onb_normal[1]);
-    const auto phi = std::atan2(-onb_normal[2], onb_normal[0]) + pi;
+    // note: The ONB is not guaranteed to produce a vector in carthesian
+    //       coordinates (e.g. they may be w.r.t. spherical coordinates).
+    //       Hence the following vector is calculated from the point in local
+    //       coordinates.
+    //       This way the u, v coordinates are always defined w.r.t. to local
+    //       space.
+    const auto normalized_point = unit_vector(point - position);
+    const auto theta = std::acos(-normalized_point[1]);
+    const auto phi = std::atan2(-normalized_point[2], normalized_point[0]) + pi;
 
     HitRecord<DIMENSION> record;
     record.t = t;
