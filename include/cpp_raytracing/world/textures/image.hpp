@@ -45,9 +45,9 @@ class Image2DTexture : public Texture<DIMENSION> {
             return this->value_for_missing_texture(coordinates, point);
         }
 
-        const auto [u,v] = coordinates.coefficients;
+        const auto [u, v] = coordinates.coefficients;
         const unsigned long i = fmod(u, 1) * image->width();
-        const unsigned long j = fmod(v, 1) * image->height();
+        const unsigned long j = fmod(1 - v, 1) * image->height();
         return image->operator[]({i, j});
     }
 };
