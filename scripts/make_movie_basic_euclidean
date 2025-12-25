@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -e
+
+# include utility functions
+source "$(dirname $0)/make_movie_util.sh"
+
+EXEC="./build/examples/basic_euclidean"
+OUT_DIR="./out/movie_basic_euclidean"
+
+# frames parameters
+FRAME_START=0
+FRAME_STOP=60
+FPS=30 # frames per second
+
+# render parameters
+EXPOSURE_TIME=$(echo "0.8/${FPS}" | bc -l)
+TOTAL_LINE_EXPOSURE_TIME=$(echo "${EXPOSURE_TIME} / 5.0" | bc -l)
+SAMPLES=10
+SAVE_FREQUENCY=100
+RAY_DEPTH=100
+RESOLUTION_FACTOR=2 # >= 2 (for ffmpeg to work)
+
+# time/frame independent parameters
+FIXED_ARGS="\
+--exposure_time ${EXPOSURE_TIME} \
+--total_line_exposure_time ${TOTAL_LINE_EXPOSURE_TIME} \
+--samples ${SAMPLES} \
+--save_frequency ${SAVE_FREQUENCY} \
+--ray_depth ${RAY_DEPTH} \
+--resolution_factor ${RESOLUTION_FACTOR}\
+"
+
+# time/frame dependent parameters
+function dynamic_args {
+    TIME=$1
+    echo "\
+--time ${TIME} \
+"
+}
+
+make_movie
