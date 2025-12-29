@@ -104,13 +104,13 @@ Mat<3_D, 4_D> Geometry::to_onb_jacobian(const Vec<4_D>& position) const {
     const Scalar r2 = pow(x, 2) + pow(y, 2) + pow(z, 2);
     const Scalar r = sqrt(r2);
     const Scalar rho = sqrt(pow(x, 2) + pow(y, 2));
-    const Scalar alpha = pow(1 - Rs / r, -0.5);
+    const Scalar alpha_inv = pow(1 - Rs / r, +0.5);
 
-    // Cartesian to spherical contravariant Jacobian and normalization
+    // Jacobian to spherical coordinates and normalization
     return {
-        Vec<4_D>{x / (r * alpha), (x * z) / (rho * alpha), -y / alpha, 0},
-        Vec<4_D>{y / r2, (y * z) / (r * rho), x / r, 0},
-        Vec<4_D>{z / (r * rho), -1, 0, 0},
+        Vec<4_D>{(x * alpha_inv) / r, (y * alpha_inv) / r, (z * alpha_inv) / r, 0},
+        Vec<4_D>{(x * z) / (rho * r), (y * z) / (rho * r), -rho / r, 0},
+        Vec<4_D>{-y / rho, x / rho, 0, 0},
     };
 }
 
@@ -129,11 +129,11 @@ Mat<4_D, 3_D> Geometry::from_onb_jacobian(const Vec<4_D>& position) const {
     const Scalar rho = sqrt(rho2);
     const Scalar alpha = pow(1 - Rs / r, -0.5);
 
-    // denormalize and spherical to Cartesian contravariant Jacobian
+    // inverse Jacobian to spherical coordinates and denormalization
     return {
-        Vec<3_D>{(alpha * x) / r, y, (rho * z) / r},
-        Vec<3_D>{(alpha * x * z / (rho * r2)), (y * z) / (rho * r), -rho2 / r2},
-        Vec<3_D>{(-alpha * y) / rho2, (r * x) / rho2, 0},
+        Vec<3_D>{(x * alpha) / r, (x * z) / (rho * r), -y / rho},
+        Vec<3_D>{(y * alpha) / r, (y * z) / (rho * r), (x / rho)},
+        Vec<3_D>{(z * alpha) / r, -rho / r, 0},
         Vec<3_D>{0, 0, 0},
     };
 }
